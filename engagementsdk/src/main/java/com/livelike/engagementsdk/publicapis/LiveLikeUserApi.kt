@@ -64,12 +64,18 @@ data class LiveLikeChatMessage(val message: String?) {
      * the URL that referenced the image
      */
     var imageUrl: String? = null
+
+    /**
+     * data for custom message
+     */
+    var custom_data: String? = null
 }
 enum class ChatMessageType(val key: String) {
     MESSAGE_CREATED("message-created"),
     MESSAGE_DELETED("message-deleted"),
     IMAGE_CREATED("image-created"),
-    IMAGE_DELETED("image-deleted")
+    IMAGE_DELETED("image-deleted"),
+    CUSTOM_MESSAGE_CREATED("custom-message-created")
 }
 
 internal fun PubnubChatEventType.toChatMessageType(): ChatMessageType {
@@ -78,6 +84,8 @@ internal fun PubnubChatEventType.toChatMessageType(): ChatMessageType {
         PubnubChatEventType.MESSAGE_CREATED -> ChatMessageType.MESSAGE_CREATED
         PubnubChatEventType.IMAGE_DELETED -> ChatMessageType.IMAGE_DELETED
         PubnubChatEventType.IMAGE_CREATED -> ChatMessageType.IMAGE_CREATED
+        PubnubChatEventType.CUSTOM_MESSAGE_CREATED -> ChatMessageType.CUSTOM_MESSAGE_CREATED
+
     }
 }
 
@@ -108,6 +116,7 @@ internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
         this.image_width = this@toLiveLikeChatMessage.image_width
         this.nickname = this@toLiveLikeChatMessage.senderDisplayName
         this.userPic = this@toLiveLikeChatMessage.senderDisplayPic
+        this.custom_data = this@toLiveLikeChatMessage.custom_data
         this.timestamp = epochTimeStamp.toString()
     }
 }

@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.MessageError
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CUSTOM_MESSAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_CREATED
@@ -291,7 +292,7 @@ internal class PubnubChatMessagingClient(
                     val event = message.message.asJsonObject.extractStringOrEmpty("event")
                         .toPubnubChatEventType()
                     when (event) {
-                        MESSAGE_CREATED, IMAGE_CREATED -> {
+                        MESSAGE_CREATED, IMAGE_CREATED , CUSTOM_MESSAGE_CREATED-> {
                             if (!list.contains(msgId)) {
                                 list.add(msgId)
                                 map[channel] = list
@@ -394,7 +395,7 @@ internal class PubnubChatMessagingClient(
             )
             var clientMessage: ClientMessage? = null
             when (event) {
-                MESSAGE_CREATED, IMAGE_CREATED -> {
+                MESSAGE_CREATED, IMAGE_CREATED, CUSTOM_MESSAGE_CREATED -> {
                     if (isDiscardOwnPublishInSubcription && getPublishedMessages(channel).contains(
                             pubnubChatEvent.payload.messageId
                         )
@@ -466,8 +467,14 @@ internal class PubnubChatMessagingClient(
     }
 
     private fun isMessageModerated(jsonObject: JsonObject): Boolean {
-        return jsonObject.getAsJsonObject("payload")?.getAsJsonArray("content_filter")
-            ?.size() ?: 0 > 0
+        // added this check since in payload content filter was coming as string (json primitive) instead of array
+        var contentfilter = jsonObject.getAsJsonObject("payload")?.get("content_filter")
+        return if (contentfilter?.isJsonPrimitive == true){
+            false
+        }else{
+            jsonObject.getAsJsonObject("payload")?.getAsJsonArray("content_filter")
+                ?.size() ?: 0 > 0
+        }
     }
 
     private fun getOwnReaction(actions: java.util.HashMap<String, java.util.HashMap<String, List<PNFetchMessageItem.Action>>>?): ChatMessageReaction? {
