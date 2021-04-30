@@ -360,6 +360,7 @@ internal class ChatSession(
             },
             currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
             message,
+            "",
             userRepository.currentUserStream.latest()?.id ?: "empty-id",
             userRepository.currentUserStream.latest()?.nickname ?: "John Doe",
             avatarUrl,
