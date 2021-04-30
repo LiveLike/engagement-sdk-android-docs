@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.livelike.livelikedemo.customchat.ChatFragment
+import com.livelike.livelikedemo.customchat.CustomMessageFragment
 import com.livelike.livelikedemo.customchat.HomeChat
 import com.livelike.livelikedemo.customchat.HomeFragment
 import java.util.Calendar
@@ -27,6 +28,16 @@ class CustomChatActivity : AppCompatActivity() {
             .addToBackStack(homeChat.toString())
             .commit()
     }
+
+    //added only to test custom message received in custom chat
+    fun showCustomMessageScreen(homeChat: HomeChat) {
+        selectedHomeChat = homeChat
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, CustomMessageFragment.newInstance())
+            .addToBackStack(homeChat.toString())
+            .commit()
+    }
+
 
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) {

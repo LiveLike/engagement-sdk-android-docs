@@ -29,7 +29,10 @@ class HomeFragment : Fragment() {
     private val adapter = HomeAdapter(object : ItemClickListener {
         override fun itemClick(homeChat: HomeChat) {
             homeChat.msgCount = 0
-            (activity as? CustomChatActivity)?.showChatScreen(homeChat)
+           // (activity as? CustomChatActivity)?.showChatScreen(homeChat)
+
+            //open custom receiving chat section
+            (activity as? CustomChatActivity)?.showCustomMessageScreen(homeChat)
         }
     })
 
@@ -70,6 +73,7 @@ class HomeFragment : Fragment() {
             }
             lay_swipe?.postDelayed({ loadUnreadCount() }, 5000L)
         }
+
     }
 
     override fun onDestroy() {
