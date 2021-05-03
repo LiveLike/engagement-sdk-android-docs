@@ -628,22 +628,23 @@ internal class ChatRecyclerAdapter(
                         // load local image with glide, so that (chatAvatarCircle and chatAvatarRadius) properties can be applied.
                         //more details on https://livelike.atlassian.net/browse/ES-1790
 
-                        Glide.with(context)
-                            .load(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
-                            .apply(options)
-                            .placeholder(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
-                            .into(img_chat_avatar)
+                        if(message.senderDisplayPic.isNullOrEmpty()){
+                            Glide.with(context)
+                                .load(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
+                                .apply(options)
+                                .placeholder(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
+                                .into(img_chat_avatar)
 
-                        message.senderDisplayPic.let {
-                            if (!it.isNullOrEmpty())
-                                Glide.with(context).load(it)
-                                    .apply(options)
-                                    .placeholder(chatUserPicDrawable)
-                                    .error(chatUserPicDrawable)
-                                    .into(img_chat_avatar)
-                            else
-                                img_chat_avatar.setImageDrawable(chatUserPicDrawable)
+                        }else{
+
+                            Glide.with(context).load(message.senderDisplayPic)
+                                .apply(options)
+                                .placeholder(chatUserPicDrawable)
+                                .error(chatUserPicDrawable)
+                                .into(img_chat_avatar)
                         }
+
+
                         chatMessage.tag = message.id
 
                         val spaceRemover = Pattern.compile("[\\s]")
