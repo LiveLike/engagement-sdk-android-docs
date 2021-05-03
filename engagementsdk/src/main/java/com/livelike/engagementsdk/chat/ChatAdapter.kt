@@ -21,6 +21,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -623,6 +624,16 @@ internal class ChatRecyclerAdapter(
                                 RoundedCorners(chatAvatarRadius)
                             )
                         }
+
+                        // load local image with glide, so that (chatAvatarCircle and chatAvatarRadius) properties can be applied.
+                        //more details on https://livelike.atlassian.net/browse/ES-1790
+
+                        Glide.with(context)
+                            .load(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
+                            .apply(options)
+                            .placeholder(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
+                            .into(img_chat_avatar)
+
                         message.senderDisplayPic.let {
                             if (!it.isNullOrEmpty())
                                 Glide.with(context).load(it)
