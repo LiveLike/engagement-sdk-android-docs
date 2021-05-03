@@ -47,6 +47,7 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
@@ -627,24 +628,23 @@ internal class ChatRecyclerAdapter(
 
                         // load local image with glide, so that (chatAvatarCircle and chatAvatarRadius) properties can be applied.
                         //more details on https://livelike.atlassian.net/browse/ES-1790
+                        
+                        Glide.with(context)
+                            .load(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
+                            .apply(options)
+                            .placeholder(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
+                            .into(img_chat_avatar)
 
-                        if(message.senderDisplayPic.isNullOrEmpty()){
-                            Glide.with(context)
-                                .load(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
-                                .apply(options)
-                                .placeholder(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
-                                .into(img_chat_avatar)
-
-                        }else{
-
-                            Glide.with(context).load(message.senderDisplayPic)
-                                .apply(options)
-                                .placeholder(chatUserPicDrawable)
-                                .error(chatUserPicDrawable)
-                                .into(img_chat_avatar)
+                        message.senderDisplayPic.let {
+                            if (!it.isNullOrEmpty())
+                                Glide.with(context).load(it)
+                                    .apply(options)
+                                    .placeholder(chatUserPicDrawable)
+                                    .error(chatUserPicDrawable)
+                                    .into(img_chat_avatar)
+                            else
+                                img_chat_avatar.setImageDrawable(chatUserPicDrawable)
                         }
-
-
                         chatMessage.tag = message.id
 
                         val spaceRemover = Pattern.compile("[\\s]")
