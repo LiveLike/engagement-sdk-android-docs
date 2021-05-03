@@ -94,19 +94,22 @@ class ChatFragment : Fragment() {
 
 
         //presently program id and chat room has been harcoded for just
-        // testing purpose wheather we teh data is received and rendered correctly
+        // testing purpose wheather we the data is received and rendered correctly
         // will remove this latter
 
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             var programId = homeChat.channel.llProgram
 
             if(programId.equals("5b4b2538-02c3-4ad2-820a-2c5e6da66314",ignoreCase = true)){
+                custom.visibility = View.VISIBLE
                 (activity as CustomChatActivity).selectedHomeChat?.session?.chatSession?.
                 connectToChatRoom("4121f7af-9f18-43e5-a658-0ac364e2f176", object : LiveLikeCallback<Unit>() {
                     override fun onResponse(result: Unit?, error: String?) {
                         println("ChatOnlyActivity.onResponse -> $result -> $error")
                     }
                 })
+            }else{
+                custom.visibility = View.GONE
             }
         }
 
@@ -129,6 +132,8 @@ class ChatFragment : Fragment() {
                 }
             }
         })
+
+
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             adapter.chatList.clear()
             adapter.chatList.addAll(homeChat.session.chatSession.getLoadedMessages())
