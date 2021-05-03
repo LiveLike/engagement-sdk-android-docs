@@ -33,6 +33,17 @@
             android:layout_weight="1"
             android:hint="Enter Message..." />
 
+
+        <Button
+            android:id="@+id/custom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Custom Msg"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="15dp"
+            app:fabSize="mini"
+            />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_send"
             android:layout_width="wrap_content"
@@ -49,14 +60,6 @@
             android:src="@drawable/ic_image"
             app:fabSize="mini" />
 
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/custom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_gif"
-            android:layout_marginRight="5dp"
-            app:fabSize="mini" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_gif_send"
