@@ -40,6 +40,7 @@ internal data class ChatMessage(
     var messageEvent: PubnubChatEventType,
     var channel: String,
     var message: String?,
+    var custom_data: String?,
     val senderId: String,
     val senderDisplayName: String,
     val senderDisplayPic: String?,

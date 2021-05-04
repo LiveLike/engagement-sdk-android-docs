@@ -16,7 +16,8 @@ internal fun ChatMessage.toPubnubChatMessage(programDateTime: String): PubnubCha
         programDateTime,
         imageUrl = imageUrl,
         image_width = image_width,
-        image_height = image_height
+        image_height = image_height,
+        custom_data = ""
     )
 }
 
@@ -31,6 +32,7 @@ internal fun PubnubChatMessage.toChatMessage(
         event,
         channel,
         message,
+        custom_data,
         senderId,
         senderNickname,
         senderImageUrl,

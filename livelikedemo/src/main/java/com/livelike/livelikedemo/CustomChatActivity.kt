@@ -28,6 +28,7 @@ class CustomChatActivity : AppCompatActivity() {
             .commit()
     }
 
+
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) {
             selectedHomeChat?.let {

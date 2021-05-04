@@ -12,23 +12,41 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.gson.JsonParser
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.livelikedemo.BuildConfig
 import com.livelike.livelikedemo.CustomChatActivity
+import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
 import com.livelike.livelikedemo.R
+import kotlinx.android.synthetic.main.custom_chat_item.view.custom_messages
+import kotlinx.android.synthetic.main.custom_chat_item.view.custom_tv
 import kotlinx.android.synthetic.main.custom_chat_item.view.img_message
+import kotlinx.android.synthetic.main.custom_chat_item.view.normal_message
 import kotlinx.android.synthetic.main.custom_chat_item.view.txt_message
 import kotlinx.android.synthetic.main.custom_chat_item.view.txt_msg_time
 import kotlinx.android.synthetic.main.custom_chat_item.view.txt_name
+import kotlinx.android.synthetic.main.custom_chat_item.view.widget_view
 import kotlinx.android.synthetic.main.fragment_chat.btn_gif_send
 import kotlinx.android.synthetic.main.fragment_chat.btn_img_send
 import kotlinx.android.synthetic.main.fragment_chat.btn_send
+import kotlinx.android.synthetic.main.fragment_chat.custom
 import kotlinx.android.synthetic.main.fragment_chat.ed_msg
 import kotlinx.android.synthetic.main.fragment_chat.lay_swipe
 import kotlinx.android.synthetic.main.fragment_chat.rcyl_chat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -51,6 +69,17 @@ class ChatFragment : Fragment() {
         "https://media.giphy.com/media/4rW9yu8QaZJFC/giphy.gif"
     )
 
+    private val authorization = "Authorization"
+    private var  accessToken: String =
+        "Bearer dyE3arFtBKdtN4b_PhlJXXgivpfLIvbFkQon96Dk4PN2_5mTwkLJZw"
+    private val client = OkHttpClient().newBuilder()
+        .build()
+
+    private val contentType = "Content-Type"
+    private val applicationJSON: String = "application/json"
+    private val mediaType: MediaType? = applicationJSON.toMediaTypeOrNull()
+    val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
     private val adapter = CustomChatAdapter()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,6 +92,30 @@ class ChatFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         rcyl_chat.adapter = adapter
+
+
+        //presently program id and chat room has been harcoded for just
+        // testing purpose wheather we the data is received and rendered correctly
+        // will remove this latter
+
+       /* (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
+            var programId = homeChat.channel.llProgram
+
+            if(programId.equals("5b4b2538-02c3-4ad2-820a-2c5e6da66314",ignoreCase = true)){
+                custom.visibility = View.VISIBLE
+                (activity as CustomChatActivity).selectedHomeChat?.session?.chatSession?.
+                connectToChatRoom("4121f7af-9f18-43e5-a658-0ac364e2f176", object : LiveLikeCallback<Unit>() {
+                    override fun onResponse(result: Unit?, error: String?) {
+                        println("ChatOnlyActivity.onResponse -> $result -> $error")
+                    }
+                })
+            }else{
+                custom.visibility = View.GONE
+            }
+        }*/
+
+
+
         ed_msg.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -80,7 +133,10 @@ class ChatFragment : Fragment() {
                 }
             }
         })
+
+
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
+            adapter.chatList.clear()
             adapter.chatList.addAll(homeChat.session.chatSession.getLoadedMessages())
             homeChat.session.chatSession.setMessageListener(object : MessageListener {
                 private val TAG = "LiveLike"
@@ -152,6 +208,19 @@ class ChatFragment : Fragment() {
             btn_gif_send.setOnClickListener {
                 sendMessage(null, gifs.random())
             }
+
+
+            // send custom message
+            com.livelike.engagementsdk.BuildConfig.CONFIG_URL
+            custom.setOnClickListener {
+                scope.launch(Dispatchers.IO) {
+                    sendCustomMessage(
+                        "{\n" +
+                                "  \"custom_data\": \"heyaa, this is for testing\"\n" +
+                                "}"
+                    )
+                }
+            }
         }
     }
 
@@ -174,6 +243,36 @@ class ChatFragment : Fragment() {
                 })
         }
     }
+
+    //custom message api call
+    private fun sendCustomMessage(post: String? = null) {
+
+        (activity as CustomChatActivity).selectedHomeChat?.let {
+
+            var chatRoomId = it.session.chatSession.getCurrentChatRoom()
+            Log.d("custom-message1",chatRoomId)
+            val urls =
+            "${com.livelike.engagementsdk.BuildConfig.CONFIG_URL}chat-rooms/${chatRoomId}/custom-messages/"
+
+            Log.d("custom-message",urls)
+
+            val body = post?.toRequestBody()
+            val request: Request = Request.Builder()
+                .url(urls)
+                .method("POST", body)
+                .addHeader(
+                    authorization,
+                    accessToken
+                )
+                .addHeader(contentType, applicationJSON)
+                .build()
+            val response: Response = client.newCall(request).execute()
+            val code = response.code
+            Log.d("responseCode", code.toString())
+        }
+    }
+
+
 
     override fun onPause() {
         super.onPause()
@@ -209,6 +308,10 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
     override fun onBindViewHolder(holder: CustomChatViewHolder, position: Int) {
         val chatMessage = chatList[position]
 
+        holder.itemView.normal_message.visibility = View.VISIBLE
+        holder.itemView.custom_messages.visibility = View.GONE
+        holder.itemView.custom_tv.visibility = View.GONE
+
         holder.itemView.txt_name.text = chatMessage.nickname
         val dateTime = Date()
         chatMessage.timestamp?.let {
@@ -231,8 +334,37 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
             holder.itemView.txt_message.text = ""
         } else {
             holder.itemView.img_message.visibility = View.GONE
-            holder.itemView.txt_message.text = chatMessage.message
+
+            if(!chatMessage.message.isNullOrEmpty()) {
+                holder.itemView.txt_message.text = chatMessage.message
+
+            } else if(!chatMessage.custom_data.isNullOrEmpty()){
+                var customData = chatMessage.custom_data
+
+                holder.itemView.normal_message.visibility = View.GONE
+                holder.itemView.custom_messages.visibility = View.VISIBLE
+                try {
+                    val jsonObject =
+                        JsonParser.parseString(customData.toString()).asJsonObject
+
+                    if(jsonObject.has("kind")){
+                        holder.itemView.widget_view.visibility = View.VISIBLE
+                        holder.itemView.widget_view.displayWidget((holder.itemView.context.applicationContext as LiveLikeApplication).sdk, jsonObject)
+                    }else{
+                        holder.itemView.custom_tv.visibility = View.VISIBLE
+                        holder.itemView.widget_view.visibility = View.GONE
+                        holder.itemView.custom_tv.text = jsonObject.toString()
+                    }
+
+                } catch (ex: Exception) {
+                    holder.itemView.custom_tv.text = customData
+                    holder.itemView.custom_tv.visibility = View.VISIBLE
+                    holder.itemView.widget_view.visibility = View.GONE
+                }
+            }
         }
+
+
         holder.itemView.txt_msg_time.text = SimpleDateFormat(
             "MMM d, h:mm a",
             Locale.getDefault()
