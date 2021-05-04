@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk
 
+import org.junit.Test
 import org.junit.experimental.theories.DataPoints
 import org.junit.experimental.theories.Theories
 import org.junit.experimental.theories.Theory
@@ -13,6 +14,11 @@ open class EpochTimeUnitTest {
         assert(sampleFormat.parseISODateTime() != null)
     }
 
+    @Test
+    fun testInValidMonthFormat() {
+        assert("2021-22-22T06:55:03,000000+00:00".parseISODateTime() == null)
+    }
+
 
     companion object {
         @DataPoints
@@ -23,7 +29,6 @@ open class EpochTimeUnitTest {
             "2020-09-04T16:40:53+05:30",
             "2020-09-04T16:40:53.000000+00:00",
             "2020-09-04T16:40:53Z",
-            "2020-09-04T16:40:53,000000+00:00"
         )
     }
 

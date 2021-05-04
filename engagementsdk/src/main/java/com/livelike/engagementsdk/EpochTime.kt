@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk
 
 import com.livelike.engagementsdk.core.utils.logError
+import org.threeten.bp.DateTimeException
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZoneOffset
 import org.threeten.bp.ZonedDateTime
@@ -98,16 +99,21 @@ internal fun String.parseISODateTime(): ZonedDateTime? {
         nanoSeconds = bd.movePointRight(9).toInt()
     }
 
-    return ZonedDateTime.of(
-        Integer.parseInt(matcher.group(1)),
-        Integer.parseInt(matcher.group(2)),
-        Integer.parseInt(matcher.group(3)),
-        Integer.parseInt(matcher.group(4)),
-        Integer.parseInt(matcher.group(5)),
-        Integer.parseInt(matcher.group(6)),
-        nanoSeconds,
-        ZoneId.ofOffset("GMT", ZoneOffset.ofTotalSeconds(timezoneShift * 60))
-    )
+    return try {
+        ZonedDateTime.of(
+            Integer.parseInt(matcher.group(1)),
+            Integer.parseInt(matcher.group(2)),
+            Integer.parseInt(matcher.group(3)),
+            Integer.parseInt(matcher.group(4)),
+            Integer.parseInt(matcher.group(5)),
+            Integer.parseInt(matcher.group(6)),
+            nanoSeconds,
+            ZoneId.ofOffset("GMT", ZoneOffset.ofTotalSeconds(timezoneShift * 60))
+        )
+    } catch (e: DateTimeException) {
+        logError { e.message }
+        null
+    }
 }
 
 /** Formats in 2019-09-17T17:31:08.914+05:30[Asia/Kolkata] */

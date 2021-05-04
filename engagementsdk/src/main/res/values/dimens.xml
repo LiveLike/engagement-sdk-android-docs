@@ -117,10 +117,8 @@
     <dimen name="livelike_chat_message_date_time_margin_right">0dp</dimen>
     <dimen name="livelike_chat_message_date_time_margin_bottom">0dp</dimen>
     <dimen name="livelike_chat_message_date_time_text_size">12sp</dimen>
-    <dimen name="livelike_chat_bubble_background_margin_start">8dp</dimen>
     <dimen name="livelike_chat_bubble_background_margin_left">8dp</dimen>
     <dimen name="livelike_chat_bubble_background_margin_top">4dp</dimen>
-    <dimen name="livelike_chat_bubble_background_margin_end">8dp</dimen>
     <dimen name="livelike_chat_bubble_background_margin_right">8dp</dimen>
     <dimen name="livelike_chat_bubble_background_margin_bottom">4dp</dimen>
     <dimen name="livelike_chat_avatar_margin_left">16dp</dimen>
