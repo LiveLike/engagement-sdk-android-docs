@@ -460,7 +460,7 @@ internal class PubnubChatMessagingClient(
             logDebug { "Received message on $channel from pubnub: ${pubnubChatEvent.payload}" }
             return clientMessage
         } else {
-            logDebug { "We don't know how to handle this message" }
+            logError { "We don't know how to handle this message" }
         }
         return null
     }
