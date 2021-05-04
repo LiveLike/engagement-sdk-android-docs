@@ -16,6 +16,7 @@
         <item name="displayUserProfile">true</item>
         <item name="showMessageTime">true</item>
         <item name="chatAvatarCircle">true</item>
+        <item name="chatAvatarRadius">20dp</item>
         <item name="chatBubbleWidth">wrap_content</item>
         <item name="chatBackgroundWidth">wrap_content</item>
         <item name="chatSendButtonPaddingLeft">10dp</item>
@@ -68,7 +69,7 @@
         <item name="chatSelectedReactionRadius">14dp</item>
         <item name="chatReactionPanelColor">@android:color/white</item>
         <item name="chatReactionDisplayCountColor">#171717</item>
-        <item name="chatAvatarCircle">true</item>
+        <item name="chatAvatarCircle">false</item>
         <item name="chatAvatarHeight">40dp</item>
         <item name="chatAvatarWidth">40dp</item>
         <item name="chatAvatarGravity">top</item>
