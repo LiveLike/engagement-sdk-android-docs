@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.livelikedemo.BuildConfig
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
@@ -97,7 +98,7 @@ class ChatFragment : Fragment() {
         // testing purpose wheather we the data is received and rendered correctly
         // will remove this latter
 
-        (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
+       /* (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             var programId = homeChat.channel.llProgram
 
             if(programId.equals("5b4b2538-02c3-4ad2-820a-2c5e6da66314",ignoreCase = true)){
@@ -111,7 +112,7 @@ class ChatFragment : Fragment() {
             }else{
                 custom.visibility = View.GONE
             }
-        }
+        }*/
 
 
 
@@ -210,10 +211,10 @@ class ChatFragment : Fragment() {
 
 
             // send custom message
+            com.livelike.engagementsdk.BuildConfig.CONFIG_URL
             custom.setOnClickListener {
                 scope.launch(Dispatchers.IO) {
                     sendCustomMessage(
-                        "https://cf-blast-qa.livelikecdn.com/api/v1/chat-rooms/4121f7af-9f18-43e5-a658-0ac364e2f176/custom-messages/",
                         "{\n" +
                                 "  \"custom_data\": \"heyaa, this is for testing\"\n" +
                                 "}"
@@ -244,24 +245,34 @@ class ChatFragment : Fragment() {
     }
 
     //custom message api call
-    private fun sendCustomMessage(url: String,
-                                  post: String? = null): String? {
+    private fun sendCustomMessage(post: String? = null) {
 
-        val body = post?.toRequestBody()
-        val request: Request = Request.Builder()
-            .url(url)
-            .method("POST", body)
-            .addHeader(
-                authorization,
-                accessToken
-            )
-            .addHeader(contentType, applicationJSON)
-            .build()
-        val response: Response = client.newCall(request).execute()
-        val code = response.code
-        Log.d("responseCode",code.toString())
-        return response.body?.string()
+        (activity as CustomChatActivity).selectedHomeChat?.let {
+
+            var chatRoomId = it.session.chatSession.getCurrentChatRoom()
+            Log.d("custom-message1",chatRoomId)
+            val urls =
+            "${com.livelike.engagementsdk.BuildConfig.CONFIG_URL}chat-rooms/${chatRoomId}/custom-messages/"
+
+            Log.d("custom-message",urls)
+
+            val body = post?.toRequestBody()
+            val request: Request = Request.Builder()
+                .url(urls)
+                .method("POST", body)
+                .addHeader(
+                    authorization,
+                    accessToken
+                )
+                .addHeader(contentType, applicationJSON)
+                .build()
+            val response: Response = client.newCall(request).execute()
+            val code = response.code
+            Log.d("responseCode", code.toString())
+        }
     }
+
+
 
     override fun onPause() {
         super.onPause()
