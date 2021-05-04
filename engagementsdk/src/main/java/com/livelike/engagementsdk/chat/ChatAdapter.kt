@@ -630,10 +630,10 @@ internal class ChatRecyclerAdapter(
                         //more details on https://livelike.atlassian.net/browse/ES-1790
 
                         if(message.senderDisplayPic.isNullOrEmpty()){
+                            //load local image
                             Glide.with(context)
-                                .load(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
+                                .load(R.drawable.default_avatar)
                                 .apply(options)
-                                .placeholder(ResourcesCompat.getDrawable(resources, R.drawable.default_avatar, null))
                                 .into(img_chat_avatar)
 
                         }else{
