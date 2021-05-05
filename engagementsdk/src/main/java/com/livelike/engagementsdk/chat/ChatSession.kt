@@ -373,6 +373,7 @@ internal class ChatSession(
             isFromMe = true,
             image_width = imageWidth ?: 100,
             image_height = imageHeight ?: 100,
+            timeStamp = timeData.timeSinceEpochInMs.toString()
         ).let { chatMessage ->
 
             //TODO: need to update for error handling here if pubnub respond failure of message
