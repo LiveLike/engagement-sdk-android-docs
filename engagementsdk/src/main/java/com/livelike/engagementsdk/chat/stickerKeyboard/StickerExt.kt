@@ -69,7 +69,7 @@ fun replaceWithStickers(
     existingSpans?.forEach { imageSpan ->
         existingSpanPositions.add(s.getSpanStart(imageSpan))
     }
-    var matcher = s.toString().findStickers()
+    val matcher = s.toString().findStickers()
 
     while (matcher.find()) {
 
@@ -90,7 +90,7 @@ fun replaceWithStickers(
                 .`as`(ByteArray::class.java)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(object : CustomTarget<ByteArray>(size, size) {
+                .into(object : CustomTarget<ByteArray>(AndroidResource.dpToPx(size), AndroidResource.dpToPx(size)) {
                     override fun onLoadCleared(placeholder: Drawable?) {
                     }
 
@@ -117,7 +117,7 @@ fun replaceWithStickers(
             Glide.with(context)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(object : CustomTarget<Drawable>(size, size) {
+                .into(object : CustomTarget<Drawable>(AndroidResource.dpToPx(size), AndroidResource.dpToPx(size)) {
                     override fun onLoadCleared(placeholder: Drawable?) {
                     }
 

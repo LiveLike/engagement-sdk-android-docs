@@ -6,7 +6,10 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.text.Layout
 import android.text.SpannableString
+import android.text.StaticLayout
+import android.text.TextPaint
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -21,7 +24,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -67,6 +69,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
@@ -487,6 +490,21 @@ internal class ChatRecyclerAdapter(
             }
         }
 
+        /**
+         * Creating this function to get line count of string assuming the width as some value
+         * it is estimated not exact value
+         */
+        private fun String.getLinesCount(): Int {
+            val density = v.context.resources.displayMetrics.density
+            val paint = TextPaint()
+            paint.textSize = chatViewThemeAttribute.chatMessageTextSize * density
+            val width = (300 * density).toInt()
+            val alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL
+            val layout =
+                StaticLayout(this, paint, width, alignment, 1F, 0F, false)
+            return layout.lineCount
+        }
+
         @SuppressLint("SetTextI18n")
         private fun setMessage(
             message: ChatMessage?
@@ -629,14 +647,14 @@ internal class ChatRecyclerAdapter(
                         // load local image with glide, so that (chatAvatarCircle and chatAvatarRadius) properties can be applied.
                         //more details on https://livelike.atlassian.net/browse/ES-1790
 
-                        if(message.senderDisplayPic.isNullOrEmpty()){
+                        if (message.senderDisplayPic.isNullOrEmpty()) {
                             //load local image
                             Glide.with(context)
                                 .load(R.drawable.default_avatar)
                                 .apply(options)
                                 .into(img_chat_avatar)
 
-                        }else{
+                        } else {
 
                             Glide.with(context).load(message.senderDisplayPic)
                                 .apply(options)
@@ -667,6 +685,7 @@ internal class ChatRecyclerAdapter(
                         }
                         when {
                             !isDeleted && isExternalImage -> {
+                                chatMessage.minHeight = AndroidResource.dpToPx(LARGER_STICKER_SIZE)
                                 val s = SpannableString(message.message)
                                 replaceWithImages(
                                     s,
@@ -683,6 +702,7 @@ internal class ChatRecyclerAdapter(
                                 }
                             }
                             !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
+                                chatMessage.minHeight = AndroidResource.dpToPx(MEDIUM_STICKER_SIZE)
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
@@ -690,7 +710,7 @@ internal class ChatRecyclerAdapter(
                                     stickerPackRepository,
                                     null,
                                     callback,
-                                    LARGER_STICKER_SIZE
+                                    MEDIUM_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     if (chatMessage.tag == message.id)
@@ -698,6 +718,15 @@ internal class ChatRecyclerAdapter(
                                 }
                             }
                             !isDeleted && atLeastOneSticker -> {
+                                var columnCount = numberOfStickers / 5
+                                val lines = message.message?.getLinesCount() ?: 0
+                                logDebug { "ViewHolder.setMessage>>>>$lines ->${message.message}" }
+                                columnCount += lines
+                                if (columnCount == 0) {
+                                    columnCount = 1
+                                }
+                                chatMessage.minHeight =
+                                    AndroidResource.dpToPx(MEDIUM_STICKER_SIZE) * columnCount
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
@@ -714,6 +743,7 @@ internal class ChatRecyclerAdapter(
                             }
                             else -> {
                                 clearTarget(message.id, context)
+                                chatMessage.minHeight = chatMessageTextSize.toInt()
                                 chatMessage.text = message.message
                             }
                         }
