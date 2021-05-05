@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.chat.stickerKeyboard.allMatches
 import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.chat.stickerKeyboard.findStickerCodes
 import com.livelike.engagementsdk.chat.stickerKeyboard.findStickers
@@ -724,14 +725,6 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         mixpanel.track(KEY_CHAT_MESSAGE_DISPLAYED, properties)
         eventObservers[clientId]?.invoke(KEY_CHAT_MESSAGE_DISPLAYED, properties)
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $msgId")
-    }
-
-    private fun Matcher.allMatches(): List<String> {
-        val allMatches = mutableListOf<String>()
-        while (find()) {
-            allMatches.add(":${group()}:")
-        }
-        return allMatches
     }
 
     override fun trackWidgetDisplayed(

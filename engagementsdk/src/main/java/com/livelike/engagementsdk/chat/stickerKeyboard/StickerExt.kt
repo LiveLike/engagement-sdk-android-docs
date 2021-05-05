@@ -53,6 +53,15 @@ fun Matcher.countMatches(): Int {
     return counter
 }
 
+fun Matcher.allMatches(): List<String> {
+    val allMatches = mutableListOf<String>()
+    while (find()) {
+        allMatches.add(":${group()}:")
+    }
+    return allMatches
+}
+
+
 const val STICKER_SIZE = 100
 
 fun replaceWithStickers(

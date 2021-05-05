@@ -40,10 +40,12 @@ import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.chat.stickerKeyboard.allMatches
 import com.livelike.engagementsdk.chat.stickerKeyboard.clearTarget
 import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.findIsOnlyStickers
+import com.livelike.engagementsdk.chat.stickerKeyboard.findStickerCodes
 import com.livelike.engagementsdk.chat.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
@@ -504,6 +506,13 @@ internal class ChatRecyclerAdapter(
                 StaticLayout(this, paint, width, alignment, 1F, 0F, false)
             return layout.lineCount
         }
+
+//        private fun String.withoutStickers(): String {
+//            this.findStickerCodes().allMatches().forEach {
+//                replace(it,"")
+//            }
+//
+//        }
 
         @SuppressLint("SetTextI18n")
         private fun setMessage(
