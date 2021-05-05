@@ -13,10 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.gson.JsonParser
+import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.livelikedemo.BuildConfig
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication
@@ -299,6 +301,7 @@ class ChatFragment : Fragment() {
 class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
     val chatList = arrayListOf<LiveLikeChatMessage>()
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomChatViewHolder {
         return CustomChatViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.custom_chat_item, parent, false)
@@ -307,7 +310,6 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
 
     override fun onBindViewHolder(holder: CustomChatViewHolder, position: Int) {
         val chatMessage = chatList[position]
-
         holder.itemView.normal_message.visibility = View.VISIBLE
         holder.itemView.custom_messages.visibility = View.GONE
         holder.itemView.custom_tv.visibility = View.GONE
