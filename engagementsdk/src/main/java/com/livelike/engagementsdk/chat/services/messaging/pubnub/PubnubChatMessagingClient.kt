@@ -111,10 +111,13 @@ internal class PubnubChatMessagingClient(
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         val pubnubChatEvent = PubnubChatEvent(
             clientMessage.messageEvent.key, clientMessage.toPubnubChatMessage(
-                ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
-                    org.threeten.bp.ZoneId.of("UTC")
-                ).format(isoUTCDateTimeFormatter)
+                when (timeSinceEpoch.timeSinceEpochInMs) {
+                    0L -> null
+                    else -> ZonedDateTime.ofInstant(
+                        Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
+                        org.threeten.bp.ZoneId.of("UTC")
+                    ).format(isoUTCDateTimeFormatter)
+                }
             )
         )
         publishQueue.enqueue(Pair(channel, pubnubChatEvent))
@@ -204,7 +207,10 @@ internal class PubnubChatMessagingClient(
         if (origin != null) {
             pubnubConfiguration.origin = origin
         }
-        pubnubConfiguration.setPresenceTimeoutWithCustomInterval(pubnubPresenceTimeout,pubnubHeartbeatInterval)
+        pubnubConfiguration.setPresenceTimeoutWithCustomInterval(
+            pubnubPresenceTimeout,
+            pubnubHeartbeatInterval
+        )
         pubnubConfiguration.reconnectionPolicy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNub(pubnubConfiguration)
         val client = this
@@ -292,7 +298,7 @@ internal class PubnubChatMessagingClient(
                     val event = message.message.asJsonObject.extractStringOrEmpty("event")
                         .toPubnubChatEventType()
                     when (event) {
-                        MESSAGE_CREATED, IMAGE_CREATED , CUSTOM_MESSAGE_CREATED-> {
+                        MESSAGE_CREATED, IMAGE_CREATED, CUSTOM_MESSAGE_CREATED -> {
                             if (!list.contains(msgId)) {
                                 list.add(msgId)
                                 map[channel] = list
@@ -469,9 +475,9 @@ internal class PubnubChatMessagingClient(
     private fun isMessageModerated(jsonObject: JsonObject): Boolean {
         // added this check since in payload content filter was coming as string (json primitive) instead of array
         var contentfilter = jsonObject.getAsJsonObject("payload")?.get("content_filter")
-        return if (contentfilter?.isJsonPrimitive == true){
+        return if (contentfilter?.isJsonPrimitive == true) {
             false
-        }else{
+        } else {
             jsonObject.getAsJsonObject("payload")?.getAsJsonArray("content_filter")
                 ?.size() ?: 0 > 0
         }
