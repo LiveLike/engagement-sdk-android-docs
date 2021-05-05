@@ -5,7 +5,7 @@ import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 
-internal fun ChatMessage.toPubnubChatMessage(programDateTime: String): PubnubChatMessage {
+internal fun ChatMessage.toPubnubChatMessage(programDateTime: String?): PubnubChatMessage {
 
     return PubnubChatMessage(
         id,

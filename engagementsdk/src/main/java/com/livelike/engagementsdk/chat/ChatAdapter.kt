@@ -21,7 +21,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -47,7 +46,6 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
-import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
@@ -455,9 +453,12 @@ internal class ChatRecyclerAdapter(
 
         // HH:MM:SS eg 02:45:12
         private fun Long.toTimeString(): String =
-            SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date().apply {
-                time = this@toTimeString
-            })
+            when (this) {
+                0L -> ""
+                else -> SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date().apply {
+                    time = this@toTimeString
+                })
+            }
 
         private fun setCustomFontWithTextStyle(
             textView: TextView,
@@ -629,14 +630,14 @@ internal class ChatRecyclerAdapter(
                         // load local image with glide, so that (chatAvatarCircle and chatAvatarRadius) properties can be applied.
                         //more details on https://livelike.atlassian.net/browse/ES-1790
 
-                        if(message.senderDisplayPic.isNullOrEmpty()){
+                        if (message.senderDisplayPic.isNullOrEmpty()) {
                             //load local image
                             Glide.with(context)
                                 .load(R.drawable.default_avatar)
                                 .apply(options)
                                 .into(img_chat_avatar)
 
-                        }else{
+                        } else {
 
                             Glide.with(context).load(message.senderDisplayPic)
                                 .apply(options)
