@@ -507,12 +507,13 @@ internal class ChatRecyclerAdapter(
             return layout.lineCount
         }
 
-//        private fun String.withoutStickers(): String {
-//            this.findStickerCodes().allMatches().forEach {
-//                replace(it,"")
-//            }
-//
-//        }
+        private fun String.withoutStickers(): String {
+            var result = this
+            this.findStickerCodes().allMatches().forEach {
+                result = result.replace(it, "")
+            }
+            return result
+        }
 
         @SuppressLint("SetTextI18n")
         private fun setMessage(
@@ -728,14 +729,12 @@ internal class ChatRecyclerAdapter(
                             }
                             !isDeleted && atLeastOneSticker -> {
                                 var columnCount = numberOfStickers / 5
-                                val lines = message.message?.getLinesCount() ?: 0
-                                logDebug { "ViewHolder.setMessage>>>>$lines ->${message.message}" }
-                                columnCount += lines
+                                val lines = message.message?.withoutStickers()?.getLinesCount() ?: 0
                                 if (columnCount == 0) {
                                     columnCount = 1
                                 }
                                 chatMessage.minHeight =
-                                    AndroidResource.dpToPx(MEDIUM_STICKER_SIZE) * columnCount
+                                    (AndroidResource.dpToPx(MEDIUM_STICKER_SIZE) * columnCount) +(lines * chatMessageTextSize.toInt())
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
