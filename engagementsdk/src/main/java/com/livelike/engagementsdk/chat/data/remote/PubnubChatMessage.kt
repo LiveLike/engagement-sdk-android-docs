@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat.data.remote
 
+import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
 internal data class PubnubChatMessage(
@@ -23,5 +24,8 @@ internal data class PubnubChatMessage(
     @SerializedName("image_width")
     val image_width: Int?,
     @SerializedName("image_height")
-    val image_height: Int?
+    val image_height: Int?,
+    @SerializedName("custom_data")
+    val custom_data: String?
+
 )

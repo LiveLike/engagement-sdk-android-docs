@@ -303,7 +303,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
 
         imageText.text = option.description
 
-        Glide.with(context)
+        Glide.with(context.applicationContext)
             .load(option.image_url)
             .into(imageButton)
         clickListener?.apply {

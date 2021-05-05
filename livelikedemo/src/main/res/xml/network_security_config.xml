@@ -7,6 +7,7 @@
         <domain includeSubdomains="true">marchmadnesslive.cdn.turner.com</domain>
         <domain includeSubdomains="true">lorempixel.com</domain>
         <domain includeSubdomains="true">blastrt-staging-us-east-1.livelikecdn.com</domain>
+        <domain includeSubdomains="true">blastrt-qa-us-east-1.livelikecdn.com</domain>
     </domain-config>
     <debug-overrides>
         <trust-anchors>

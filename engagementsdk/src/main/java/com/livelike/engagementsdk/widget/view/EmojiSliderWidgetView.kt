@@ -104,7 +104,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                             list.add(
                                 async {
                                     try {
-                                        Glide.with(context)
+                                        Glide.with(context.applicationContext)
                                             .asBitmap()
                                             .load(it.image_url)
                                             .centerCrop()

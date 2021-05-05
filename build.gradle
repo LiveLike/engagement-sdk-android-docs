@@ -27,7 +27,7 @@ buildscript {
         mixpanelVersion = '5.8.7'
         mockitoVersion = '2.18.3'
         okhttpVersion = '4.9.1'
-        pubnubVersion = '4.35.0'
+        pubnubVersion = '4.36.0'
         gsonVersion = '2.8.6'
         supportTestVersion = '1.0.2'
         threetenabpVersion = "1.1.2"

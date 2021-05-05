@@ -76,7 +76,7 @@ internal class ChatSession(
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     private var chatRepository: ChatRepository? = null
-    private var chatRoomId:String? =null
+    private var chatRoomId: String? = null
 
     private val chatSessionIdleStream: Stream<Boolean> =
         SubscriptionManager(true)
@@ -105,7 +105,9 @@ internal class ChatSession(
                         liveLikeUser.id,
                         MockAnalyticsService(),
                         pair.first.pubnubPublishKey,
-                        origin = pair.first.pubnubOrigin
+                        origin = pair.first.pubnubOrigin,
+                        pubnubHeartbeatInterval = pair.first.pubnubHeartbeatInterval,
+                        pubnubPresenceTimeout = pair.first.pubnubPresenceTimeout
                     )
                 logDebug { "chatRepository created" }
                 // updating urls value will be added in enterChat Room
@@ -257,33 +259,38 @@ internal class ChatSession(
         startTimestamp: Long,
         callback: LiveLikeCallback<Byte>
     ) {
-        chatRoomId?.let{
-        logDebug { "messageCount $chatRoomId ,$startTimestamp" }
-        fetchChatRoom(it, object : LiveLikeCallback<ChatRoom>() {
-            override fun onResponse(result: ChatRoom?, error: String?) {
-                result?.let { chatRoom ->
-                    chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
-                        if (pubnubClientForMessageCount == null) {
-                            pubnubClientForMessageCount =
-                                chatRepository?.establishChatMessagingConnection() as PubnubChatMessagingClient
-                        }
-                        pubnubClientForMessageCount?.getMessageCountV1(channel, startTimestamp)
-                            ?.run {
-                                callback.processResult(this)
+        chatRoomId?.let {
+            logDebug { "messageCount $chatRoomId ,$startTimestamp" }
+            fetchChatRoom(it, object : LiveLikeCallback<ChatRoom>() {
+                override fun onResponse(result: ChatRoom?, error: String?) {
+                    result?.let { chatRoom ->
+                        chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
+                            if (pubnubClientForMessageCount == null) {
+                                pubnubClientForMessageCount =
+                                    chatRepository?.establishChatMessagingConnection() as PubnubChatMessagingClient
                             }
+                            pubnubClientForMessageCount?.getMessageCountV1(channel, startTimestamp)
+                                ?.run {
+                                    callback.processResult(this)
+                                }
+                        }
+                    }
+                    error?.let {
+                        callback.onResponse(null, error)
                     }
                 }
-                error?.let {
-                    callback.onResponse(null, error)
-                }
-            }
-        })
-    }
+            })
+        }
 
     }
 
     //TODO: will move to constructor later after discussion
     override fun connectToChatRoom(chatRoomId: String, callback: LiveLikeCallback<Unit>?) {
+        if (chatRoomId.isEmpty()) {
+            callback?.onResponse(null, "ChatRoom Id cannot be Empty")
+            errorDelegate?.onError("ChatRoom Id cannot be Empty")
+            return
+        }
         if (currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) == chatRoomId) return // Already in the room
         currentChatRoom?.let { chatRoom ->
             chatClient?.unsubscribe(listOf(chatRoom.channels.chat[CHAT_PROVIDER] ?: ""))
@@ -358,6 +365,7 @@ internal class ChatSession(
             },
             currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
             message,
+            "",
             userRepository.currentUserStream.latest()?.id ?: "empty-id",
             userRepository.currentUserStream.latest()?.nickname ?: "John Doe",
             avatarUrl,
@@ -365,6 +373,7 @@ internal class ChatSession(
             isFromMe = true,
             image_width = imageWidth ?: 100,
             image_height = imageHeight ?: 100,
+            timeStamp = timeData.timeSinceEpochInMs.toString()
         ).let { chatMessage ->
 
             //TODO: need to update for error handling here if pubnub respond failure of message

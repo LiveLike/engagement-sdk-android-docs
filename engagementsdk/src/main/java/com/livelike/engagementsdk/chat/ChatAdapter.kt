@@ -87,7 +87,7 @@ internal class ChatRecyclerAdapter(
     lateinit var stickerPackRepository: StickerPackRepository
     var chatReactionRepository: ChatReactionRepository? = null
 
-    var checkListIsAtTop: (((position: Int) -> Boolean)?)  = null
+    var checkListIsAtTop: (((position: Int) -> Boolean)?) = null
 
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
@@ -212,7 +212,7 @@ internal class ChatRecyclerAdapter(
                 showFloatingUI(
                     isOwnMessage,
                     message?.myChatMessageReaction,
-                    (checkListIsAtTop?.invoke(adapterPosition)?:false) && itemCount > 1
+                    (checkListIsAtTop?.invoke(adapterPosition) ?: false) && itemCount > 1
                 )
             }
         }
@@ -453,9 +453,12 @@ internal class ChatRecyclerAdapter(
 
         // HH:MM:SS eg 02:45:12
         private fun Long.toTimeString(): String =
-            SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date().apply {
-                time = this@toTimeString
-            })
+            when (this) {
+                0L -> ""
+                else -> SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date().apply {
+                    time = this@toTimeString
+                })
+            }
 
         private fun setCustomFontWithTextStyle(
             textView: TextView,
@@ -623,16 +626,26 @@ internal class ChatRecyclerAdapter(
                                 RoundedCorners(chatAvatarRadius)
                             )
                         }
-                        message.senderDisplayPic.let {
-                            if (!it.isNullOrEmpty())
-                                Glide.with(context).load(it)
-                                    .apply(options)
-                                    .placeholder(chatUserPicDrawable)
-                                    .error(chatUserPicDrawable)
-                                    .into(img_chat_avatar)
-                            else
-                                img_chat_avatar.setImageDrawable(chatUserPicDrawable)
+
+                        // load local image with glide, so that (chatAvatarCircle and chatAvatarRadius) properties can be applied.
+                        //more details on https://livelike.atlassian.net/browse/ES-1790
+
+                        if (message.senderDisplayPic.isNullOrEmpty()) {
+                            //load local image
+                            Glide.with(context)
+                                .load(R.drawable.default_avatar)
+                                .apply(options)
+                                .into(img_chat_avatar)
+
+                        } else {
+
+                            Glide.with(context).load(message.senderDisplayPic)
+                                .apply(options)
+                                .placeholder(chatUserPicDrawable)
+                                .error(chatUserPicDrawable)
+                                .into(img_chat_avatar)
                         }
+                        chatMessage.tag = message.id
 
                         val spaceRemover = Pattern.compile("[\\s]")
                         val inputNoString = spaceRemover.matcher(message.message ?: "")
@@ -666,7 +679,8 @@ internal class ChatRecyclerAdapter(
                                     message.image_height ?: LARGER_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    chatMessage.text = s
+                                    if (chatMessage.tag == message.id)
+                                        chatMessage.text = s
                                 }
                             }
                             !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
@@ -680,7 +694,8 @@ internal class ChatRecyclerAdapter(
                                     LARGER_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    chatMessage.text = s
+                                    if (chatMessage.tag == message.id)
+                                        chatMessage.text = s
                                 }
                             }
                             !isDeleted && atLeastOneSticker -> {
@@ -694,7 +709,8 @@ internal class ChatRecyclerAdapter(
                                     MEDIUM_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    chatMessage.text = s
+                                    if (chatMessage.tag == message.id)
+                                        chatMessage.text = s
                                 }
                             }
                             else -> {

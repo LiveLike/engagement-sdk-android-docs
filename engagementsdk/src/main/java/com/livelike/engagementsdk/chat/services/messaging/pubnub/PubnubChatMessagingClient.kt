@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.MessageError
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CUSTOM_MESSAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_CREATED
@@ -59,8 +60,6 @@ import java.util.Calendar
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-const val MAX_HISTORY_COUNT_PER_CHANNEL = 100
-
 internal class PubnubChatMessagingClient(
     subscriberKey: String,
     authKey: String,
@@ -68,7 +67,9 @@ internal class PubnubChatMessagingClient(
     private val analyticsService: AnalyticsService,
     publishKey: String? = null,
     val isDiscardOwnPublishInSubcription: Boolean = true,
-    val origin: String? = null
+    val origin: String? = null,
+    private val pubnubHeartbeatInterval: Int,
+    private val pubnubPresenceTimeout: Int
 ) : MessagingClient {
 
     @Volatile
@@ -110,10 +111,13 @@ internal class PubnubChatMessagingClient(
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         val pubnubChatEvent = PubnubChatEvent(
             clientMessage.messageEvent.key, clientMessage.toPubnubChatMessage(
-                ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
-                    org.threeten.bp.ZoneId.of("UTC")
-                ).format(isoUTCDateTimeFormatter)
+                when (timeSinceEpoch.timeSinceEpochInMs) {
+                    0L -> null
+                    else -> ZonedDateTime.ofInstant(
+                        Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
+                        org.threeten.bp.ZoneId.of("UTC")
+                    ).format(isoUTCDateTimeFormatter)
+                }
             )
         )
         publishQueue.enqueue(Pair(channel, pubnubChatEvent))
@@ -203,6 +207,10 @@ internal class PubnubChatMessagingClient(
         if (origin != null) {
             pubnubConfiguration.origin = origin
         }
+        pubnubConfiguration.setPresenceTimeoutWithCustomInterval(
+            pubnubPresenceTimeout,
+            pubnubHeartbeatInterval
+        )
         pubnubConfiguration.reconnectionPolicy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNub(pubnubConfiguration)
         val client = this
@@ -290,7 +298,7 @@ internal class PubnubChatMessagingClient(
                     val event = message.message.asJsonObject.extractStringOrEmpty("event")
                         .toPubnubChatEventType()
                     when (event) {
-                        MESSAGE_CREATED, IMAGE_CREATED -> {
+                        MESSAGE_CREATED, IMAGE_CREATED, CUSTOM_MESSAGE_CREATED -> {
                             if (!list.contains(msgId)) {
                                 list.add(msgId)
                                 map[channel] = list
@@ -393,7 +401,7 @@ internal class PubnubChatMessagingClient(
             )
             var clientMessage: ClientMessage? = null
             when (event) {
-                MESSAGE_CREATED, IMAGE_CREATED -> {
+                MESSAGE_CREATED, IMAGE_CREATED, CUSTOM_MESSAGE_CREATED -> {
                     if (isDiscardOwnPublishInSubcription && getPublishedMessages(channel).contains(
                             pubnubChatEvent.payload.messageId
                         )
@@ -456,7 +464,7 @@ internal class PubnubChatMessagingClient(
                     )
                 }
             }
-            logError { "Received message on $channel from pubnub: ${pubnubChatEvent.payload}" }
+            logDebug { "Received message on $channel from pubnub: ${pubnubChatEvent.payload}" }
             return clientMessage
         } else {
             logError { "We don't know how to handle this message" }
@@ -465,8 +473,14 @@ internal class PubnubChatMessagingClient(
     }
 
     private fun isMessageModerated(jsonObject: JsonObject): Boolean {
-        return jsonObject.getAsJsonObject("payload")?.getAsJsonArray("content_filter")
-            ?.size() ?: 0 > 0
+        // added this check since in payload content filter was coming as string (json primitive) instead of array
+        var contentfilter = jsonObject.getAsJsonObject("payload")?.get("content_filter")
+        return if (contentfilter?.isJsonPrimitive == true) {
+            false
+        } else {
+            jsonObject.getAsJsonObject("payload")?.getAsJsonArray("content_filter")
+                ?.size() ?: 0 > 0
+        }
     }
 
     private fun getOwnReaction(actions: java.util.HashMap<String, java.util.HashMap<String, List<PNFetchMessageItem.Action>>>?): ChatMessageReaction? {

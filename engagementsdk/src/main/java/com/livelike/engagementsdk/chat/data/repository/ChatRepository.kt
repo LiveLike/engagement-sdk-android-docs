@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat.data.repository
 
 import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
 import com.livelike.engagementsdk.TEMPLATE_CHAT_ROOM_ID
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
@@ -20,7 +21,9 @@ internal class ChatRepository(
     private val uuid: String,
     private val analyticsService: AnalyticsService,
     private val publishKey: String? = null,
-    private val origin: String? = null
+    private val origin: String? = null,
+    private val pubnubHeartbeatInterval: Int,
+    private val pubnubPresenceTimeout: Int
 ) : BaseRepository() {
 
     var pubnubChatMessagingClient: PubnubChatMessagingClient? = null
@@ -30,12 +33,14 @@ internal class ChatRepository(
         if (pubnubChatMessagingClient == null)
             pubnubChatMessagingClient =
                 PubnubChatMessagingClient(
-                    subscribeKey,
-                    authKey,
-                    uuid,
-                    analyticsService,
-                    publishKey,
-                    origin = origin
+                    subscriberKey = subscribeKey,
+                    authKey = authKey,
+                    uuid = uuid,
+                    analyticsService = analyticsService,
+                    publishKey = publishKey,
+                    origin = origin,
+                    pubnubHeartbeatInterval = pubnubHeartbeatInterval,
+                    pubnubPresenceTimeout = pubnubPresenceTimeout
                 )
         return pubnubChatMessagingClient!!
     }
@@ -134,7 +139,7 @@ internal class ChatRepository(
         )
     }
 
-    fun loadPreviousMessages(channel: String, limit: Int = 20) {
+    fun loadPreviousMessages(channel: String, limit: Int = CHAT_HISTORY_LIMIT) {
         pubnubChatMessagingClient?.loadMessagesWithReactions(
             channel,
             limit

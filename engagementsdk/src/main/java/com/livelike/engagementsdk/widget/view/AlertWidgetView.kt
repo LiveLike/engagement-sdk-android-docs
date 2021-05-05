@@ -169,7 +169,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             bodyText.requestLayout()
         } else {
             resourceAlert.image_url.apply {
-                Glide.with(context)
+                Glide.with(context.applicationContext)
                     .load(resourceAlert.image_url)
                     .into(bodyImage)
             }

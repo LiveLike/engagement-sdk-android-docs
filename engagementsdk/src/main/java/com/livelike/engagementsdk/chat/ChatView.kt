@@ -793,12 +793,14 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             PubnubChatEventType.MESSAGE_CREATED,
             viewModel?.currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
             edittext_chat_message.text.toString().trim(),
+            "",
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
             session?.avatarUrl,
             isFromMe = true,
             image_width = 100,
-            image_height = 100
+            image_height = 100,
+            timeStamp = timeData.timeSinceEpochInMs.toString()
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
