@@ -1,9 +1,7 @@
 package com.livelike.livelikedemo
 
+import android.graphics.Color
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +9,11 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
@@ -51,6 +53,8 @@ import com.livelike.livelikedemo.models.PredictionResponse
 import com.livelike.livelikedemo.models.QuizRequest
 import com.livelike.livelikedemo.models.QuizResponse
 import com.livelike.livelikedemo.utils.ThemeRandomizer
+import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.btn_change_background
+import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.fm_lay
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.progress_view
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.rcyl_view
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.rewards_tv
@@ -154,6 +158,31 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
             }
         }
+
+        val bufferReader =
+            application.assets.open("themes/customWidgetThemeUpdated.json").bufferedReader()
+        val data = bufferReader.use {
+            it.readText()
+        }
+
+        widget_view.applyTheme(JsonParser.parseString(data).asJsonObject)
+
+        val rnd = java.util.Random()
+        btn_change_background.setOnClickListener {
+            if (rnd.nextBoolean()) {
+                val color: Int =
+                    Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+                fm_lay.setBackgroundColor(color)
+            } else {
+                val list = arrayListOf(
+                    R.drawable.background1,
+                    R.drawable.background2,
+                    R.drawable.background3
+                )
+                fm_lay.setBackgroundResource(list.random())
+            }
+        }
+
         widget_view.setWidgetListener(object : WidgetListener {
             override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
                 println("Widget:${liveLikeWidget.id},${liveLikeWidget.programId},${liveLikeWidget.options?.size}")
@@ -240,20 +269,20 @@ class WidgetOnlyActivity : AppCompatActivity() {
         }
 
 
-            widget_view.postDelayed({
-                val availableRewards = session.getRewardItems().joinToString { rewardItem ->
-                    rewardItem.name
-                }
-                // check added to prevent crash - ES - 1466
-                if(!(isFinishing || isDestroyed)) {
-                    AlertDialog.Builder(this).apply {
-                        setTitle("Welcome! You have chance to win rewards!")
-                            .setMessage(availableRewards)
-                            .create()
-                    }.show()
-                }
+        widget_view.postDelayed({
+            val availableRewards = session.getRewardItems().joinToString { rewardItem ->
+                rewardItem.name
+            }
+            // check added to prevent crash - ES - 1466
+            if (!(isFinishing || isDestroyed)) {
+                AlertDialog.Builder(this).apply {
+                    setTitle("Welcome! You have chance to win rewards!")
+                        .setMessage(availableRewards)
+                        .create()
+                }.show()
+            }
 
-            }, 2000)
+        }, 2000)
 
 
         EngagementSDK.predictionWidgetVoteRepository = object : PredictionWidgetVoteRepository {
@@ -626,7 +655,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
 
             private val authorization = "Authorization"
-            private var  accessToken: String =
+            private var accessToken: String =
                 "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
 
             private suspend fun postAPI(

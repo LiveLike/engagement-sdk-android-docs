@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
     tools:context=".WidgetOnlyActivity">
 
     <FrameLayout
@@ -12,6 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="20dp"
+        android:background="@android:color/black"
         app:layout_constraintBottom_toTopOf="@+id/rcyl_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,17 +21,14 @@
         <com.livelike.engagementsdk.widget.view.WidgetView
             android:id="@+id/widget_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/black" />
-
-
+            android:layout_height="match_parent" />
 
         <TextView
             android:id="@+id/rewards_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorAccent"
-            android:layout_gravity="bottom"/>
+            android:layout_gravity="bottom"
+            android:textColor="@color/colorAccent" />
 
         <ProgressBar
             android:id="@+id/progress_view"
@@ -40,6 +37,13 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="10dp"
             android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btn_change_background"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:text="Change Background" />
     </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
