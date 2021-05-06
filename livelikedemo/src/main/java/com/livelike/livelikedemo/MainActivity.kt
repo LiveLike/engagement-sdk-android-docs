@@ -43,6 +43,7 @@ import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chatroomText1
 import kotlinx.android.synthetic.main.activity_main.chk_custom_widgets_ui
+import kotlinx.android.synthetic.main.activity_main.chk_enable_debug
 import kotlinx.android.synthetic.main.activity_main.chk_show_avatar
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.custom_chat
@@ -117,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             unregisterReceiver(mConnReceiver)
         }
-         userStream.unsubscribe(this)
+        userStream.unsubscribe(this)
         (application as LiveLikeApplication).removePublicSession()
         (application as LiveLikeApplication).removePrivateSession()
         super.onDestroy()
@@ -137,21 +138,21 @@ class MainActivity : AppCompatActivity() {
         channelManager = (application as LiveLikeApplication).channelManager
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          networkCallback =  object : ConnectivityManager.NetworkCallback() {
-              override fun onAvailable(network: Network) {
-                  super.onAvailable(network)
+            networkCallback = object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    super.onAvailable(network)
 //                    (application as LiveLikeApplication).initSDK()
-                  channelManager.loadClientConfig()
-              }
+                    channelManager.loadClientConfig()
+                }
 
-              override fun onLost(network: Network) {
-                  super.onLost(network)
-              }
+                override fun onLost(network: Network) {
+                    super.onLost(network)
+                }
 
-              override fun onUnavailable() {
-                  super.onUnavailable()
-              }
-          }
+                override fun onUnavailable() {
+                    super.onUnavailable()
+                }
+            }
             cm.registerDefaultNetworkCallback(networkCallback!!)
         } else {
             registerReceiver(mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
@@ -205,9 +206,14 @@ class MainActivity : AppCompatActivity() {
         chk_custom_widgets_ui.setOnCheckedChangeListener { buttonView, isChecked ->
             player.customCheerMeter = isChecked
             onlyWidget.customCheerMeter = isChecked
-
             LiveLikeApplication.showCustomWidgetsUI = isChecked
         }
+
+        chk_enable_debug.isChecked = EngagementSDK.enableDebug
+        chk_enable_debug.setOnCheckedChangeListener { buttonView, isChecked ->
+            EngagementSDK.enableDebug = isChecked
+        }
+
         sample_app.setOnClickListener {
             startActivity(Intent(this, SampleAppActivity::class.java))
         }
@@ -397,7 +403,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
         })
-         userStream = (application as LiveLikeApplication).sdk.userStream
+        userStream = (application as LiveLikeApplication).sdk.userStream
         userStream.subscribe(this) {
             runOnUiThread {
                 txt_nickname_server.text = it?.nickname

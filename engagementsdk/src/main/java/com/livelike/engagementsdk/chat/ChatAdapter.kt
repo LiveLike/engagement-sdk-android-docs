@@ -51,7 +51,6 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
-import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
@@ -460,9 +459,12 @@ internal class ChatRecyclerAdapter(
 
         // HH:MM:SS eg 02:45:12
         private fun Long.toTimeString(): String =
-            SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date().apply {
-                time = this@toTimeString
-            })
+            when (this) {
+                0L -> ""
+                else -> SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date().apply {
+                    time = this@toTimeString
+                })
+            }
 
         private fun setCustomFontWithTextStyle(
             textView: TextView,
