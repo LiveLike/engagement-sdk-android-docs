@@ -11,7 +11,9 @@
         android:id="@+id/lay_swipe"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcyl_chat"
@@ -34,15 +36,13 @@
             android:hint="Enter Message..." />
 
 
-        <Button
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/custom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Custom Msg"
+            android:src="@drawable/custom_message"
             android:layout_marginRight="5dp"
-            android:layout_marginBottom="15dp"
-            app:fabSize="mini"
-            />
+            app:fabSize="mini" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_send"
