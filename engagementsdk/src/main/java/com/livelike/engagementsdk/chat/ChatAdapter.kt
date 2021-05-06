@@ -502,7 +502,8 @@ internal class ChatRecyclerAdapter(
             val density = v.context.resources.displayMetrics.density
             val paint = TextPaint()
             paint.textSize = chatViewThemeAttribute.chatMessageTextSize * density
-            val width = (300 * density).toInt()
+            //Using static width for now ,can be replace with dynamic for later
+            val width = (AndroidResource.dpToPx(300) * density).toInt()
             val alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL
             val layout =
                 StaticLayout(this, paint, width, alignment, 1F, 0F, false)
@@ -736,7 +737,10 @@ internal class ChatRecyclerAdapter(
                                     columnCount = 1
                                 }
                                 chatMessage.minHeight =
-                                    (AndroidResource.dpToPx(MEDIUM_STICKER_SIZE) * columnCount) +(lines * chatMessageTextSize.toInt())
+                                    (AndroidResource.dpToPx(MEDIUM_STICKER_SIZE) * columnCount) + when {
+                                        lines != columnCount -> (lines * chatMessageTextSize.toInt())
+                                        else -> 0
+                                    }
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
