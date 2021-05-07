@@ -114,8 +114,11 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                 )
                 if (themeComponent.header?.background != null) {
                     labelText?.background = AndroidResource.createDrawable(themeComponent.header)
+                }
+                themeComponent.header?.padding?.let {
                     AndroidResource.setPaddingForView(labelText, themeComponent.header.padding)
                 }
+
                 bodyBackground?.background =
                     AndroidResource.createDrawable(themeComponent.body)
                 AndroidResource.updateThemeForView(
