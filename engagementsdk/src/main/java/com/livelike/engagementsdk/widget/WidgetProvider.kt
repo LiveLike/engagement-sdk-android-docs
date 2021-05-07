@@ -193,7 +193,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     internal var fontFamilyProvider: FontFamilyProvider? = null
-    open var showResultAnimation:Boolean = true
+    open var showResultAnimation:Boolean = true // this has been added so that result animation on widget views can be shown /hide based on this
 
     var widgetId: String = ""
     lateinit var widgetInfos: WidgetInfos

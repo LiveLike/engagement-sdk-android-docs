@@ -127,7 +127,7 @@ internal class TimeLineViewAdapter(
             widgetView?.let { view ->
 
                 // this has been added to show/hide animation in result state
-                view.showResultAnimation = timelineWidgetResource.apiSource == WidgetApiSource.REALTIME_API
+                view.showResultAnimation = (timelineWidgetResource.apiSource == WidgetApiSource.REALTIME_API)
                 displayWidget(widgetType, view)
             }
         }
@@ -155,6 +155,6 @@ class ProgressViewHolder(view: View) : RecyclerView.ViewHolder(view)
 data class TimelineWidgetResource(
     var widgetState: WidgetStates,
     val liveLikeWidget: LiveLikeWidget,
-    val apiSource: WidgetApiSource //this has been added to show/hide animation . if real time widget animation will be shown else not
+    var apiSource: WidgetApiSource //this has been added to show/hide animation . if real time widget animation will be shown else not
 )
 
