@@ -112,7 +112,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     if (progress != 1f) {
                         resumeAnimation()
                     }
-                    visibility = View.VISIBLE
+                    visibility = if(showResultAnimation) {
+                        View.VISIBLE
+                    }else{
+                        View.GONE
+                    }
                 }
                 viewModel?.points?.let {
                     if (!shouldShowPointTutorial() && it > 0) {
@@ -145,6 +149,9 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     applyThemeOnTitleView(themeComponent)
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
+                    AndroidResource.createDrawable(themeComponent.body)?.let {
+                        textRecyclerView.background = it
+                    }
                 }
             }
         }

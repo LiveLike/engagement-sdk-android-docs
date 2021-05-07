@@ -13,7 +13,14 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
-class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession) : ViewModel() {
+/**
+ * @contentSession: object of LiveLikeContentSession
+ * predicate for filtering the widgets to only specific kind of widgets
+ */
+class WidgetTimeLineViewModel(
+    private val contentSession: LiveLikeContentSession,
+    private val predicate: (LiveLikeWidget) -> Boolean = { _ -> true }
+) : ViewModel() {
 
     /**
      * it contains all the widgets that has been loaded onto this timeline
@@ -27,7 +34,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
     internal val widgetEventStream: Stream<String> =
         SubscriptionManager(true)
 
-    var  widgetViewModelCache = mutableMapOf<String, BaseViewModel?>()
+    var widgetViewModelCache = mutableMapOf<String, BaseViewModel?>()
 
     init {
         loadPastPublishedWidgets(LiveLikePagination.FIRST)
@@ -43,17 +50,24 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
             page,
             object : LiveLikeCallback<List<LiveLikeWidget>>() {
                 override fun onResponse(result: List<LiveLikeWidget>?, error: String?) {
+                    val filteredWidgets = arrayListOf<TimelineWidgetResource>()
                     result?.let { list ->
                         val widgets = list.map {
                             TimelineWidgetResource(
                                 decideWidgetInteraction(it, WidgetApiSource.HISTORY_API),
-                                it
+                                it,WidgetApiSource.HISTORY_API
                             )
                         }
-                        timeLineWidgets.addAll(widgets)
-                        logDebug { "timeline widget total ${timeLineWidgets.size}" }
+                        filteredWidgets.addAll(widgets.filter { predicate.invoke(it.liveLikeWidget) })
+                        timeLineWidgets.addAll(filteredWidgets)
+                        logDebug { "timeline widget total:${timeLineWidgets.size}, filtered widget:${filteredWidgets.size}" }
                         uiScope.launch {
-                            timeLineWidgetsStream.onNext(Pair(WidgetApiSource.HISTORY_API, widgets))
+                            timeLineWidgetsStream.onNext(
+                                Pair(
+                                    WidgetApiSource.HISTORY_API,
+                                    filteredWidgets
+                                )
+                            )
                         }
                     }
                     widgetEventStream.onNext(WIDGET_LOADING_COMPLETE)
@@ -61,7 +75,10 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                     if (result == null && error == null) {
                         logDebug { "timeline list finished" }
                         widgetEventStream.onNext(WIDGET_TIMELINE_END)
-
+                    } else if (filteredWidgets.isEmpty()) {
+                        //to load more widget if the filtered widget is empty, a use case if user wants to show only a specific widget and it is not available in first page
+                        // so it will until it reaches end or that page that contain that specific widget
+                        loadPastPublishedWidgets(LiveLikePagination.NEXT)
                     }
                 }
             })
@@ -71,10 +88,10 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
      * this call load the next available page of past published widgets on this program.
      **/
     fun loadMore() {
-        if(widgetEventStream.latest()?.equals(WIDGET_TIMELINE_END) == true){
+        if (widgetEventStream.latest()?.equals(WIDGET_TIMELINE_END) == true) {
             return
         }
-        if(widgetEventStream.latest()?.equals(WIDGET_LOADING_COMPLETE) == true) {
+        if (widgetEventStream.latest()?.equals(WIDGET_LOADING_COMPLETE) == true) {
             loadPastPublishedWidgets(LiveLikePagination.NEXT)
         }
     }
@@ -88,22 +105,23 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
             it?.let {
                 val widget = TimelineWidgetResource(
                     decideWidgetInteraction(it, WidgetApiSource.REALTIME_API),
-                    it
+                    it,
+                    WidgetApiSource.REALTIME_API
                 )
-                timeLineWidgets.add(0,widget)
-                uiScope.launch {
-                    timeLineWidgetsStream.onNext(
-                        Pair(
-                            WidgetApiSource.REALTIME_API,
-                            mutableListOf(widget)
+                if (predicate.invoke(widget.liveLikeWidget)) {
+                    timeLineWidgets.add(0, widget)
+                    uiScope.launch {
+                        timeLineWidgetsStream.onNext(
+                            Pair(
+                                WidgetApiSource.REALTIME_API,
+                                mutableListOf(widget)
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
     }
-
-
 
     fun wouldAllowWidgetInteraction(liveLikeWidget: LiveLikeWidget): Boolean {
         return timeLineWidgets.find { it.liveLikeWidget.id == liveLikeWidget.id }?.widgetState == WidgetStates.INTERACTING

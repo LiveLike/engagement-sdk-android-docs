@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk
 
 import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.SocialEmbedItem
 
 data class LiveLikeWidget(
@@ -117,7 +118,20 @@ data class LiveLikeWidget(
     val socialEmbedItems: List<SocialEmbedItem>?,
     @field:SerializedName("comment")
     val comment: String?
-)
+) {
+    /**
+     * Added this method to get WidgetType for integrator understanding and they can use it for they implementation
+     */
+    fun getWidgetType(): WidgetType? {
+        var widgetType = kind
+        widgetType = if (widgetType?.contains("follow-up") == true) {
+            "$widgetType-updated"
+        } else {
+            "$widgetType-created"
+        }
+        return WidgetType.fromString(widgetType)
+    }
+}
 
 data class CreatedBy(
 

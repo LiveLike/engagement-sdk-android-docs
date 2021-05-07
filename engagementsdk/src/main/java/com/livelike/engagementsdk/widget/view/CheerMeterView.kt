@@ -35,6 +35,7 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_2
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_winner_anim
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_winner_team
+import kotlinx.android.synthetic.main.widget_cheer_meter.view.lay_cheer_meter_background
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.ll_cheer_meter_teams
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.lottie_vs_animation
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.textEggTimer
@@ -81,7 +82,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
 
-
     private fun stateObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
@@ -93,7 +93,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
-                if ((viewModel?.totalVoteCount ?: 0) > 0 || viewModel?.enableDefaultWidgetTransition == false) {
+                if ((viewModel?.totalVoteCount
+                        ?: 0) > 0 || viewModel?.enableDefaultWidgetTransition == false
+                ) {
                     viewModel?.voteEnd?.onNext(true)
                     viewModel?.voteEnd()
                 }
@@ -205,6 +207,11 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 widgetsTheme?.cheerMeter?.sideBButton?.let {
                     updateRippleView(view_ripple2, it)
                 }
+                widgetsTheme?.cheerMeter?.body?.let { props ->
+                    AndroidResource.createDrawable(props)?.let {
+                        lay_cheer_meter_background.background = it
+                    }
+                }
             }
             txt_cheer_meter_title.text = resource.question
             if (optionList.size == 2) {
@@ -249,7 +256,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 playAnimation()
             }
 
-            showTimer(resource.timeout,textEggTimer, {
+            showTimer(resource.timeout, textEggTimer, {
                 viewModel?.animationEggTimerProgress = it
             }, {
                 viewModel?.dismissWidget(it)

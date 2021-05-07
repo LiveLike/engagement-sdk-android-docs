@@ -6,7 +6,10 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.text.Layout
 import android.text.SpannableString
+import android.text.StaticLayout
+import android.text.TextPaint
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -37,10 +40,12 @@ import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.chat.stickerKeyboard.allMatches
 import com.livelike.engagementsdk.chat.stickerKeyboard.clearTarget
 import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.findIsOnlyStickers
+import com.livelike.engagementsdk.chat.stickerKeyboard.findStickerCodes
 import com.livelike.engagementsdk.chat.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
@@ -65,6 +70,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
@@ -488,6 +494,30 @@ internal class ChatRecyclerAdapter(
             }
         }
 
+        /**
+         * Creating this function to get line count of string assuming the width as some value
+         * it is estimated not exact value
+         */
+        private fun String.getLinesCount(): Int {
+            val density = v.context.resources.displayMetrics.density
+            val paint = TextPaint()
+            paint.textSize = chatViewThemeAttribute.chatMessageTextSize * density
+            //Using static width for now ,can be replace with dynamic for later
+            val width = (AndroidResource.dpToPx(300) * density).toInt()
+            val alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL
+            val layout =
+                StaticLayout(this, paint, width, alignment, 1F, 0F, false)
+            return layout.lineCount
+        }
+
+        private fun String.withoutStickers(): String {
+            var result = this
+            this.findStickerCodes().allMatches().forEach {
+                result = result.replace(it, "")
+            }
+            return result
+        }
+
         @SuppressLint("SetTextI18n")
         private fun setMessage(
             message: ChatMessage?
@@ -668,6 +698,7 @@ internal class ChatRecyclerAdapter(
                         }
                         when {
                             !isDeleted && isExternalImage -> {
+                                chatMessage.minHeight = AndroidResource.dpToPx(LARGER_STICKER_SIZE)
                                 val s = SpannableString(message.message)
                                 replaceWithImages(
                                     s,
@@ -684,6 +715,7 @@ internal class ChatRecyclerAdapter(
                                 }
                             }
                             !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
+                                chatMessage.minHeight = AndroidResource.dpToPx(MEDIUM_STICKER_SIZE)
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
@@ -691,7 +723,7 @@ internal class ChatRecyclerAdapter(
                                     stickerPackRepository,
                                     null,
                                     callback,
-                                    LARGER_STICKER_SIZE
+                                    MEDIUM_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     if (chatMessage.tag == message.id)
@@ -699,6 +731,16 @@ internal class ChatRecyclerAdapter(
                                 }
                             }
                             !isDeleted && atLeastOneSticker -> {
+                                var columnCount = numberOfStickers / 5
+                                val lines = message.message?.withoutStickers()?.getLinesCount() ?: 0
+                                if (columnCount == 0) {
+                                    columnCount = 1
+                                }
+                                chatMessage.minHeight =
+                                    (AndroidResource.dpToPx(MEDIUM_STICKER_SIZE) * columnCount) + when {
+                                        lines != columnCount -> (lines * chatMessageTextSize.toInt())
+                                        else -> 0
+                                    }
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
@@ -715,6 +757,7 @@ internal class ChatRecyclerAdapter(
                             }
                             else -> {
                                 clearTarget(message.id, context)
+                                chatMessage.minHeight = chatMessageTextSize.toInt()
                                 chatMessage.text = message.message
                             }
                         }

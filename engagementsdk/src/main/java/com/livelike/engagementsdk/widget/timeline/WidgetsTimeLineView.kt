@@ -122,8 +122,14 @@ class WidgetsTimeLineView(
                             )
                         )
                         pair.second[0]?.widgetState = WidgetStates.RESULTS
-
                         adapter.notifyItemChanged(0)
+
+                        // added this, so that animation is shown only once hence changed the API source to history api
+                        delay(2600)
+                        adapter.list[0].apiSource = WidgetApiSource.HISTORY_API
+                        adapter.notifyItemChanged(0)
+
+
                     }
                 } else {
                     adapter.list.addAll(pair.second)
@@ -212,7 +218,12 @@ class WidgetsTimeLineView(
                 }
 
                 WidgetTimeLineViewModel.WIDGET_LOADING_STARTED -> {
-
+                    //adding this line for case if in first page the filter widget data is empty and we are loading next page as automatically
+                    if (adapter.itemCount == 0) {
+                        timeLineViewModel.uiScope.launch {
+                            showLoadingSpinnerForTimeline()
+                        }
+                    }
                 }
             }
         }
