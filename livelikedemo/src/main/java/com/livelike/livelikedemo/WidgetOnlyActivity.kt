@@ -159,6 +159,14 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
         }
 
+        val bufferReader =
+            application.assets.open("themes/customWidgetThemeUpdated.json").bufferedReader()
+        val data = bufferReader.use {
+            it.readText()
+        }
+
+        widget_view.applyTheme(JsonParser.parseString(data).asJsonObject)
+
         val rnd = java.util.Random()
         btn_change_background.setOnClickListener {
             if (rnd.nextBoolean()) {

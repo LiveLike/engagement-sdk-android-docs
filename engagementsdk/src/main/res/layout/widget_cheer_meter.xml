@@ -4,6 +4,7 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/lay_cheer_meter_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/cheer_meter_rounded_corner_black_background"
