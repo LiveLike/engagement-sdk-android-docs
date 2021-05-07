@@ -47,7 +47,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                         val widgets = list.map {
                             TimelineWidgetResource(
                                 decideWidgetInteraction(it, WidgetApiSource.HISTORY_API),
-                                it
+                                it,WidgetApiSource.HISTORY_API
                             )
                         }
                         timeLineWidgets.addAll(widgets)
@@ -88,7 +88,8 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
             it?.let {
                 val widget = TimelineWidgetResource(
                     decideWidgetInteraction(it, WidgetApiSource.REALTIME_API),
-                    it
+                    it,
+                    WidgetApiSource.REALTIME_API
                 )
                 timeLineWidgets.add(0,widget)
                 uiScope.launch {

@@ -193,6 +193,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     internal var fontFamilyProvider: FontFamilyProvider? = null
+    open var showResultAnimation:Boolean = true
 
     var widgetId: String = ""
     lateinit var widgetInfos: WidgetInfos
