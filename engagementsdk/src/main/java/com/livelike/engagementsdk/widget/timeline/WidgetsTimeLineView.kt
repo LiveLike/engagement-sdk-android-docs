@@ -122,8 +122,14 @@ class WidgetsTimeLineView(
                             )
                         )
                         pair.second[0]?.widgetState = WidgetStates.RESULTS
-
                         adapter.notifyItemChanged(0)
+
+                        // added this, so that animation is shown only once hence changed the API source to history api
+                        delay(2600)
+                        adapter.list[0].apiSource = WidgetApiSource.HISTORY_API
+                        adapter.notifyItemChanged(0)
+
+
                     }
                 } else {
                     adapter.list.addAll(pair.second)

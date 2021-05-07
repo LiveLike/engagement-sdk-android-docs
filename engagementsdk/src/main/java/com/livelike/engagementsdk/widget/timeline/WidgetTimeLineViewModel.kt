@@ -55,7 +55,7 @@ class WidgetTimeLineViewModel(
                         val widgets = list.map {
                             TimelineWidgetResource(
                                 decideWidgetInteraction(it, WidgetApiSource.HISTORY_API),
-                                it
+                                it,WidgetApiSource.HISTORY_API
                             )
                         }
                         filteredWidgets.addAll(widgets.filter { predicate.invoke(it.liveLikeWidget) })
@@ -105,7 +105,8 @@ class WidgetTimeLineViewModel(
             it?.let {
                 val widget = TimelineWidgetResource(
                     decideWidgetInteraction(it, WidgetApiSource.REALTIME_API),
-                    it
+                    it,
+                    WidgetApiSource.REALTIME_API
                 )
                 if (predicate.invoke(widget.liveLikeWidget)) {
                     timeLineWidgets.add(0, widget)

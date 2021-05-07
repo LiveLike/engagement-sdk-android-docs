@@ -87,7 +87,11 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                             if (progress != 1f) {
                                 resumeAnimation()
                             }
-                            visibility = View.VISIBLE
+                            visibility = if(showResultAnimation) {
+                                View.VISIBLE
+                            }else{
+                                View.GONE
+                            }
                         }
                         listOf(textEggTimer).forEach {
                             it?.showCloseButton() {
@@ -120,7 +124,11 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                             subscribeToAnimationUpdates { value ->
                                 viewModel?.animationProgress = value
                             }
-                            visibility = View.VISIBLE
+                            visibility = if(showResultAnimation) {
+                                View.VISIBLE
+                            }else{
+                                View.GONE
+                            }
                         }
                         listOf(textEggTimer).forEach {
                             it?.showCloseButton() {

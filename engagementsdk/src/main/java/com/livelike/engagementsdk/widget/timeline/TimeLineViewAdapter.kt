@@ -73,7 +73,7 @@ internal class TimeLineViewAdapter(
     override fun onBindViewHolder(itemViewHolder: RecyclerView.ViewHolder, p1: Int) {
         if (itemViewHolder is TimeLineItemViewHolder) {
             val timelineWidgetResource = list[p1]
-            val liveLikeWidget = timelineWidgetResource.liveLikeWidget
+           // val liveLikeWidget = timelineWidgetResource.liveLikeWidget
             liveLikeEngagementTheme?.let {
                 itemViewHolder.itemView.widget_view.applyTheme(it)
             }
@@ -82,15 +82,17 @@ internal class TimeLineViewAdapter(
                     WidgetStates.INTERACTING
             itemViewHolder.itemView.widget_view.showDismissButton = false
             itemViewHolder.itemView.widget_view.widgetViewFactory = widgetViewFactory
-            displayWidget(itemViewHolder, liveLikeWidget)
+            displayWidget(itemViewHolder, timelineWidgetResource)
             itemViewHolder.itemView.widget_view.setState(timelineWidgetResource.widgetState)
         }
     }
 
     private fun displayWidget(
         itemViewHolder: RecyclerView.ViewHolder,
-        liveLikeWidget: LiveLikeWidget
+        timelineWidgetResource: TimelineWidgetResource
     ) {
+
+        val liveLikeWidget = timelineWidgetResource.liveLikeWidget
         val widgetResourceJson =
             JsonParser.parseString(GsonBuilder().create().toJson(liveLikeWidget)).asJsonObject
         var widgetType = widgetResourceJson.get("kind").asString
@@ -123,6 +125,9 @@ internal class TimeLineViewAdapter(
             }
             timeLineViewModel.widgetViewModelCache[widgetId] = widgetView?.widgetViewModel
             widgetView?.let { view ->
+
+                // this has been added to show/hide animation in result state
+                view.showResultAnimation = (timelineWidgetResource.apiSource == WidgetApiSource.REALTIME_API)
                 displayWidget(widgetType, view)
             }
         }
@@ -149,6 +154,7 @@ class ProgressViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
 data class TimelineWidgetResource(
     var widgetState: WidgetStates,
-    val liveLikeWidget: LiveLikeWidget
+    val liveLikeWidget: LiveLikeWidget,
+    var apiSource: WidgetApiSource //this has been added to show/hide animation . if real time widget animation will be shown else not
 )
 
