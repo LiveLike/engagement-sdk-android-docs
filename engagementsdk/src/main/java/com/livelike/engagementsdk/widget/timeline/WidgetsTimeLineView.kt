@@ -212,7 +212,12 @@ class WidgetsTimeLineView(
                 }
 
                 WidgetTimeLineViewModel.WIDGET_LOADING_STARTED -> {
-
+                    //adding this line for case if in first page the filter widget data is empty and we are loading next page as automatically
+                    if (adapter.itemCount == 0) {
+                        timeLineViewModel.uiScope.launch {
+                            showLoadingSpinnerForTimeline()
+                        }
+                    }
                 }
             }
         }

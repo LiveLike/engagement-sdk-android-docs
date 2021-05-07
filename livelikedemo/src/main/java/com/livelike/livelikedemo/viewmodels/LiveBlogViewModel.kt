@@ -4,17 +4,22 @@ import androidx.lifecycle.AndroidViewModel
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.channel.ChannelManager
 
 class LiveBlogViewModel constructor(
-   val application: LiveLikeApplication
+    val application: LiveLikeApplication
 ) : AndroidViewModel(application) {
 
     var publicSession: LiveLikeContentSession? = null
     var timeLineViewModel: WidgetTimeLineViewModel? = null
-
+    var showAlertOnly = false
+        set(value) {
+            field = value
+            createTimeLineViewModel()
+        }
 
     private var channelManager: ChannelManager? = null
     private var engagementSDK: EngagementSDK? = null
@@ -44,8 +49,10 @@ class LiveBlogViewModel constructor(
      * timeline view model created
      **/
     private fun createTimeLineViewModel() {
-        if (timeLineViewModel == null) {
-            timeLineViewModel = WidgetTimeLineViewModel(getSession()!!)
+        timeLineViewModel = WidgetTimeLineViewModel(getSession()!!) { widget ->
+            if (showAlertOnly)
+                widget.getWidgetType() == WidgetType.ALERT
+            else true
         }
     }
 
