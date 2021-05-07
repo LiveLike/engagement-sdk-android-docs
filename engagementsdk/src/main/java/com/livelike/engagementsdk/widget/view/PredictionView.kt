@@ -213,6 +213,9 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     applyThemeOnTitleView(themeComponent)
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
+                    AndroidResource.createDrawable(themeComponent.body)?.let {
+                        textRecyclerView.background = it
+                    }
                 }
             }
         }

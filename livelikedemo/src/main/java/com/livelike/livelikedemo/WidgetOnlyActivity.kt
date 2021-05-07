@@ -493,7 +493,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 null,
                                 programId,
                                 question,
-                                "PT10S"
+                                "PT30S"
                             )
                             txtPrediction, imgPrediction -> PredictionRequest(
                                 "The confirmation Message",
