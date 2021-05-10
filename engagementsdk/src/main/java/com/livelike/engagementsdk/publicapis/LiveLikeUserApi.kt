@@ -9,7 +9,8 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
  */
 data class LiveLikeUserApi(
     var nickname: String,
-    val accessToken: String
+    val accessToken: String,
+    var userId:String
 )
 
 // this model is not changed since 1.2 release in hurry, we need to fix it may require to bump to major version.
@@ -117,6 +118,7 @@ internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
         this.nickname = this@toLiveLikeChatMessage.senderDisplayName
         this.userPic = this@toLiveLikeChatMessage.senderDisplayPic
         this.custom_data = this@toLiveLikeChatMessage.custom_data
+        this.senderId = this@toLiveLikeChatMessage.senderId
         this.timestamp = epochTimeStamp.toString()
     }
 }
