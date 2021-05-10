@@ -9,7 +9,8 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
  */
 data class LiveLikeUserApi(
     var nickname: String,
-    val accessToken: String
+    val accessToken: String,
+    var userId:String
 )
 
 // this model is not changed since 1.2 release in hurry, we need to fix it may require to bump to major version.
