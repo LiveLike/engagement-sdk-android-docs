@@ -117,6 +117,7 @@ internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
         this.nickname = this@toLiveLikeChatMessage.senderDisplayName
         this.userPic = this@toLiveLikeChatMessage.senderDisplayPic
         this.custom_data = this@toLiveLikeChatMessage.custom_data
+        this.senderId = this@toLiveLikeChatMessage.senderId
         this.timestamp = epochTimeStamp.toString()
     }
 }
