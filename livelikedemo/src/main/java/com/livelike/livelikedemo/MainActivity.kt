@@ -407,6 +407,13 @@ class MainActivity : AppCompatActivity() {
         userStream.subscribe(this) {
             runOnUiThread {
                 txt_nickname_server.text = it?.nickname
+                it?.let {
+                    Toast.makeText(
+                        applicationContext,
+                        "CustomData: ${it.custom_data}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
         btn_nick_name.setOnClickListener {
