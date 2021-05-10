@@ -161,6 +161,7 @@ internal class ChatRecyclerAdapter(
                         blockUser(
                             msg.senderId
                         )
+                        reporter(msg)
                     }
                     create()
                 }.show()
