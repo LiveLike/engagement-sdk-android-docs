@@ -165,7 +165,7 @@ class EngagementSDK(
 
     override val userStream: Stream<LiveLikeUserApi>
         get() = userRepository.currentUserStream.map {
-            LiveLikeUserApi(it.nickname, it.accessToken)
+            LiveLikeUserApi(it.nickname, it.accessToken, it.id)
         }
     override val userAccessToken: String?
         get() = userRepository.userAccessToken
