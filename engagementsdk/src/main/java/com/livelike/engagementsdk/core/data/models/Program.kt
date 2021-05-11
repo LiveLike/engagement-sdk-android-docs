@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.core.data.models
 
 import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 
 internal data class Program(
@@ -23,7 +24,7 @@ internal data class Program(
     val defaultChatRoom: ChatRoom?,
     val reportUrl: String?,
     val leaderboards: List<LeaderBoardResource>,
-    val rewardItems : List<RewardItem>
+    val rewardItems: List<RewardItem>
 )
 
 internal data class LeaderBoardResource(
@@ -43,7 +44,7 @@ internal fun LeaderBoardResource.toLeadBoard(): LeaderBoard {
 }
 
 internal fun LeaderboardClient.toLeaderBoard(): LeaderBoard {
-    return LeaderBoard(id,name,rewardItem.toReward())
+    return LeaderBoard(id, name, rewardItem.toReward())
 }
 
 data class LeaderBoard(
@@ -86,7 +87,14 @@ data class LeaderBoardEntry(
     @SerializedName("profile_id") val profile_id: String,
     @SerializedName("rank") val rank: Int,
     @SerializedName("score") val score: Int,
-    @SerializedName("profile_nickname") val profile_nickname: String
+    @SerializedName("profile_nickname") val profile_nickname: String,
+    @SerializedName("profile") val profile: Profile
+)
+
+data class Profile(
+    val custom_data: String? = null,
+    val nickname: String,
+    var id: String
 )
 
 data class LeaderboardClient(
@@ -94,17 +102,14 @@ data class LeaderboardClient(
     @SerializedName("name") val name: String,
     @SerializedName("rewardItem") val rewardItem: RewardItem,
     @SerializedName("currentUserPlacement") val currentUserPlacement: LeaderboardPlacement,
-    @SerializedName("leaderboardDelegate")val leaderBoardDelegate: LeaderBoardDelegate?
+    @SerializedName("leaderboardDelegate") val leaderBoardDelegate: LeaderBoardDelegate?
 )
 
 data class LeaderboardPlacement(
-    @SerializedName("rank") val rank:Int,
+    @SerializedName("rank") val rank: Int,
     @SerializedName("rankPercentile") val rankPercentile: String,
-    @SerializedName("score") val score: Int)
-
-
-
-
+    @SerializedName("score") val score: Int
+)
 
 
 data class LeaderBoardEntryPaginationResult(

@@ -74,11 +74,12 @@ class LeaderBoardActivity : AppCompatActivity() {
             setTitle("Profile")
             setItems(
                 arrayOf(
-                    "NickName: ${result.profile_nickname}",
-                    "Id: ${result.profile_id}",
+                    "NickName: ${result.profile.nickname}",
+                    "Id: ${result.profile.id}",
                     "Percentile Rank: ${result.percentile_rank}",
                     "Rank: ${result.rank}",
-                    "Score: ${result.score}"
+                    "Score: ${result.score}",
+                    "Custom Data: ${result.profile.custom_data}"
                 )
             ) { _, which ->
             }
@@ -105,13 +106,8 @@ class LeaderBoardActivity : AppCompatActivity() {
                 LinearLayoutManager.VERTICAL,
                 false
             )
-        ed_txt_program_id.setText("47c14e1d-5786-401e-a850-22c5a91a5399") //QA
-        //ed_txt_program_id.setText("6834f1fd-f24d-4538-ba51-63544f9d78eb")//Prod
-
-
-
-
-
+//        ed_txt_program_id.setText("47c14e1d-5786-401e-a850-22c5a91a5399") //QA
+        ed_txt_program_id.setText("6834f1fd-f24d-4538-ba51-63544f9d78eb")//Prod
 
 
         rcyl_leader_board_entries.adapter = adapter
