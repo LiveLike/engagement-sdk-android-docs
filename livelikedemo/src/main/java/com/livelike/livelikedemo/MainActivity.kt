@@ -37,6 +37,7 @@ import kotlinx.android.synthetic.main.activity_main.btn_avatar_remove
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
 import kotlinx.android.synthetic.main.activity_main.btn_nick_name
+import kotlinx.android.synthetic.main.activity_main.btn_user_details
 import kotlinx.android.synthetic.main.activity_main.build_no
 import kotlinx.android.synthetic.main.activity_main.chat_input_visibility_switch
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
@@ -416,6 +417,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        btn_user_details.setOnClickListener {
+            (application as LiveLikeApplication).sdk.getCurrentUserDetails(object :
+                LiveLikeCallback<LiveLikeUserApi>() {
+                override fun onResponse(result: LiveLikeUserApi?, error: String?) {
+                    result?.let {
+                        Toast.makeText(
+                            applicationContext,
+                            "API CustomData: ${it.custom_data}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    error?.let {
+                        Toast.makeText(
+                            applicationContext,
+                            "$it",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            })
+        }
+
         btn_nick_name.setOnClickListener {
             if (nicknameText.text.toString().isEmpty().not())
                 (application as LiveLikeApplication).sdk.updateChatNickname(nicknameText.text.toString())

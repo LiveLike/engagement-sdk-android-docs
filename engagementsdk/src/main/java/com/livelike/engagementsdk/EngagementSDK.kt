@@ -645,6 +645,31 @@ class EngagementSDK(
         }
     }
 
+    override fun getCurrentUserDetails(liveLikeCallback: LiveLikeCallback<LiveLikeUserApi>) {
+        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
+            .subscribe(this) { pair ->
+                pair?.let { _ ->
+                    dataClient.getUserData(pair.second.profileUrl, pair.first.accessToken) {
+                        if (it == null) {
+                            liveLikeCallback.onResponse(
+                                null,
+                                "Network error or invalid access token"
+                            )
+                        } else {
+                            liveLikeCallback.onResponse(
+                                LiveLikeUserApi(
+                                    it.nickname,
+                                    it.accessToken,
+                                    it.id,
+                                    it.custom_data
+                                ), null
+                            )
+                        }
+                    }
+                }
+            }
+    }
+
     internal suspend fun getChatRoom(chatRoomId: String): Flow<Result<ChatRoom>> {
         return flow {
             configurationUserPairFlow.collect {
