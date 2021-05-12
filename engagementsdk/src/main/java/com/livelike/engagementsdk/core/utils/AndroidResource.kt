@@ -129,7 +129,13 @@ internal class AndroidResource {
         }
 
         fun setPaddingForView(view: View?, padding: List<Double>?) {
-            logDebug { "padding to view values:[${padding?.get(0)},${padding?.get(1)},${padding?.get(2)},${padding?.get(3)}]" }
+            logDebug {
+                "padding to view values:[${padding?.get(0)},${padding?.get(1)},${
+                    padding?.get(
+                        2
+                    )
+                },${padding?.get(3)}]"
+            }
             view?.setPadding(
                 webPxToDevicePx(padding?.get(0)?.toInt() ?: 0),
                 webPxToDevicePx(padding?.get(1)?.toInt() ?: 0),
@@ -139,9 +145,9 @@ internal class AndroidResource {
         }
 
         fun createDrawable(
-            component: ViewStyleProps?
+            component: ViewStyleProps?,
+            shape: GradientDrawable = GradientDrawable()
         ): GradientDrawable? {
-            val shape = GradientDrawable()
             component?.background?.let {
                 if (it.format == Format.Fill.key) {
                     if (it.color!!.isNotEmpty())
@@ -155,10 +161,12 @@ internal class AndroidResource {
                 }
             }
             if (component?.padding.isNullOrEmpty().not() && component?.padding?.size == 4) {
-                shape.setPadding(webPxToDevicePx(component.padding[0].toInt()),
+                shape.setPadding(
+                    webPxToDevicePx(component.padding[0].toInt()),
                     webPxToDevicePx(component.padding[1].toInt()),
                     webPxToDevicePx(component.padding[2].toInt()),
-                    webPxToDevicePx(component.padding[3].toInt()))
+                    webPxToDevicePx(component.padding[3].toInt())
+                )
             }
 
             shape.orientation =
