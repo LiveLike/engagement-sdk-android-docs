@@ -7,7 +7,6 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +19,6 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
-import com.livelike.engagementsdk.widget.util.DividerItemDecorator
 import com.livelike.engagementsdk.widget.util.SmoothScrollerLinearLayoutManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
@@ -62,12 +60,11 @@ class WidgetsTimeLineView(
      **/
     fun setSeparator(customSeparator: Drawable?) {
         this.separator = customSeparator
-        if(separator == null){
-            // this is default separator for timeline
-            separator = ContextCompat.getDrawable(context, R.drawable.default_separator_timeline)
+        separator?.let {
+            val itemDecoration = DividerItemDecoration(context, VERTICAL)
+            itemDecoration.setDrawable(it)
+            timeline_rv.addItemDecoration(itemDecoration)
         }
-        val itemDecoration = DividerItemDecorator(separator)
-        timeline_rv.addItemDecoration(itemDecoration)
     }
 
 
