@@ -118,6 +118,6 @@ interface IEngagement {
     fun getChatUserMutedStatus(chatRoomId: String,
                                liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>)
 
-
+    fun getCurrentUserDetails(liveLikeCallback: LiveLikeCallback<LiveLikeUserApi>)
 
 }
