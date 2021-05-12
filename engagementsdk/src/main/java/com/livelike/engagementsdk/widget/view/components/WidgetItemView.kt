@@ -22,7 +22,6 @@ import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageBar
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButton
-import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButtonBackground
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageItemRoot
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imagePercentage
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageText
@@ -307,7 +306,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             .load(option.image_url)
             .into(imageButton)
         clickListener?.apply {
-            imageButtonBackground.setOnClickListener(clickListener)
+            imageItemRoot.setOnClickListener(clickListener)
         }
         layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -353,9 +352,9 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                 bkgrd?.background = drawable
                 bkgrd?.tag = drawableId ?: drawable2
             }
-            if (imageButtonBackground != null && imageButtonBackground?.tag != drawableId ?: drawable2) {
-                imageButtonBackground?.background = drawable
-                imageButtonBackground?.tag = drawableId ?: drawable2
+            if (imageItemRoot != null && imageItemRoot?.tag != drawableId ?: drawable2) {
+                imageItemRoot?.background = drawable
+                imageItemRoot?.tag = drawableId ?: drawable2
             }
         }
     }

@@ -513,7 +513,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "header": {
         "fontFamily": [
@@ -541,7 +547,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionBar": {
         "fontFamily": [
@@ -767,7 +779,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "incorrectOption": {
         "fontFamily": [
@@ -781,7 +799,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionDescription": {
         "fontFamily": [
@@ -893,7 +917,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "header": {
         "fontFamily": [
@@ -921,7 +951,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionBar": {
         "fontFamily": [
@@ -1133,7 +1169,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "header": {
         "fontFamily": [
@@ -1161,7 +1203,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionBar": {
         "fontFamily": [
@@ -1387,7 +1435,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "incorrectOption": {
         "fontFamily": [
@@ -1401,7 +1455,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionDescription": {
         "fontFamily": [
@@ -1513,7 +1573,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "header": {
         "fontFamily": [
@@ -1541,7 +1607,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionBar": {
         "fontFamily": [
