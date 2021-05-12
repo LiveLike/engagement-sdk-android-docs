@@ -4,8 +4,12 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.JsonObject
@@ -16,6 +20,7 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
+import com.livelike.engagementsdk.widget.util.DividerItemDecorator
 import com.livelike.engagementsdk.widget.util.SmoothScrollerLinearLayoutManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
@@ -35,6 +40,7 @@ class WidgetsTimeLineView(
     private var showingSnapToLive: Boolean = false
     private var isFirstItemVisible = false
     private var autoScrollTimeline = false
+    private var separator:Drawable? = null
 
     // The minimum amount of items to have below your current scroll position
     // before loading more.
@@ -50,6 +56,21 @@ class WidgetsTimeLineView(
             field = value
         }
 
+    /**
+     * this will add custom separator/divider (drawables) between widgets in timeline
+     * * @param Drawable
+     **/
+    fun setSeparator(customSeparator: Drawable?) {
+        this.separator = customSeparator
+        if(separator == null){
+            // this is default separator for timeline
+            separator = ContextCompat.getDrawable(context, R.drawable.default_separator_timeline)
+        }
+        val itemDecoration = DividerItemDecorator(separator)
+        timeline_rv.addItemDecoration(itemDecoration)
+    }
+
+
     init {
         inflate(context, R.layout.livelike_timeline_view, this)
 
@@ -64,8 +85,6 @@ class WidgetsTimeLineView(
                 timeLineViewModel
             )
         adapter.list.addAll(timeLineViewModel.timeLineWidgets)
-        /*timeline_rv.layoutManager =
-            LinearLayoutManager(context)*/
         timeline_rv.layoutManager = SmoothScrollerLinearLayoutManager(context)
         timeline_rv.adapter = adapter
         initListeners()
