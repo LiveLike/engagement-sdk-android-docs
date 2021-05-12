@@ -22,7 +22,6 @@ import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.widget_alert.view.bodyBackground
 import kotlinx.android.synthetic.main.widget_alert.view.bodyImage
 import kotlinx.android.synthetic.main.widget_alert.view.bodyText
 import kotlinx.android.synthetic.main.widget_alert.view.labelText
@@ -105,7 +104,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
 
     override fun applyTheme(theme: WidgetsTheme) {
         super.applyTheme(theme)
-        viewModel?.data?.latest()?.let { widget ->
+        viewModel?.data?.latest()?.let { _ ->
             theme.getThemeLayoutComponent(WidgetType.ALERT)?.let { themeComponent ->
                 AndroidResource.updateThemeForView(
                     labelText,
@@ -119,7 +118,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                     AndroidResource.setPaddingForView(labelText, themeComponent.header.padding)
                 }
 
-                bodyBackground?.background =
+                widgetContainer?.background =
                     AndroidResource.createDrawable(themeComponent.body)
                 AndroidResource.updateThemeForView(
                     bodyText,
@@ -180,12 +179,12 @@ internal class AlertWidgetView : SpecifiedWidgetView {
 
         if (resourceAlert.title.isNullOrEmpty()) {
             labelText.visibility = View.GONE
-            val params = bodyBackground.layoutParams as LayoutParams
+            val params = widgetContainer.layoutParams as LayoutParams
             params.topMargin = AndroidResource.dpToPx(0)
-            bodyBackground.requestLayout()
+            widgetContainer.requestLayout()
         } else {
-            val params = bodyBackground.layoutParams as LayoutParams
-            bodyBackground.requestLayout()
+            val params = widgetContainer.layoutParams as LayoutParams
+            widgetContainer.requestLayout()
         }
 
         if (resourceAlert.text.isNullOrEmpty()) {
