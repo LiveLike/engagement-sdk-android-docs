@@ -27,7 +27,13 @@
         "background": {
           "color": "363636",
           "format": "fill"
-        }
+        },
+        "borderRadius": [
+          0,
+          0,
+          10,
+          10
+        ]
       },
       "footer": {
         "fontFamily": [
@@ -97,7 +103,13 @@
         "background": {
           "format": "fill",
           "color": "7C40B8"
-        }
+        },
+        "borderRadius": [
+          10,
+          10,
+          0,
+          0
+        ]
       }
     },
     "imageSlider": {
@@ -139,7 +151,13 @@
         "background": {
           "color": "363636",
           "format": "fill"
-        }
+        },
+        "borderRadius": [
+          0,
+          0,
+          10,
+          10
+        ]
       },
       "footer": {
         "fontFamily": [
@@ -209,7 +227,13 @@
         "background": {
           "format": "fill",
           "color": "7C40B8"
-        }
+        },
+        "borderRadius": [
+          10,
+          10,
+          0,
+          0
+        ]
       },
       "interactiveTrackRight": {
         "fontFamily": [

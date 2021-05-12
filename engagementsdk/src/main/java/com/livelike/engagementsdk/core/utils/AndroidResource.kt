@@ -161,6 +161,7 @@ internal class AndroidResource {
             if (component?.borderRadius.isNullOrEmpty()
                     .not() && component?.borderRadius?.size == 4
             ) {
+                //array order be[top-left,top-right,bottom-left,bottom-right]
                 shape.cornerRadii = floatArrayOf(
                     dpToPx(component.borderRadius[0].toInt()).toFloat(),
                     dpToPx(component.borderRadius[0].toInt()).toFloat(),

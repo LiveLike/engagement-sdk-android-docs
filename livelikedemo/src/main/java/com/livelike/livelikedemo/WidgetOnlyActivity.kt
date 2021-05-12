@@ -17,9 +17,11 @@ import com.google.gson.JsonParser
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVote
@@ -158,6 +160,16 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
             }
         }
+
+        val file_name = "themes/customWidgetThemeUpdated.json"
+        val bufferReader = application.assets.open(file_name).bufferedReader()
+        val data = bufferReader.use {
+            it.readText()
+        }
+        val element =
+            LiveLikeEngagementTheme.instanceFrom(JsonParser.parseString(data).asJsonObject)
+        if (element is Result.Success)
+            widget_view.applyTheme(element.data)
 
         val rnd = java.util.Random()
         btn_change_background.setOnClickListener {
