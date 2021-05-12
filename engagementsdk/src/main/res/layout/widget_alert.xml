@@ -35,7 +35,7 @@
         android:id="@+id/widgetContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_corner_with_background"
+        android:background="@drawable/alert_rounded_corner_with_background"
         android:animateLayoutChanges="@bool/livelike_widget_component_layout_transition_enabled"
         app:layout_constraintTop_toBottomOf="@+id/labelText">
 

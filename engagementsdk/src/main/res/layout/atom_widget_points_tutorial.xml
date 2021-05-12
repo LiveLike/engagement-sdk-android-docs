@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
-        android:background="@drawable/rounded_corner_with_background">
+        android:background="@drawable/alert_rounded_corner_with_background">
 
 
         <!--suppress AndroidDomInspection -->
