@@ -2,6 +2,7 @@ package com.livelike.livelikedemo
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.livelike.engagementsdk.widget.timeline.WidgetsTimeLineView
 import com.livelike.livelikedemo.customwidgets.timeline.TimeLineWidgetFactory
@@ -44,6 +45,9 @@ class LiveBlogActivity : AppCompatActivity() {
             liveBlogViewModel?.timeLineViewModel!!,
             liveBlogViewModel?.getEngagementSDK()!!
         )
+
+        // adding custom separator between widgets in timeline
+        timeLineView.setSeparator(ContextCompat.getDrawable(this, R.drawable.custom_separator_timeline))
         if (LiveLikeApplication.showCustomWidgetsUI) {
             timeLineView.widgetViewFactory =
                 TimeLineWidgetFactory(
