@@ -173,5 +173,9 @@
     <dimen name="alert_title_padding_left">8dp</dimen>
     <dimen name="alert_title_padding_right">8dp</dimen>
     <dimen name="cheer_meter_title_padding">5dp</dimen>
+    <dimen name="livelike_image_slider_padding_left">6dp</dimen>
+    <dimen name="livelike_image_slider_padding_top">3dp</dimen>
+    <dimen name="livelike_image_slider_padding_right">6dp</dimen>
+    <dimen name="livelike_image_slider_padding_bottom">3dp</dimen>
     <item name="livelike_snap_live_horizontal_bias" format="float" type="dimen">1.0</item>
 </resources>

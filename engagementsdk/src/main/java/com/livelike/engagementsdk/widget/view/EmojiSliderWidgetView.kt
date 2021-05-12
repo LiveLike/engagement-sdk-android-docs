@@ -19,8 +19,7 @@ import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider
-import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider_widget_box
-import kotlinx.android.synthetic.main.widget_emoji_slider.view.txtTitleBackground
+import kotlinx.android.synthetic.main.widget_emoji_slider.view.lay_image_slider
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -74,17 +73,14 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
         logDebug { "EmojiSlider Widget showing result value:${image_slider.averageProgress}" }
     }
 
-    private fun updateTitle(it: ImageSliderTheme?) {
+    private fun updateTheme(it: ImageSliderTheme?) {
         it?.let { sliderTheme ->
             applyThemeOnTitleView(sliderTheme)
-            AndroidResource.createDrawable(sliderTheme.body)?.let {
-                image_slider_widget_box.background = it
-            }
-            if (sliderTheme.header?.background != null) {
-                txtTitleBackground.background = AndroidResource.createDrawable(sliderTheme.header)
-            }
             sliderTheme.header?.padding?.let {
                 AndroidResource.setPaddingForView(titleView, sliderTheme.header.padding)
+            }
+            AndroidResource.createDrawable(sliderTheme.body)?.let {
+                lay_image_slider.background = it
             }
         }
     }
@@ -94,7 +90,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             resource.getMergedOptions() ?: return
             if (!isViewInflated) {
                 inflate(context, R.layout.widget_emoji_slider, this)
-                updateTitle(widgetsTheme?.imageSlider)
+                updateTheme(widgetsTheme?.imageSlider)
                 titleTextView.gravity = Gravity.START
                 titleView.title = resource.question
                 if (image_slider.progress == ImageSlider.INITIAL_POSITION)

@@ -9,7 +9,6 @@
         android:id="@+id/image_slider_widget_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_corner_with_background"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -49,24 +48,32 @@
             app:layout_constraintTop_toTopOf="@+id/titleView"
             app:layout_constraintVertical_bias="0.0" />
 
-
-        <com.livelike.engagementsdk.widget.view.components.imageslider.ImageSlider
-            android:id="@+id/image_slider"
+        <FrameLayout
+            android:id="@+id/lay_image_slider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
-            android:layout_marginTop="3dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginBottom="3dp"
-            android:visibility="gone"
-            app:allow_reselection="true"
+            android:background="@drawable/rounded_corner_with_background"
+            android:paddingLeft="@dimen/livelike_image_slider_padding_left"
+            android:paddingTop="@dimen/livelike_image_slider_padding_top"
+            android:paddingRight="@dimen/livelike_image_slider_padding_right"
+            android:paddingBottom="@dimen/livelike_image_slider_padding_bottom"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/titleView"
-            app:progress_value="0.3"
-            app:register_touches_outside_thumb="true"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toBottomOf="@id/titleView">
+
+            <com.livelike.engagementsdk.widget.view.components.imageslider.ImageSlider
+                android:id="@+id/image_slider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:allow_reselection="true"
+                app:progress_value="0.3"
+                app:register_touches_outside_thumb="true"
+                tools:visibility="visible" />
+
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

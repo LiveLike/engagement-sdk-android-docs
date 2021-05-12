@@ -146,6 +146,12 @@
           0,
           0
         ],
+        "padding": [
+          30,
+          30,
+          30,
+          30
+        ],
         "borderColor": "00000000",
         "fontColor": "ffffff",
         "background": {
