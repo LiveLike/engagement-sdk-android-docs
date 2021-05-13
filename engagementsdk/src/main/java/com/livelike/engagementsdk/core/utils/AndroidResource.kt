@@ -161,12 +161,14 @@ internal class AndroidResource {
                 }
             }
             if (component?.padding.isNullOrEmpty().not() && component?.padding?.size == 4) {
-                shape.setPadding(
-                    webPxToDevicePx(component.padding[0].toInt()),
-                    webPxToDevicePx(component.padding[1].toInt()),
-                    webPxToDevicePx(component.padding[2].toInt()),
-                    webPxToDevicePx(component.padding[3].toInt())
-                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    shape.setPadding(
+                        webPxToDevicePx(component.padding[0].toInt()),
+                        webPxToDevicePx(component.padding[1].toInt()),
+                        webPxToDevicePx(component.padding[2].toInt()),
+                        webPxToDevicePx(component.padding[3].toInt())
+                    )
+                }
             }
 
             shape.orientation =
