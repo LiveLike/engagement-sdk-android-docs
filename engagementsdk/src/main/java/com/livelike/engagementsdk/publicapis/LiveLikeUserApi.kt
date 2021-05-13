@@ -2,14 +2,15 @@ package com.livelike.engagementsdk.publicapis
 
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 
 /**
  * User pojo to be exposed, should be minimal in terms of fields
  */
 data class LiveLikeUserApi(
     var nickname: String,
-    val accessToken: String
+    val accessToken: String,
+    var userId: String,
+    var custom_data: String? = null
 )
 
 // this model is not changed since 1.2 release in hurry, we need to fix it may require to bump to major version.
@@ -70,6 +71,7 @@ data class LiveLikeChatMessage(val message: String?) {
      */
     var custom_data: String? = null
 }
+
 enum class ChatMessageType(val key: String) {
     MESSAGE_CREATED("message-created"),
     MESSAGE_DELETED("message-deleted"),
@@ -117,6 +119,7 @@ internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
         this.nickname = this@toLiveLikeChatMessage.senderDisplayName
         this.userPic = this@toLiveLikeChatMessage.senderDisplayPic
         this.custom_data = this@toLiveLikeChatMessage.custom_data
+        this.senderId = this@toLiveLikeChatMessage.senderId
         this.timestamp = epochTimeStamp.toString()
     }
 }

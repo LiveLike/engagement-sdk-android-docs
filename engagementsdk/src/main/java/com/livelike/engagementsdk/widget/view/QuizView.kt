@@ -167,7 +167,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
             titleView.title = resource.question
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_quiz)
-
+            textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
             titleTextView.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
                 viewModel?.adapter?.apply {

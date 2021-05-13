@@ -35,20 +35,9 @@
         android:id="@+id/widgetContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/alert_rounded_corner_with_background"
         android:animateLayoutChanges="@bool/livelike_widget_component_layout_transition_enabled"
         app:layout_constraintTop_toBottomOf="@+id/labelText">
-
-        <View
-            android:id="@+id/bodyBackground"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:animateLayoutChanges="@bool/livelike_widget_component_layout_transition_enabled"
-            android:background="@drawable/rounded_corner_with_background"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/bodyImage"
@@ -59,9 +48,9 @@
             android:contentDescription="@string/image"
             android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/linkBackground"
-            app:layout_constraintEnd_toEndOf="@+id/bodyBackground"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/bodyText"
-            app:layout_constraintTop_toTopOf="@+id/bodyBackground"
+            app:layout_constraintTop_toTopOf="parent"
             tools:src="@tools:sample/backgrounds/scenic" />
 
         <!--suppress AndroidDomInspection -->
@@ -82,8 +71,8 @@
             app:layout_constraintBottom_toTopOf="@+id/linkBackground"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/bodyBackground"
-            app:layout_constraintTop_toTopOf="@+id/bodyBackground"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Lorem ipsume" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -94,10 +83,10 @@
             android:background="@color/livelike_alert_link_background_color"
             android:visibility="visible"
             android:layout_marginTop="5dp"
-            app:layout_constraintBottom_toBottomOf="@+id/bodyBackground"
-            app:layout_constraintEnd_toEndOf="@+id/bodyBackground"
-            app:layout_constraintStart_toStartOf="@+id/bodyBackground"
-            app:layout_constraintTop_toTopOf="@+id/bodyBackground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" >
 
         <View

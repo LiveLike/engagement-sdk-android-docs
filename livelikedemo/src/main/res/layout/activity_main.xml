@@ -533,6 +533,14 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="SETTINGS" />
 
+                <Button
+                    android:id="@+id/btn_user_details"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:text="fetch"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <TextView
                     android:id="@+id/chat_input_visibility_label"
                     android:layout_width="wrap_content"

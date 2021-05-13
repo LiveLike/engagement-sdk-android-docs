@@ -17,5 +17,6 @@ data class LiveLikeUser(
     var isChatEnabled: Boolean,
     var userPic: String? = null,
     var url: String,
-    var chat_room_memberships_url: String
+    var chat_room_memberships_url: String,
+    var custom_data: String? = null
 )

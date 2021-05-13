@@ -10,6 +10,9 @@
     <color name="livelike_default_chat_cell_name_color">#66ffffff</color>
     <color name="livelike_default_chat_cell_message_color">#dfdfdf</color>
     <color name="livelike_default_button_background_color">#99000000</color>
+    <color name="livelike_poll_background_color">#99000000</color>
+    <color name="livelike_prediction_background_color">#99000000</color>
+    <color name="livelike_quiz_background_color">#99000000</color>
     <color name="livelike_chat_background_start_color">#212121</color>
     <color name="livelike_chat_input_text_color">@color/livelike_white</color>
     <color name="livelike_chat_input_background_color">#66000000</color>
@@ -108,7 +111,9 @@
     <color name="livelike_sticker_recent_empty_text_color">#66ffffff</color>
     <color name="livelike_chatMessage_timestamp_text_color">#666666</color>
 
-    <color name="livelike_alert_slider_background_color">#90000000</color>
+    <color name="livelike_alert_background_color">#90000000</color>
+    <color name="livelike_social_background_color">#90000000</color>
+    <color name="livelike_slider_background_color">#90000000</color>
     <color name="chat_bottom_bar_gradient_end_color">#00000000</color>
     <color name="chat_bottom_bar_gradient_start_color">#000000</color>
     <color name="ripple_effect_team1_mask_color">#802828b4</color>
@@ -123,4 +128,7 @@
     <color name="livelike_snap_live_color">#FFF</color>
     <color name="livelike_snap_live_icon_color">#000</color>
     <color name="livelike_chat_reaction_selected_background_color">#33000000</color>
+    <color name="txt_cheer_meter_team_1_color">#FFFFFF</color>
+    <color name="txt_cheer_meter_team_2_color">#ffffff</color>
+    <color name="livelike_cheer_meter_background_bottom_color">#70000000</color>
 </resources>
