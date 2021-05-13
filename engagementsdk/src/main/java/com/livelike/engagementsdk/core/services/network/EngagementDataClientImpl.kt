@@ -189,7 +189,8 @@ internal open class EngagementDataClientImpl : DataClient,
                         responseData.extractBoolean("chat_enabled"),
                         null,
                         responseData.extractStringOrEmpty("url"),
-                        responseData.extractStringOrEmpty("chat_room_memberships_url")
+                        responseData.extractStringOrEmpty("chat_room_memberships_url"),
+                        responseData.extractStringOrEmpty("custom_data")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
