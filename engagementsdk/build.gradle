@@ -20,12 +20,12 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
-        versionName "2.16.3"
+        versionName "2.16.4"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'proguard-rules.pro'
 
-        buildConfigField "String", "SDK_VERSION", '"2.16.3"'
+        buildConfigField "String", "SDK_VERSION", '"2.16.4"'
     }
 
     buildTypes {
