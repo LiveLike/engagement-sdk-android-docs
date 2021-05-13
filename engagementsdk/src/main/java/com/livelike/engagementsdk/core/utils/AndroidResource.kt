@@ -129,6 +129,13 @@ internal class AndroidResource {
         }
 
         fun setPaddingForView(view: View?, padding: List<Double>?) {
+            logDebug {
+                "padding to view values:[${padding?.get(0)},${padding?.get(1)},${
+                    padding?.get(
+                        2
+                    )
+                },${padding?.get(3)}]"
+            }
             view?.setPadding(
                 webPxToDevicePx(padding?.get(0)?.toInt() ?: 0),
                 webPxToDevicePx(padding?.get(1)?.toInt() ?: 0),
@@ -138,9 +145,9 @@ internal class AndroidResource {
         }
 
         fun createDrawable(
-            component: ViewStyleProps?
+            component: ViewStyleProps?,
+            shape: GradientDrawable = GradientDrawable()
         ): GradientDrawable? {
-            var shape: GradientDrawable = GradientDrawable()
             component?.background?.let {
                 if (it.format == Format.Fill.key) {
                     if (it.color!!.isNotEmpty())
@@ -153,6 +160,16 @@ internal class AndroidResource {
                         shape.colors = null
                 }
             }
+            if (component?.padding.isNullOrEmpty().not() && component?.padding?.size == 4) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    shape.setPadding(
+                        webPxToDevicePx(component.padding[0].toInt()),
+                        webPxToDevicePx(component.padding[1].toInt()),
+                        webPxToDevicePx(component.padding[2].toInt()),
+                        webPxToDevicePx(component.padding[3].toInt())
+                    )
+                }
+            }
 
             shape.orientation =
                 component?.background?.direction?.toInt()
@@ -161,6 +178,7 @@ internal class AndroidResource {
             if (component?.borderRadius.isNullOrEmpty()
                     .not() && component?.borderRadius?.size == 4
             ) {
+                //array order be[top-left,top-right,bottom-left,bottom-right]
                 shape.cornerRadii = floatArrayOf(
                     dpToPx(component.borderRadius[0].toInt()).toFloat(),
                     dpToPx(component.borderRadius[0].toInt()).toFloat(),

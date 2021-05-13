@@ -170,6 +170,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 inflate(context, R.layout.widget_text_option_selection, this@PollView)
             }
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
+            textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_poll)
 
             titleView.title = resource.question
             // TODO: update header background with margin or padding

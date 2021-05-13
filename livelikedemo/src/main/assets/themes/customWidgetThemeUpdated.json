@@ -27,7 +27,19 @@
         "background": {
           "color": "363636",
           "format": "fill"
-        }
+        },
+        "borderRadius": [
+          0,
+          0,
+          10,
+          10
+        ],
+        "padding": [
+          30,
+          30,
+          30,
+          30
+        ]
       },
       "footer": {
         "fontFamily": [
@@ -97,7 +109,13 @@
         "background": {
           "format": "fill",
           "color": "7C40B8"
-        }
+        },
+        "borderRadius": [
+          10,
+          10,
+          0,
+          0
+        ]
       }
     },
     "imageSlider": {
@@ -134,12 +152,24 @@
           0,
           0
         ],
+        "padding": [
+          30,
+          30,
+          30,
+          30
+        ],
         "borderColor": "00000000",
         "fontColor": "ffffff",
         "background": {
           "color": "363636",
           "format": "fill"
-        }
+        },
+        "borderRadius": [
+          0,
+          0,
+          10,
+          10
+        ]
       },
       "footer": {
         "fontFamily": [
@@ -209,7 +239,13 @@
         "background": {
           "format": "fill",
           "color": "7C40B8"
-        }
+        },
+        "borderRadius": [
+          10,
+          10,
+          0,
+          0
+        ]
       },
       "interactiveTrackRight": {
         "fontFamily": [
@@ -477,7 +513,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "header": {
         "fontFamily": [
@@ -505,7 +547,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionBar": {
         "fontFamily": [
@@ -731,7 +779,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "incorrectOption": {
         "fontFamily": [
@@ -745,7 +799,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionDescription": {
         "fontFamily": [
@@ -857,7 +917,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "header": {
         "fontFamily": [
@@ -885,7 +951,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionBar": {
         "fontFamily": [
@@ -1097,7 +1169,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "header": {
         "fontFamily": [
@@ -1125,7 +1203,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionBar": {
         "fontFamily": [
@@ -1351,7 +1435,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "incorrectOption": {
         "fontFamily": [
@@ -1365,7 +1455,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionDescription": {
         "fontFamily": [
@@ -1477,7 +1573,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "header": {
         "fontFamily": [
@@ -1505,7 +1607,13 @@
         "background": {
           "color": "00000000",
           "format": "fill"
-        }
+        },
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ]
       },
       "selectedOptionBar": {
         "fontFamily": [
@@ -1721,7 +1829,13 @@
         "background": {
           "color": "363636",
           "format": "fill"
-        }
+        },
+        "borderRadius": [
+          0,
+          0,
+          10,
+          10
+        ]
       },
       "footer": {
         "fontFamily": [
@@ -1791,7 +1905,13 @@
         "background": {
           "format": "fill",
           "color": "7C40B8"
-        }
+        },
+        "borderRadius": [
+          10,
+          10,
+          0,
+          0
+        ]
       },
       "versus": {
         "fontFamily": [
@@ -1817,7 +1937,7 @@
         "borderColor": "00000000",
         "fontColor": "ffffff",
         "background": {
-          "color": "00000000",
+          "color": "119811",
           "format": "fill"
         }
       },
@@ -1831,7 +1951,7 @@
         "borderColor": "00000000",
         "fontColor": "ffffff",
         "background": {
-          "color": "00000000",
+          "color": "3546AA",
           "format": "fill"
         }
       },
@@ -1845,7 +1965,7 @@
         "borderColor": "00000000",
         "fontColor": "ffffff",
         "background": {
-          "color": "00000000",
+          "color": "3546AA",
           "format": "fill"
         }
       },
@@ -1859,7 +1979,7 @@
         "borderColor": "00000000",
         "fontColor": "ffffff",
         "background": {
-          "color": "00000000",
+          "color": "119811",
           "format": "fill"
         }
       }

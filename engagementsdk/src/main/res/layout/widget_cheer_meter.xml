@@ -4,19 +4,19 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:id="@+id/lay_cheer_meter_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/cheer_meter_rounded_corner_black_background"
         android:orientation="vertical">
 
 
         <LinearLayout
+            android:id="@+id/lay_cheer_meter_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/livelike_cheer_meter_padding"
+            android:background="@drawable/cheer_meter_rounded_corner_black_background"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="@dimen/livelike_cheer_meter_padding">
 
             <!--            <ImageView-->
             <!--                android:layout_width="wrap_content"-->
@@ -51,26 +51,35 @@
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/lay_cheer_meter_background"
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="200dp"
+            android:background="@drawable/cheer_meter_rounded_corner_black_background_bottom">
 
-            <View
-                android:id="@+id/view_ripple"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="left"
-                android:background="@drawable/ripple_effect_team_1"
-                android:clickable="true"
-                android:focusable="true" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <View
-                android:id="@+id/view_ripple2"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="right"
-                android:background="@drawable/ripple_effect_team_2"
-                android:clickable="true"
-                android:focusable="true" />
+                <View
+                    android:id="@+id/view_ripple"
+                    android:layout_width="0dp"
+                    android:layout_height="200dp"
+                    android:layout_gravity="left"
+                    android:layout_weight="1"
+                    android:background="@drawable/ripple_effect_team_1"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <View
+                    android:id="@+id/view_ripple2"
+                    android:layout_width="0dp"
+                    android:layout_height="200dp"
+                    android:layout_gravity="right"
+                    android:layout_weight="1"
+                    android:background="@drawable/ripple_effect_team_2"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -115,8 +124,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_gravity="top"
-                android:animateLayoutChanges="@bool/livelike_widget_component_layout_transition_enabled"
-                android:background="@android:color/white">
+                android:animateLayoutChanges="@bool/livelike_widget_component_layout_transition_enabled">
 
                 <TextView
                     android:id="@+id/txt_cheer_meter_team_1"
@@ -126,6 +134,7 @@
                     android:background="@drawable/cheer_meter_team_1_background_gradient"
                     android:gravity="center"
                     android:padding="3dp"
+                    android:textColor="@color/txt_cheer_meter_team_1_color"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse" />
 
                 <TextView
@@ -135,6 +144,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/cheer_meter_team_2_background_gradient"
                     android:gravity="center"
+                    android:textColor="@color/txt_cheer_meter_team_2_color"
                     android:padding="3dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse" />
             </LinearLayout>
@@ -174,8 +184,8 @@
         android:id="@+id/fl_result_team"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/livelike_cheer_meter_result_margin_top"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:paddingTop="@dimen/livelike_cheer_meter_result_margin_top">
 
         <ImageView
             android:id="@+id/img_winner_team"

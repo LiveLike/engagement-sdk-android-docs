@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_2
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_winner_anim
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_winner_team
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.lay_cheer_meter_background
+import kotlinx.android.synthetic.main.widget_cheer_meter.view.lay_cheer_meter_header
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.ll_cheer_meter_teams
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.lottie_vs_animation
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.textEggTimer
@@ -186,6 +187,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     cheerMeterTheme.title,
                     fontFamilyProvider
                 )
+                cheerMeterTheme.header?.let {
+                    lay_cheer_meter_header.background = AndroidResource.createDrawable(it)
+                }
                 AndroidResource.updateThemeForView(
                     txt_cheer_meter_team_1,
                     cheerMeterTheme.sideABar,
@@ -359,10 +363,16 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         drawable?.let {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 if (drawable is RippleDrawable) {
-                    val drawable2 = drawable.findDrawableByLayerId(android.R.id.mask)
+                    var drawable2 = drawable.findDrawableByLayerId(android.R.id.mask)
                     if (drawable2 is GradientDrawable) {
-//                        AndroidResource.createUpdateDrawable(component, drawable2)
+                        drawable2 = AndroidResource.createDrawable(component, drawable2)
+                        drawable.setDrawableByLayerId(android.R.id.mask, drawable2)
+                        viewRipple.background = drawable
                     }
+                }
+            } else {
+                if (drawable is GradientDrawable) {
+                    viewRipple.background = AndroidResource.createDrawable(component, drawable)
                 }
             }
         }

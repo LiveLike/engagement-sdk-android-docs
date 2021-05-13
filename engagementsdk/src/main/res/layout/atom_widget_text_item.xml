@@ -2,29 +2,19 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bkgrd"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="@bool/livelike_widget_component_layout_transition_enabled">
-
-
-    <View
-        android:id="@+id/bkgrd"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@drawable/answer_background_default"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+    android:animateLayoutChanges="@bool/livelike_widget_component_layout_transition_enabled"
+    android:background="@drawable/answer_background_default">
 
     <ProgressBar
         android:id="@+id/determinateBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="0dp"
-        android:layout_height="24dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_height="@dimen/widget_text_item_progress_height"
+        android:layout_marginLeft="@dimen/widget_text_item_progress_margin_left"
+        android:layout_marginRight="@dimen/widget_text_item_progress_margin_right"
         android:gravity="start|center"
         android:indeterminate="false"
         android:textSize="@dimen/livelike_option_text_size"
@@ -33,8 +23,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/text_button"
-        tools:progress="60"
         app:layout_constraintVertical_bias="0.5"
+        tools:progress="60"
         tools:progressDrawable="@drawable/progress_bar_correct"
         tools:visibility="visible" />
 
