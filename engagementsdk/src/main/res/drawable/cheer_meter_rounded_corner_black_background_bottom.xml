@@ -5,5 +5,5 @@
     <corners
         android:bottomLeftRadius="@dimen/livelike_cheer_meter_corner_radius"
         android:bottomRightRadius="@dimen/livelike_cheer_meter_corner_radius" />
-    <solid android:color="@color/livelike_cheer_meter_background_color" />
+    <solid android:color="@color/livelike_cheer_meter_background_bottom_color" />
 </shape>

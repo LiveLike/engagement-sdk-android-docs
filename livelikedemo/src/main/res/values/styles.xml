@@ -10,6 +10,7 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
 
+
     </style>
 
     <style name="Default" parent="AppTheme">
@@ -168,7 +169,6 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
-
 
     <style name="TestAppButton" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:paddingStart">16dp</item>

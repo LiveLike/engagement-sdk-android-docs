@@ -177,5 +177,18 @@
     <dimen name="livelike_image_slider_padding_top">3dp</dimen>
     <dimen name="livelike_image_slider_padding_right">6dp</dimen>
     <dimen name="livelike_image_slider_padding_bottom">3dp</dimen>
+    <dimen name="livelike_alert_header_corner_radius">6dp</dimen>
+    <dimen name="livelike_alert_body_corner_radius">6dp</dimen>
+    <dimen name="livelike_image_slider_corner_radius">6dp</dimen>
+    <dimen name="livelike_poll_header_corner_radius">6dp</dimen>
+    <dimen name="livelike_poll_corner_radius">6dp</dimen>
+    <dimen name="widget_text_item_progress_height">24dp</dimen>
+    <dimen name="widget_text_item_progress_margin_left">8dp</dimen>
+    <dimen name="widget_text_item_progress_margin_right">8dp</dimen>
+    <dimen name="livelike_prediction_corner_radius">6dp</dimen>
+    <dimen name="livelike_poll_option_corner_radius">6dp</dimen>
+    <dimen name="livelike_prediction_option_corner_radius">6dp</dimen>
+    <dimen name="livelike_quiz_corner_radius">6dp</dimen>
+    <dimen name="livelike_quiz_option_corner_radius">6dp</dimen>
     <item name="livelike_snap_live_horizontal_bias" format="float" type="dimen">1.0</item>
 </resources>

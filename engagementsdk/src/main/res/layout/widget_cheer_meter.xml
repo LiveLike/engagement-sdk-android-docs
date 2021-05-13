@@ -134,6 +134,7 @@
                     android:background="@drawable/cheer_meter_team_1_background_gradient"
                     android:gravity="center"
                     android:padding="3dp"
+                    android:textColor="@color/txt_cheer_meter_team_1_color"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse" />
 
                 <TextView
@@ -143,6 +144,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/cheer_meter_team_2_background_gradient"
                     android:gravity="center"
+                    android:textColor="@color/txt_cheer_meter_team_2_color"
                     android:padding="3dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse" />
             </LinearLayout>

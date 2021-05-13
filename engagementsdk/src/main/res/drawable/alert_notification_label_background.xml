@@ -14,7 +14,7 @@
         android:right="@dimen/livelike_alert_notification_label_padding_right"
         android:top="@dimen/livelike_alert_notification_label_padding_top" />
     <corners
-        android:topLeftRadius="@dimen/livelike_button_corner_radius"
-        android:topRightRadius="@dimen/livelike_button_corner_radius" />
+        android:topLeftRadius="@dimen/livelike_alert_header_corner_radius"
+        android:topRightRadius="@dimen/livelike_alert_header_corner_radius" />
 
 </shape>
