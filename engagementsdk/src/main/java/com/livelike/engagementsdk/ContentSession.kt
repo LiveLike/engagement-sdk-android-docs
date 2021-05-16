@@ -103,50 +103,50 @@ internal class ContentSession(
         liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
     ) {
         uiScope.launch {
-            val defaultUrl =
-                "${BuildConfig.CONFIG_URL}programs/$programId/widgets/?status=published&ordering=recent"
-            val url = when (liveLikePagination) {
-                LiveLikePagination.FIRST -> defaultUrl
-                LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
-                LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
-            }
-            try {
-                if (url == null) {
-                    liveLikeCallback.onResponse(null, null)
-                } else {
-                    val jsonObject = widgetDataClient.getAllPublishedWidgets(url)
-                    publishedWidgetListResponse =
-                        gson.fromJson(
-                            jsonObject.toString(),
-                            PublishedWidgetListResponse::class.java
-                        )
-                    publishedWidgetListResponse?.results?.filter {
-                        it?.let {
-                            var widgetType = it.kind
-                            widgetType = if (widgetType?.contains("follow-up") == true) {
-                                "$widgetType-updated"
-                            } else {
-                                "$widgetType-created"
-                            }
-                            return@filter WidgetType.fromString(widgetType) != null
-                        }
-                        return@filter false
-                    }
-                        .let {
-                            liveLikeCallback.onResponse(
-                                it
-                                , null
-                            )
-                        }
-                }
-            } catch (e: JsonParseException) {
-                e.printStackTrace()
-                liveLikeCallback.onResponse(null, e.message)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                liveLikeCallback.onResponse(null, e.message)
-            }
+            programRepository.program?.timelineUrl?.replace("{program_id}",programId)?.let { url->
 
+                val url = when (liveLikePagination) {
+                    LiveLikePagination.FIRST -> url
+                    LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
+                    LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
+                }
+                try {
+                    if (url == null) {
+                        liveLikeCallback.onResponse(null, null)
+                    } else {
+                        val jsonObject = widgetDataClient.getAllPublishedWidgets(url)
+                        publishedWidgetListResponse =
+                            gson.fromJson(
+                                jsonObject.toString(),
+                                PublishedWidgetListResponse::class.java
+                            )
+                        publishedWidgetListResponse?.results?.filter {
+                            it?.let {
+                                var widgetType = it.kind
+                                widgetType = if (widgetType?.contains("follow-up") == true) {
+                                    "$widgetType-updated"
+                                } else {
+                                    "$widgetType-created"
+                                }
+                                return@filter WidgetType.fromString(widgetType) != null
+                            }
+                            return@filter false
+                        }
+                            .let {
+                                liveLikeCallback.onResponse(
+                                    it
+                                    , null
+                                )
+                            }
+                    }
+                } catch (e: JsonParseException) {
+                    e.printStackTrace()
+                    liveLikeCallback.onResponse(null, e.message)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    liveLikeCallback.onResponse(null, e.message)
+                }
+            }
         }
     }
 
