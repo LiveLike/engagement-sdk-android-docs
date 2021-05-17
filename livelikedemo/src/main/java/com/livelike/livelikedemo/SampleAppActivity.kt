@@ -81,6 +81,7 @@ class SampleAppActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         session!!.close()
+        engagementSDK?.close()
         engagementSDK = null
     }
 }
