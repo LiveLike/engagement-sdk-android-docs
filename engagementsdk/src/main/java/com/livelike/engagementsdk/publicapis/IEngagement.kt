@@ -120,4 +120,5 @@ interface IEngagement {
 
     fun getCurrentUserDetails(liveLikeCallback: LiveLikeCallback<LiveLikeUserApi>)
 
+    fun close()
 }

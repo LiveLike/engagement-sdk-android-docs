@@ -109,6 +109,7 @@ interface AnalyticsService {
         reactionId: String,
         isRemoved: Boolean
     )
+    fun destroy()
 }
 
 class MockAnalyticsService(private val clientId: String = "") : AnalyticsService {
@@ -134,6 +135,13 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d(
             "[Analytics]",
             "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $isRemoved"
+        )
+    }
+
+    override fun destroy() {
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}]"
         )
     }
 
@@ -651,6 +659,14 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         Log.d(
             "[Analytics]",
             "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $isRemoved"
+        )
+    }
+
+    override fun destroy() {
+        mixpanel.flush()
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}]"
         )
     }
 
