@@ -11,7 +11,7 @@ import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 internal class WidgetInteractionRepository(val context: Context, val programID: String) {
 
 
-    private val remoteWidgetInteraction: RemoteWidgetInteraction = RemoteWidgetInteraction()
+    private val widgetInteractionRemoteSource: WidgetInteractionRemoteSource = WidgetInteractionRemoteSource()
 
     private val widgetInteractionMap = mutableMapOf<String, WidgetUserInteractionBase>()
 
@@ -25,7 +25,7 @@ internal class WidgetInteractionRepository(val context: Context, val programID: 
     internal suspend fun fetchAndStoreWidgetInteractions(url: String, accessToken: String) {
 
         val widgetInteractionsResult =
-            remoteWidgetInteraction.getWidgetInteractions(url, accessToken)
+            widgetInteractionRemoteSource.getWidgetInteractions(url, accessToken)
 
         if (widgetInteractionsResult is com.livelike.engagementsdk.core.services.network.Result.Success) {
             val interactionList = mutableListOf<WidgetUserInteractionBase>()

@@ -17,14 +17,22 @@ abstract class WidgetUserInteractionBase(
 
     companion object {
         internal fun <T : WidgetUserInteractionBase> getWidgetClass(widgetKind: String): Class<T> {
-            return (if (widgetKind == "emoji-slider") {
-                EmojiSliderUserInteraction::class.java
-            } else if (widgetKind.contains("quiz") || widgetKind.contains("prediction")) {
-                WidgetWithChoicesUserInteraction::class.java
-            } else if (widgetKind.contains("poll")) {
-                WidgetWithOptionUserInteraction::class.java
-            } else {
-                CheerMeterUserInteraction::class.java
+            return (when {
+                widgetKind == "emoji-slider" -> {
+                    EmojiSliderUserInteraction::class.java
+                }
+                widgetKind.contains("quiz") -> {
+                    QuizWidgetUserInteraction::class.java
+                }
+                widgetKind.contains("poll") -> {
+                    PollWidgetUserInteraction::class.java
+                }
+                widgetKind.contains("prediction") -> {
+                    PredictionWidgetUserInteraction::class.java
+                }
+                else -> {
+                    CheerMeterUserInteraction::class.java
+                }
             }) as Class<T>
         }
     }
@@ -41,7 +49,7 @@ class EmojiSliderUserInteraction(
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
 
-class WidgetWithChoicesUserInteraction(
+class QuizWidgetUserInteraction(
     @field:SerializedName("choice_id")
     val choiceId: String,
     id: String,
@@ -51,7 +59,17 @@ class WidgetWithChoicesUserInteraction(
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
-class WidgetWithOptionUserInteraction(
+class PollWidgetUserInteraction(
+    @field:SerializedName("option_id")
+    val optionId: String,
+    id: String,
+    createdAt: String,
+    url: String,
+    widgetId: String,
+    widgetKind: String
+) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
+
+class PredictionWidgetUserInteraction(
     @field:SerializedName("option_id")
     val optionId: String,
     id: String,
@@ -80,7 +98,7 @@ enum class WidgetKind(val event: String) {
 
     companion object {
         private val map = values().associateBy(WidgetKind::event)
-        fun fromString(type: String) = map[type]
+        fun fromString(type: String) = map[type]?:POLL
     }
 
     fun getType(): String {

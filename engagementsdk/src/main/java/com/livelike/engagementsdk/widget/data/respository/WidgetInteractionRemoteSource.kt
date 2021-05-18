@@ -5,7 +5,7 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.widget.data.models.UserWidgetInteractionApi
 
-internal class RemoteWidgetInteraction {
+internal class WidgetInteractionRemoteSource {
 
 
     private  val engagementDataClientImpl: EngagementDataClientImpl = EngagementDataClientImpl()
