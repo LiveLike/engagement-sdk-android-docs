@@ -1,39 +1,89 @@
 package com.livelike.engagementsdk.widget.data.models
 
+import com.google.gson.annotations.SerializedName
+
 abstract class WidgetUserInteractionBase(
+    @field:SerializedName("id")
     open val id: String,
-    open val created_at: String,
+    @field:SerializedName("created_at")
+    open val createdAt: String,
+    @field:SerializedName("url")
     open val url: String,
-    open val widget_id: String,
-    open val widget_kind: String
-)
+    @field:SerializedName("widget_id")
+    open val widgetId: String,
+    @field:SerializedName("widget_kind")
+    open val widgetKind: String
+) {
+
+    companion object {
+        internal fun <T : WidgetUserInteractionBase> getWidgetClass(widgetKind: String): Class<T> {
+            return (if (widgetKind == "emoji-slider") {
+                EmojiSliderUserInteraction::class.java
+            } else if (widgetKind.contains("quiz") || widgetKind.contains("prediction")) {
+                WidgetWithChoicesUserInteraction::class.java
+            } else if (widgetKind.contains("poll")) {
+                WidgetWithOptionUserInteraction::class.java
+            } else {
+                CheerMeterUserInteraction::class.java
+            }) as Class<T>
+        }
+    }
+}
 
 
-data class EmojiSliderUserInteraction(
-   val magnitude: Double,
-   override val id: String,
-   override val created_at: String,
-   override val url: String,
-   override val widget_id: String,
-   override val widget_kind: String
-) : WidgetUserInteractionBase(id, created_at, url, widget_id, widget_kind)
+class EmojiSliderUserInteraction(
+    val magnitude: Double,
+    id: String,
+    createdAt: String,
+    url: String,
+    widgetId: String,
+    widgetKind: String
+) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
 
-data class WidgetWithChoicesUserInteraction(
-   val choice_id: String,
-   override val id: String,
-   override val created_at: String,
-   override val url: String,
-   override val widget_id: String,
-   override val widget_kind: String
-) : WidgetUserInteractionBase(id, created_at, url, widget_id, widget_kind)
+class WidgetWithChoicesUserInteraction(
+    @field:SerializedName("choice_id")
+    val choiceId: String,
+    id: String,
+    createdAt: String,
+    url: String,
+    widgetId: String,
+    widgetKind: String
+) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
+class WidgetWithOptionUserInteraction(
+    @field:SerializedName("option_id")
+    val optionId: String,
+    id: String,
+    createdAt: String,
+    url: String,
+    widgetId: String,
+    widgetKind: String
+) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
-data class WidgetWithOptionUserInteraction(
-   val choice_id: String,
-   override val id: String,
-   override val created_at: String,
-   override val url: String,
-   override val widget_id: String,
-   override val widget_kind: String
-) : WidgetUserInteractionBase(id, created_at, url, widget_id, widget_kind)
+class CheerMeterUserInteraction(
+    @field:SerializedName("vote_count")
+    var totalScore: Int,
+    id: String,
+    createdAt: String,
+    url: String,
+    widgetId: String,
+    widgetKind: String
+) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
+
+enum class WidgetKind(val event: String) {
+    CHEER_METER("cheer-meter"),
+    PREDICTION("prediction"),
+    QUIZ("quiz"),
+    POLL("poll"),
+    IMAGE_SLIDER("emoji-slider");
+
+    companion object {
+        private val map = values().associateBy(WidgetKind::event)
+        fun fromString(type: String) = map[type]
+    }
+
+    fun getType(): String {
+        return event
+    }
+}
