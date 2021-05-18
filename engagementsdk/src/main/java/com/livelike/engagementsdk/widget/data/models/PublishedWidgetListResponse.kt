@@ -13,6 +13,9 @@ data class PublishedWidgetListResponse(
     @field:SerializedName("count")
     val count: Int? = null,
 
+    @field:SerializedName("widget_interactions_url_template")
+    val widgetInteractionsUrlTemplate: String,
+
     @field:SerializedName("results")
     val results: List<LiveLikeWidget>? = null
 )

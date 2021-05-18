@@ -37,6 +37,7 @@ import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.PublishedWidgetListResponse
+import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
@@ -46,6 +47,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
@@ -94,6 +96,9 @@ internal class ContentSession(
     private var publishedWidgetListResponse: PublishedWidgetListResponse? = null
     internal var isSetSessionCalled = false
 
+    private lateinit var widgetInteractionRepository: WidgetInteractionRepository
+
+
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         widgetThemeAttributes = widgetViewThemeAttributes
     }
@@ -103,50 +108,67 @@ internal class ContentSession(
         liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
     ) {
         uiScope.launch {
-            programRepository.program?.timelineUrl?.replace("{program_id}",programId)?.let { url->
+            programFlow.collect {program->
+                program?.timelineUrl?.let { url->
 
-                val url = when (liveLikePagination) {
-                    LiveLikePagination.FIRST -> url
-                    LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
-                    LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
-                }
-                try {
-                    if (url == null) {
-                        liveLikeCallback.onResponse(null, null)
-                    } else {
-                        val jsonObject = widgetDataClient.getAllPublishedWidgets(url)
-                        publishedWidgetListResponse =
-                            gson.fromJson(
-                                jsonObject.toString(),
-                                PublishedWidgetListResponse::class.java
-                            )
-                        publishedWidgetListResponse?.results?.filter {
-                            it?.let {
-                                var widgetType = it.kind
-                                widgetType = if (widgetType?.contains("follow-up") == true) {
-                                    "$widgetType-updated"
-                                } else {
-                                    "$widgetType-created"
-                                }
-                                return@filter WidgetType.fromString(widgetType) != null
-                            }
-                            return@filter false
-                        }
-                            .let {
-                                liveLikeCallback.onResponse(
-                                    it
-                                    , null
+                    val url = when (liveLikePagination) {
+                        LiveLikePagination.FIRST -> url
+                        LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
+                        LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
+                    }
+                    try {
+                        if (url == null) {
+                            liveLikeCallback.onResponse(null, null)
+                        } else {
+                            val jsonObject = widgetDataClient.getAllPublishedWidgets(url)
+                            publishedWidgetListResponse =
+                                gson.fromJson(
+                                    jsonObject.toString(),
+                                    PublishedWidgetListResponse::class.java
+                                )
+
+
+                            // fetching widget interactions for widgets loaded
+                            userRepository.currentUserStream.latest()?.let { user ->
+                                widgetInteractionRepository.fetchAndStoreWidgetInteractions(
+                                    publishedWidgetListResponse?.widgetInteractionsUrlTemplate?.replace(
+                                        "{profile_id}",
+                                        user.id
+                                    ) ?: "",
+                                    user.accessToken
                                 )
                             }
+
+                            publishedWidgetListResponse?.results?.filter {
+                                it?.let {
+                                    var widgetType = it.kind
+                                    widgetType = if (widgetType?.contains("follow-up") == true) {
+                                        "$widgetType-updated"
+                                    } else {
+                                        "$widgetType-created"
+                                    }
+                                    return@filter WidgetType.fromString(widgetType) != null
+                                }
+                                return@filter false
+                            }
+                                .let {
+                                    liveLikeCallback.onResponse(
+                                        it
+                                        , null
+                                    )
+                                }
+                        }
+                    } catch (e: JsonParseException) {
+                        e.printStackTrace()
+                        liveLikeCallback.onResponse(null, e.message)
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        liveLikeCallback.onResponse(null, e.message)
                     }
-                } catch (e: JsonParseException) {
-                    e.printStackTrace()
-                    liveLikeCallback.onResponse(null, e.message)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    liveLikeCallback.onResponse(null, e.message)
                 }
+
             }
+
         }
     }
 
@@ -201,13 +223,15 @@ internal class ContentSession(
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
-    // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
-    private val configurationUserPairFlow = flow {
-        while (sdkConfiguration.latest() == null || userRepository.currentUserStream.latest() == null) {
+    private val programFlow = flow {
+        while (programRepository.program == null) {
             delay(1000)
         }
-        emit(Pair(sdkConfiguration.latest()!!, userRepository.currentUserStream.latest()!!))
+        emit(programRepository.program)
     }
+
+    // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
+
     val livelikeThemeStream: Stream<LiveLikeEngagementTheme> = SubscriptionManager()
 
     init {
@@ -280,6 +304,9 @@ internal class ContentSession(
         if (!applicationContext.isNetworkConnected()) {
             errorDelegate?.onError("Network error please create the session again")
         }
+
+        widgetInteractionRepository =
+            WidgetInteractionRepository(context = applicationContext, programID = programId)
     }
 
     private fun startObservingForGamificationAnalytics(
