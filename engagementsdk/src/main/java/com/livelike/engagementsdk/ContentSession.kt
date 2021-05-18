@@ -96,7 +96,7 @@ internal class ContentSession(
     private var publishedWidgetListResponse: PublishedWidgetListResponse? = null
     internal var isSetSessionCalled = false
 
-    private lateinit var widgetInteractionRepository: WidgetInteractionRepository
+    internal var widgetInteractionRepository: WidgetInteractionRepository
 
 
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
@@ -391,7 +391,8 @@ internal class ContentSession(
                     animationEventsStream,
                     widgetThemeAttributes,
                     livelikeThemeStream,
-                    widgetStream
+                    widgetStream,
+                    widgetInteractionRepository
                 )
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())

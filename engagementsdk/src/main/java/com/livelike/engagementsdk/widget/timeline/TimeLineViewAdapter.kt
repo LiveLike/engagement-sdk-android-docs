@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
+import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.LiveLikeWidget
@@ -118,7 +119,8 @@ internal class TimeLineViewAdapter(
                     null,
                     SubscriptionManager(),
                     widgetViewThemeAttributes,
-                    engagementSDKTheme
+                    engagementSDKTheme,
+                    (timeLineViewModel.contentSession as ContentSession).widgetInteractionRepository
                 )
             timeLineViewModel.widgetViewModelCache[widgetId]?.let {
                 widgetView?.widgetViewModel = it
