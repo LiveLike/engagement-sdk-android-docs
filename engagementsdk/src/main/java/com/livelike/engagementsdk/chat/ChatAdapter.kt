@@ -439,10 +439,11 @@ internal class ChatRecyclerAdapter(
             }
         }
 
-        fun hideFloatingUI() {
+        private fun hideFloatingUI() {
             if (chatPopUpView?.isShowing == true)
                 chatPopUpView?.dismiss()
             chatPopUpView = null
+            lastFloatingUiAnchorView = null
             if (mRecyclerView?.isComputingLayout == false && mRecyclerView?.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
                 //Add check for checking computing and check with current adapter position
                 if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
