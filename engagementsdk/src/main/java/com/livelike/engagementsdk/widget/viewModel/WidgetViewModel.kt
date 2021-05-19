@@ -27,7 +27,7 @@ internal abstract class WidgetViewModel<T : Resource>(
     val analyticsService: AnalyticsService
 ) : BaseViewModel(analyticsService) {
 
-    var widgetInfos: WidgetInfos? = null
+   lateinit var widgetInfos: WidgetInfos
     lateinit var sdkConfiguration: EngagementSDK.SdkConfiguration
     var widgetMessagingClient: WidgetManager? = null
     var programRepository: ProgramRepository? = null

@@ -17,6 +17,9 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
+import com.livelike.engagementsdk.widget.data.models.WidgetKind
+import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
@@ -40,7 +43,8 @@ internal class CheerMeterViewModel(
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
-    val widgetMessagingClient: WidgetManager? = null
+    val widgetMessagingClient: WidgetManager? = null,
+    val widgetInteractionRepository: WidgetInteractionRepository?
 ) : BaseViewModel(analyticsService), CheerMeterWidgetmodel {
 
     var totalVoteCount = 0
@@ -249,6 +253,13 @@ internal class CheerMeterViewModel(
                 incrementVoteCount(it)
             }
         }
+    }
+
+    override fun getUserInteraction(): CheerMeterUserInteraction? {
+        return widgetInteractionRepository?.getWidgetInteraction(
+            widgetInfos.widgetId,
+            WidgetKind.fromString(widgetInfos.type)
+        )
     }
 
 

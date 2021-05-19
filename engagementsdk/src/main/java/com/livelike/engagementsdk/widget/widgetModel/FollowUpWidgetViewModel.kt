@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.widget.widgetModel
 
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
 
@@ -22,6 +23,11 @@ interface FollowUpWidgetViewModel : LiveLikeWidgetMediator {
      * claim earned rewards if any for the chosen prediction
      **/
     fun claimRewards()
+
+    /**
+     * it returns the latest user interaction for the widget
+     */
+    fun getUserInteraction() : PredictionWidgetUserInteraction?
 
 
 }
