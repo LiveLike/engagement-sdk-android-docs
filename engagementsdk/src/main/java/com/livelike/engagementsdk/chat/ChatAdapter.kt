@@ -865,4 +865,4 @@ internal class ChatRecyclerAdapter(
 
 // const val should be in uppercase always
 private const val LARGER_STICKER_SIZE = 100
-private const val MEDIUM_STICKER_SIZE = 50
+private const val MEDIUM_STICKER_SIZE = 32
