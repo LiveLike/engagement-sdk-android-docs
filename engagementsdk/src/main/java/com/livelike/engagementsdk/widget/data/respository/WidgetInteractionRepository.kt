@@ -37,7 +37,7 @@ internal class WidgetInteractionRepository(val context: Context, val programID: 
                 interactions.textQuiz?.let { interactionList.addAll(it) }
                 interactions.imagePoll?.let { interactionList.addAll(it) }
                 interactions.imagePrediction?.let { interactionList.addAll(it) }
-                interactions.imagePoll?.let { interactionList.addAll(it) }
+                interactions.imageQuiz?.let { interactionList.addAll(it) }
             }
             interactionList.forEach {
                 widgetInteractionMap[it.id] = it
