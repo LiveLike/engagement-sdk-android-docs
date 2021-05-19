@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
  * predicate for filtering the widgets to only specific kind of widgets
  */
 class WidgetTimeLineViewModel(
-    private val contentSession: LiveLikeContentSession,
+    internal val contentSession: LiveLikeContentSession,
     private val predicate: (LiveLikeWidget) -> Boolean = { _ -> true }
 ) : ViewModel() {
 

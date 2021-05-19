@@ -23,6 +23,7 @@ import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
@@ -46,7 +47,8 @@ internal class WidgetManager(
     private val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
     private val widgetThemeAttributes: WidgetViewThemeAttributes?,
     private val livelikeThemeStream: Stream<LiveLikeEngagementTheme>,
-    private val widgetStream: Stream<LiveLikeWidget>
+    private val widgetStream: Stream<LiveLikeWidget>,
+    private val widgetInteractionRepository: WidgetInteractionRepository
 ) :
     MessagingClientProxy(upstream) {
 
@@ -196,7 +198,8 @@ internal class WidgetManager(
                             programRepository,
                             animationEventsStream,
                             widgetThemeAttributes ?: WidgetViewThemeAttributes(),
-                            livelikeThemeStream.latest()
+                            livelikeThemeStream.latest(),
+                            widgetInteractionRepository = widgetInteractionRepository
                         )
                 )
             )
@@ -268,7 +271,8 @@ internal fun MessagingClient.asWidgetManager(
     animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
     widgetThemeAttributes: WidgetViewThemeAttributes?,
     livelikeThemeStream: Stream<LiveLikeEngagementTheme>,
-    widgetStream: Stream<LiveLikeWidget>
+    widgetStream: Stream<LiveLikeWidget>,
+    widgetInteractionRepository: WidgetInteractionRepository
 ): WidgetManager {
     return WidgetManager(
         this,
@@ -283,6 +287,7 @@ internal fun MessagingClient.asWidgetManager(
         animationEventsStream,
         widgetThemeAttributes,
         livelikeThemeStream,
-        widgetStream
+        widgetStream,
+        widgetInteractionRepository
     )
 }

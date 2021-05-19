@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.widget.widgetModel
 
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
 
@@ -15,5 +16,10 @@ interface CheerMeterWidgetmodel : LiveLikeWidgetMediator {
      * record the cheer vote
      */
     fun submitVote(optionID: String)
+
+    /**
+     * it returns the latest user interaction for the widget
+     */
+    fun getUserInteraction() : CheerMeterUserInteraction?
 
 }

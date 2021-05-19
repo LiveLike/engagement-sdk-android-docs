@@ -190,5 +190,12 @@
     <dimen name="livelike_prediction_option_corner_radius">6dp</dimen>
     <dimen name="livelike_quiz_corner_radius">6dp</dimen>
     <dimen name="livelike_quiz_option_corner_radius">6dp</dimen>
+    <dimen name="livelike_body_image_margin">5dp</dimen>
+    <dimen name="livelike_body_text_margin_left">16dp</dimen>
+    <dimen name="livelike_body_text_margin_top">20dp</dimen>
+    <dimen name="livelike_body_text_margin_right">90dp</dimen>
+    <dimen name="livelike_body_text_margin_bottom">20dp</dimen>
+    <dimen name="livelike_link_background_margin_top">5dp</dimen>
+    <dimen name="livelike_link_arrow_margin_right">16dp</dimen>
     <item name="livelike_snap_live_horizontal_bias" format="float" type="dimen">1.0</item>
 </resources>

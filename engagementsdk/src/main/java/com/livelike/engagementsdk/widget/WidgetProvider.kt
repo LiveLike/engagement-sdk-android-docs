@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.widget
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.AnalyticsService
@@ -36,6 +35,7 @@ import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_QUIZ
 import com.livelike.engagementsdk.widget.data.models.Badge
+import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.view.AlertWidgetView
 import com.livelike.engagementsdk.widget.view.CheerMeterView
 import com.livelike.engagementsdk.widget.view.CollectBadgeWidgetView
@@ -75,7 +75,8 @@ internal class WidgetProvider {
         programRepository: ProgramRepository? = null,
         animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
         widgetThemeAttributes: WidgetViewThemeAttributes,
-        liveLikeEngagementTheme: LiveLikeEngagementTheme?
+        liveLikeEngagementTheme: LiveLikeEngagementTheme?,
+        widgetInteractionRepository: WidgetInteractionRepository? = null
     ): SpecifiedWidgetView? {
         val specifiedWidgetView = when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
@@ -95,7 +96,8 @@ internal class WidgetProvider {
                     onDismiss,
                     userRepository,
                     programRepository,
-                    widgetMessagingClient
+                    widgetMessagingClient,
+                    widgetInteractionRepository
                 )
             }
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
@@ -111,7 +113,8 @@ internal class WidgetProvider {
                     onDismiss,
                     userRepository,
                     programRepository,
-                    widgetMessagingClient
+                    widgetMessagingClient,
+                    widgetInteractionRepository
                 )
             }
             TEXT_POLL, IMAGE_POLL -> PollView(context).apply {
@@ -125,7 +128,8 @@ internal class WidgetProvider {
                     onDismiss,
                     userRepository,
                     programRepository,
-                    widgetMessagingClient
+                    widgetMessagingClient,
+                    widgetInteractionRepository
                 )
             }
             POINTS_TUTORIAL -> PointsTutorialView(context).apply {
@@ -159,7 +163,8 @@ internal class WidgetProvider {
                     onDismiss,
                     userRepository,
                     programRepository,
-                    widgetMessagingClient
+                    widgetMessagingClient,
+                    widgetInteractionRepository
                 )
             }
             IMAGE_SLIDER -> EmojiSliderWidgetView(context).apply {
@@ -167,7 +172,8 @@ internal class WidgetProvider {
                 this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = EmojiSliderWidgetViewModel(
                     widgetInfos, analyticsService, sdkConfiguration, onDismiss,
-                    userRepository, programRepository, widgetMessagingClient
+                    userRepository, programRepository, widgetMessagingClient,
+                    widgetInteractionRepository
                 )
             }
             SOCIAL_EMBED -> SocialEmbedWidgetView(context).apply {

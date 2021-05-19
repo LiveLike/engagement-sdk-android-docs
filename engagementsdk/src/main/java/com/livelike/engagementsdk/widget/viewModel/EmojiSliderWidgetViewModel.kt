@@ -13,6 +13,9 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.data.models.EmojiSliderUserInteraction
+import com.livelike.engagementsdk.widget.data.models.WidgetKind
+import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.model.ImageSliderEntity
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
@@ -27,7 +30,8 @@ internal class EmojiSliderWidgetViewModel(
     onDismiss: () -> Unit,
     userRepository: UserRepository,
     programRepository: ProgramRepository? = null,
-    widgetMessagingClient: WidgetManager? = null
+    widgetMessagingClient: WidgetManager? = null,
+    val widgetInteractionRepository: WidgetInteractionRepository?
 ) : WidgetViewModel<ImageSliderEntity>(
     widgetInfos,
     sdkConfiguration,
@@ -116,6 +120,13 @@ internal class EmojiSliderWidgetViewModel(
             )
         }
         vote(magnitude.toString())
+    }
+
+    override fun getUserInteraction(): EmojiSliderUserInteraction? {
+        return widgetInteractionRepository?.getWidgetInteraction(
+            widgetInfos.widgetId,
+            WidgetKind.fromString(widgetInfos.type)
+        )
     }
 
     override fun onClear() {

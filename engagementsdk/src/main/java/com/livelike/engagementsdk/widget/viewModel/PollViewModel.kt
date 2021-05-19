@@ -21,7 +21,10 @@ import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.data.models.WidgetKind
+import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
@@ -44,7 +47,8 @@ internal class PollViewModel(
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
-    private val widgetMessagingClient: WidgetManager? = null
+    private val widgetMessagingClient: WidgetManager? = null,
+    val widgetInteractionRepository: WidgetInteractionRepository?
 ) : BaseViewModel(analyticsService), PollWidgetModel {
     lateinit var onWidgetInteractionCompleted: () -> Unit
 
@@ -268,6 +272,13 @@ internal class PollViewModel(
                 }
             }
         }
+    }
+
+    override fun getUserInteraction(): PollWidgetUserInteraction? {
+        return widgetInteractionRepository?.getWidgetInteraction(
+            widgetInfos.widgetId,
+            WidgetKind.fromString(widgetInfos.type)
+        )
     }
 
     override val widgetData: LiveLikeWidget
