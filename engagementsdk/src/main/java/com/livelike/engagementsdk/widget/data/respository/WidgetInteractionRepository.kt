@@ -16,6 +16,13 @@ internal class WidgetInteractionRepository(val context: Context, val programID: 
 
     private val widgetInteractionMap = mutableMapOf<String, WidgetUserInteractionBase>()
 
+    fun <T : WidgetUserInteractionBase> saveWidgetInteraction(widgetInteraction :T){
+        if (widgetInteraction is CheerMeterUserInteraction && widgetInteractionMap[widgetInteraction.widgetId] != null) {
+            widgetInteraction.totalScore += (widgetInteractionMap[widgetInteraction.widgetId] as CheerMeterUserInteraction).totalScore
+        }
+        widgetInteractionMap[widgetInteraction.widgetId] = widgetInteraction
+    }
+
     fun <T : WidgetUserInteractionBase> getWidgetInteraction(
         widgetId: String,
         widgetKind: WidgetKind
@@ -41,10 +48,10 @@ internal class WidgetInteractionRepository(val context: Context, val programID: 
                 interactions.imageQuiz?.let { interactionList.addAll(it) }
             }
             interactionList.forEach {
-                if (it is CheerMeterUserInteraction && widgetInteractionMap[it.id] != null) {
-                    it.totalScore += (widgetInteractionMap[it.id] as CheerMeterUserInteraction).totalScore
+                if (it is CheerMeterUserInteraction && widgetInteractionMap[it.widgetId] != null) {
+                    it.totalScore += (widgetInteractionMap[it.widgetId] as CheerMeterUserInteraction).totalScore
                 }
-                widgetInteractionMap[it.id] = it
+                widgetInteractionMap[it.widgetId] = it
             }
         }
     }
