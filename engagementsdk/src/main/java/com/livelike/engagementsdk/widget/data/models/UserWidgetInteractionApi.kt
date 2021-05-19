@@ -17,16 +17,16 @@ internal data class Interactions(
     @field:SerializedName("emoji-slider")
     val emojiSlider: List<EmojiSliderUserInteraction>?,
     @field:SerializedName("text-poll")
-    val textPoll: List<WidgetWithOptionUserInteraction>?,
+    val textPoll: List<PollWidgetUserInteraction>?,
     @field:SerializedName("image-poll")
-    val imagePoll: List<WidgetWithOptionUserInteraction>?,
+    val imagePoll: List<PollWidgetUserInteraction>?,
     @field:SerializedName("text-quiz")
-    val textQuiz: List<WidgetWithChoicesUserInteraction>?,
+    val textQuiz: List<QuizWidgetUserInteraction>?,
     @field:SerializedName("image-quiz")
-    val imageQuiz: List<WidgetWithChoicesUserInteraction>?,
+    val imageQuiz: List<QuizWidgetUserInteraction>?,
     @field:SerializedName("text-prediction")
-    val textPrediction: List<WidgetWithOptionUserInteraction>?,
+    val textPrediction: List<PredictionWidgetUserInteraction>?,
     @field:SerializedName("image-prediction")
-    val imagePrediction: List<WidgetWithOptionUserInteraction>?,
+    val imagePrediction: List<PredictionWidgetUserInteraction>?,
 
-)
+    )

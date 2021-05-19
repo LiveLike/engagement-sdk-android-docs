@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.widget.data.respository
 
 import android.content.Context
+import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 
@@ -11,7 +12,7 @@ import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 internal class WidgetInteractionRepository(val context: Context, val programID: String) {
 
 
-    private val remoteWidgetInteraction: RemoteWidgetInteraction = RemoteWidgetInteraction()
+    private val widgetInteractionRemoteSource: WidgetInteractionRemoteSource = WidgetInteractionRemoteSource()
 
     private val widgetInteractionMap = mutableMapOf<String, WidgetUserInteractionBase>()
 
@@ -25,7 +26,7 @@ internal class WidgetInteractionRepository(val context: Context, val programID: 
     internal suspend fun fetchAndStoreWidgetInteractions(url: String, accessToken: String) {
 
         val widgetInteractionsResult =
-            remoteWidgetInteraction.getWidgetInteractions(url, accessToken)
+            widgetInteractionRemoteSource.getWidgetInteractions(url, accessToken)
 
         if (widgetInteractionsResult is com.livelike.engagementsdk.core.services.network.Result.Success) {
             val interactionList = mutableListOf<WidgetUserInteractionBase>()
@@ -37,9 +38,12 @@ internal class WidgetInteractionRepository(val context: Context, val programID: 
                 interactions.textQuiz?.let { interactionList.addAll(it) }
                 interactions.imagePoll?.let { interactionList.addAll(it) }
                 interactions.imagePrediction?.let { interactionList.addAll(it) }
-                interactions.imagePoll?.let { interactionList.addAll(it) }
+                interactions.imageQuiz?.let { interactionList.addAll(it) }
             }
             interactionList.forEach {
+                if (it is CheerMeterUserInteraction && widgetInteractionMap[it.id] != null) {
+                    it.totalScore += (widgetInteractionMap[it.id] as CheerMeterUserInteraction).totalScore
+                }
                 widgetInteractionMap[it.id] = it
             }
         }

@@ -22,7 +22,10 @@ import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.data.models.WidgetKind
+import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
@@ -46,11 +49,12 @@ internal class PredictionViewModel(
     val widgetInfos: WidgetInfos,
     private val appContext: Context,
     private val analyticsService: AnalyticsService,
-    private  val sdkConfiguration: EngagementSDK.SdkConfiguration,
+    private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
-    val widgetMessagingClient: WidgetManager? = null
+    val widgetMessagingClient: WidgetManager? = null,
+    val widgetInteractionRepository: WidgetInteractionRepository?
 ) : BaseViewModel(analyticsService) , PredictionWidgetViewModel, FollowUpWidgetViewModel {
     var followUp: Boolean = false
     var points: Int? = null
@@ -327,6 +331,13 @@ internal class PredictionViewModel(
             // Save widget id and voted option for followup widget
             addWidgetPredictionVoted(widget.resource.id ?: "", option?.id ?: "")
         }
+    }
+
+    override fun getUserInteraction(): PredictionWidgetUserInteraction? {
+        return widgetInteractionRepository?.getWidgetInteraction(
+            widgetInfos.widgetId,
+            WidgetKind.fromString(widgetInfos.type)
+        )
     }
 
     @Suppress("USELESS_ELVIS")
