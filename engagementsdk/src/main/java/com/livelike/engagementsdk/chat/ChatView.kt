@@ -518,7 +518,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun wouldShowBadge(programRank: ProgramGamificationProfile, animate: Boolean = false) {
-        var currentBadge = programRank.newBadges?.max()
+        var currentBadge = programRank.newBadges?.maxOrNull()
         if (currentBadge == null) {
             currentBadge = programRank.currentBadge
         }
