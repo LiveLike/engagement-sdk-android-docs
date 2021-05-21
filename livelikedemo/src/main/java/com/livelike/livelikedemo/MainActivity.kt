@@ -179,7 +179,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         registerNetWorkCallback()
-        sdk_version.text = "SDK Version : ${com.livelike.engagementsdk.BuildConfig.VERSION_NAME}"
+        sdk_version.text = "SDK Version : ${com.livelike.engagementsdk.BuildConfig.SDK_VERSION}"
         if (BuildConfig.VERSION_CODE > 1) {
             build_no.text = "Bitrise build : ${BuildConfig.VERSION_CODE}"
         }

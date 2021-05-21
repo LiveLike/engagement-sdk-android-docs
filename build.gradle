@@ -16,7 +16,7 @@ buildscript {
         exoplayerVersion = "2.9.3"
         coroutinesVersion = "1.4.1"
         glideVersion = '4.12.0'
-        gradleVersion = '3.5.0'
+        gradleVersion = '4.2.1'
         gsonVersion = '2.8.6'
         junitVersion = '4.13.2'
         kotlinVersion = '1.4.21'
