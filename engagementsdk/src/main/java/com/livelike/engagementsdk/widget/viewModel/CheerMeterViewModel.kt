@@ -15,9 +15,11 @@ import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
+import com.livelike.engagementsdk.formatIsoZoned8601
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
+import com.livelike.engagementsdk.widget.data.models.EmojiSliderUserInteraction
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
@@ -30,6 +32,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.threeten.bp.ZonedDateTime
 
 internal class CheerMeterWidget(
     val type: WidgetType,
@@ -74,6 +77,8 @@ internal class CheerMeterViewModel(
     init {
 
         widgetObserver(widgetInfos)
+        //restoring the cheer meter score from interaction history
+        totalVoteCount = getUserInteraction()?.totalScore ?: 0
     }
 
     fun incrementVoteCount(teamIndex: Int) {
@@ -83,6 +88,7 @@ internal class CheerMeterViewModel(
             it.voteCount++
         }
         wouldSendVote()
+        saveInteraction(totalVoteCount,null)
     }
 
     private fun wouldSendVote() {
@@ -262,6 +268,18 @@ internal class CheerMeterViewModel(
         )
     }
 
+    internal fun saveInteraction(score: Int, url: String?) {
+        widgetInteractionRepository?.saveWidgetInteraction(
+            CheerMeterUserInteraction(
+                score,
+                "",
+                ZonedDateTime.now().formatIsoZoned8601(),
+                url,
+                widgetInfos.widgetId,
+                widgetInfos.type
+            )
+        )
+    }
 
 }
 
