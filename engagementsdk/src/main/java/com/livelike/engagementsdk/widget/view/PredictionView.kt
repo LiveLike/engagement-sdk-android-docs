@@ -246,6 +246,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 {
                     viewModel?.adapter?.notifyDataSetChanged()
                     viewModel?.onOptionClicked()
+                    viewModel?.saveInteraction(it)
                 },
                 widget.type,
                 resource.correct_option_id,
@@ -269,6 +270,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 }
 
             textRecyclerView.apply {
+                viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.optionId)
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
