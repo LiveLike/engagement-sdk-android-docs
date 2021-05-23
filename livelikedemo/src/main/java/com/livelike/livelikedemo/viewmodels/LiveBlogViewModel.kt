@@ -1,5 +1,6 @@
 package com.livelike.livelikedemo.viewmodels
 
+import IntractableWidgetTimelineViewModel
 import androidx.lifecycle.AndroidViewModel
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
@@ -14,7 +15,7 @@ class LiveBlogViewModel constructor(
 ) : AndroidViewModel(application) {
 
     var publicSession: LiveLikeContentSession? = null
-    var timeLineViewModel: WidgetTimeLineViewModel? = null
+    var timeLineViewModel: IntractableWidgetTimelineViewModel? = null
     var showAlertOnly = false
         set(value) {
             field = value
@@ -47,9 +48,10 @@ class LiveBlogViewModel constructor(
 
     /**
      * timeline view model created
+     * IntractableWidgetTimelineViewModel is used to make all widgets intractable by default in Timeline
      **/
     private fun createTimeLineViewModel() {
-        timeLineViewModel = WidgetTimeLineViewModel(getSession()!!) { widget ->
+        timeLineViewModel = IntractableWidgetTimelineViewModel(getSession()!!) { widget ->
             if (showAlertOnly)
                 widget.getWidgetType() == WidgetType.ALERT
             else true

@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
  * @contentSession: object of LiveLikeContentSession
  * predicate for filtering the widgets to only specific kind of widgets
  */
-class WidgetTimeLineViewModel(
+open class WidgetTimeLineViewModel(
     internal val contentSession: LiveLikeContentSession,
     private val predicate: (LiveLikeWidget) -> Boolean = { _ -> true }
 ) : ViewModel() {
@@ -127,7 +127,7 @@ class WidgetTimeLineViewModel(
         return timeLineWidgets.find { it.liveLikeWidget.id == liveLikeWidget.id }?.widgetState == WidgetStates.INTERACTING
     }
 
-    private fun decideWidgetInteraction(
+    open fun decideWidgetInteraction(
         liveLikeWidget: LiveLikeWidget,
         timeLineWidgetApiSource: WidgetApiSource
     ): WidgetStates {
