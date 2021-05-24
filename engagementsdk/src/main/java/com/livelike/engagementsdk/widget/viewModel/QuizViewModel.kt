@@ -18,22 +18,26 @@ import com.livelike.engagementsdk.core.utils.debounce
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
+import com.livelike.engagementsdk.formatIsoZoned8601
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.QuizWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
+import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.threeten.bp.ZonedDateTime
 
 internal class QuizWidget(
     val type: WidgetType,
@@ -255,6 +259,19 @@ internal class QuizViewModel(
         return widgetInteractionRepository?.getWidgetInteraction(
             widgetInfos.widgetId,
             WidgetKind.fromString(widgetInfos.type)
+        )
+    }
+
+    internal fun saveInteraction(option: Option) {
+        widgetInteractionRepository?.saveWidgetInteraction(
+            QuizWidgetUserInteraction(
+                option.id,
+                "",
+                ZonedDateTime.now().formatIsoZoned8601(),
+                option.getMergedVoteUrl(),
+                widgetInfos.widgetId,
+                widgetInfos.type
+            )
         )
     }
 

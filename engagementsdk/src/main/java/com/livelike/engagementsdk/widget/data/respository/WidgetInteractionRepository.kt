@@ -17,9 +17,6 @@ internal class WidgetInteractionRepository(val context: Context, val programID: 
     private val widgetInteractionMap = mutableMapOf<String, WidgetUserInteractionBase>()
 
     fun <T : WidgetUserInteractionBase> saveWidgetInteraction(widgetInteraction :T){
-        if (widgetInteraction is CheerMeterUserInteraction && widgetInteractionMap[widgetInteraction.widgetId] != null) {
-            widgetInteraction.totalScore += (widgetInteractionMap[widgetInteraction.widgetId] as CheerMeterUserInteraction).totalScore
-        }
         widgetInteractionMap[widgetInteraction.widgetId] = widgetInteraction
     }
 
