@@ -62,6 +62,10 @@ class WidgetsTimeLineView(
      *  widgetsTimeLineView.widgetTimerController = CMSSpecifiedDurationTimer()
      **/
     var widgetTimerController: WidgetTimerController? = null
+        set(value) {
+            field = value
+            adapter.widgetTimerController = field
+        }
 
     /**
      * this will add custom separator/divider (drawables) between widgets in timeline
@@ -90,6 +94,7 @@ class WidgetsTimeLineView(
                 sdk,
                 timeLineViewModel
             )
+        adapter.widgetTimerController = widgetTimerController
         adapter.list.addAll(timeLineViewModel.timeLineWidgets)
         timeline_rv.layoutManager = SmoothScrollerLinearLayoutManager(context)
         timeline_rv.adapter = adapter
