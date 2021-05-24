@@ -739,7 +739,7 @@ internal class ChatRecyclerAdapter(
                                     columnCount = 1
                                 }
                                 chatMessage.minHeight =
-                                    (AndroidResource.dpToPx(SMALL_STICKER_SIZE) * columnCount) + when {
+                                    (chatMessageTextSize.toInt() * columnCount) + when {
                                         lines != columnCount -> (lines * chatMessageTextSize.toInt())
                                         else -> 0
                                     }
