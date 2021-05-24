@@ -128,9 +128,6 @@ internal class TimeLineViewAdapter(
             }
             timeLineViewModel.widgetViewModelCache[widgetId] = widgetView?.widgetViewModel
             widgetView?.let { view ->
-
-                // this has been added to show/hide animation in result state
-                view.showResultAnimation = (timelineWidgetResource.apiSource == WidgetApiSource.REALTIME_API)
                 displayWidget(widgetType, view)
             }
         }

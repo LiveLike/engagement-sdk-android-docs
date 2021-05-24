@@ -27,6 +27,10 @@ open class WidgetTimeLineViewModel(
      **/
     val timeLineWidgets = mutableListOf<TimelineWidgetResource>()
 
+    /**
+     * public stream of widgets that can be observed to build custom timeline view or to know source of individual widgets
+     * currently there are 2 source of widgets: real-time  or history api(past widgets)
+     **/
     val timeLineWidgetsStream: Stream<Pair<WidgetApiSource, List<TimelineWidgetResource>>> =
         SubscriptionManager(false)
 

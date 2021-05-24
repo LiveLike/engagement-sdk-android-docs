@@ -112,6 +112,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                 }
                 WidgetStates.INTERACTING -> {
                     unLockInteraction()
+                    showResultAnimation = true
                 }
                 WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                     lockInteraction()

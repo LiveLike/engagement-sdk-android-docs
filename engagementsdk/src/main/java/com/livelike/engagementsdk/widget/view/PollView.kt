@@ -82,6 +82,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
+                showResultAnimation = true
                 viewModel?.results?.subscribe(javaClass.simpleName) {
                     if (isFirstInteraction)
                         resultsObserver(it)
