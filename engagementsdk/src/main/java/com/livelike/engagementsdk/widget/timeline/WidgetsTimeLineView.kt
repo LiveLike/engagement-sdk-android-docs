@@ -58,6 +58,8 @@ class WidgetsTimeLineView(
     /**
      * configuring this controlled will allow to control the timer in widget
      * By default there will be no timer, interaction duration will be kept indefinite
+     * to have cms defined interaction timer simple use:
+     *  widgetsTimeLineView.widgetTimerController = CMSSpecifiedDurationTimer()
      **/
     var widgetTimerController: WidgetTimerController? = null
 

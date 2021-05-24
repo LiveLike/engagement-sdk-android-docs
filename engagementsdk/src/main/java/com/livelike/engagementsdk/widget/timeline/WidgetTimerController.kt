@@ -15,3 +15,15 @@ abstract class WidgetTimerController {
 
 }
 
+
+/**
+ * This is implementation of WidgetTimerController which simply returns the cms defined duration for widget timer
+ */
+class CMSSpecifiedDurationTimer : WidgetTimerController() {
+
+    override fun timeValue(widget: LiveLikeWidget): String {
+        return widget.timeout ?: "T30S"
+    }
+
+}
+
