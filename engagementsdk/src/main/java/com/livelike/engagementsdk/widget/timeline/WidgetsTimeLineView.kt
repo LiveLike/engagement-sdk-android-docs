@@ -54,6 +54,13 @@ class WidgetsTimeLineView(
             field = value
         }
 
+
+    /**
+     * configuring this controlled will allow to control the timer in widget
+     * By default there will be no timer, interaction duration will be kept indefinite
+     **/
+    var widgetTimerController: WidgetTimerController? = null
+
     /**
      * this will add custom separator/divider (drawables) between widgets in timeline
      * * @param Drawable
