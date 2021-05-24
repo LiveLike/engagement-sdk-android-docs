@@ -197,5 +197,6 @@
     <dimen name="livelike_body_text_margin_bottom">20dp</dimen>
     <dimen name="livelike_link_background_margin_top">5dp</dimen>
     <dimen name="livelike_link_arrow_margin_right">16dp</dimen>
+    <dimen name="livelike_vote_btn_radius">6dp</dimen>
     <item name="livelike_snap_live_horizontal_bias" format="float" type="dimen">1.0</item>
 </resources>

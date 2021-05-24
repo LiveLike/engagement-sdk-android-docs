@@ -65,7 +65,7 @@ internal class QuizViewModel(
     private val debouncedVoteId = currentVoteId.debounce()
 //    var state: Stream<String> =
 //        SubscriptionManager() // results
-
+    val voteLockStream: SubscriptionManager<String> = SubscriptionManager()
     var adapter: WidgetOptionsViewAdapter? = null
     private var timeoutStarted = false
     var animationProgress = 0f
@@ -89,7 +89,7 @@ internal class QuizViewModel(
         widgetObserver(widgetInfos)
     }
 
-    private fun vote() {
+    internal fun vote() {
         logDebug { "Quiz Widget selectedPosition:${adapter?.selectedPosition}" }
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
 
@@ -97,12 +97,13 @@ internal class QuizViewModel(
             adapter?.apply {
                 val url = myDataset[selectedPosition].getMergedVoteUrl()
                 url?.let {
-                    dataClient.voteAsync(
+                    val fetchedUrl = dataClient.voteAsync(
                         url,
                         myDataset[selectedPosition].id,
                         userRepository.userAccessToken,
                         userRepository = userRepository
                     )
+                    voteLockStream.onNext(fetchedUrl)
                 }
             }
             adapter?.notifyDataSetChanged()
