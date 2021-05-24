@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
@@ -42,8 +43,9 @@ internal class EmojiSliderWidgetViewModel(
     analyticsService
 ), ImageSliderWidgetModel {
 
-    init {
+    val voteLockStream: SubscriptionManager<String> = SubscriptionManager()
 
+    init {
         widgetObserver(widgetInfos)
     }
 
@@ -57,11 +59,12 @@ internal class EmojiSliderWidgetViewModel(
     override fun vote(value: String) {
         uiScope.launch {
             data.latest()?.voteUrl?.let {
-                dataClient.voteAsync(
+                val fetchedUrl = dataClient.voteAsync(
                     it, "", userRepository?.userAccessToken, FormBody.Builder()
                         .add("magnitude", value).build(),
                     userRepository = userRepository
                 )
+                voteLockStream.onNext(fetchedUrl)
             }
         }
     }

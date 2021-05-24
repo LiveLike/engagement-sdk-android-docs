@@ -88,41 +88,10 @@
             tools:itemCount="4"
             tools:listitem="@layout/atom_widget_image_item" />
 
-        <LinearLayout
-            android:id="@+id/lay_lock"
+        <include
+            layout="@layout/common_lock_btn_lay"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <Button
-                android:id="@+id/btn_lock"
-                android:layout_width="110dp"
-                android:layout_height="42dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="@drawable/lock_btn_background"
-                android:enabled="true"
-                android:text="Vote"
-                android:textAllCaps="false"
-                android:textColor="#FFF"
-                android:textSize="18sp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lay_textRecyclerView" />
-
-            <TextView
-                android:id="@+id/label_lock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="10dp"
-                android:text="Voted!"
-                android:textColor="#FFF"
-                android:textSize="18sp"
-                android:visibility="invisible"
-                tools:visibility="visible" />
-        </LinearLayout>
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <com.livelike.engagementsdk.widget.view.components.ConfirmMessageView

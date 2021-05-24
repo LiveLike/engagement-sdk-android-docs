@@ -21,10 +21,10 @@ import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.btn_lock
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.label_lock
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_lock
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
@@ -212,7 +212,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     btn_lock.isEnabled = false
                     btn_lock.alpha = 0.5f
                     label_lock.visibility = View.VISIBLE
-                    viewModel?.widgetState?.onNext(WidgetStates.RESULTS)
                 }
             }
 
