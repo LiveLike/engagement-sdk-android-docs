@@ -145,7 +145,24 @@ class WidgetsTimeLineView(
                 // changing timeout value for widgets when widgetTimerController is configured
                 widgetTimerController?.run {
                     it.second.forEach { widget ->
-                        widget.liveLikeWidget.timeout = this.timeValue(widget.liveLikeWidget)
+                        if (widget.widgetState == WidgetStates.INTERACTING) {
+                            widget.liveLikeWidget.timeout = this.timeValue(widget.liveLikeWidget)
+                            timeLineViewModel.uiScope.launch {
+                                delay(
+                                    AndroidResource.parseDuration(
+                                        pair.second[0].liveLikeWidget.timeout ?: ""
+                                    )
+                                )
+                                pair.second[0]?.widgetState = WidgetStates.RESULTS
+                                adapter.notifyItemChanged(adapter.list.indexOf(widget))
+
+                                // added this, so that animation is shown only once hence changed the API source to history api
+                                // TODO to discuss on below lines
+                                delay(2600)
+                                adapter.list[0].apiSource = WidgetApiSource.HISTORY_API
+                                adapter.notifyItemChanged(0)
+                            }
+                        }
                     }
                 }
 
@@ -153,22 +170,6 @@ class WidgetsTimeLineView(
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
                     wouldRetreatToActiveWidgetPosition()
-                    timeLineViewModel.uiScope.launch {
-                        delay(
-                            AndroidResource.parseDuration(
-                                pair.second[0].liveLikeWidget.timeout ?: ""
-                            )
-                        )
-                        pair.second[0]?.widgetState = WidgetStates.RESULTS
-                        adapter.notifyItemChanged(0)
-
-                        // added this, so that animation is shown only once hence changed the API source to history api
-                        delay(2600)
-                        adapter.list[0].apiSource = WidgetApiSource.HISTORY_API
-                        adapter.notifyItemChanged(0)
-
-
-                    }
                 } else {
                     adapter.list.addAll(pair.second)
                     adapter.notifyItemRangeInserted(
