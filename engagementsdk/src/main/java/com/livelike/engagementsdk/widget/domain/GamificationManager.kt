@@ -23,7 +23,7 @@ internal object GamificationManager {
     ) {
 
         if (programGamificationProfile.newBadges != null && programGamificationProfile.newBadges.isNotEmpty()) {
-            val latestBadge = programGamificationProfile.newBadges.max()
+            val latestBadge = programGamificationProfile.newBadges.maxOrNull()
             val message = ClientMessage(
 //                TODO create generic to create this json message, really tech debt is increasing at fast rate now.
                 JsonObject().apply {

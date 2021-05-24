@@ -147,6 +147,7 @@ internal class ChatRecyclerAdapter(
         private var message: ChatMessage? = null
         private val bounceAnimation: Animation =
             AnimationUtils.loadAnimation(v.context, R.anim.bounce_animation)
+        @SuppressLint("StringFormatInvalid")
         private val dialogOptions = listOf(
             v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {

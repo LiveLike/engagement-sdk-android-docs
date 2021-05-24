@@ -26,7 +26,7 @@ internal fun SpecifiedWidgetView.wouldShowProgressionMeter(
             val nextBadgeToDisplay: Badge? = if (it.newBadges == null || it.newBadges.isEmpty()) {
                 it.nextBadge
             } else {
-                it.newBadges?.max()!!
+                it.newBadges?.maxOrNull()!!
             }
             nextBadgeToDisplay?.let { nextBadge ->
                 progressionMeterView.animatePointsBadgeProgression(
@@ -43,7 +43,7 @@ internal fun SpecifiedWidgetView.wouldShowProgressionMeter(
 internal fun AnalyticsWidgetInteractionInfo.addGamificationAnalyticsData(programGamificationProfile: ProgramGamificationProfile) {
     pointEarned = programGamificationProfile.newPoints
 
-    programGamificationProfile.newBadges?.max()?.let {
+    programGamificationProfile.newBadges?.maxOrNull()?.let {
         badgeEarned = it.id
         badgeLevelEarned = it.level
     }
