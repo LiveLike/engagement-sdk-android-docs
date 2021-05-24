@@ -211,7 +211,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     btn_lock.isEnabled = false
                     btn_lock.alpha = 0.5f
                     label_lock.visibility = View.VISIBLE
-                    lockInteraction()
+                    viewModel?.widgetState?.onNext(WidgetStates.RESULTS)
                 }
             }
 
