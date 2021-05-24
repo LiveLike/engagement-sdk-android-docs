@@ -67,6 +67,7 @@ import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_label
 import kotlinx.android.synthetic.main.activity_main.themes_label
+import kotlinx.android.synthetic.main.activity_main.timeline_two
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.txt_nickname_server
 import kotlinx.android.synthetic.main.activity_main.view_pager_sample
@@ -247,6 +248,10 @@ class MainActivity : AppCompatActivity() {
 
         live_blog.setOnClickListener {
             startActivity(Intent(this, LiveBlogActivity::class.java))
+        }
+
+        timeline_two.setOnClickListener {
+            startActivity(Intent(this, IntractableTimelineActivity::class.java))
         }
 
         leaderboard_button.setOnClickListener {

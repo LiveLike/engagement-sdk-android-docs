@@ -54,6 +54,19 @@ class WidgetsTimeLineView(
             field = value
         }
 
+
+    /**
+     * configuring this controlled will allow to control the timer in widget
+     * By default there will be no timer, interaction duration will be kept indefinite
+     * to have cms defined interaction timer simple use:
+     *  widgetsTimeLineView.widgetTimerController = CMSSpecifiedDurationTimer()
+     **/
+    var widgetTimerController: WidgetTimerController? = null
+        set(value) {
+            field = value
+            adapter.widgetTimerController = field
+        }
+
     /**
      * this will add custom separator/divider (drawables) between widgets in timeline
      * * @param Drawable
@@ -81,6 +94,7 @@ class WidgetsTimeLineView(
                 sdk,
                 timeLineViewModel
             )
+        adapter.widgetTimerController = widgetTimerController
         adapter.list.addAll(timeLineViewModel.timeLineWidgets)
         timeline_rv.layoutManager = SmoothScrollerLinearLayoutManager(context)
         timeline_rv.adapter = adapter
@@ -127,26 +141,35 @@ class WidgetsTimeLineView(
     private fun subscribeForTimelineWidgets() {
         timeLineViewModel.timeLineWidgetsStream.subscribe(this) { pair ->
             pair?.let {
+
+                // changing timeout value for widgets when widgetTimerController is configured
+                widgetTimerController?.run {
+                    it.second.forEach { widget ->
+                        if (widget.widgetState == WidgetStates.INTERACTING) {
+                            widget.liveLikeWidget.timeout = this.timeValue(widget.liveLikeWidget)
+                            timeLineViewModel.uiScope.launch {
+                                delay(
+                                    AndroidResource.parseDuration(
+                                        pair.second[0].liveLikeWidget.timeout ?: ""
+                                    )
+                                )
+                                pair.second[0]?.widgetState = WidgetStates.RESULTS
+                                adapter.notifyItemChanged(adapter.list.indexOf(widget))
+
+                                // added this, so that animation is shown only once hence changed the API source to history api
+                                // TODO to discuss on below lines
+                                delay(2600)
+                                adapter.list[0].apiSource = WidgetApiSource.HISTORY_API
+                                adapter.notifyItemChanged(0)
+                            }
+                        }
+                    }
+                }
+
                 if (pair.first == WidgetApiSource.REALTIME_API) {
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
                     wouldRetreatToActiveWidgetPosition()
-                    timeLineViewModel.uiScope.launch {
-                        delay(
-                            AndroidResource.parseDuration(
-                                pair.second[0].liveLikeWidget.timeout ?: ""
-                            )
-                        )
-                        pair.second[0]?.widgetState = WidgetStates.RESULTS
-                        adapter.notifyItemChanged(0)
-
-                        // added this, so that animation is shown only once hence changed the API source to history api
-                        delay(2600)
-                        adapter.list[0].apiSource = WidgetApiSource.HISTORY_API
-                        adapter.notifyItemChanged(0)
-
-
-                    }
                 } else {
                     adapter.list.addAll(pair.second)
                     adapter.notifyItemRangeInserted(

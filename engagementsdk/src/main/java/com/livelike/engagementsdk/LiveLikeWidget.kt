@@ -31,7 +31,7 @@ data class LiveLikeWidget(
     val scheduleUrl: String? = null,
 
     @field:SerializedName("timeout")
-    val timeout: String? = null,
+    var timeout: String? = null,
 
     @field:SerializedName("impression_count")
     val impressionCount: Int? = null,
