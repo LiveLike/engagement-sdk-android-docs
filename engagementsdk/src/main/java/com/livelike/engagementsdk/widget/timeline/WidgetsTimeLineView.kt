@@ -136,6 +136,14 @@ class WidgetsTimeLineView(
     private fun subscribeForTimelineWidgets() {
         timeLineViewModel.timeLineWidgetsStream.subscribe(this) { pair ->
             pair?.let {
+
+                // changing timeout value for widgets when widgetTimerController is configured
+                widgetTimerController?.run {
+                    it.second.forEach { widget ->
+                        widget.liveLikeWidget.timeout = this.timeValue(widget.liveLikeWidget)
+                    }
+                }
+
                 if (pair.first == WidgetApiSource.REALTIME_API) {
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
