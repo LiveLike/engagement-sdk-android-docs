@@ -66,6 +66,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
+                showResultAnimation = true
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()

@@ -90,6 +90,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
+                showResultAnimation = true
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
