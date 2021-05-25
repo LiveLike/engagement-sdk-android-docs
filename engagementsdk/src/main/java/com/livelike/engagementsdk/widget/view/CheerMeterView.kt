@@ -271,13 +271,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 playAnimation()
             }
 
-            // moved to interacting state
-           /* showTimer(resource.timeout, textEggTimer, {
-                viewModel?.animationEggTimerProgress = it
-            }, {
-                viewModel?.dismissWidget(it)
-            })*/
-
             logDebug { "Showing CheerMeter Widget" }
             if (widgetViewModel?.widgetState?.latest() == null)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)

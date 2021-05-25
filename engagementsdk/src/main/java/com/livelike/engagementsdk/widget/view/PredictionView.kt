@@ -294,13 +294,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 )
             }
 
-            // moved to interacting state
-          /*  showTimer(resource.timeout, textEggTimer, {
-                viewModel?.animationEggTimerProgress = it
-            }, {
-                viewModel?.dismissWidget(it)
-            })*/
-
             logDebug { "showing PredictionView Widget" }
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)

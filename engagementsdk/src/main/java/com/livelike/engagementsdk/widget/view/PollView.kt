@@ -199,8 +199,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
             }
-            //moving this to interacting state (ES-1933)
-            //showTimer()
+
             logDebug { "showing PollWidget" }
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)

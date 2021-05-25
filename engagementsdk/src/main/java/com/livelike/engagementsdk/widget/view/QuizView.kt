@@ -199,12 +199,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
-            //moved to interacting state
-           /* showTimer(resource.timeout, textEggTimer, {
-                viewModel?.animationEggTimerProgress = it
-            }, {
-                viewModel?.dismissWidget(it)
-            })*/
 
             lay_lock.visibility = View.VISIBLE
             var clicked = false
