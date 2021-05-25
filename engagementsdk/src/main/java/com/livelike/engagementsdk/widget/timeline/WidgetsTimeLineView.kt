@@ -202,12 +202,15 @@ class WidgetsTimeLineView(
             it.liveLikeWidget.kind?.contains("follow-up") ?: false
         }.map { it.liveLikeWidget.textPredictionId ?: it.liveLikeWidget.imagePredictionId }
 
-        val allWidgets = mutableListOf<TimelineWidgetResource>()
-        allWidgets.addAll(widgets)
-        allWidgets.addAll(adapter.list)
-        allWidgets.forEach { widget ->
+        widgets.forEach { widget ->
             if (followUpWidgetPredictionIds.contains(widget.liveLikeWidget.id)) {
                 widget.widgetState = WidgetStates.RESULTS
+            }
+        }
+        adapter.list.forEach { widget ->
+            if (followUpWidgetPredictionIds.contains(widget.liveLikeWidget.id) && widget.widgetState == WidgetStates.INTERACTING) {
+                widget.widgetState = WidgetStates.RESULTS
+                adapter.notifyItemChanged(adapter.list.indexOf(widget))
             }
         }
     }
