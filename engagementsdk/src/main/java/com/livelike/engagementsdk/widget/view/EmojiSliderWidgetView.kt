@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -17,9 +18,14 @@ import com.livelike.engagementsdk.widget.view.components.imageslider.ScaleDrawab
 import com.livelike.engagementsdk.widget.view.components.imageslider.ThumbDrawable
 import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.lay_image_slider
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -134,6 +140,12 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                         }
                     }
                 }
+                btn_lock.setOnClickListener {
+                    if (viewModel.currentVote.currentData != null) {
+                        lockVote()
+                        textEggTimer.visibility = GONE
+                    }
+                }
 
                 image_slider.positionListener = { magnitude ->
                     viewModel.currentVote.onNext(
@@ -150,5 +162,25 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
         }
         logDebug { "showing EmojiSliderWidget" }
         super.dataModelObserver(entity)
+    }
+
+    private fun lockVote() {
+        disableLockButton()
+        label_lock.visibility = View.VISIBLE
+        viewModel?.run {
+            timeOutJob?.cancel()
+            onInteractionCompletion{}
+        }
+    }
+
+
+    fun enableLockButton() {
+        btn_lock.isEnabled = true
+        btn_lock.alpha = 1f
+    }
+
+    fun disableLockButton() {
+        btn_lock.isEnabled = false
+        btn_lock.alpha = 0.5f
     }
 }

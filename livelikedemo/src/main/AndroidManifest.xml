@@ -34,6 +34,7 @@
             android:name=".WidgetFrameworkTestActivity"
             android:exported="true" />
         <activity android:name=".LiveBlogActivity" />
+        <activity android:name=".IntractableTimelineActivity" />
         <activity
             android:name=".ChatOnlyActivity"
             android:theme="@style/Default" />

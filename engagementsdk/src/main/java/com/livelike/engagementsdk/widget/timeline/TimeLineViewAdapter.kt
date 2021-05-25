@@ -38,6 +38,8 @@ internal class TimeLineViewAdapter(
     var isEndReached = false
     var liveLikeEngagementTheme: LiveLikeEngagementTheme? = null
 
+    var widgetTimerController: WidgetTimerController? = null
+
     override fun onCreateViewHolder(p0: ViewGroup, viewtype: Int): RecyclerView.ViewHolder {
         return when (viewtype) {
 
@@ -79,8 +81,7 @@ internal class TimeLineViewAdapter(
                 itemViewHolder.itemView.widget_view.applyTheme(it)
             }
             itemViewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
-            itemViewHolder.itemView.widget_view.showTimer = timelineWidgetResource.widgetState ==
-                    WidgetStates.INTERACTING
+            itemViewHolder.itemView.widget_view.showTimer = widgetTimerController != null
             itemViewHolder.itemView.widget_view.showDismissButton = false
             itemViewHolder.itemView.widget_view.widgetViewFactory = widgetViewFactory
             displayWidget(itemViewHolder, timelineWidgetResource)
@@ -126,10 +127,8 @@ internal class TimeLineViewAdapter(
                 widgetView?.widgetViewModel = it
             }
             timeLineViewModel.widgetViewModelCache[widgetId] = widgetView?.widgetViewModel
+            widgetView?.widgetViewModel?.showDismissButton = false
             widgetView?.let { view ->
-
-                // this has been added to show/hide animation in result state
-                view.showResultAnimation = (timelineWidgetResource.apiSource == WidgetApiSource.REALTIME_API)
                 displayWidget(widgetType, view)
             }
         }

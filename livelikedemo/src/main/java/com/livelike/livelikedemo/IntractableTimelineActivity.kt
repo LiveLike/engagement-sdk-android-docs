@@ -4,35 +4,39 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import com.livelike.engagementsdk.widget.timeline.CMSSpecifiedDurationTimer
 import com.livelike.engagementsdk.widget.timeline.WidgetsTimeLineView
 import com.livelike.livelikedemo.customwidgets.timeline.TimeLineWidgetFactory
 import com.livelike.livelikedemo.utils.ThemeRandomizer
-import com.livelike.livelikedemo.viewmodels.LiveBlogModelFactory
-import com.livelike.livelikedemo.viewmodels.LiveBlogViewModel
+import com.livelike.livelikedemo.viewmodels.IntractableTimelineViewModelFactory
+import com.livelike.livelikedemo.viewmodels.NewIntractableTimelineViewModel
 import kotlinx.android.synthetic.main.activity_live_blog.radio_group
 import kotlinx.android.synthetic.main.activity_live_blog.timeline_container
 
-open class LiveBlogActivity : AppCompatActivity() {
+class IntractableTimelineActivity : AppCompatActivity() {
 
-    open var liveBlogViewModel: LiveBlogViewModel? = null
+    var newTimelineViewModel: NewIntractableTimelineViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_blog)
 
         /**
-         * init view model, which will be responsible for managing WidgetTimelineViewmodel, so that its not created each time
+         * Intractable view model initialized
          **/
-        initViewModel()
+
+        newTimelineViewModel = ViewModelProvider(
+                this,
+                IntractableTimelineViewModelFactory(this.application)
+            ).get(NewIntractableTimelineViewModel::class.java)
 
 
         radio_group.setOnCheckedChangeListener { group, checkedId ->
-            liveBlogViewModel?.showAlertOnly = (checkedId == R.id.radio2)
+            newTimelineViewModel?.showAlertOnly = (checkedId == R.id.radio2)
             createTimeLineView()
         }
         createTimeLineView()
     }
+
 
     /**
      * create timeline view
@@ -42,22 +46,18 @@ open class LiveBlogActivity : AppCompatActivity() {
         timeline_container.removeAllViews()
         val timeLineView = WidgetsTimeLineView(
             this,
-            liveBlogViewModel?.timeLineViewModel!!,
-            liveBlogViewModel?.getEngagementSDK()!!
+            newTimelineViewModel?.timeLineViewModel!!,
+            newTimelineViewModel?.getEngagementSDK()!!
         )
 
         // adding custom separator between widgets in timeline
-        timeLineView.setSeparator(ContextCompat.getDrawable(this, R.drawable.custom_separator_timeline))
-
-        //CMS timer configured
-        timeLineView.widgetTimerController = CMSSpecifiedDurationTimer()
-
+         timeLineView.setSeparator(ContextCompat.getDrawable(this, R.drawable.white_separator))
 
         if (LiveLikeApplication.showCustomWidgetsUI) {
             timeLineView.widgetViewFactory =
                 TimeLineWidgetFactory(
                     this,
-                    liveBlogViewModel?.timeLineViewModel!!.timeLineWidgets
+                    newTimelineViewModel?.timeLineViewModel!!.timeLineWidgets
                 )
         } else {
             if (ThemeRandomizer.themesList.size > 0) {
@@ -66,15 +66,5 @@ open class LiveBlogActivity : AppCompatActivity() {
         }
         timeline_container.addView(timeLineView)
     }
-
-
-
-    private fun initViewModel() {
-        liveBlogViewModel = ViewModelProvider(
-            this,
-            LiveBlogModelFactory(this.application)
-        ).get(LiveBlogViewModel::class.java)
-    }
-
 
 }

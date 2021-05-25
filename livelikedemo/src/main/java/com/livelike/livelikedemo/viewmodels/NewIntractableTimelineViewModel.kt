@@ -6,20 +6,19 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.widget.WidgetType
-import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.channel.ChannelManager
 
-class LiveBlogViewModel constructor(
+class NewIntractableTimelineViewModel constructor(
     val application: LiveLikeApplication
 ) : AndroidViewModel(application) {
 
     var publicSession: LiveLikeContentSession? = null
-    var timeLineViewModel: WidgetTimeLineViewModel? = null
+    var timeLineViewModel: IntractableWidgetTimelineViewModel? = null
     var showAlertOnly = false
         set(value) {
             field = value
-            createTimeLineViewModel()
+            initIntractableTimelineViewModel()
         }
 
     private var channelManager: ChannelManager? = null
@@ -31,7 +30,7 @@ class LiveBlogViewModel constructor(
         engagementSDK = application.sdk
         contentSession =
             createPublicSession(getChannelManager()?.selectedChannel?.llProgram.toString())
-        createTimeLineViewModel()
+        initIntractableTimelineViewModel()
     }
 
     private fun getSession(): LiveLikeContentSession? {
@@ -48,10 +47,10 @@ class LiveBlogViewModel constructor(
 
     /**
      * timeline view model created
-     *
+     * IntractableWidgetTimelineViewModel is used to make all widgets intractable by default in Timeline
      **/
-    private fun createTimeLineViewModel() {
-        timeLineViewModel = WidgetTimeLineViewModel(getSession()!!) { widget ->
+    private fun initIntractableTimelineViewModel() {
+        timeLineViewModel = IntractableWidgetTimelineViewModel(getSession()!!) { widget ->
             if (showAlertOnly)
                 widget.getWidgetType() == WidgetType.ALERT
             else true
@@ -64,7 +63,7 @@ class LiveBlogViewModel constructor(
     private fun createPublicSession(
         sessionId: String,
         widgetInterceptor: WidgetInterceptor? = null,
-    ): LiveLikeContentSession? {
+    ): LiveLikeContentSession {
         if (publicSession == null || publicSession?.contentSessionId() != sessionId) {
             publicSession?.close()
             publicSession =
@@ -83,4 +82,5 @@ class LiveBlogViewModel constructor(
         application.publicSession = null
         super.onCleared()
     }
+
 }

@@ -48,11 +48,12 @@
             app:layout_constraintTop_toTopOf="@+id/titleView"
             app:layout_constraintVertical_bias="0.0" />
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/lay_image_slider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/slider_rounded_corner_with_background"
+            android:orientation="vertical"
             android:paddingLeft="@dimen/livelike_image_slider_padding_left"
             android:paddingTop="@dimen/livelike_image_slider_padding_top"
             android:paddingRight="@dimen/livelike_image_slider_padding_right"
@@ -73,7 +74,12 @@
                 app:register_touches_outside_thumb="true"
                 tools:visibility="visible" />
 
-        </FrameLayout>
+            <include
+                layout="@layout/common_lock_btn_lay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

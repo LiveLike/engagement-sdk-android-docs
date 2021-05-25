@@ -90,6 +90,17 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
+                showResultAnimation = true
+
+                // show timer while widget interaction mode
+                viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
+                    showTimer(timeout, textEggTimer, {
+                        viewModel?.animationEggTimerProgress = it
+                    }, {
+                        viewModel?.dismissWidget(it)
+                    })
+                }
+
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
@@ -260,11 +271,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 playAnimation()
             }
 
-            showTimer(resource.timeout, textEggTimer, {
-                viewModel?.animationEggTimerProgress = it
-            }, {
-                viewModel?.dismissWidget(it)
-            })
             logDebug { "Showing CheerMeter Widget" }
             if (widgetViewModel?.widgetState?.latest() == null)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
