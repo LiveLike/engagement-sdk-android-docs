@@ -136,11 +136,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                                 View.GONE
                             }
                         }
-                        listOf(textEggTimer).forEach {
-                            it?.showCloseButton() {
-                                viewModel?.dismissWidget(it)
-                            }
-                        }
                         viewModel?.points?.let {
                             if (!shouldShowPointTutorial() && it > 0) {
                                 pointView.startAnimation(it, true)
