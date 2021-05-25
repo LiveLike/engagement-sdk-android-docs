@@ -1,10 +1,13 @@
 package com.livelike.livelikedemo
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.widget.timeline.CMSSpecifiedDurationTimer
+import com.livelike.engagementsdk.widget.timeline.WidgetTimerController
 import com.livelike.engagementsdk.widget.timeline.WidgetsTimeLineView
 import com.livelike.livelikedemo.customwidgets.timeline.TimeLineWidgetFactory
 import com.livelike.livelikedemo.utils.ThemeRandomizer
@@ -12,10 +15,13 @@ import com.livelike.livelikedemo.viewmodels.LiveBlogModelFactory
 import com.livelike.livelikedemo.viewmodels.LiveBlogViewModel
 import kotlinx.android.synthetic.main.activity_live_blog.radio_group
 import kotlinx.android.synthetic.main.activity_live_blog.timeline_container
+import kotlinx.android.synthetic.main.activity_live_blog.timeout_set
+import kotlinx.android.synthetic.main.activity_live_blog.widget_timeout
 
 open class LiveBlogActivity : AppCompatActivity() {
 
     open var liveBlogViewModel: LiveBlogViewModel? = null
+    var timeout:String?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +38,11 @@ open class LiveBlogActivity : AppCompatActivity() {
             createTimeLineView()
         }
         createTimeLineView()
+        timeout_set.setOnClickListener {
+            Log.d("timeline","timeout set")
+            setWidgetTimeout()
+        }
+
     }
 
     /**
@@ -40,6 +51,7 @@ open class LiveBlogActivity : AppCompatActivity() {
      **/
     private fun createTimeLineView() {
         timeline_container.removeAllViews()
+
         val timeLineView = WidgetsTimeLineView(
             this,
             liveBlogViewModel?.timeLineViewModel!!,
@@ -49,8 +61,18 @@ open class LiveBlogActivity : AppCompatActivity() {
         // adding custom separator between widgets in timeline
         timeLineView.setSeparator(ContextCompat.getDrawable(this, R.drawable.custom_separator_timeline))
 
-        //CMS timer configured
-        timeLineView.widgetTimerController = CMSSpecifiedDurationTimer()
+        if(!this.timeout.isNullOrEmpty()){
+            // integrator timeout configured
+            timeLineView.widgetTimerController = object : WidgetTimerController(){
+                override fun timeValue(widget: LiveLikeWidget): String {
+                    return "T${this@LiveBlogActivity.timeout}S"
+                }
+            }
+
+        }else{
+            //CMS timeout configured
+            timeLineView.widgetTimerController = CMSSpecifiedDurationTimer()
+        }
 
 
         if (LiveLikeApplication.showCustomWidgetsUI) {
@@ -65,7 +87,19 @@ open class LiveBlogActivity : AppCompatActivity() {
             }
         }
         timeline_container.addView(timeLineView)
+
     }
+
+
+    private fun setWidgetTimeout(){
+
+        if(!widget_timeout.text.toString().isNullOrEmpty()){
+            this.timeout = widget_timeout.text.toString()
+            createTimeLineView()
+        }
+    }
+
+
 
 
 
@@ -75,6 +109,8 @@ open class LiveBlogActivity : AppCompatActivity() {
             LiveBlogModelFactory(this.application)
         ).get(LiveBlogViewModel::class.java)
     }
+
+
 
 
 }

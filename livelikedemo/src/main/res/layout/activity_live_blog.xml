@@ -29,6 +29,28 @@
             android:text="Show Alert Only" />
     </RadioGroup>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/widget_timeout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Set Widget Timeout"/>
+
+        <Button
+            android:id="@+id/timeout_set"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Set"
+            android:background="@color/cheer_meter_team1_color"
+            android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
+
     <FrameLayout
         android:id="@+id/timeline_container"
         android:layout_width="match_parent"
