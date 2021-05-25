@@ -101,11 +101,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                         AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
                 }
                 resultsObserver(viewModel?.results?.latest())
-                listOf(textEggTimer).forEach { v ->
-                    v?.showCloseButton() {
-                        viewModel?.dismissWidget(it)
-                    }
-                }
+               
                 viewModel?.adapter?.correctOptionId =
                     viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
                 viewModel?.adapter?.userSelectedOptionId =
