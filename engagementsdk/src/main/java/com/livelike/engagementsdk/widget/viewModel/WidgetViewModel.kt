@@ -18,6 +18,7 @@ import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -27,7 +28,8 @@ internal abstract class WidgetViewModel<T : Resource>(
     val analyticsService: AnalyticsService
 ) : BaseViewModel(analyticsService) {
 
-   lateinit var widgetInfos: WidgetInfos
+    var timeOutJob: Job? = null
+    lateinit var widgetInfos: WidgetInfos
     lateinit var sdkConfiguration: EngagementSDK.SdkConfiguration
     var widgetMessagingClient: WidgetManager? = null
     var programRepository: ProgramRepository? = null
@@ -110,18 +112,25 @@ internal abstract class WidgetViewModel<T : Resource>(
     fun startInteractionTimeout(timeout: Long, function: (() -> Unit)? = null) {
         if (!timeoutStarted) {
             timeoutStarted = true
-            uiScope.launch {
+            timeOutJob = uiScope.launch {
                 delay(timeout)
-                if (currentVote.latest() == null) {
-                    dismissWidget(DismissAction.TIMEOUT)
-                    function?.invoke()
-                } else {
-                    state.onNext(WidgetState.LOCK_INTERACTION)
-                    widgetState.onNext(WidgetStates.RESULTS)
-                }
-                timeoutStarted = false
+                onInteractionCompletion(function)
             }
         }
+    }
+
+    /**
+     * will be called after timer completion or can be called manually after interaction finished
+     **/
+    internal fun onInteractionCompletion(function: (() -> Unit)?) {
+        if (currentVote.latest() == null) {
+            dismissWidget(DismissAction.TIMEOUT)
+            function?.invoke()
+        } else {
+            state.onNext(WidgetState.LOCK_INTERACTION)
+            widgetState.onNext(WidgetStates.RESULTS)
+        }
+        timeoutStarted = false
     }
 
     // FYI Right now this Widgetmodel is inherited by tutorial and gamification widgets, so dismiss analytics should be added in more concrete class.

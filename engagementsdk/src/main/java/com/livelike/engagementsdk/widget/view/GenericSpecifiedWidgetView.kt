@@ -4,6 +4,7 @@ package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -14,6 +15,7 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
@@ -113,6 +115,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                 WidgetStates.INTERACTING -> {
                     unLockInteraction()
                     showResultAnimation = true
+                    lay_lock.visibility = View.VISIBLE
                 }
                 WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                     lockInteraction()
