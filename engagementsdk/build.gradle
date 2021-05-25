@@ -21,12 +21,12 @@ android {
         compileSdkVersion rootProject.targetSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
-        versionName "2.16.4"
+        versionName "2.17"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'proguard-rules.pro'
 
-        buildConfigField "String", "SDK_VERSION", '"2.16.4"'
+        buildConfigField "String", "SDK_VERSION", '"2.17"'
     }
 
     buildTypes {
