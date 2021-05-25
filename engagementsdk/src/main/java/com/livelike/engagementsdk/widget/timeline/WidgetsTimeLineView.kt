@@ -12,13 +12,18 @@ import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
+import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.data.models.WidgetKind
+import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 import com.livelike.engagementsdk.widget.util.SmoothScrollerLinearLayoutManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
@@ -141,7 +146,7 @@ class WidgetsTimeLineView(
     private fun subscribeForTimelineWidgets() {
         timeLineViewModel.timeLineWidgetsStream.subscribe(this) { pair ->
             pair?.let {
-
+                lockAlreadyInteractedQuizAndEmojiSlider(pair.second)
                 wouldLockPredictionWidgets(pair.second) // if follow up is received lock prediction interaction
                 // changing timeout value for widgets when widgetTimerController is configured
                 widgetTimerController?.run {
@@ -177,17 +182,35 @@ class WidgetsTimeLineView(
         }
     }
 
+    private fun lockAlreadyInteractedQuizAndEmojiSlider(widgets: List<TimelineWidgetResource>) {
+        widgets.forEach {
+            val kind = it.liveLikeWidget.kind
+            if (kind == WidgetKind.IMAGE_SLIDER.event || kind?.contains(WidgetKind.QUIZ.event) == true) {
+                if ((timeLineViewModel.contentSession as ContentSession)?.widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
+                        it.liveLikeWidget.id?:"",
+                        WidgetKind.fromString(kind)
+                    ) != null
+                ) {
+                    it.widgetState = WidgetStates.RESULTS
+                }
+            }
+        }
+    }
+
     private fun wouldLockPredictionWidgets(widgets: List<TimelineWidgetResource>) {
         var followUpWidgetPredictionIds = widgets.filter {
             it.liveLikeWidget.kind?.contains("follow-up") ?: false
         }.map { it.liveLikeWidget.textPredictionId ?: it.liveLikeWidget.imagePredictionId }
 
-        val allWidgets = mutableListOf<TimelineWidgetResource>()
-        allWidgets.addAll(widgets)
-        allWidgets.addAll(adapter.list)
-        allWidgets.forEach { widget ->
+        widgets.forEach { widget ->
             if (followUpWidgetPredictionIds.contains(widget.liveLikeWidget.id)) {
                 widget.widgetState = WidgetStates.RESULTS
+            }
+        }
+        adapter.list.forEach { widget ->
+            if (followUpWidgetPredictionIds.contains(widget.liveLikeWidget.id) && widget.widgetState == WidgetStates.INTERACTING) {
+                widget.widgetState = WidgetStates.RESULTS
+                adapter.notifyItemChanged(adapter.list.indexOf(widget))
             }
         }
     }
