@@ -8,7 +8,7 @@ abstract class WidgetUserInteractionBase(
     @field:SerializedName("created_at")
     open val createdAt: String,
     @field:SerializedName("url")
-    open val url: String,
+    open val url: String?,
     @field:SerializedName("widget_id")
     open val widgetId: String,
     @field:SerializedName("widget_kind")
@@ -40,10 +40,10 @@ abstract class WidgetUserInteractionBase(
 
 
 class EmojiSliderUserInteraction(
-    val magnitude: Double,
+    val magnitude: Float,
     id: String,
     createdAt: String,
-    url: String,
+    url: String?,
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
@@ -54,7 +54,7 @@ class QuizWidgetUserInteraction(
     val choiceId: String,
     id: String,
     createdAt: String,
-    url: String,
+    url: String?,
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
@@ -64,7 +64,7 @@ class PollWidgetUserInteraction(
     val optionId: String,
     id: String,
     createdAt: String,
-    url: String,
+    url: String?,
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
@@ -74,7 +74,7 @@ class PredictionWidgetUserInteraction(
     val optionId: String,
     id: String,
     createdAt: String,
-    url: String,
+    url: String?,
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
@@ -84,7 +84,7 @@ class CheerMeterUserInteraction(
     var totalScore: Int,
     id: String,
     createdAt: String,
-    url: String,
+    url: String?,
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)

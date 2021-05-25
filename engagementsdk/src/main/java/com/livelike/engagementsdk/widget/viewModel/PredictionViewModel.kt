@@ -18,16 +18,19 @@ import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
+import com.livelike.engagementsdk.formatIsoZoned8601
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
+import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
@@ -39,6 +42,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
+import org.threeten.bp.ZonedDateTime
 
 internal class PredictionWidget(
     val type: WidgetType,
@@ -339,6 +343,20 @@ internal class PredictionViewModel(
             WidgetKind.fromString(widgetInfos.type)
         )
     }
+
+    internal fun saveInteraction(option: Option) {
+        widgetInteractionRepository?.saveWidgetInteraction(
+            PredictionWidgetUserInteraction(
+                option.id,
+                "",
+                ZonedDateTime.now().formatIsoZoned8601(),
+                option.getMergedVoteUrl(),
+                widgetInfos.widgetId,
+                widgetInfos.type
+            )
+        )
+    }
+
 
     @Suppress("USELESS_ELVIS")
     private suspend fun vote() {

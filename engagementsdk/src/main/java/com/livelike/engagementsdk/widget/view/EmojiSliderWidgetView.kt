@@ -156,6 +156,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                             ).toFloat()
                         }"
                     )
+                    viewModel?.saveInteraction(magnitude = magnitude, entity.voteUrl)
                 }
             }
         }

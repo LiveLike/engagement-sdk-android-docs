@@ -189,6 +189,9 @@ internal class AndroidResource {
                     dpToPx(component.borderRadius[3].toInt()).toFloat(),
                     dpToPx(component.borderRadius[3].toInt()).toFloat()
                 )
+            } else {
+                //adding default radius to have parity with IOS and web
+                shape.cornerRadius = dpToPx(4).toFloat()
             }
             if (component?.borderColor.isNullOrEmpty()
                     .not() && component?.borderWidth != null

@@ -4,8 +4,11 @@ import android.animation.LayoutTransition
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.ClipDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
@@ -327,8 +330,21 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
     private fun updateViewProgressBar(drawableId: Int, component: ViewStyleProps? = null) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
         component?.let {
-            determinateBar?.progressDrawable = AndroidResource.createDrawable(component)
-            imageBar?.progressDrawable = AndroidResource.createDrawable(component)
+            //TODO: the progress drawable has some UI issue,need to recheck and update
+            val progressDrawable = AndroidResource.createDrawable(component)
+            val layerDrawable =
+                LayerDrawable(
+                    arrayOf(
+                        ClipDrawable(
+                            progressDrawable,
+                            Gravity.LEFT,
+                            ClipDrawable.HORIZONTAL
+                        )
+                    )
+                )
+            layerDrawable.setId(0, android.R.id.progress)
+            determinateBar?.progressDrawable = layerDrawable
+            imageBar?.progressDrawable = layerDrawable
         }
         if (component == null) {
             if (determinateBar != null && determinateBar?.tag != drawableId) {

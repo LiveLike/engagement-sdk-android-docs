@@ -188,6 +188,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 viewModel?.currentVoteId?.onNext(selectedId)
                 widgetLifeCycleEventsListener?.onUserInteract(widgetData)
                 isFirstInteraction = true
+                viewModel?.saveInteraction(it)
             }, type)
 
             widgetsTheme?.let {
@@ -197,6 +198,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.onWidgetInteractionCompleted = { onWidgetInteractionCompleted() }
 
             textRecyclerView.apply {
+                viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.optionId)
                 this.adapter = viewModel?.adapter
             }
 

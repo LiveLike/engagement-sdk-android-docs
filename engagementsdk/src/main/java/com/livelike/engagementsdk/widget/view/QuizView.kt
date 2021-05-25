@@ -190,6 +190,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     val currentSelectionId = myDataset[selectedPosition]
                     viewModel?.currentVoteId?.onNext(currentSelectionId.id)
                     widgetLifeCycleEventsListener?.onUserInteract(widgetData)
+                    viewModel?.saveInteraction(it)
                 }
             }, type)
 
@@ -199,6 +200,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
+                viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.choiceId)
                 setHasFixedSize(true)
             }
 
