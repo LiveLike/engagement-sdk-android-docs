@@ -71,6 +71,15 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
                 showResultAnimation = true
+
+                // show timer while widget interaction mode
+                viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
+                    showTimer(timeout, textEggTimer, {
+                        viewModel?.animationEggTimerProgress = it
+                    }, {
+                        viewModel?.dismissWidget(it)
+                    })
+                }
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
@@ -190,11 +199,12 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
-            showTimer(resource.timeout, textEggTimer, {
+            //moved to interacting state
+           /* showTimer(resource.timeout, textEggTimer, {
                 viewModel?.animationEggTimerProgress = it
             }, {
                 viewModel?.dismissWidget(it)
-            })
+            })*/
 
             lay_lock.visibility = View.VISIBLE
             var clicked = false

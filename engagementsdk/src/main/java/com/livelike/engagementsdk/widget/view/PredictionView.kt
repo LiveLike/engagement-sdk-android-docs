@@ -70,6 +70,16 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
                 showResultAnimation = true
+
+                // show timer while widget interaction mode
+                viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
+                    showTimer(timeout, textEggTimer, {
+                        viewModel?.animationEggTimerProgress = it
+                    }, {
+                        viewModel?.dismissWidget(it)
+                    })
+                }
+
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
@@ -284,12 +294,12 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 )
             }
 
-
-            showTimer(resource.timeout, textEggTimer, {
+            // moved to interacting state
+          /*  showTimer(resource.timeout, textEggTimer, {
                 viewModel?.animationEggTimerProgress = it
             }, {
                 viewModel?.dismissWidget(it)
-            })
+            })*/
 
             logDebug { "showing PredictionView Widget" }
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
