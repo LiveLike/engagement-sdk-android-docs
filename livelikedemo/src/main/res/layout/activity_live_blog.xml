@@ -40,7 +40,9 @@
         android:id="@+id/widget_timeout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Set Widget Timeout"/>
+        android:maxLength="3"
+        android:inputType="number"
+        android:hint="custom timer value in seconds"/>
 
         <Button
             android:id="@+id/timeout_set"
