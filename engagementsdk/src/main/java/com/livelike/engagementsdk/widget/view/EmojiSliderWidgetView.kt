@@ -141,8 +141,10 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                     }
                 }
                 btn_lock.setOnClickListener {
-                    lockVote()
-                    textEggTimer.visibility = GONE
+                    if (viewModel.currentVote.currentData != null) {
+                        lockVote()
+                        textEggTimer.visibility = GONE
+                    }
                 }
 
                 image_slider.positionListener = { magnitude ->
