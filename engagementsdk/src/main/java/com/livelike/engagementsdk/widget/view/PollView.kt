@@ -83,6 +83,10 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
                 showResultAnimation = true
+
+                // show timer while widget interaction mode
+                viewModel?.data?.latest()?.showTimer()
+
                 viewModel?.results?.subscribe(javaClass.simpleName) {
                     if (isFirstInteraction)
                         resultsObserver(it)
@@ -195,7 +199,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
             }
-            showTimer()
+
             logDebug { "showing PollWidget" }
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)

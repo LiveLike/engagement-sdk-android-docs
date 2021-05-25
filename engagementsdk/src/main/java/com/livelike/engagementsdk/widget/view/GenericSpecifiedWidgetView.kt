@@ -78,11 +78,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                     widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
 
             }
-            showTimer(entity.timeout,textEggTimer, {
-                viewModel?.animationEggTimerProgress = it
-            }, {
-                viewModel?.dismissWidget(it)
-            })
+
         }
         if (entity == null) {
             isViewInflated = false
@@ -115,6 +111,13 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                 WidgetStates.INTERACTING -> {
                     unLockInteraction()
                     showResultAnimation = true
+                    viewModel?.data?.latest()?.timeout?.let { timeout ->
+                        showTimer(timeout, textEggTimer, {
+                            viewModel?.animationEggTimerProgress = it
+                        }, {
+                            viewModel?.dismissWidget(it)
+                        })
+                    }
                     lay_lock.visibility = View.VISIBLE
                 }
                 WidgetStates.RESULTS, WidgetStates.FINISHED -> {
