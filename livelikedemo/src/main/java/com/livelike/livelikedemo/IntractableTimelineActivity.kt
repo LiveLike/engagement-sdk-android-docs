@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -11,6 +12,7 @@ import com.livelike.livelikedemo.viewmodels.IntractableTimelineViewModelFactory
 import com.livelike.livelikedemo.viewmodels.NewIntractableTimelineViewModel
 import kotlinx.android.synthetic.main.activity_live_blog.radio_group
 import kotlinx.android.synthetic.main.activity_live_blog.timeline_container
+import kotlinx.android.synthetic.main.activity_live_blog.timeout_layout
 
 class IntractableTimelineActivity : AppCompatActivity() {
 
@@ -23,7 +25,7 @@ class IntractableTimelineActivity : AppCompatActivity() {
         /**
          * Intractable view model initialized
          **/
-
+        timeout_layout.visibility = View.GONE
         newTimelineViewModel = ViewModelProvider(
                 this,
                 IntractableTimelineViewModelFactory(this.application)
