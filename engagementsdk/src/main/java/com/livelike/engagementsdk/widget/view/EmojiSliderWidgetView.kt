@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -17,7 +18,11 @@ import com.livelike.engagementsdk.widget.view.components.imageslider.ScaleDrawab
 import com.livelike.engagementsdk.widget.view.components.imageslider.ThumbDrawable
 import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.lay_image_slider
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -134,7 +139,25 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                         }
                     }
                 }
-
+                lay_lock.visibility = View.VISIBLE
+                var clicked = false
+                btn_lock.setOnClickListener {
+                    if (!clicked) {
+                        clicked = true
+                        viewModel.confirmInteraction()
+                    } else {
+                        logDebug { "Already clicked" }
+                    }
+                }
+                viewModel.voteLockStream.subscribe(this) {
+                    clicked = false
+                    logDebug { "Vote: $it" }
+                    if (it.isNullOrEmpty().not()) {
+                        btn_lock.isEnabled = false
+                        btn_lock.alpha = 0.5f
+                        label_lock.visibility = View.VISIBLE
+                    }
+                }
                 image_slider.positionListener = { magnitude ->
                     viewModel.currentVote.onNext(
                         "${

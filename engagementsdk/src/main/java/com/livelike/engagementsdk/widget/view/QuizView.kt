@@ -21,7 +21,11 @@ import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
@@ -168,7 +172,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
             titleView.title = resource.question
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_quiz)
-            textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
+            lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
             titleTextView.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
                 viewModel?.adapter?.apply {
@@ -191,6 +195,27 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }, {
                 viewModel?.dismissWidget(it)
             })
+
+            lay_lock.visibility = View.VISIBLE
+            var clicked = false
+            btn_lock.setOnClickListener {
+                if (!clicked) {
+                    clicked = true
+                    viewModel?.vote()
+                } else {
+                    logDebug { "Already clicked" }
+                }
+            }
+            viewModel?.voteLockStream?.subscribe(this) {
+                clicked = false
+                logDebug { "Vote: $it" }
+                if (it.isNullOrEmpty().not()) {
+                    btn_lock.isEnabled = false
+                    btn_lock.alpha = 0.5f
+                    label_lock.visibility = View.VISIBLE
+                }
+            }
+
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
             logDebug { "showing QuizWidget" }
