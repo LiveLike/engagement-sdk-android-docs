@@ -73,6 +73,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
                 showResultAnimation = true
+                lay_lock.visibility = View.VISIBLE
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
@@ -197,8 +198,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }, {
                 viewModel?.dismissWidget(it)
             })
-
-            lay_lock.visibility = View.VISIBLE
 
             btn_lock.setOnClickListener {
                 if(viewModel?.adapter?.selectedPosition != RecyclerView.NO_POSITION) {
