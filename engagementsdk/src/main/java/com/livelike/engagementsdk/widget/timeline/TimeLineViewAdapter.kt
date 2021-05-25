@@ -127,6 +127,7 @@ internal class TimeLineViewAdapter(
                 widgetView?.widgetViewModel = it
             }
             timeLineViewModel.widgetViewModelCache[widgetId] = widgetView?.widgetViewModel
+            widgetView?.widgetViewModel?.showDismissButton = false
             widgetView?.let { view ->
                 displayWidget(widgetType, view)
             }
