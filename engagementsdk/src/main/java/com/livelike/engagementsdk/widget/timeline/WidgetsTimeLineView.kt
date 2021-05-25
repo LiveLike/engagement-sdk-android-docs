@@ -160,7 +160,7 @@ class WidgetsTimeLineView(
                         }
                     }
                 }
-
+                print("oh my god")
                 if (pair.first == WidgetApiSource.REALTIME_API) {
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
@@ -178,11 +178,14 @@ class WidgetsTimeLineView(
     }
 
     private fun wouldLockPredictionWidgets(widgets: List<TimelineWidgetResource>) {
-        var followUpWidgetPredictionIds = widgets?.filter {
+        var followUpWidgetPredictionIds = widgets.filter {
             it.liveLikeWidget.kind?.contains("follow-up") ?: false
         }.map { it.liveLikeWidget.textPredictionId ?: it.liveLikeWidget.imagePredictionId }
 
-        widgets.union(adapter.list)?.forEach { widget ->
+        val allWidgets = mutableListOf<TimelineWidgetResource>()
+        allWidgets.addAll(widgets)
+        allWidgets.addAll(adapter.list)
+        allWidgets.forEach { widget ->
             if (followUpWidgetPredictionIds.contains(widget.liveLikeWidget.id)) {
                 widget.widgetState = WidgetStates.RESULTS
             }
