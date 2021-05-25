@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -32,6 +33,7 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggT
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
+import kotlinx.coroutines.launch
 
 class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
 
@@ -197,22 +199,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             })
 
             lay_lock.visibility = View.VISIBLE
-            var clicked = false
+
             btn_lock.setOnClickListener {
-                if (!clicked) {
-                    clicked = true
-                    viewModel?.vote()
-                } else {
-                    logDebug { "Already clicked" }
-                }
-            }
-            viewModel?.voteLockStream?.subscribe(this) {
-                clicked = false
-                logDebug { "Vote: $it" }
-                if (it.isNullOrEmpty().not()) {
-                    btn_lock.isEnabled = false
-                    btn_lock.alpha = 0.5f
-                    label_lock.visibility = View.VISIBLE
+                if(viewModel?.adapter?.selectedPosition != RecyclerView.NO_POSITION) {
+                    lockVote()
+                    textEggTimer.visibility = GONE
                 }
             }
 
@@ -225,6 +216,27 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             removeAllViews()
             parent?.let { (it as ViewGroup).removeAllViews() }
         }
+    }
+
+    private fun lockVote() {
+        disableLockButton()
+        label_lock.visibility = View.VISIBLE
+        viewModel?.run {
+            timeOutJob?.cancel()
+            uiScope.launch {
+                lockInteractionAndSubmitVote()
+            }
+        }
+    }
+
+    fun enableLockButton() {
+        btn_lock.isEnabled = true
+        btn_lock.alpha = 1f
+    }
+
+    fun disableLockButton() {
+        btn_lock.isEnabled = false
+        btn_lock.alpha = 0.5f
     }
 
     private fun lockInteraction() {
