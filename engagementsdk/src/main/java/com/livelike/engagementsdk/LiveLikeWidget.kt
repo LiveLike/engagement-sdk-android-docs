@@ -100,6 +100,8 @@ data class LiveLikeWidget(
     val linkLabel: String? = null,
     @field:SerializedName("text_prediction_id")
     val textPredictionId: String? = null,
+    @field:SerializedName("image_prediction_id")
+    val imagePredictionId: String? = null,
     @field:SerializedName("text_prediction_url")
     val textPredictionUrl: String? = null,
     @field:SerializedName("correct_option_id")

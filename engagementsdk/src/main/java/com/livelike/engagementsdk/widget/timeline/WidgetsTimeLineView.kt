@@ -142,6 +142,7 @@ class WidgetsTimeLineView(
         timeLineViewModel.timeLineWidgetsStream.subscribe(this) { pair ->
             pair?.let {
 
+                wouldLockPredictionWidgets(pair.second) // if follow up is received lock prediction interaction
                 // changing timeout value for widgets when widgetTimerController is configured
                 widgetTimerController?.run {
                     it.second.forEach { widget ->
@@ -172,6 +173,18 @@ class WidgetsTimeLineView(
                     )
                     adapter.isLoadingInProgress = false
                 }
+            }
+        }
+    }
+
+    private fun wouldLockPredictionWidgets(widgets: List<TimelineWidgetResource>) {
+        var followUpWidgetPredictionIds = widgets?.filter {
+            it.liveLikeWidget.kind?.contains("follow-up") ?: false
+        }.map { it.liveLikeWidget.textPredictionId ?: it.liveLikeWidget.imagePredictionId }
+
+        widgets.union(adapter.list)?.forEach { widget ->
+            if (followUpWidgetPredictionIds.contains(widget.liveLikeWidget.id)) {
+                widget.widgetState = WidgetStates.RESULTS
             }
         }
     }
