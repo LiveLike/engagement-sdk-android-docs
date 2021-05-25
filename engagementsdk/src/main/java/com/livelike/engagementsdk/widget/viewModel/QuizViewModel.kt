@@ -32,6 +32,7 @@ import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -51,6 +52,7 @@ internal class QuizViewModel(
     val widgetMessagingClient: WidgetManager? = null,
     val widgetInteractionRepository: WidgetInteractionRepository?
 ) : BaseViewModel(analyticsService), QuizWidgetModel {
+
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
         get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
@@ -65,7 +67,6 @@ internal class QuizViewModel(
     private val debouncedVoteId = currentVoteId.debounce()
 //    var state: Stream<String> =
 //        SubscriptionManager() // results
-    val voteLockStream: SubscriptionManager<String> = SubscriptionManager()
     var adapter: WidgetOptionsViewAdapter? = null
     private var timeoutStarted = false
     var animationProgress = 0f
@@ -77,6 +78,8 @@ internal class QuizViewModel(
     private var programId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
+
+    internal var timeOutJob: Job? = null
 
     init {
 
@@ -103,7 +106,6 @@ internal class QuizViewModel(
                         userRepository.userAccessToken,
                         userRepository = userRepository
                     )
-                    voteLockStream.onNext(fetchedUrl)
                 }
             }
             adapter?.notifyDataSetChanged()
@@ -141,17 +143,20 @@ internal class QuizViewModel(
     ) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            uiScope.launch {
+            timeOutJob = uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
-                debouncedVoteId.unsubscribe(javaClass)
-                adapter?.selectionLocked = true
-//                state.onNext(WidgetState.LOCK_INTERACTION.name)
-                vote()
-                delay(500)
-                widgetState.onNext(WidgetStates.RESULTS)
-                resultsState(widgetViewThemeAttributes)
+                lockInteractionAndSubmitVote()
             }
         }
+    }
+
+    internal suspend fun lockInteractionAndSubmitVote() {
+        debouncedVoteId.unsubscribe(javaClass)
+        adapter?.selectionLocked = true
+        vote()
+        delay(500) // Just refactoring, this line was already here
+        widgetState.onNext(WidgetStates.RESULTS)
+        resultsState()
     }
 
     fun dismissWidget(action: DismissAction) {
@@ -173,7 +178,7 @@ internal class QuizViewModel(
         viewModelJob.cancel()
     }
 
-    private fun resultsState(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
+    private fun resultsState() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)

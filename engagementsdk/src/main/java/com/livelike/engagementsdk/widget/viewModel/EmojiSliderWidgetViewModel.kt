@@ -43,7 +43,6 @@ internal class EmojiSliderWidgetViewModel(
     analyticsService
 ), ImageSliderWidgetModel {
 
-    val voteLockStream: SubscriptionManager<String> = SubscriptionManager()
 
     init {
         widgetObserver(widgetInfos)
@@ -64,7 +63,6 @@ internal class EmojiSliderWidgetViewModel(
                         .add("magnitude", value).build(),
                     userRepository = userRepository
                 )
-                voteLockStream.onNext(fetchedUrl)
             }
         }
     }
@@ -136,4 +134,5 @@ internal class EmojiSliderWidgetViewModel(
         super.onClear()
         unsubscribeWidgetResults()
     }
+
 }

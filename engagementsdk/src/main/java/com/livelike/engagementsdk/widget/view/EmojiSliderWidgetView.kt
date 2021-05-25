@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.lay_image_slider
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -139,25 +140,13 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                         }
                     }
                 }
-                lay_lock.visibility = View.VISIBLE
-                var clicked = false
                 btn_lock.setOnClickListener {
-                    if (!clicked) {
-                        clicked = true
-                        viewModel.confirmInteraction()
-                    } else {
-                        logDebug { "Already clicked" }
+                    if (viewModel.currentVote.currentData != null) {
+                        lockVote()
+                        textEggTimer.visibility = GONE
                     }
                 }
-                viewModel.voteLockStream.subscribe(this) {
-                    clicked = false
-                    logDebug { "Vote: $it" }
-                    if (it.isNullOrEmpty().not()) {
-                        btn_lock.isEnabled = false
-                        btn_lock.alpha = 0.5f
-                        label_lock.visibility = View.VISIBLE
-                    }
-                }
+
                 image_slider.positionListener = { magnitude ->
                     viewModel.currentVote.onNext(
                         "${
@@ -172,5 +161,25 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
         }
         logDebug { "showing EmojiSliderWidget" }
         super.dataModelObserver(entity)
+    }
+
+    private fun lockVote() {
+        disableLockButton()
+        label_lock.visibility = View.VISIBLE
+        viewModel?.run {
+            timeOutJob?.cancel()
+            onInteractionCompletion{}
+        }
+    }
+
+
+    fun enableLockButton() {
+        btn_lock.isEnabled = true
+        btn_lock.alpha = 1f
+    }
+
+    fun disableLockButton() {
+        btn_lock.isEnabled = false
+        btn_lock.alpha = 0.5f
     }
 }
