@@ -69,13 +69,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             else -> viewModel.data.latest()
         }
         image_slider.averageProgress = result?.averageMagnitude ?: image_slider.progress
-
-        //Commenting this code as we have to update image and red pointer both iin resul stage
-//        if (!didUserVote) {
-        result?.averageMagnitude?.let {
-            image_slider.progress = it
-        }
-//        }
+        
         logDebug { "EmojiSlider Widget showing result value:${image_slider.averageProgress}" }
     }
 

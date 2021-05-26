@@ -112,9 +112,10 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
    abstract fun onClear()
 }
 
-enum class WidgetStates {
+enum class WidgetStates : Comparable<WidgetStates>{
     READY,//the data has received and ready to use to inject into view
     INTERACTING,//the data is injected into view and shown
     RESULTS,// interaction completed and result to be shown
     FINISHED,//dismiss the widget
+
 }

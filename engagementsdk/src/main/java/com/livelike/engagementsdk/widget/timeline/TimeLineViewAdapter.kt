@@ -85,7 +85,12 @@ internal class TimeLineViewAdapter(
             itemViewHolder.itemView.widget_view.showDismissButton = false
             itemViewHolder.itemView.widget_view.widgetViewFactory = widgetViewFactory
             displayWidget(itemViewHolder, timelineWidgetResource)
-            itemViewHolder.itemView.widget_view.setState(timelineWidgetResource.widgetState)
+            itemViewHolder.itemView.widget_view.setState(
+                maxOf(
+                    timelineWidgetResource.widgetState,
+                    itemViewHolder.itemView.widget_view.getCurrentState() ?: WidgetStates.READY
+                )
+            )
         }
     }
 
