@@ -198,6 +198,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.onWidgetInteractionCompleted = { onWidgetInteractionCompleted() }
 
             textRecyclerView.apply {
+                isFirstInteraction = viewModel?.getUserInteraction() !=null
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.optionId)
                 this.adapter = viewModel?.adapter
             }
