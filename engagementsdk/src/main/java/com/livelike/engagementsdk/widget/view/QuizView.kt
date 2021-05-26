@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
@@ -188,23 +189,26 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     widgetLifeCycleEventsListener?.onUserInteract(widgetData)
                     viewModel?.saveInteraction(it)
                 }
+                enableLockButton()
             }, type)
 
             widgetsTheme?.let {
                 applyTheme(it)
             }
-
+            disableLockButton()
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.choiceId)
                 setHasFixedSize(true)
             }
-
             btn_lock.setOnClickListener {
                 if(viewModel?.adapter?.selectedPosition != RecyclerView.NO_POSITION) {
                     lockVote()
                     textEggTimer.visibility = GONE
                 }
+            }
+            if (viewModel?.getUserInteraction() != null) {
+                findViewById<TextView>(R.id.label_lock)?.visibility = VISIBLE
             }
 
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
@@ -235,6 +239,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     fun disableLockButton() {
+        lay_lock.visibility = VISIBLE
         btn_lock.isEnabled = false
         btn_lock.alpha = 0.5f
     }

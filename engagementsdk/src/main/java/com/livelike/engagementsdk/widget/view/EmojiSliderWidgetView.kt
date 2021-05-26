@@ -134,6 +134,10 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                         }
                     }
                 }
+                disableLockButton()
+                if (viewModel.getUserInteraction() != null) {
+                    label_lock.visibility = VISIBLE
+                }
                 btn_lock.setOnClickListener {
                     if (viewModel.currentVote.currentData != null) {
                         lockVote()
@@ -151,6 +155,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                         }"
                     )
                     viewModel?.saveInteraction(magnitude = magnitude, entity.voteUrl)
+                    enableLockButton()
                 }
             }
         }
@@ -174,6 +179,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
     }
 
     fun disableLockButton() {
+        lay_lock.visibility = VISIBLE
         btn_lock.isEnabled = false
         btn_lock.alpha = 0.5f
     }

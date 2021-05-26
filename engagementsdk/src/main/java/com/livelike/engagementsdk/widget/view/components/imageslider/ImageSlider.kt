@@ -162,7 +162,7 @@ internal class ImageSlider @JvmOverloads constructor(
             val array = context.obtainStyledAttributes(attrs, R.styleable.ImageSlider)
 
             try {
-                progress = array.getProgress()
+                progress = INITIAL_POSITION
 
                 colorStart = array.getProgressGradientStart()
                 colorEnd = array.getProgressGradientEnd()
@@ -449,6 +449,6 @@ internal class ImageSlider @JvmOverloads constructor(
     }
 
     companion object {
-        const val INITIAL_POSITION = 0.25f
+        const val INITIAL_POSITION = 0.5f
     }
 }
