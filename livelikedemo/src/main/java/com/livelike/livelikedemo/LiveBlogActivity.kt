@@ -65,7 +65,7 @@ open class LiveBlogActivity : AppCompatActivity() {
             // integrator timeout configured
             timeLineView.widgetTimerController = object : WidgetTimerController(){
                 override fun timeValue(widget: LiveLikeWidget): String {
-                    return "T${this@LiveBlogActivity.timeout}S"
+                    return "P0DT00H00M${this@LiveBlogActivity.timeout}S"
                 }
             }
 
