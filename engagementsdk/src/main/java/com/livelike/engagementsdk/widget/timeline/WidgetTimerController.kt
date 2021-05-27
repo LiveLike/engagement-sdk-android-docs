@@ -22,7 +22,7 @@ abstract class WidgetTimerController {
 class CMSSpecifiedDurationTimer : WidgetTimerController() {
 
     override fun timeValue(widget: LiveLikeWidget): String {
-        return widget.timeout ?: "T30S"
+        return widget.timeout ?: "P0DT00H00M30S"
     }
 
 }
