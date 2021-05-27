@@ -97,8 +97,13 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                     entity.initialMagnitude?.let {
                         image_slider.progress = it
                     }
+                disableLockButton()
+                if (viewModel.getUserInteraction() != null) {
+                    label_lock.visibility = VISIBLE
+                }
                 viewModel.currentVote.currentData?.let {
                     image_slider.progress = it.toFloat()
+                    enableLockButton()
                 }
                 val size = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
@@ -134,13 +139,10 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                         }
                     }
                 }
-                disableLockButton()
-                if (viewModel.getUserInteraction() != null) {
-                    label_lock.visibility = VISIBLE
-                }
                 btn_lock.setOnClickListener {
-                    if (viewModel.currentVote.currentData != null) {
+                    viewModel.currentVote.currentData?.let {
                         lockVote()
+                        viewModel?.saveInteraction(it.toFloat(), entity.voteUrl)
                         textEggTimer.visibility = GONE
                     }
                 }
@@ -154,7 +156,6 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                             ).toFloat()
                         }"
                     )
-                    viewModel?.saveInteraction(magnitude = magnitude, entity.voteUrl)
                     enableLockButton()
                 }
             }

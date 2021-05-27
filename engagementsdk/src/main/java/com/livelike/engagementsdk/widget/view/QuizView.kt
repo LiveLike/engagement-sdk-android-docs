@@ -187,7 +187,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     val currentSelectionId = myDataset[selectedPosition]
                     viewModel?.currentVoteId?.onNext(currentSelectionId.id)
                     widgetLifeCycleEventsListener?.onUserInteract(widgetData)
-                    viewModel?.saveInteraction(it)
                 }
                 enableLockButton()
             }, type)
@@ -209,7 +208,10 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             if (viewModel?.getUserInteraction() != null) {
                 findViewById<TextView>(R.id.label_lock)?.visibility = VISIBLE
+            } else if (viewModel?.adapter?.selectedPosition != RecyclerView.NO_POSITION) {
+                enableLockButton()
             }
+
 
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
@@ -224,6 +226,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun lockVote() {
         disableLockButton()
+        viewModel?.currentVoteId?.currentData?.let { id ->
+            viewModel?.adapter?.myDataset?.find { it.id == id }?.let { option ->
+                viewModel?.saveInteraction(option)
+            }
+        }
         label_lock.visibility = View.VISIBLE
         viewModel?.run {
             timeOutJob?.cancel()
