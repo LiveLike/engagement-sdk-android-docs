@@ -31,4 +31,6 @@
     <string name="livelike_chat_alert_blocked_confirm">OK</string>
     <string name="livelike_chat_report_message_confirm">OK</string>
     <string name="send_message_failed_access_denied">You cannot send a message</string>
+    <string name="vote">Vote</string>
+    <string name="voted">Voted!</string>
 </resources>

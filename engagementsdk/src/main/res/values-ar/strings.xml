@@ -32,4 +32,6 @@
     <string name="livelike_chat_alert_blocked_confirm">حسنا</string>
     <string name="livelike_chat_report_message_confirm">حسنا</string>
     <string name="send_message_failed_access_denied">"لا يمكنك إرسال رسالة "</string>
+    <string name="vote">تصويت</string>
+    <string name="voted">تم التصويت!</string>
 </resources>
