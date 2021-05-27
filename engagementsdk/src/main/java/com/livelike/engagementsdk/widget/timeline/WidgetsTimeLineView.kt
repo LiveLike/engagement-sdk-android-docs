@@ -14,14 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
-import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 import com.livelike.engagementsdk.widget.util.SmoothScrollerLinearLayoutManager
@@ -146,6 +144,7 @@ class WidgetsTimeLineView(
     private fun subscribeForTimelineWidgets() {
         timeLineViewModel.timeLineWidgetsStream.subscribe(this) { pair ->
             pair?.let {
+                lockInteracatedWidgetsWithoutPatchUrl(pair.second) // will remove this logic when backend adds patch_url
                 lockAlreadyInteractedQuizAndEmojiSlider(pair.second)
                 wouldLockPredictionWidgets(pair.second) // if follow up is received lock prediction interaction
                 // changing timeout value for widgets when widgetTimerController is configured
@@ -180,6 +179,22 @@ class WidgetsTimeLineView(
                 }
             }
         }
+    }
+
+    private fun lockInteracatedWidgetsWithoutPatchUrl(widgets: List<TimelineWidgetResource>) {
+        widgets.forEach {
+            val kind = it.liveLikeWidget.kind
+            if (kind == WidgetKind.CHEER_METER.event || kind?.contains(WidgetKind.POLL.event) == true || kind?.contains(WidgetKind.PREDICTION.event) == true) {
+                if ((timeLineViewModel.contentSession as ContentSession)?.widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
+                        it.liveLikeWidget.id?:"",
+                        WidgetKind.fromString(kind)
+                    ) != null
+                ) {
+                    it.widgetState = WidgetStates.RESULTS
+                }
+            }
+        }
+
     }
 
     private fun lockAlreadyInteractedQuizAndEmojiSlider(widgets: List<TimelineWidgetResource>) {
