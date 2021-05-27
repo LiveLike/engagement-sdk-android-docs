@@ -1,4 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">LiveLikeDemo</string>
     <string name="start_ad">Start Ad</string>
     <string name="stop_ad">Stop Ad</string>
@@ -62,6 +64,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_main2">MainActivity2</string>
 
-    <string name="livelike_vote_label">Vote</string>
-    <string name="livelike_voted_label">Voted！</string>
+
+    <string name="livelike_vote_label">वोट</string>
+    <string name="livelike_voted_label">मतदान किया!</string>
 </resources>
