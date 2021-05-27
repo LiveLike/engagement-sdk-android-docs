@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="livelike_vote_label">تصويت</string>
+    <string name="livelike_voted_label">تم التصويت!</string>
+</resources>

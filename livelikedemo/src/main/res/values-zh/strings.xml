@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="livelike_vote_label">投票</string>
+    <string name="livelike_voted_label">投票了！</string>
+
+</resources>
