@@ -243,7 +243,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     fun enableLockButton() {
         btn_lock.isEnabled = true
         btn_lock.alpha = 1f
-        btn_lock.invalidate()
     }
 
     fun disableLockButton() {
