@@ -68,7 +68,6 @@ internal class QuizViewModel(
         SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> =
         SubscriptionManager()
-    private val debouncedVoteId = currentVoteId.debounce()
 //    var state: Stream<String> =
 //        SubscriptionManager() // results
     var adapter: WidgetOptionsViewAdapter? = null
@@ -86,13 +85,6 @@ internal class QuizViewModel(
     internal var timeOutJob: Job? = null
 
     init {
-
-        debouncedVoteId.subscribe(javaClass) {
-            if (it != null) {
-                vote()
-            }
-        }
-
         widgetObserver(widgetInfos)
     }
 
@@ -155,7 +147,6 @@ internal class QuizViewModel(
     }
 
     internal suspend fun lockInteractionAndSubmitVote() {
-        debouncedVoteId.unsubscribe(javaClass)
         adapter?.selectionLocked = true
         vote()
         delay(500) // Just refactoring, this line was already here
