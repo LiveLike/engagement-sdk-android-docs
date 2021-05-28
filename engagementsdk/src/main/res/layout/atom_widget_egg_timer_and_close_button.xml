@@ -9,7 +9,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:background="@mipmap/widget_ic_x"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

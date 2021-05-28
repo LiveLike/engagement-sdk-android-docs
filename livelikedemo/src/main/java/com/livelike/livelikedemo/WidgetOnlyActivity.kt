@@ -161,15 +161,15 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
         }
 
-//        val file_name = "themes/customWidgetThemeUpdated.json"
-//        val bufferReader = application.assets.open(file_name).bufferedReader()
-//        val data = bufferReader.use {
-//            it.readText()
-//        }
-//        val element =
-//            LiveLikeEngagementTheme.instanceFrom(JsonParser.parseString(data).asJsonObject)
-//        if (element is Result.Success)
-//            widget_view.applyTheme(element.data)
+        val file_name = "themes/customWidgetThemeUpdated.json"
+        val bufferReader = application.assets.open(file_name).bufferedReader()
+        val data = bufferReader.use {
+            it.readText()
+        }
+        val element =
+            LiveLikeEngagementTheme.instanceFrom(JsonParser.parseString(data).asJsonObject)
+        if (element is Result.Success)
+            widget_view.applyTheme(element.data)
 
         val rnd = java.util.Random()
         btn_change_background.setOnClickListener {

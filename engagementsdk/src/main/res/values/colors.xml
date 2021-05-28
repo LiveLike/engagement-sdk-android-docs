@@ -131,4 +131,6 @@
     <color name="txt_cheer_meter_team_1_color">#FFFFFF</color>
     <color name="txt_cheer_meter_team_2_color">#ffffff</color>
     <color name="livelike_cheer_meter_background_bottom_color">#70000000</color>
+    <color name="livelike_vote_btn_color">#800080</color>
+    <color name="livelike_vote_btn_color_pressed">#AA800080</color>
 </resources>

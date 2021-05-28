@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
+import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.LiveLikeWidget
@@ -36,6 +37,8 @@ internal class TimeLineViewAdapter(
     var isLoadingInProgress = false
     var isEndReached = false
     var liveLikeEngagementTheme: LiveLikeEngagementTheme? = null
+
+    var widgetTimerController: WidgetTimerController? = null
 
     override fun onCreateViewHolder(p0: ViewGroup, viewtype: Int): RecyclerView.ViewHolder {
         return when (viewtype) {
@@ -78,12 +81,16 @@ internal class TimeLineViewAdapter(
                 itemViewHolder.itemView.widget_view.applyTheme(it)
             }
             itemViewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
-            itemViewHolder.itemView.widget_view.showTimer = timelineWidgetResource.widgetState ==
-                    WidgetStates.INTERACTING
+            itemViewHolder.itemView.widget_view.showTimer = widgetTimerController != null
             itemViewHolder.itemView.widget_view.showDismissButton = false
             itemViewHolder.itemView.widget_view.widgetViewFactory = widgetViewFactory
             displayWidget(itemViewHolder, timelineWidgetResource)
-            itemViewHolder.itemView.widget_view.setState(timelineWidgetResource.widgetState)
+            itemViewHolder.itemView.widget_view.setState(
+                maxOf(
+                    timelineWidgetResource.widgetState,
+                    itemViewHolder.itemView.widget_view.getCurrentState() ?: WidgetStates.READY
+                )
+            )
         }
     }
 
@@ -118,16 +125,15 @@ internal class TimeLineViewAdapter(
                     null,
                     SubscriptionManager(),
                     widgetViewThemeAttributes,
-                    engagementSDKTheme
+                    engagementSDKTheme,
+                    (timeLineViewModel.contentSession as ContentSession).widgetInteractionRepository
                 )
             timeLineViewModel.widgetViewModelCache[widgetId]?.let {
                 widgetView?.widgetViewModel = it
             }
             timeLineViewModel.widgetViewModelCache[widgetId] = widgetView?.widgetViewModel
+            widgetView?.widgetViewModel?.showDismissButton = false
             widgetView?.let { view ->
-
-                // this has been added to show/hide animation in result state
-                view.showResultAnimation = (timelineWidgetResource.apiSource == WidgetApiSource.REALTIME_API)
                 displayWidget(widgetType, view)
             }
         }

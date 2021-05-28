@@ -69,6 +69,17 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
+                showResultAnimation = true
+
+                // show timer while widget interaction mode
+                viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
+                    showTimer(timeout, textEggTimer, {
+                        viewModel?.animationEggTimerProgress = it
+                    }, {
+                        viewModel?.dismissWidget(it)
+                    })
+                }
+
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
@@ -91,11 +102,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                                 View.VISIBLE
                             }else{
                                 View.GONE
-                            }
-                        }
-                        listOf(textEggTimer).forEach {
-                            it?.showCloseButton() {
-                                viewModel?.dismissWidget(it)
                             }
                         }
                         viewModel?.points?.let {
@@ -128,11 +134,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                                 View.VISIBLE
                             }else{
                                 View.GONE
-                            }
-                        }
-                        listOf(textEggTimer).forEach {
-                            it?.showCloseButton() {
-                                viewModel?.dismissWidget(it)
                             }
                         }
                         viewModel?.points?.let {
@@ -246,6 +247,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 {
                     viewModel?.adapter?.notifyDataSetChanged()
                     viewModel?.onOptionClicked()
+                    viewModel?.saveInteraction(it)
                 },
                 widget.type,
                 resource.correct_option_id,
@@ -269,6 +271,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 }
 
             textRecyclerView.apply {
+                viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.optionId)
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
@@ -282,13 +285,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     widgetViewThemeAttributes
                 )
             }
-
-
-            showTimer(resource.timeout, textEggTimer, {
-                viewModel?.animationEggTimerProgress = it
-            }, {
-                viewModel?.dismissWidget(it)
-            })
 
             logDebug { "showing PredictionView Widget" }
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)

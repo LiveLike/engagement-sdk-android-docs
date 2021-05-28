@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LiveLikeDemo</string>
+    <string name="start_ad">Start Ad</string>
+    <string name="stop_ad">Stop Ad</string>
+    <string name="channel">Channel</string>
+    <string name="app_id">mOBYul18quffrBDuq2IACKtVuLbUzXIPye5S3bq5</string>
+    <string name="resize_btn_label">Nickname</string>
+    <string name="settings_label">SETTINGS</string>
+    <string name="chat_only_btn_label">Chat Only</string>
+    <string name="orientation_widget_only_btn_label">Widgets with Screen orientation </string>
+    <string name="widgets_only_btn_label">Widgets Only</string>
+    <string name="standalone_label">STANDALONE</string>
+    <string name="events_btn_label">Events</string>
+    <string name="layout_label">LAYOUT</string>
+    <string name="default_channel_label">No Event Channel Selected</string>
+    <string name="default_theme_label">Default Theme</string>
+    <string name="layout_side_content_description">layout side</string>
+    <string name="layout_overlay_content_description">layout overlay</string>
+    <string name="select_event">SELECT EVENT</string>
+    <string name="commands">COMMANDS</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="correct_answer">Correct Answer</string>
+    <string name="wrong_answer">Wrong Answer</string>
+    <string name="command">Command</string>
+    <string name="log">LOG</string>
+    <string name="poll">POLL</string>
+    <string name="text">Text</string>
+    <string name="image">Image</string>
+    <string name="quiz">QUIZ</string>
+    <string name="prediction">PREDICTION</string>
+    <string name="cheerMeter">CHEER_METER</string>
+    <string name="clapping">Clapping</string>
+    <string name="emoji">EMOJI</string>
+    <string name="poll_lowercase">Poll</string>
+    <string name="slider">Slider</string>
+    <string name="alert">ALERT</string>
+    <string name="news">NEWS</string>
+    <string name="stats">STATS</string>
+    <string name="sponsor">SPONSOR</string>
+    <string name="information">INFORMATION</string>
+    <string name="weather">Weather</string>
+    <string name="twitter">Twitter</string>
+    <string name="widget_type">widgetType</string>
+    <string name="widget_variance">widgetVariance</string>
+    <string name="widgets">Widgets</string>
+    <string name="longChatMessage">This is a very long message which demonstrates that chat views will handle
+        150 characters. The number of characters in this message are 150.
+    </string>
+    <string name="theme_btn_label">Themes</string>
+
+    <string name="win_animation_turner">winAnimationTurner</string>
+    <string name="stay_tuned_animation_fan_code">stayTunedFanCode</string>
+    <string name="lose_animation_turner">loseAnimationTurner</string>
+    <string name="widget_framework">Widget Framework</string>
+    <string name="build_details">Build Details</string>
+    <string name="chat_list_is_empty">Chat List is Empty</string>
+    <string name="title_activity_m_m_l">MMLActivity</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main2">MainActivity2</string>
+
+
+    <string name="livelike_vote_label">वोट</string>
+    <string name="livelike_voted_label">मतदान किया!</string>
+</resources>

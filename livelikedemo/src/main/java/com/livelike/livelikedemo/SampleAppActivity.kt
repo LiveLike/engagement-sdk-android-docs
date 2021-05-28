@@ -16,7 +16,7 @@ class SampleAppActivity : AppCompatActivity() {
 
     private var session: LiveLikeContentSession? = null
     private lateinit var channelManager: ChannelManager
-    private lateinit var engagementSDK: EngagementSDK
+    private var engagementSDK: EngagementSDK? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,12 +53,14 @@ class SampleAppActivity : AppCompatActivity() {
         channelManager.selectedChannel.let { channel ->
             if (channel != ChannelManager.NONE_CHANNEL) {
                 session =
-                    engagementSDK.createContentSession(channel.llProgram!!, errorDelegate = object :
-                        ErrorDelegate() {
-                        override fun onError(error: String) {
-                            println("Error:$error")
-                        }
-                    })
+                    engagementSDK?.createContentSession(
+                        channel.llProgram!!,
+                        errorDelegate = object :
+                            ErrorDelegate() {
+                            override fun onError(error: String) {
+                                println("Error:$error")
+                            }
+                        })
                 chat_view.setSession(session!!.chatSession)
 
                 widget_view.setSession(session!!)
@@ -79,5 +81,7 @@ class SampleAppActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         session!!.close()
+        engagementSDK?.close()
+        engagementSDK = null
     }
 }

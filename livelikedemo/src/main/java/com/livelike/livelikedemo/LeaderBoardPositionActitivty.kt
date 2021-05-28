@@ -66,8 +66,8 @@ class LeaderBoardPositionActitivty : AppCompatActivity() {
                                     runOnUiThread {
                                         // Stuff that updates the UI
                                         val textViewRow = TextView(this@LeaderBoardPositionActitivty)
-                                        textViewRow.setTextColor(R.color.colorAccent)
-                                        textViewRow.setText("\"LeaderBoardName\" + ${leaderBoard.name} + \"Rank: \"+ ${currentUserPlacementDidChange.rank}+ \"Percentile\"+ ${currentUserPlacementDidChange.rankPercentile} + \"Score \"+ ${currentUserPlacementDidChange.score}")
+                                        textViewRow.setTextColor(resources.getColor(R.color.colorAccent))
+                                        textViewRow.text = "\"LeaderBoardName\" + ${leaderBoard.name} + \"Rank: \"+ ${currentUserPlacementDidChange.rank}+ \"Percentile\"+ ${currentUserPlacementDidChange.rankPercentile} + \"Score \"+ ${currentUserPlacementDidChange.score}"
                                         leaderBoardLayout.addView(textViewRow)
                                     }
 

@@ -6,6 +6,8 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -21,13 +23,18 @@ import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
+import kotlinx.coroutines.launch
 
 class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
 
@@ -66,6 +73,16 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
+                showResultAnimation = true
+                // show timer while widget interaction mode
+                viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
+                    showTimer(timeout, textEggTimer, {
+                        viewModel?.animationEggTimerProgress = it
+                    }, {
+                        viewModel?.dismissWidget(it)
+                    })
+                }
+                lay_lock.visibility = View.VISIBLE
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
@@ -85,11 +102,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                         AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
                 }
                 resultsObserver(viewModel?.results?.latest())
-                listOf(textEggTimer).forEach { v ->
-                    v?.showCloseButton() {
-                        viewModel?.dismissWidget(it)
-                    }
-                }
+               
                 viewModel?.adapter?.correctOptionId =
                     viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
                 viewModel?.adapter?.userSelectedOptionId =
@@ -167,7 +180,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
             titleView.title = resource.question
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_quiz)
-            textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
+            lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
             titleTextView.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
                 viewModel?.adapter?.apply {
@@ -175,21 +188,31 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.currentVoteId?.onNext(currentSelectionId.id)
                     widgetLifeCycleEventsListener?.onUserInteract(widgetData)
                 }
+                enableLockButton()
             }, type)
 
             widgetsTheme?.let {
                 applyTheme(it)
             }
-
+            disableLockButton()
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
+                viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.choiceId)
                 setHasFixedSize(true)
             }
-            showTimer(resource.timeout, textEggTimer, {
-                viewModel?.animationEggTimerProgress = it
-            }, {
-                viewModel?.dismissWidget(it)
-            })
+            btn_lock.setOnClickListener {
+                if(viewModel?.adapter?.selectedPosition != RecyclerView.NO_POSITION) {
+                    lockVote()
+                    textEggTimer.visibility = GONE
+                }
+            }
+            if (viewModel?.getUserInteraction() != null) {
+                findViewById<TextView>(R.id.label_lock)?.visibility = VISIBLE
+            } else if (viewModel?.adapter?.selectedPosition != RecyclerView.NO_POSITION) {
+                enableLockButton()
+            }
+
+
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
             logDebug { "showing QuizWidget" }
@@ -199,6 +222,33 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             removeAllViews()
             parent?.let { (it as ViewGroup).removeAllViews() }
         }
+    }
+
+    private fun lockVote() {
+        disableLockButton()
+        viewModel?.currentVoteId?.currentData?.let { id ->
+            viewModel?.adapter?.myDataset?.find { it.id == id }?.let { option ->
+                viewModel?.saveInteraction(option)
+            }
+        }
+        label_lock.visibility = View.VISIBLE
+        viewModel?.run {
+            timeOutJob?.cancel()
+            uiScope.launch {
+                lockInteractionAndSubmitVote()
+            }
+        }
+    }
+
+    fun enableLockButton() {
+        btn_lock.isEnabled = true
+        btn_lock.alpha = 1f
+    }
+
+    fun disableLockButton() {
+        lay_lock.visibility = VISIBLE
+        btn_lock.isEnabled = false
+        btn_lock.alpha = 0.5f
     }
 
     private fun lockInteraction() {

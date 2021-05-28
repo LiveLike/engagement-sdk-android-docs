@@ -18,12 +18,17 @@ import com.livelike.engagementsdk.core.utils.debounce
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
+import com.livelike.engagementsdk.formatIsoZoned8601
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.data.models.WidgetKind
+import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
+import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
@@ -31,6 +36,8 @@ import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.DateTimeFormatter
 
 internal class PollWidget(
     val type: WidgetType,
@@ -44,7 +51,8 @@ internal class PollViewModel(
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
-    private val widgetMessagingClient: WidgetManager? = null
+    private val widgetMessagingClient: WidgetManager? = null,
+    val widgetInteractionRepository: WidgetInteractionRepository?
 ) : BaseViewModel(analyticsService), PollWidgetModel {
     lateinit var onWidgetInteractionCompleted: () -> Unit
 
@@ -115,17 +123,31 @@ internal class PollViewModel(
         logDebug { "PollWidget Vote: position:${adapter?.selectedPosition}" }
         uiScope.launch {
             adapter?.run {
-                val url = myDataset[selectedPosition].getMergedVoteUrl()
+                val option = myDataset[selectedPosition]
+                val url = option.getMergedVoteUrl()
                 url?.let {
                     dataClient.voteAsync(
                         it,
-                        myDataset[selectedPosition].id,
+                        option.id,
                         userRepository.userAccessToken,
                         userRepository = userRepository
                     )
                 }
             }
         }
+    }
+
+    internal fun saveInteraction(option: Option) {
+        widgetInteractionRepository?.saveWidgetInteraction(
+            PollWidgetUserInteraction(
+                option.id,
+                "",
+                ZonedDateTime.now().formatIsoZoned8601(),
+                option.getMergedVoteUrl(),
+                widgetInfos.widgetId,
+                widgetInfos.type
+            )
+        )
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
@@ -268,6 +290,13 @@ internal class PollViewModel(
                 }
             }
         }
+    }
+
+    override fun getUserInteraction(): PollWidgetUserInteraction? {
+        return widgetInteractionRepository?.getWidgetInteraction(
+            widgetInfos.widgetId,
+            WidgetKind.fromString(widgetInfos.type)
+        )
     }
 
     override val widgetData: LiveLikeWidget

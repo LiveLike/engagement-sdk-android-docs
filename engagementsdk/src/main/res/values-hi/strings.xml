@@ -32,4 +32,6 @@
     <string name="livelike_chat_alert_blocked_confirm">ठीक</string>
     <string name="livelike_chat_report_message_confirm">ठीक</string>
     <string name="send_message_failed_access_denied">"आप एक संदेश नहीं भेज सकते "</string>
+    <string name="livelike_vote_label">वोट</string>
+    <string name="livelike_voted_label">मतदान किया!</string>
 </resources>

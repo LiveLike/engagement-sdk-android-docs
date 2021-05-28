@@ -82,6 +82,11 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
+                showResultAnimation = true
+
+                // show timer while widget interaction mode
+                viewModel?.data?.latest()?.showTimer()
+
                 viewModel?.results?.subscribe(javaClass.simpleName) {
                     if (isFirstInteraction)
                         resultsObserver(it)
@@ -183,6 +188,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 viewModel?.currentVoteId?.onNext(selectedId)
                 widgetLifeCycleEventsListener?.onUserInteract(widgetData)
                 isFirstInteraction = true
+                viewModel?.saveInteraction(it)
             }, type)
 
             widgetsTheme?.let {
@@ -192,9 +198,11 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.onWidgetInteractionCompleted = { onWidgetInteractionCompleted() }
 
             textRecyclerView.apply {
+                isFirstInteraction = viewModel?.getUserInteraction() !=null
+                viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.optionId)
                 this.adapter = viewModel?.adapter
             }
-            showTimer()
+
             logDebug { "showing PollWidget" }
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)

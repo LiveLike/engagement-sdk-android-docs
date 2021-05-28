@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.widget.widgetModel
 
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
 
@@ -16,5 +17,12 @@ interface PredictionWidgetViewModel : LiveLikeWidgetMediator {
      * lock the answer for prediction
      */
     fun lockInVote(optionID: String)
+
+
+
+    /**
+     * it returns the latest user interaction for the widget
+     */
+    fun getUserInteraction() : PredictionWidgetUserInteraction?
 
 }

@@ -109,6 +109,7 @@ interface AnalyticsService {
         reactionId: String,
         isRemoved: Boolean
     )
+    fun destroy()
 }
 
 class MockAnalyticsService(private val clientId: String = "") : AnalyticsService {
@@ -134,6 +135,13 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d(
             "[Analytics]",
             "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $isRemoved"
+        )
+    }
+
+    override fun destroy() {
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}]"
         )
     }
 
@@ -559,9 +567,6 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         mixpanel.track(KEY_WIDGET_INTERACTION, properties)
         eventObservers[clientId]?.invoke(KEY_WIDGET_INTERACTION, properties)
 
-        val superProp = JSONObject()
-        superProp.put("Time of Last Widget Interaction", timeOfLastInteraction)
-        mixpanel.registerSuperProperties(superProp)
         Log.d(
             "[Analytics]",
             "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId $interactionInfo"
@@ -651,6 +656,14 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         Log.d(
             "[Analytics]",
             "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $isRemoved"
+        )
+    }
+
+    override fun destroy() {
+        mixpanel.flush()
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}]"
         )
     }
 
@@ -761,10 +774,6 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
 
     override fun trackWidgetReceived(kind: String, id: String) {
         val properties = JSONObject()
-        properties.put(
-            "Time Of Last Widget Receipt",
-            parser.format(Date(System.currentTimeMillis()))
-        )
         properties.put("Widget Type", kind)
         properties.put("Widget Id", id)
         mixpanel.track(KEY_WIDGET_RECEIVED, properties)

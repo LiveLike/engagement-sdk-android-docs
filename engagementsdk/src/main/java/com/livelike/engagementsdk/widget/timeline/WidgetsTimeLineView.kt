@@ -4,11 +4,15 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.FrameLayout
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.R
@@ -16,6 +20,8 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
+import com.livelike.engagementsdk.widget.data.models.WidgetKind
+import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 import com.livelike.engagementsdk.widget.util.SmoothScrollerLinearLayoutManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
@@ -35,6 +41,7 @@ class WidgetsTimeLineView(
     private var showingSnapToLive: Boolean = false
     private var isFirstItemVisible = false
     private var autoScrollTimeline = false
+    private var separator:Drawable? = null
 
     // The minimum amount of items to have below your current scroll position
     // before loading more.
@@ -50,6 +57,33 @@ class WidgetsTimeLineView(
             field = value
         }
 
+
+    /**
+     * configuring this controlled will allow to control the timer in widget
+     * By default there will be no timer, interaction duration will be kept indefinite
+     * to have cms defined interaction timer simple use:
+     *  widgetsTimeLineView.widgetTimerController = CMSSpecifiedDurationTimer()
+     **/
+    var widgetTimerController: WidgetTimerController? = null
+        set(value) {
+            field = value
+            adapter.widgetTimerController = field
+        }
+
+    /**
+     * this will add custom separator/divider (drawables) between widgets in timeline
+     * * @param Drawable
+     **/
+    fun setSeparator(customSeparator: Drawable?) {
+        this.separator = customSeparator
+        separator?.let {
+            val itemDecoration = DividerItemDecoration(context, VERTICAL)
+            itemDecoration.setDrawable(it)
+            timeline_rv.addItemDecoration(itemDecoration)
+        }
+    }
+
+
     init {
         inflate(context, R.layout.livelike_timeline_view, this)
 
@@ -63,9 +97,8 @@ class WidgetsTimeLineView(
                 sdk,
                 timeLineViewModel
             )
+        adapter.widgetTimerController = widgetTimerController
         adapter.list.addAll(timeLineViewModel.timeLineWidgets)
-        /*timeline_rv.layoutManager =
-            LinearLayoutManager(context)*/
         timeline_rv.layoutManager = SmoothScrollerLinearLayoutManager(context)
         timeline_rv.adapter = adapter
         initListeners()
@@ -111,26 +144,31 @@ class WidgetsTimeLineView(
     private fun subscribeForTimelineWidgets() {
         timeLineViewModel.timeLineWidgetsStream.subscribe(this) { pair ->
             pair?.let {
+                lockInteracatedWidgetsWithoutPatchUrl(pair.second) // will remove this logic when backend adds patch_url
+                lockAlreadyInteractedQuizAndEmojiSlider(pair.second)
+                wouldLockPredictionWidgets(pair.second) // if follow up is received lock prediction interaction
+                // changing timeout value for widgets when widgetTimerController is configured
+                widgetTimerController?.run {
+                    it.second.forEach { widget ->
+                        if (widget.widgetState == WidgetStates.INTERACTING) {
+                            widget.liveLikeWidget.timeout = this.timeValue(widget.liveLikeWidget)
+                            timeLineViewModel.uiScope.launch {
+                                delay(
+                                    AndroidResource.parseDuration(
+                                        pair.second[0].liveLikeWidget.timeout ?: ""
+                                    )
+                                )
+                                pair.second[0]?.widgetState = WidgetStates.RESULTS
+                                adapter.notifyItemChanged(adapter.list.indexOf(widget))
+                            }
+                        }
+                    }
+                }
+                print("oh my god")
                 if (pair.first == WidgetApiSource.REALTIME_API) {
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
                     wouldRetreatToActiveWidgetPosition()
-                    timeLineViewModel.uiScope.launch {
-                        delay(
-                            AndroidResource.parseDuration(
-                                pair.second[0].liveLikeWidget.timeout ?: ""
-                            )
-                        )
-                        pair.second[0]?.widgetState = WidgetStates.RESULTS
-                        adapter.notifyItemChanged(0)
-
-                        // added this, so that animation is shown only once hence changed the API source to history api
-                        delay(2600)
-                        adapter.list[0].apiSource = WidgetApiSource.HISTORY_API
-                        adapter.notifyItemChanged(0)
-
-
-                    }
                 } else {
                     adapter.list.addAll(pair.second)
                     adapter.notifyItemRangeInserted(
@@ -139,6 +177,55 @@ class WidgetsTimeLineView(
                     )
                     adapter.isLoadingInProgress = false
                 }
+            }
+        }
+    }
+
+    private fun lockInteracatedWidgetsWithoutPatchUrl(widgets: List<TimelineWidgetResource>) {
+        widgets.forEach {
+            val kind = it.liveLikeWidget.kind
+            if (kind?.contains(WidgetKind.POLL.event) == true || kind?.contains(WidgetKind.PREDICTION.event) == true) {
+                if ((timeLineViewModel.contentSession as ContentSession)?.widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
+                        it.liveLikeWidget.id?:"",
+                        WidgetKind.fromString(kind)
+                    ) != null
+                ) {
+                    it.widgetState = WidgetStates.RESULTS
+                }
+            }
+        }
+
+    }
+
+    private fun lockAlreadyInteractedQuizAndEmojiSlider(widgets: List<TimelineWidgetResource>) {
+        widgets.forEach {
+            val kind = it.liveLikeWidget.kind
+            if (kind == WidgetKind.IMAGE_SLIDER.event || kind?.contains(WidgetKind.QUIZ.event) == true) {
+                if ((timeLineViewModel.contentSession as ContentSession)?.widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
+                        it.liveLikeWidget.id?:"",
+                        WidgetKind.fromString(kind)
+                    ) != null
+                ) {
+                    it.widgetState = WidgetStates.RESULTS
+                }
+            }
+        }
+    }
+
+    private fun wouldLockPredictionWidgets(widgets: List<TimelineWidgetResource>) {
+        var followUpWidgetPredictionIds = widgets.filter {
+            it.liveLikeWidget.kind?.contains("follow-up") ?: false
+        }.map { it.liveLikeWidget.textPredictionId ?: it.liveLikeWidget.imagePredictionId }
+
+        widgets.forEach { widget ->
+            if (followUpWidgetPredictionIds.contains(widget.liveLikeWidget.id)) {
+                widget.widgetState = WidgetStates.RESULTS
+            }
+        }
+        adapter.list.forEach { widget ->
+            if (followUpWidgetPredictionIds.contains(widget.liveLikeWidget.id) && widget.widgetState == WidgetStates.INTERACTING) {
+                widget.widgetState = WidgetStates.RESULTS
+                adapter.notifyItemChanged(adapter.list.indexOf(widget))
             }
         }
     }

@@ -90,6 +90,17 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
+                showResultAnimation = true
+
+                // show timer while widget interaction mode
+                viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
+                    showTimer(timeout, textEggTimer, {
+                        viewModel?.animationEggTimerProgress = it
+                    }, {
+                        viewModel?.dismissWidget(it)
+                    })
+                }
+
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
@@ -260,11 +271,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 playAnimation()
             }
 
-            showTimer(resource.timeout, textEggTimer, {
-                viewModel?.animationEggTimerProgress = it
-            }, {
-                viewModel?.dismissWidget(it)
-            })
             logDebug { "Showing CheerMeter Widget" }
             if (widgetViewModel?.widgetState?.latest() == null)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
@@ -285,7 +291,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             var handler = Handler(Looper.getMainLooper())
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 // when tapped for first time
-                if (viewModel?.totalVoteCount == 0 && v.isClickable) {
+                if (v.isClickable) {
                     this@CheerMeterView.clearStartingAnimations()
                 }
                 when (event.action) {
@@ -350,7 +356,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun clearStartingAnimations() {
         img_logo_team_1.clearAnimation()
         img_logo_team_2.clearAnimation()
-        lottie_vs_animation.visibility = View.INVISIBLE
+        lottie_vs_animation.visibility = View.GONE
 //        collapse(lottie_vs_animation, 500, 0)
     }
 

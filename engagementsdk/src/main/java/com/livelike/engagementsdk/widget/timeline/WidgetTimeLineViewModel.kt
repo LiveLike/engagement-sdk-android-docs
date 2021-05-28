@@ -17,8 +17,8 @@ import kotlinx.coroutines.launch
  * @contentSession: object of LiveLikeContentSession
  * predicate for filtering the widgets to only specific kind of widgets
  */
-class WidgetTimeLineViewModel(
-    private val contentSession: LiveLikeContentSession,
+open class WidgetTimeLineViewModel(
+    internal val contentSession: LiveLikeContentSession,
     private val predicate: (LiveLikeWidget) -> Boolean = { _ -> true }
 ) : ViewModel() {
 
@@ -27,6 +27,10 @@ class WidgetTimeLineViewModel(
      **/
     val timeLineWidgets = mutableListOf<TimelineWidgetResource>()
 
+    /**
+     * public stream of widgets that can be observed to build custom timeline view or to know source of individual widgets
+     * currently there are 2 source of widgets: real-time  or history api(past widgets)
+     **/
     val timeLineWidgetsStream: Stream<Pair<WidgetApiSource, List<TimelineWidgetResource>>> =
         SubscriptionManager(false)
 
@@ -127,7 +131,7 @@ class WidgetTimeLineViewModel(
         return timeLineWidgets.find { it.liveLikeWidget.id == liveLikeWidget.id }?.widgetState == WidgetStates.INTERACTING
     }
 
-    private fun decideWidgetInteraction(
+    open fun decideWidgetInteraction(
         liveLikeWidget: LiveLikeWidget,
         timeLineWidgetApiSource: WidgetApiSource
     ): WidgetStates {

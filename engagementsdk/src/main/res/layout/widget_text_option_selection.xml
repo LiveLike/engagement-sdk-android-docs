@@ -50,7 +50,7 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textRecyclerView">
+        app:layout_constraintTop_toBottomOf="@+id/lay_textRecyclerView">
 
         <com.livelike.engagementsdk.widget.view.components.PointView
             android:id="@+id/pointView"
@@ -68,30 +68,40 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/pointView" />
     </LinearLayout>
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/textRecyclerView"
+    <LinearLayout
+        android:id="@+id/lay_textRecyclerView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/answer_background_last_item"
-        android:hapticFeedbackEnabled="true"
         android:orientation="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleView"
-        tools:itemCount="4"
-        tools:listitem="@layout/atom_widget_image_item" />
+        app:layout_constraintTop_toBottomOf="@+id/titleView">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/textRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hapticFeedbackEnabled="true"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="4"
+            tools:listitem="@layout/atom_widget_image_item" />
+
+        <include
+            layout="@layout/common_lock_btn_lay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <com.livelike.engagementsdk.widget.view.components.ConfirmMessageView
         android:id="@+id/confirmationMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/textRecyclerView"
-        app:layout_constraintEnd_toEndOf="@+id/textRecyclerView"
-        app:layout_constraintStart_toStartOf="@+id/textRecyclerView"
+        app:layout_constraintBottom_toBottomOf="@+id/lay_textRecyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/lay_textRecyclerView"
+        app:layout_constraintStart_toStartOf="@+id/lay_textRecyclerView"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="gone" />
 
@@ -104,9 +114,9 @@
         android:padding="0dp"
         android:scaleType="fitCenter"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/textRecyclerView"
-        app:layout_constraintEnd_toEndOf="@+id/textRecyclerView"
-        app:layout_constraintStart_toStartOf="@+id/textRecyclerView"
+        app:layout_constraintBottom_toBottomOf="@+id/lay_textRecyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/lay_textRecyclerView"
+        app:layout_constraintStart_toStartOf="@+id/lay_textRecyclerView"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="invisible" />
 

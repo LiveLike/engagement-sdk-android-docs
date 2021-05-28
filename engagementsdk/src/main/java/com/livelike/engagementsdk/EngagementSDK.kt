@@ -670,6 +670,15 @@ class EngagementSDK(
             }
     }
 
+    /**
+     * Closing all the services , stream and clear the variable
+     * TODO: all stream close,instance clear
+     */
+    override fun close() {
+        analyticService.latest()?.destroy()
+        analyticService.clear()
+    }
+
     internal suspend fun getChatRoom(chatRoomId: String): Flow<Result<ChatRoom>> {
         return flow {
             configurationUserPairFlow.collect {

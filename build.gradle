@@ -16,10 +16,10 @@ buildscript {
         exoplayerVersion = "2.9.3"
         coroutinesVersion = "1.4.1"
         glideVersion = '4.12.0'
-        gradleVersion = '3.5.0'
+        gradleVersion = '4.2.1'
         gsonVersion = '2.8.6'
         junitVersion = '4.13.2'
-        kotlinVersion = '1.4.21'
+        kotlinVersion = '1.5.0-RC'
         ktlintVersion = '0.30.0'
         lottieVersion = '3.5.0'
         mavenPluginVersion = '2.1'
@@ -36,7 +36,6 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
         maven { url 'https://repo.gradle.org/gradle/libs-releases' }
     }
 
@@ -59,6 +58,7 @@ plugins {
 allprojects {
     repositories {
         google()
+        mavenCentral()
         jcenter()
         maven { url 'https://jitpack.io' }
     }

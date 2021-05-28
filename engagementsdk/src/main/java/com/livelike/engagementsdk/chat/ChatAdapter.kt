@@ -147,6 +147,7 @@ internal class ChatRecyclerAdapter(
         private var message: ChatMessage? = null
         private val bounceAnimation: Animation =
             AnimationUtils.loadAnimation(v.context, R.anim.bounce_animation)
+        @SuppressLint("StringFormatInvalid")
         private val dialogOptions = listOf(
             v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {
@@ -439,10 +440,11 @@ internal class ChatRecyclerAdapter(
             }
         }
 
-        fun hideFloatingUI() {
+        private fun hideFloatingUI() {
             if (chatPopUpView?.isShowing == true)
                 chatPopUpView?.dismiss()
             chatPopUpView = null
+            lastFloatingUiAnchorView = null
             if (mRecyclerView?.isComputingLayout == false && mRecyclerView?.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
                 //Add check for checking computing and check with current adapter position
                 if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
@@ -732,13 +734,13 @@ internal class ChatRecyclerAdapter(
                                 }
                             }
                             !isDeleted && atLeastOneSticker -> {
-                                var columnCount = numberOfStickers / 5
+                                var columnCount = numberOfStickers / 8
                                 val lines = message.message?.withoutStickers()?.getLinesCount() ?: 0
                                 if (columnCount == 0) {
                                     columnCount = 1
                                 }
                                 chatMessage.minHeight =
-                                    (AndroidResource.dpToPx(MEDIUM_STICKER_SIZE) * columnCount) + when {
+                                    (chatMessageTextSize.toInt() * columnCount) + when {
                                         lines != columnCount -> (lines * chatMessageTextSize.toInt())
                                         else -> 0
                                     }
@@ -749,7 +751,7 @@ internal class ChatRecyclerAdapter(
                                     stickerPackRepository,
                                     null,
                                     callback,
-                                    MEDIUM_STICKER_SIZE
+                                    SMALL_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     if (chatMessage.tag == message.id)
@@ -866,3 +868,4 @@ internal class ChatRecyclerAdapter(
 // const val should be in uppercase always
 private const val LARGER_STICKER_SIZE = 100
 private const val MEDIUM_STICKER_SIZE = 50
+private const val SMALL_STICKER_SIZE = 28
