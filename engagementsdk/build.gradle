@@ -30,6 +30,18 @@ android {
         buildConfigField "String", "SDK_VERSION", '"2.17"'
     }
 
+    afterEvaluate {
+        publishing {
+            publications {
+                // creating a release publication
+                release(MavenPublication) {
+                    from components.productionRelease
+                    version = '2.17'
+                }
+            }
+        }
+    }
+    
     buildTypes {
         debug {}
         release {
