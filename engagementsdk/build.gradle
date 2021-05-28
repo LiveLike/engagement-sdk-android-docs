@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'maven-publish'
 
-
 group = 'com.livelike'
 
 android {
@@ -36,6 +35,8 @@ android {
                 // creating a release publication
                 release(MavenPublication) {
                     from components.productionRelease
+                    groupId =  'com.livelike.android-engagement-sdk'
+                    artifactId = 'engagementsdk'
                     version = '2.17'
                 }
             }
