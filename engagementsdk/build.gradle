@@ -37,7 +37,7 @@ android {
                     from components.productionRelease
                     groupId =  'com.livelike.android-engagement-sdk'
                     artifactId = 'engagementsdk'
-                    version = '2.17'
+                    version = '2.17.0-test'
                 }
             }
         }
