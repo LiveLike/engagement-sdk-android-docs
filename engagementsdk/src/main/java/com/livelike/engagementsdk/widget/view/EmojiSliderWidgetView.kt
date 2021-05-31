@@ -97,7 +97,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                     entity.initialMagnitude?.let {
                         image_slider.progress = it
                     }
-                disableLockButton()
+                enableLockButton()
                 if (viewModel.getUserInteraction() != null) {
                     label_lock.visibility = VISIBLE
                 }
@@ -140,6 +140,9 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                     }
                 }
                 btn_lock.setOnClickListener {
+                    if(viewModel.currentVote.currentData == null){
+                        viewModel.currentVote.onNext(image_slider.progress.toString())
+                    }
                     viewModel.currentVote.currentData?.let {
                         lockVote()
                         viewModel?.saveInteraction(it.toFloat(), entity.voteUrl)
