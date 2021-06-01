@@ -103,7 +103,6 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                 }
                 viewModel.currentVote.currentData?.let {
                     image_slider.progress = it.toFloat()
-                    enableLockButton()
                 }
                 val size = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
@@ -157,7 +156,9 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                             ).toFloat()
                         }"
                     )
-                    enableLockButton()
+                }
+                viewModel?.getUserInteraction()?.run {
+                    disableLockButton()
                 }
             }
         }
