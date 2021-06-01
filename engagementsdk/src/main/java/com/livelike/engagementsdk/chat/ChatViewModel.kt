@@ -56,7 +56,7 @@ internal class ChatViewModel(
     var deletedMessages = hashSetOf<String>()
 
     internal val eventStream: Stream<String> =
-        SubscriptionManager(false)
+        SubscriptionManager(true)
     var currentChatRoom: ChatRoom? = null
         set(value) {
             field = value

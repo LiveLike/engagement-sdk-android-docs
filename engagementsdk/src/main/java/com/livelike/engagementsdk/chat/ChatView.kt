@@ -587,7 +587,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         return super.dispatchTouchEvent(ev)
     }
 
-    private var isLastItemVisible = false
+    private var isLastItemVisible = true
     private var autoScroll = false
 
     /**
