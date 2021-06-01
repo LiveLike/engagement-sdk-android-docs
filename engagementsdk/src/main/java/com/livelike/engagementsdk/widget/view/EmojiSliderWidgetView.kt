@@ -176,6 +176,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
 
 
     fun enableLockButton() {
+        lay_lock.visibility = VISIBLE
         btn_lock.isEnabled = true
         btn_lock.alpha = 1f
     }
