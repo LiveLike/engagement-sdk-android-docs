@@ -19,6 +19,7 @@ import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
@@ -158,7 +159,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.fontFamilyProvider = fontFamilyProvider
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        textRecyclerView.background = it
+                        lay_textRecyclerView.background = it
                     }
                 }
             }
@@ -175,7 +176,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 inflate(context, R.layout.widget_text_option_selection, this@PollView)
             }
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
-            textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_poll)
+            lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_poll)
 
             titleView.title = resource.question
             // TODO: update header background with margin or padding

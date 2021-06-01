@@ -25,6 +25,7 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
@@ -223,7 +224,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        textRecyclerView.background = it
+                        lay_textRecyclerView.background = it
                     }
                 }
             }
@@ -240,7 +241,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
 
             titleView.title = resource.question
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
-            textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
+            lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
             titleTextView.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(
                 optionList,
