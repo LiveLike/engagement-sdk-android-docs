@@ -163,7 +163,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        textRecyclerView.background = it
+                        lay_textRecyclerView.background = it
                     }
                 }
             }
