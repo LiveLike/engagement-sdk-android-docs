@@ -88,6 +88,7 @@ internal class ChatViewModel(
             chatAdapter.chatRepository = value
         }
     var reportUrl: String? = null
+    var isLastItemVisible = true
 
     internal var chatLoaded = false
         set(value) {

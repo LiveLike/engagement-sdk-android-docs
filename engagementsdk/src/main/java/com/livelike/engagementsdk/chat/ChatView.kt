@@ -292,7 +292,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         // Auto scroll if user is looking at the latest messages
                         autoScroll = true
                         checkEmptyChat()
-                        if (isLastItemVisible && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
+                        if (viewModel?.isLastItemVisible == true && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
                                 .not()
                         ) {
                             snapToLive()
@@ -587,7 +587,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         return super.dispatchTouchEvent(ev)
     }
 
-    private var isLastItemVisible = true
+    //private var isLastItemVisible = true
     private var autoScroll = false
 
     /**
@@ -610,7 +610,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
                     val endHasBeenReached = lastVisible + 5 >= totalItemCount
                     if (!autoScroll)
-                        isLastItemVisible = if (totalItemCount > 0 && endHasBeenReached) {
+                        viewModel?.isLastItemVisible = if (totalItemCount > 0 && endHasBeenReached) {
                             hideSnapToLive()
                             true
                         } else {
