@@ -69,13 +69,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             else -> viewModel.data.latest()
         }
         image_slider.averageProgress = result?.averageMagnitude ?: image_slider.progress
-
-        //Commenting this code as we have to update image and red pointer both iin resul stage
-//        if (!didUserVote) {
-        result?.averageMagnitude?.let {
-            image_slider.progress = it
-        }
-//        }
+        
         logDebug { "EmojiSlider Widget showing result value:${image_slider.averageProgress}" }
     }
 
@@ -103,8 +97,13 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                     entity.initialMagnitude?.let {
                         image_slider.progress = it
                     }
+                disableLockButton()
+                if (viewModel.getUserInteraction() != null) {
+                    label_lock.visibility = VISIBLE
+                }
                 viewModel.currentVote.currentData?.let {
                     image_slider.progress = it.toFloat()
+                    enableLockButton()
                 }
                 val size = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
@@ -141,8 +140,9 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                     }
                 }
                 btn_lock.setOnClickListener {
-                    if (viewModel.currentVote.currentData != null) {
+                    viewModel.currentVote.currentData?.let {
                         lockVote()
+                        viewModel?.saveInteraction(it.toFloat(), entity.voteUrl)
                         textEggTimer.visibility = GONE
                     }
                 }
@@ -156,7 +156,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                             ).toFloat()
                         }"
                     )
-                    viewModel?.saveInteraction(magnitude = magnitude, entity.voteUrl)
+                    enableLockButton()
                 }
             }
         }
@@ -180,6 +180,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
     }
 
     fun disableLockButton() {
+        lay_lock.visibility = VISIBLE
         btn_lock.isEnabled = false
         btn_lock.alpha = 0.5f
     }

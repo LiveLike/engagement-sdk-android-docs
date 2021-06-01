@@ -32,5 +32,7 @@
     <string name="livelike_chat_alert_blocked_confirm">好</string>
     <string name="livelike_chat_report_message_confirm">好</string>
     <string name="send_message_failed_access_denied">"您无法发送消息 "</string>
+    <string name="livelike_vote_label">投票</string>
+    <string name="livelike_voted_label">投票了！</string>
 
 </resources>

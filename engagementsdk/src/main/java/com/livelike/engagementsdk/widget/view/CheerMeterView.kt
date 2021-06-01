@@ -291,7 +291,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             var handler = Handler(Looper.getMainLooper())
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 // when tapped for first time
-                if (viewModel?.totalVoteCount == 0 && v.isClickable) {
+                if (v.isClickable) {
                     this@CheerMeterView.clearStartingAnimations()
                 }
                 when (event.action) {
@@ -356,7 +356,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun clearStartingAnimations() {
         img_logo_team_1.clearAnimation()
         img_logo_team_2.clearAnimation()
-        lottie_vs_animation.visibility = View.INVISIBLE
+        lottie_vs_animation.visibility = View.GONE
 //        collapse(lottie_vs_animation, 500, 0)
     }
 

@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
@@ -186,26 +187,31 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     val currentSelectionId = myDataset[selectedPosition]
                     viewModel?.currentVoteId?.onNext(currentSelectionId.id)
                     widgetLifeCycleEventsListener?.onUserInteract(widgetData)
-                    viewModel?.saveInteraction(it)
                 }
+                enableLockButton()
             }, type)
 
             widgetsTheme?.let {
                 applyTheme(it)
             }
-
+            disableLockButton()
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.choiceId)
                 setHasFixedSize(true)
             }
-
             btn_lock.setOnClickListener {
                 if(viewModel?.adapter?.selectedPosition != RecyclerView.NO_POSITION) {
                     lockVote()
                     textEggTimer.visibility = GONE
                 }
             }
+            if (viewModel?.getUserInteraction() != null) {
+                findViewById<TextView>(R.id.label_lock)?.visibility = VISIBLE
+            } else if (viewModel?.adapter?.selectedPosition != RecyclerView.NO_POSITION) {
+                enableLockButton()
+            }
+
 
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
@@ -220,6 +226,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun lockVote() {
         disableLockButton()
+        viewModel?.currentVoteId?.currentData?.let { id ->
+            viewModel?.adapter?.myDataset?.find { it.id == id }?.let { option ->
+                viewModel?.saveInteraction(option)
+            }
+        }
         label_lock.visibility = View.VISIBLE
         viewModel?.run {
             timeOutJob?.cancel()
@@ -235,6 +246,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     fun disableLockButton() {
+        lay_lock.visibility = VISIBLE
         btn_lock.isEnabled = false
         btn_lock.alpha = 0.5f
     }
