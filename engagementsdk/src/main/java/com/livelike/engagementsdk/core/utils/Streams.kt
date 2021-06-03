@@ -89,21 +89,21 @@ internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L): Subscr
         .let { mgr ->
             val source = this
             val handler = Handler(Looper.getMainLooper())
-            var running = false
+           // var running = false
 
             fun runnable(): Runnable {
                 return Runnable {
-                    running = false
+                    //running = false
                     mgr.onNext(source.currentData)
                 }
             }
 
             source.subscribe(source::class.java.simpleName) {
-                if (!running) {
-                    running = true
-                    handler.removeCallbacks(runnable())
+               /* if (!running) {
+                    running = true*/
+                    handler.removeCallbacksAndMessages(null)
                     handler.postDelayed(runnable(), duration)
-                }
+               // }
             }
 
             return mgr
