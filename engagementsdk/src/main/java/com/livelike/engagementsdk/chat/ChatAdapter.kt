@@ -668,10 +668,10 @@ internal class ChatRecyclerAdapter(
                             Glide.with(context)
                                 .load(R.drawable.default_avatar)
                                 .apply(options)
+                                .placeholder(chatUserPicDrawable)
                                 .into(img_chat_avatar)
 
                         } else {
-
                             Glide.with(context).load(message.senderDisplayPic)
                                 .apply(options)
                                 .placeholder(chatUserPicDrawable)
