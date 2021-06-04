@@ -84,7 +84,7 @@ internal fun <X, Y> Stream<X>.combineLatestOnce(
     return pairedStream
 }
 
-internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L): SubscriptionManager<T> =
+internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 300L): SubscriptionManager<T> =
     SubscriptionManager<T>()
         .let { mgr ->
             val source = this
