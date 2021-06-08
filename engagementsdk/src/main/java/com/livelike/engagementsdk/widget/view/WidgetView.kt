@@ -36,7 +36,6 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     internal var widgetContainerViewModel: WidgetContainerViewModel? =
         WidgetContainerViewModel(SubscriptionManager())
     internal val widgetViewThemeAttributes = WidgetViewThemeAttributes()
-    internal val widgetInteractionRepository = WidgetInteractionRepository(context)
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
         set(value) {
             field = value
@@ -168,6 +167,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 "$widgetType-created"
             }
             val widgetId = widgetResourceJson["id"].asString
+            val programId = widgetResourceJson.get("program_id").asString
             widgetContainerViewModel?.analyticsService = sdk.analyticService.latest()
             widgetContainerViewModel?.currentWidgetViewStream?.onNext(
                 Pair(
@@ -187,7 +187,8 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                             SubscriptionManager(),
                             widgetViewThemeAttributes,
                             engagementSDKTheme,
-                            widgetInteractionRepository
+                            WidgetInteractionRepository(context, programId, sdk.userRepository,
+                                sdk.configurationStream.latest()?.programDetailUrlTemplate)
                         )
                 )
             )

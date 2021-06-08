@@ -356,64 +356,35 @@ internal class PredictionViewModel(
             )
     }
 
-    override fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<PredictionWidgetUserInteraction>) {
-        if(getUserInteraction() != null){
-            liveLikeCallback.onResponse(
-                getUserInteraction()
-                , null
-            )
-        }else {
-            llDataClient.getProgramData(
-                sdkConfiguration.programDetailUrlTemplate.replace(
-                    TEMPLATE_PROGRAM_ID,
-                    programId
-                )
-            ) { program, _ ->
-                when {
-                    program?.widgetInteractionUrl != null -> {
-                        uiScope.launch {
-                            var url =
-                                userRepository.currentUserStream.latest()?.id?.let {
-                                    program.widgetInteractionUrl.replace(
-                                        "{profile_id}",
-                                        it
-                                    )
-                                } ?: ""
+    override fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>) {
+        uiScope.launch {
+            try {
+                val results =
+                    widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
 
-                            val widgetKind =
-                                if (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_PREDICTION) "text_prediction" else "image_prediction"
-
-                            if (url.isNotEmpty()) {
-                                url += "?${widgetKind}_id=${widgetInfos.widgetId}"
-                            }
-                            try {
-                                userRepository.userAccessToken?.let {
-                                    val results =
-                                        widgetInteractionRepository?.fetchAndStoreWidgetInteractions(
-                                            url,
-                                            it
-                                        )
-                                    if (results is Result.Success) {
-                                        liveLikeCallback.onResponse(
-                                            getUserInteraction(), null
-                                        )
-                                    } else {
-                                        liveLikeCallback.onResponse(
-                                            null, null
-                                        )
-                                    }
-                                }
-
-                            } catch (e: JsonParseException) {
-                                e.printStackTrace()
-                                liveLikeCallback.onResponse(null, e.message)
-                            } catch (e: IOException) {
-                                e.printStackTrace()
-                                liveLikeCallback.onResponse(null, e.message)
-                            }
-                        }
+                if (results is Result.Success) {
+                    if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_PREDICTION){
+                        logDebug { "network-interaction-poll${results.data.interactions.textPrediction?.get(0)?.optionId}" }
+                        liveLikeCallback.onResponse(
+                            results.data.interactions.textPrediction, null
+                        )
+                    }else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_PREDICTION){
+                        logDebug { "network-interaction-poll${results.data.interactions.imagePrediction?.get(0)?.optionId}" }
+                        liveLikeCallback.onResponse(
+                            results.data.interactions.imagePrediction, null
+                        )
                     }
+                } else {
+                    liveLikeCallback.onResponse(
+                        null, null
+                    )
                 }
+            } catch (e: JsonParseException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
             }
         }
     }

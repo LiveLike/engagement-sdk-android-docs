@@ -138,70 +138,28 @@ internal class EmojiSliderWidgetViewModel(
             )
     }
 
-    override fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<EmojiSliderUserInteraction>) {
-        if(getUserInteraction() != null){
-            liveLikeCallback.onResponse(
-                getUserInteraction()
-                , null
-            )
-        }else {
-            llDataClient.getProgramData(
-                sdkConfiguration.programDetailUrlTemplate.replace(
-                    TEMPLATE_PROGRAM_ID,
-                    programId
-                )
-            ) { program, _ ->
-                when {
-                    program?.widgetInteractionUrl != null -> {
-                        uiScope.launch {
-                            var url =
-                                userRepository.currentUserStream.latest()?.id?.let {
-                                    program.widgetInteractionUrl.replace(
-                                        "{profile_id}",
-                                        it
-                                    )
-                                } ?: ""
+    override fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<List<EmojiSliderUserInteraction>>) {
+        uiScope.launch {
+            try {
+                val results =
+                    widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
 
-                            if (url.isNotEmpty()) {
-                                url += "?emoji_slider_id=${widgetInfos.widgetId}"
-                            }
-
-                            try {
-                                userRepository.userAccessToken?.let {
-                                    val results =
-                                        widgetInteractionRepository?.fetchAndStoreWidgetInteractions(
-                                            url,
-                                            it
-                                        )
-                                    if (results is Result.Success) {
-                                        logDebug {
-                                            "interaction-response- ${
-                                                results.data.interactions?.emojiSlider?.get(
-                                                    0
-                                                )?.magnitude
-                                            }"
-                                        }
-                                        liveLikeCallback.onResponse(
-                                            getUserInteraction(), null
-                                        )
-
-                                    } else {
-                                        liveLikeCallback.onResponse(
-                                            null, null
-                                        )
-                                    }
-                                }
-
-                            } catch (e: JsonParseException) {
-                                e.printStackTrace()
-                                liveLikeCallback.onResponse(null, e.message)
-                            } catch (e: IOException) {
-                                e.printStackTrace()
-                                liveLikeCallback.onResponse(null, e.message)
-                            }
-                        }
-                    }
+                if (results is Result.Success) {
+                    logDebug { "network-interaction-poll${results.data.interactions.emojiSlider?.get(0)?.magnitude}" }
+                    liveLikeCallback.onResponse(
+                        results.data.interactions.emojiSlider, null
+                    )
+                } else {
+                    liveLikeCallback.onResponse(
+                        null, null
+                    )
                 }
+            } catch (e: JsonParseException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
             }
         }
     }

@@ -30,7 +30,7 @@ interface ImageSliderWidgetModel : LiveLikeWidgetMediator {
     /**
      * returns widget interaction from remote source
      */
-    fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<EmojiSliderUserInteraction>)
+    fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<List<EmojiSliderUserInteraction>>)
 
 
 

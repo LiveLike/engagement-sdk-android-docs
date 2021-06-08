@@ -27,6 +27,6 @@ interface CheerMeterWidgetmodel : LiveLikeWidgetMediator {
     /**
      * returns widget interaction from remote source
      */
-    fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<CheerMeterUserInteraction>)
+    fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<List<CheerMeterUserInteraction>>)
 
 }

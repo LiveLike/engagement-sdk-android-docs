@@ -31,6 +31,6 @@ interface PredictionWidgetViewModel : LiveLikeWidgetMediator {
     /**
      * returns widget interaction from remote source
      */
-    fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<PredictionWidgetUserInteraction>)
+    fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>)
 
 }

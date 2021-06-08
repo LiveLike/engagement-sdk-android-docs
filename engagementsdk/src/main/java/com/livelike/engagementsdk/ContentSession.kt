@@ -244,6 +244,7 @@ internal class ContentSession(
             .subscribe(this) {
                 it?.let { pair ->
                     val configuration = pair.second
+                    programRepository.programUrlTemplate = configuration.programDetailUrlTemplate
 
                     logDebug { "analyticService created" }
                     widgetContainer.analyticsService = analyticServiceStream.latest()
@@ -306,8 +307,8 @@ internal class ContentSession(
         }
 
         widgetInteractionRepository =
-           // WidgetInteractionRepository(context = applicationContext, programID = programId)
-        WidgetInteractionRepository(context = applicationContext)
+           WidgetInteractionRepository(context = applicationContext, programID = programId,
+               userRepository = userRepository, programUrlTemplate = programRepository.programUrlTemplate)
     }
 
     private fun startObservingForGamificationAnalytics(
