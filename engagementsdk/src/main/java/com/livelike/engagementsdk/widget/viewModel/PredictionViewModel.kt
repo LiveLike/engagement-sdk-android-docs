@@ -2,27 +2,32 @@ package com.livelike.engagementsdk.widget.viewModel
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.RequestType
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.formatIsoZoned8601
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
 import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
@@ -43,6 +48,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
 import org.threeten.bp.ZonedDateTime
+import java.io.IOException
 
 internal class PredictionWidget(
     val type: WidgetType,
@@ -82,6 +88,7 @@ internal class PredictionViewModel(
     private var programId:String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
+    private var latestUserInteraction : PredictionWidgetUserInteraction? = null
 
     init {
 
@@ -334,14 +341,83 @@ internal class PredictionViewModel(
             }
             // Save widget id and voted option for followup widget
             addWidgetPredictionVoted(widget.resource.id ?: "", option?.id ?: "")
+
+            // save interaction locally
+            if(option!=null) {
+                saveInteraction(option)
+            }
         }
     }
 
     override fun getUserInteraction(): PredictionWidgetUserInteraction? {
-        return widgetInteractionRepository?.getWidgetInteraction(
-            widgetInfos.widgetId,
-            WidgetKind.fromString(widgetInfos.type)
-        )
+        return latestUserInteraction
+            ?: widgetInteractionRepository?.getWidgetInteraction(
+                widgetInfos.widgetId,
+                WidgetKind.fromString(widgetInfos.type)
+            )
+    }
+
+    override fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<PredictionWidgetUserInteraction>) {
+
+        llDataClient.getProgramData(
+            sdkConfiguration.programDetailUrlTemplate.replace(
+                TEMPLATE_PROGRAM_ID,
+                programId
+            )
+        ) { program, _ ->
+            when {
+                program?.widgetInteractionUrl != null -> {
+                    uiScope.launch{
+                        var url =
+                            userRepository.currentUserStream.latest()?.id?.let {
+                                program.widgetInteractionUrl.replace(
+                                    "{profile_id}",
+                                    it
+                                )
+                            } ?: ""
+
+                        val widgetKind = if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_PREDICTION) "text_prediction" else "image_prediction"
+
+                        if(url.isNotEmpty()){
+                            url += "?${widgetKind}_id=${widgetInfos.widgetId}"
+                        }
+                        logDebug { "url value $url" }
+
+                        try {
+                            userRepository.userAccessToken?.let {
+                                val results = widgetInteractionRepository?.fetchAndStoreWidgetInteractions(url, it)
+                                if (results is Result.Success){
+                                    logDebug {"interaction-response- ${results.data.interactions?.textQuiz?.get(0)?.choiceId}"}
+
+                                    latestUserInteraction = if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_PREDICTION){
+                                        results.data.interactions?.textPrediction?.get(results.data.interactions?.textPrediction.size - 1)
+                                    }else {
+                                        results.data.interactions?.imagePrediction?.get(results.data.interactions?.imagePrediction.size - 1)
+                                    }
+
+                                    liveLikeCallback.onResponse(
+                                        getUserInteraction()
+                                        , null
+                                    )
+                                }else{
+                                    liveLikeCallback.onResponse(
+                                        null
+                                        , null
+                                    )
+                                }
+                            }
+
+                        } catch (e: JsonParseException) {
+                            e.printStackTrace()
+                            liveLikeCallback.onResponse(null, e.message)
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                            liveLikeCallback.onResponse(null, e.message)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     internal fun saveInteraction(option: Option) {

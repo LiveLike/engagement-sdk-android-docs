@@ -306,7 +306,8 @@ internal class ContentSession(
         }
 
         widgetInteractionRepository =
-            WidgetInteractionRepository(context = applicationContext, programID = programId)
+           // WidgetInteractionRepository(context = applicationContext, programID = programId)
+        WidgetInteractionRepository(context = applicationContext)
     }
 
     private fun startObservingForGamificationAnalytics(
