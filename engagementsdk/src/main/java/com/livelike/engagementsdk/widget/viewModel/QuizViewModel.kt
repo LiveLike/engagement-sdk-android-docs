@@ -267,53 +267,62 @@ internal class QuizViewModel(
     }
 
     override fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<QuizWidgetUserInteraction>) {
-        llDataClient.getProgramData(
-            sdkConfiguration.programDetailUrlTemplate.replace(
-                TEMPLATE_PROGRAM_ID,
-                programId
+
+        if(getUserInteraction() != null){
+            liveLikeCallback.onResponse(
+                getUserInteraction()
+                , null
             )
-        ) { program, _ ->
-            when {
-                program?.widgetInteractionUrl != null -> {
-                    uiScope.launch{
-                        var url =
-                            userRepository.currentUserStream.latest()?.id?.let {
-                                program.widgetInteractionUrl.replace(
-                                    "{profile_id}",
-                                    it
-                                )
-                            } ?: ""
-
-                        val widgetKind = if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ) "text_quiz" else "image_quiz"
-
-                        if(url.isNotEmpty()){
-                            url += "?${widgetKind}_id=${widgetInfos.widgetId}"
-                        }
-
-                        try {
-                            userRepository.userAccessToken?.let {
-                                val results = widgetInteractionRepository?.fetchAndStoreWidgetInteractions(url, it)
-                                if (results is Result.Success){
-
-                                    logDebug {"interaction-response-quiz ${results?.data.interactions.textQuiz?.get(0)?.choiceId}"}
-                                    liveLikeCallback.onResponse(
-                                        getUserInteraction()
-                                        , null
+        }else {
+            llDataClient.getProgramData(
+                sdkConfiguration.programDetailUrlTemplate.replace(
+                    TEMPLATE_PROGRAM_ID,
+                    programId
+                )
+            ) { program, _ ->
+                when {
+                    program?.widgetInteractionUrl != null -> {
+                        uiScope.launch {
+                            var url =
+                                userRepository.currentUserStream.latest()?.id?.let {
+                                    program.widgetInteractionUrl.replace(
+                                        "{profile_id}",
+                                        it
                                     )
-                                }else{
-                                    liveLikeCallback.onResponse(
-                                        null
-                                        , null
-                                    )
-                                }
+                                } ?: ""
+
+                            val widgetKind =
+                                if (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ) "text_quiz" else "image_quiz"
+
+                            if (url.isNotEmpty()) {
+                                url += "?${widgetKind}_id=${widgetInfos.widgetId}"
                             }
 
-                        } catch (e: JsonParseException) {
-                            e.printStackTrace()
-                            liveLikeCallback.onResponse(null, e.message)
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                            liveLikeCallback.onResponse(null, e.message)
+                            try {
+                                userRepository.userAccessToken?.let {
+                                    val results =
+                                        widgetInteractionRepository?.fetchAndStoreWidgetInteractions(
+                                            url,
+                                            it
+                                        )
+                                    if (results is Result.Success) {
+                                        liveLikeCallback.onResponse(
+                                            getUserInteraction(), null
+                                        )
+                                    } else {
+                                        liveLikeCallback.onResponse(
+                                            null, null
+                                        )
+                                    }
+                                }
+
+                            } catch (e: JsonParseException) {
+                                e.printStackTrace()
+                                liveLikeCallback.onResponse(null, e.message)
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                                liveLikeCallback.onResponse(null, e.message)
+                            }
                         }
                     }
                 }
