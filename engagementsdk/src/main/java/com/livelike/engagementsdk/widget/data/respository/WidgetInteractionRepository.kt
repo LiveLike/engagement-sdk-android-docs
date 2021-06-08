@@ -1,7 +1,9 @@
 package com.livelike.engagementsdk.widget.data.respository
 
 import android.content.Context
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
+import com.livelike.engagementsdk.widget.data.models.UserWidgetInteractionApi
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 
@@ -9,7 +11,7 @@ import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
  * Repository that handles user's widget interaction data. It knows what data sources need to be
  * triggered to get widget interaction and where to store the data.
  **/
-internal class WidgetInteractionRepository(val context: Context, val programID: String) {
+internal class WidgetInteractionRepository(val context: Context) {
 
 
     private val widgetInteractionRemoteSource: WidgetInteractionRemoteSource = WidgetInteractionRemoteSource()
@@ -27,7 +29,7 @@ internal class WidgetInteractionRepository(val context: Context, val programID: 
         return widgetInteractionMap[widgetId] as T?
     }
 
-    internal suspend fun fetchAndStoreWidgetInteractions(url: String, accessToken: String) {
+    internal suspend fun fetchAndStoreWidgetInteractions(url: String, accessToken: String): Result<UserWidgetInteractionApi> {
 
         val widgetInteractionsResult =
             widgetInteractionRemoteSource.getWidgetInteractions(url, accessToken)
@@ -51,6 +53,7 @@ internal class WidgetInteractionRepository(val context: Context, val programID: 
                 widgetInteractionMap[it.widgetId] = it
             }
         }
+        return  widgetInteractionsResult
     }
 
 }
