@@ -26,6 +26,7 @@ import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
+import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 
@@ -35,6 +36,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     internal var widgetContainerViewModel: WidgetContainerViewModel? =
         WidgetContainerViewModel(SubscriptionManager())
     internal val widgetViewThemeAttributes = WidgetViewThemeAttributes()
+    internal val widgetInteractionRepository = WidgetInteractionRepository(context)
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
         set(value) {
             field = value
@@ -184,7 +186,8 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                             null,
                             SubscriptionManager(),
                             widgetViewThemeAttributes,
-                            engagementSDKTheme
+                            engagementSDKTheme,
+                            widgetInteractionRepository
                         )
                 )
             )
