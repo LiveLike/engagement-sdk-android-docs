@@ -5,12 +5,16 @@ import android.graphics.Color
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.OptionsItem
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
+import com.livelike.engagementsdk.widget.data.models.QuizWidgetUserInteraction
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_quiz_widget.view.button2
@@ -47,6 +51,17 @@ class CustomQuizWidget : ConstraintLayout {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+
+        // this is added just to test exposed api loadWidgetInteraction
+        quizWidgetModel?.loadWidgetInteraction( object : LiveLikeCallback<List<QuizWidgetUserInteraction>>(){
+            override fun onResponse(result: List<QuizWidgetUserInteraction>?, error: String?) {
+                if(result!=null){
+                    if(result.isNotEmpty()){
+                        Log.d("interaction-poll",result[0].choiceId)
+                    }
+                }
+            }
+        })
         quizWidgetModel?.widgetData?.let { liveLikeWidget ->
             liveLikeWidget.choices?.let {
                 val adapter =
