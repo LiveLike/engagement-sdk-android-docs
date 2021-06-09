@@ -10,7 +10,8 @@ import com.livelike.livelikedemo.customwidgets.timeline.TimeLineWidgetFactory
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.viewmodels.IntractableTimelineViewModelFactory
 import com.livelike.livelikedemo.viewmodels.NewIntractableTimelineViewModel
-import kotlinx.android.synthetic.main.activity_live_blog.radio_group
+import kotlinx.android.synthetic.main.activity_live_blog.radio1
+import kotlinx.android.synthetic.main.activity_live_blog.radio2
 import kotlinx.android.synthetic.main.activity_live_blog.timeline_container
 import kotlinx.android.synthetic.main.activity_live_blog.timeout_layout
 
@@ -31,11 +32,14 @@ class IntractableTimelineActivity : AppCompatActivity() {
                 IntractableTimelineViewModelFactory(this.application)
             ).get(NewIntractableTimelineViewModel::class.java)
 
+        radio1.visibility = View.GONE
+        radio2.visibility = View.GONE
 
-        radio_group.setOnCheckedChangeListener { group, checkedId ->
+
+      /*  radio_group.setOnCheckedChangeListener { group, checkedId ->
             newTimelineViewModel?.showAlertOnly = (checkedId == R.id.radio2)
             createTimeLineView()
-        }
+        }*/
         createTimeLineView()
     }
 
