@@ -59,7 +59,7 @@ class MMLPollWidget(
     }
 
     private fun initView() {
-        pollWidgetModel?.loadWidgetInteraction( object : LiveLikeCallback<List<PollWidgetUserInteraction>>(){
+        pollWidgetModel?.loadInteractionHistory( object : LiveLikeCallback<List<PollWidgetUserInteraction>>(){
             override fun onResponse(result: List<PollWidgetUserInteraction>?, error: String?) {
                 if(result!=null){
                     if(result.isNotEmpty()){
