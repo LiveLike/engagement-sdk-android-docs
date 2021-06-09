@@ -52,7 +52,7 @@ class CustomPollWidget : ConstraintLayout {
         super.onAttachedToWindow()
 
         // this is added just to test exposed api loadWidgetInteraction
-        pollWidgetModel?.loadWidgetInteraction( object : LiveLikeCallback<List<PollWidgetUserInteraction>>(){
+        pollWidgetModel?.loadInteractionHistory( object : LiveLikeCallback<List<PollWidgetUserInteraction>>(){
             override fun onResponse(result: List<PollWidgetUserInteraction>?, error: String?) {
                if(result!=null){
                    if(result.isNotEmpty()){

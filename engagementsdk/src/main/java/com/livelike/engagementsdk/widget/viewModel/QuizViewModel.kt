@@ -266,7 +266,7 @@ internal class QuizViewModel(
             )
     }
 
-    override fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<List<QuizWidgetUserInteraction>>) {
+    override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<QuizWidgetUserInteraction>>) {
         uiScope.launch {
             try {
                 val results =
@@ -274,19 +274,19 @@ internal class QuizViewModel(
 
                 if (results is Result.Success) {
                     if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ){
-                        logDebug { "network-interaction-poll${results.data.interactions.textQuiz?.get(0)?.choiceId}" }
+                        logDebug { "interaction-text-quiz-${results.data.interactions.textQuiz?.get(0)?.choiceId}" }
                         liveLikeCallback.onResponse(
                             results.data.interactions.textQuiz, null
                         )
                     }else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_QUIZ){
-                        logDebug { "network-interaction-poll${results.data.interactions.imageQuiz?.get(0)?.choiceId}" }
+                        logDebug { "interaction-image-quiz-${results.data.interactions.imageQuiz?.get(0)?.choiceId}" }
                         liveLikeCallback.onResponse(
                             results.data.interactions.imageQuiz, null
                         )
                     }
-                } else {
+                }  else if (results is Result.Error) {
                     liveLikeCallback.onResponse(
-                        null, null
+                        null, results.exception.message
                     )
                 }
             } catch (e: JsonParseException) {

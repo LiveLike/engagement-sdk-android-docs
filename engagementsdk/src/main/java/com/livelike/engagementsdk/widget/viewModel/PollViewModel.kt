@@ -309,7 +309,7 @@ internal class PollViewModel(
             )
     }
 
-    override fun loadWidgetInteraction(
+    override fun loadInteractionHistory(
         liveLikeCallback: LiveLikeCallback<List<PollWidgetUserInteraction>>) {
             uiScope.launch {
                 try {
@@ -318,19 +318,19 @@ internal class PollViewModel(
 
                     if (results is Result.Success) {
                         if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL){
-                            logDebug { "interaction-text-poll${results.data.interactions.textPoll?.get(0)?.optionId}" }
+                            logDebug { "interaction-text-poll-${results.data.interactions.textPoll?.get(0)?.optionId}" }
                             liveLikeCallback.onResponse(
                                 results.data.interactions.textPoll, null
                             )
                         }else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL){
-                            logDebug { "interaction-image-poll${results.data.interactions.imagePoll?.get(0)?.optionId}" }
+                            logDebug { "interaction-image-poll-${results.data.interactions.imagePoll?.get(0)?.optionId}" }
                             liveLikeCallback.onResponse(
                                 results.data.interactions.imagePoll, null
                             )
                         }
-                    } else {
+                    } else if (results is Result.Error) {
                         liveLikeCallback.onResponse(
-                            null, null
+                            null, results.exception.message
                         )
                     }
                 } catch (e: JsonParseException) {

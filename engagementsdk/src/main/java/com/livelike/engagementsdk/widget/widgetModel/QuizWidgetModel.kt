@@ -28,8 +28,8 @@ interface QuizWidgetModel : LiveLikeWidgetMediator {
 
 
     /**
-     * returns widget interaction from remote source
+     * returns widget interactions from remote source
      */
-    fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<List<QuizWidgetUserInteraction>>)
+    fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<QuizWidgetUserInteraction>>)
 
 }

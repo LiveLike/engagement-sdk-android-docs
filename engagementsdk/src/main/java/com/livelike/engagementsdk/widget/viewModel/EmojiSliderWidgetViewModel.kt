@@ -138,20 +138,20 @@ internal class EmojiSliderWidgetViewModel(
             )
     }
 
-    override fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<List<EmojiSliderUserInteraction>>) {
+    override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<EmojiSliderUserInteraction>>) {
         uiScope.launch {
             try {
                 val results =
                     widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
 
                 if (results is Result.Success) {
-                    logDebug { "network-interaction-poll${results.data.interactions.emojiSlider?.get(0)?.magnitude}" }
+                    logDebug { "interaction-slider-${results.data.interactions.emojiSlider?.get(0)?.magnitude}" }
                     liveLikeCallback.onResponse(
                         results.data.interactions.emojiSlider, null
                     )
-                } else {
+                } else if (results is Result.Error) {
                     liveLikeCallback.onResponse(
-                        null, null
+                        null, results.exception.message
                     )
                 }
             } catch (e: JsonParseException) {

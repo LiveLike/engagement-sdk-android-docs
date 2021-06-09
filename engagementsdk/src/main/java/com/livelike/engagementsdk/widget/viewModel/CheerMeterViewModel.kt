@@ -272,20 +272,20 @@ internal class CheerMeterViewModel(
             )
     }
 
-    override fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<List<CheerMeterUserInteraction>>) {
+    override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<CheerMeterUserInteraction>>) {
         uiScope.launch {
             try {
                 val results =
                     widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
 
                 if (results is Result.Success) {
-                    logDebug { "network-interaction-poll${results.data.interactions.cheerMeter?.get(0)?.totalScore}" }
+                    logDebug { "interaction-cheermeter-${results.data.interactions.cheerMeter?.get(0)?.totalScore}" }
                     liveLikeCallback.onResponse(
                         results.data.interactions.cheerMeter, null
                     )
-                } else {
+                }  else if (results is Result.Error) {
                     liveLikeCallback.onResponse(
-                        null, null
+                        null, results.exception.message
                     )
                 }
             } catch (e: JsonParseException) {

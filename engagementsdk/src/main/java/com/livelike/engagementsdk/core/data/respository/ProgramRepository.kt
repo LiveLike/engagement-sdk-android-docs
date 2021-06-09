@@ -68,7 +68,7 @@ internal class ProgramRepository(
 
     /**
      * responsible for fetching program resource
-     * @param programDetailUrlTemplate (received in engagementsdk configuration resource)
+     * @param programDetailUrlTemplate (received in engagement configuration resource)
      */
    suspend fun getProgramData(programDetailUrlTemplate:String): Result<ProgramModel> {
        var results:Result<ProgramModel>? = null
@@ -81,7 +81,7 @@ internal class ProgramRepository(
                accessToken = userRepository.userAccessToken
            )
            if (results is Result.Success) {
-               this@ProgramRepository.program = (results as Result.Success<ProgramModel>).data.toProgram()
+               this@ProgramRepository.program = results.data.toProgram()
            }
        return results
     }

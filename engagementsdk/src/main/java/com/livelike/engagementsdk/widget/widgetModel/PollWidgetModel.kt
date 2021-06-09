@@ -19,8 +19,8 @@ interface PollWidgetModel : LiveLikeWidgetMediator {
     fun getUserInteraction() : PollWidgetUserInteraction?
 
     /**
-     * returns widget interaction from remote source
+     * returns widget interactions from remote source
      */
-    fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<List<PollWidgetUserInteraction>>)
+    fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<PollWidgetUserInteraction>>)
 
 }

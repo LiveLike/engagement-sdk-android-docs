@@ -356,7 +356,7 @@ internal class PredictionViewModel(
             )
     }
 
-    override fun loadWidgetInteraction(liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>) {
+    override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>) {
         uiScope.launch {
             try {
                 val results =
@@ -364,19 +364,19 @@ internal class PredictionViewModel(
 
                 if (results is Result.Success) {
                     if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_PREDICTION){
-                        logDebug { "network-interaction-poll${results.data.interactions.textPrediction?.get(0)?.optionId}" }
+                        logDebug { "interaction-text-prediction-${results.data.interactions.textPrediction?.get(0)?.optionId}" }
                         liveLikeCallback.onResponse(
                             results.data.interactions.textPrediction, null
                         )
                     }else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_PREDICTION){
-                        logDebug { "network-interaction-poll${results.data.interactions.imagePrediction?.get(0)?.optionId}" }
+                        logDebug { "interaction-image-prediction-${results.data.interactions.imagePrediction?.get(0)?.optionId}" }
                         liveLikeCallback.onResponse(
                             results.data.interactions.imagePrediction, null
                         )
                     }
-                } else {
+                } else if (results is Result.Error) {
                     liveLikeCallback.onResponse(
-                        null, null
+                        null, results.exception.message
                     )
                 }
             } catch (e: JsonParseException) {

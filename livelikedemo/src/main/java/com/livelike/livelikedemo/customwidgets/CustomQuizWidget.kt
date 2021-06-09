@@ -53,7 +53,7 @@ class CustomQuizWidget : ConstraintLayout {
         super.onAttachedToWindow()
 
         // this is added just to test exposed api loadWidgetInteraction
-        quizWidgetModel?.loadWidgetInteraction( object : LiveLikeCallback<List<QuizWidgetUserInteraction>>(){
+        quizWidgetModel?.loadInteractionHistory( object : LiveLikeCallback<List<QuizWidgetUserInteraction>>(){
             override fun onResponse(result: List<QuizWidgetUserInteraction>?, error: String?) {
                 if(result!=null){
                     if(result.isNotEmpty()){
