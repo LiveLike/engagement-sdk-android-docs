@@ -3,22 +3,16 @@ package com.livelike.engagementsdk.widget.data.respository
 import android.content.Context
 import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.core.data.models.Program
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.Result
-import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
 import com.livelike.engagementsdk.widget.data.models.UserWidgetInteractionApi
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * Repository that handles user's widget interaction data. It knows what data sources need to be
@@ -97,13 +91,14 @@ internal class WidgetInteractionRepository(
                ))
 
                 if (programResults is Result.Success){
-                    logDebug { "network-interaction program received" }
                     results = userRepository.userAccessToken?.let {
                         fetchAndStoreWidgetInteractions(
                             getInteractionUrl(widgetInfo),
                             it
                         )
                     }
+                }else if (programResults is Result.Error) {
+                    logError {"Unable to fetch program details ${programResults.exception.message}"}
                 }
             }
         }else {
