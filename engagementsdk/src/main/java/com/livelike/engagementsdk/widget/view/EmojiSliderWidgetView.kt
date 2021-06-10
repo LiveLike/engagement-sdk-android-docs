@@ -99,7 +99,6 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                     }
                 enableLockButton()
                 if (viewModel.getUserInteraction() != null) {
-                    isFirstInteraction = true
                     label_lock.visibility = VISIBLE
                 }
                 viewModel.currentVote.currentData?.let {

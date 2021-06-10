@@ -38,7 +38,6 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
     override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
     var isViewInflated = false
-    var isFirstInteraction = false
 
     override var widgetViewModel: BaseViewModel? = null
         get() = viewModel
@@ -104,11 +103,9 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
         viewModel.state.subscribe(javaClass.simpleName) {
             it?.let { stateObserver(it) }
         }
-
         widgetViewModel?.widgetState?.subscribe(javaClass.simpleName) {
             when (it) {
                 WidgetStates.READY -> {
-                    isFirstInteraction = false
                     lockInteraction()
                 }
                 WidgetStates.INTERACTING -> {
@@ -122,16 +119,11 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                         })
                     }
                     lay_lock.visibility = View.VISIBLE
-                    viewModel?.results?.subscribe(javaClass.simpleName) {
-                        if (isFirstInteraction)
-                            showResults()
-                    }
                 }
                 WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                     lockInteraction()
                     onWidgetInteractionCompleted()
-                    viewModel?.results?.subscribe(javaClass.simpleName) {  showResults() }
-                   // showResults()
+                    showResults()
                     viewModel.confirmInteraction()
                 }
             }
