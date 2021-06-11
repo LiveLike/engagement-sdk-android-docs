@@ -74,6 +74,7 @@ internal class PollViewModel(
     val currentVoteId: SubscriptionManager<String?> =
         SubscriptionManager()
     private val debouncer = currentVoteId.debounce()
+    var lastestVotedOptionId:String? = ""
 
 
     var adapter: WidgetOptionsViewAdapter? = null
@@ -127,17 +128,21 @@ internal class PollViewModel(
     private fun vote() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
         logDebug { "PollWidget Vote: position:${adapter?.selectedPosition}" }
+
         uiScope.launch {
             adapter?.run {
                 val option = myDataset[selectedPosition]
-                val url = option.getMergedVoteUrl()
-                url?.let {
-                    dataClient.voteAsync(
-                        it,
-                        option.id,
-                        userRepository.userAccessToken,
-                        userRepository = userRepository
-                    )
+                if(lastestVotedOptionId != option.id){
+                    val url = option.getMergedVoteUrl()
+                    lastestVotedOptionId = option.id
+                    url?.let {
+                        dataClient.voteAsync(
+                            it,
+                            option.id,
+                            userRepository.userAccessToken,
+                            userRepository = userRepository
+                        )
+                    }
                 }
             }
         }
@@ -258,7 +263,7 @@ internal class PollViewModel(
         results.onNext(null)
         animationEggTimerProgress = 0f
         currentVoteId.onNext(null)
-
+        lastestVotedOptionId = ""
         interactionData.reset()
         widgetSpecificInfo.reset()
         currentWidgetId = ""
