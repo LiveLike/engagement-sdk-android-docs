@@ -11,7 +11,6 @@ import com.livelike.engagementsdk.widget.view.components.WidgetItemView
 
 internal class WidgetOptionsViewAdapter(
     internal var myDataset: List<Option>,
-    private val onClick: (selectedOption: Option) -> Unit,
     private val widgetType: WidgetType,
     var correctOptionId: String? = null,
     var userSelectedOptionId: String = "",
@@ -21,6 +20,9 @@ internal class WidgetOptionsViewAdapter(
 
     var fontFamilyProvider: FontFamilyProvider? = null
     var selectedPosition = RecyclerView.NO_POSITION
+    var onClick: ((Option) -> Unit)? = null
+
+
     var selectionLocked = false
     var showPercentage = false
         set(value) {
@@ -30,9 +32,10 @@ internal class WidgetOptionsViewAdapter(
             field = value
         }
 
+
     inner class TextOptionViewHolder(
         val textItemView: WidgetItemView,
-        val onClick: (selectedOption: Option) -> Unit
+        val onClick: ((selectedOption: Option) -> Unit)?
     ) :
         RecyclerView.ViewHolder(textItemView),
         View.OnClickListener {
@@ -46,7 +49,7 @@ internal class WidgetOptionsViewAdapter(
             selectedPosition = adapterPosition
             notifyDataSetChanged()
 
-            onClick(myDataset[selectedPosition])
+            onClick?.invoke(myDataset[selectedPosition])
         }
     }
 

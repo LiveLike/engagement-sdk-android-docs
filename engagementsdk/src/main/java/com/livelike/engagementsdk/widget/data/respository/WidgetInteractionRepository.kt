@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.widget.data.respository
 
 import android.content.Context
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
@@ -47,10 +48,15 @@ internal class WidgetInteractionRepository(val context: Context, val programID: 
             interactionList.forEach {
                 if (it is CheerMeterUserInteraction && widgetInteractionMap[it.widgetId] != null) {
                     it.totalScore += (widgetInteractionMap[it.widgetId] as CheerMeterUserInteraction).totalScore
+                    logDebug { "total-score ${ it.totalScore}" }
                 }
                 widgetInteractionMap[it.widgetId] = it
             }
         }
+    }
+
+    fun clearInteractionMap(){
+        widgetInteractionMap.clear()
     }
 
 }

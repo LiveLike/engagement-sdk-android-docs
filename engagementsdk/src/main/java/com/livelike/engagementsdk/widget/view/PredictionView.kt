@@ -245,16 +245,18 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             titleTextView.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(
                 optionList,
-                {
-                    viewModel?.adapter?.notifyDataSetChanged()
-                    viewModel?.onOptionClicked()
-                    viewModel?.saveInteraction(it)
-                },
                 widget.type,
                 resource.correct_option_id,
                 (if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
                     ?: ""
             )
+
+          // set on click
+            viewModel?.adapter?.onClick =  {
+                viewModel?.adapter?.notifyDataSetChanged()
+                viewModel?.onOptionClicked()
+                viewModel?.saveInteraction(it)
+            }
 
             widgetsTheme?.let {
                 applyTheme(it)
