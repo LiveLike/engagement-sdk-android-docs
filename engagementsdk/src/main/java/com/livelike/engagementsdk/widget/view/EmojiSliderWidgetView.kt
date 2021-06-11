@@ -69,7 +69,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             else -> viewModel.data.latest()
         }
         image_slider.averageProgress = result?.averageMagnitude ?: image_slider.progress
-        
+
         logDebug { "EmojiSlider Widget showing result value:${image_slider.averageProgress}" }
     }
 
@@ -99,6 +99,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                     }
                 enableLockButton()
                 if (viewModel.getUserInteraction() != null) {
+                    isFirstInteraction = true
                     label_lock.visibility = VISIBLE
                 }
                 viewModel.currentVote.currentData?.let {

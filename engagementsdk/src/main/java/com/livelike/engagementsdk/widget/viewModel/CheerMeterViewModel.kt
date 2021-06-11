@@ -15,6 +15,7 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.debounce
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
@@ -29,7 +30,6 @@ import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -62,7 +62,6 @@ internal class CheerMeterViewModel(
      **/
     var voteStateList: MutableList<CheerMeterVoteState> = mutableListOf<CheerMeterVoteState>()
 
-    private var pushVoteJob: Job? = null
     val results: Stream<Resource> =
         SubscriptionManager()
     val
@@ -78,12 +77,20 @@ internal class CheerMeterViewModel(
     var animationEggTimerProgress = 0f
     var animationProgress = 0f
 
+    private val vote  = SubscriptionManager<Int>()
+    private val debounceVote =   vote.debounce()
+
     init {
 
         widgetObserver(widgetInfos)
         //restoring the cheer meter score from interaction history
         totalVoteCount = getUserInteraction()?.totalScore ?: 0
+
+        debounceVote.subscribe(this) {
+            wouldSendVote()
+        }
     }
+
 
     fun incrementVoteCount(teamIndex: Int) {
         interactionData.incrementInteraction()
@@ -91,19 +98,14 @@ internal class CheerMeterViewModel(
         voteStateList.getOrNull(teamIndex)?.let {
             it.voteCount++
         }
-        wouldSendVote()
-        saveInteraction(totalVoteCount,null)
+        vote.onNext(totalVoteCount)
+        saveInteraction(totalVoteCount, null)
     }
 
     private fun wouldSendVote() {
-        if (pushVoteJob == null || pushVoteJob?.isCompleted == false) {
-            pushVoteJob?.cancel()
-            pushVoteJob = uiScope.launch {
-                delay(1000L)
-                voteStateList.forEach {
-                    pushVoteStateData(it)
-                }
-                pushVoteJob = null
+        uiScope.launch {
+            voteStateList.forEach {
+                pushVoteStateData(it)
             }
         }
     }
@@ -124,10 +126,9 @@ internal class CheerMeterViewModel(
                 voteState.voteUrl = it
                 voteState.requestType = RequestType.PATCH
             }
-            if (count < voteState.voteCount)
-                voteState.voteCount = voteState.voteCount - count
-            else
-                voteState.voteCount = 0
+
+            voteState.voteCount -= count
+           // TODO  only on success count should be subtracted
         }
     }
 
@@ -237,6 +238,7 @@ internal class CheerMeterViewModel(
         interactionData.reset()
         currentWidgetId = ""
         currentWidgetType = null
+        vote.clear()
         viewModelJob.cancel("Widget Cleanup")
     }
 

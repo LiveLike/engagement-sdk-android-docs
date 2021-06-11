@@ -133,9 +133,9 @@ internal class EmojiSliderWidgetViewModel(
 
     override fun getUserInteraction(): EmojiSliderUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
-                widgetInfos.widgetId,
-                WidgetKind.fromString(widgetInfos.type)
-            )
+            widgetInfos.widgetId,
+            WidgetKind.fromString(widgetInfos.type)
+        )
     }
 
     override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<EmojiSliderUserInteraction>>) {

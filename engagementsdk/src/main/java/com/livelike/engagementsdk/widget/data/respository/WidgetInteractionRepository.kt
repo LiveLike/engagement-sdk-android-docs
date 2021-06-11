@@ -9,6 +9,7 @@ import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
 import com.livelike.engagementsdk.widget.data.models.UserWidgetInteractionApi
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
@@ -146,6 +147,10 @@ internal class WidgetInteractionRepository(
             else ->""
         }
 
+    }
+
+    fun clearInteractionMap(){
+        widgetInteractionMap.clear()
     }
 
 }
