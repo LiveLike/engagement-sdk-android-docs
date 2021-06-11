@@ -84,26 +84,21 @@ internal fun <X, Y> Stream<X>.combineLatestOnce(
     return pairedStream
 }
 
-internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L): SubscriptionManager<T> =
+internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 300L): SubscriptionManager<T> =
     SubscriptionManager<T>()
         .let { mgr ->
             val source = this
             val handler = Handler(Looper.getMainLooper())
-            var running = false
 
             fun runnable(): Runnable {
                 return Runnable {
-                    running = false
                     mgr.onNext(source.currentData)
                 }
             }
 
             source.subscribe(source::class.java.simpleName) {
-                if (!running) {
-                    running = true
-                    handler.removeCallbacks(runnable())
+                    handler.removeCallbacksAndMessages(null)
                     handler.postDelayed(runnable(), duration)
-                }
             }
 
             return mgr

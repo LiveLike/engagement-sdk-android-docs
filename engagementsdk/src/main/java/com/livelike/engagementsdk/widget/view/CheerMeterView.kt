@@ -264,12 +264,20 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 setupTeamCheerRipple(view_ripple2, img_logo_team_2, 1)
             }
 
-            lottie_vs_animation.apply {
-                setAnimation("vs_animation.json")
-                progress = viewModel?.animationProgress ?: 0f
-                repeatCount = 0
-                playAnimation()
-            }
+            if ((viewModel?.totalVoteCount ?: 0) > 0){
+                clearStartingAnimations()
+                txt_my_score.visibility = View.VISIBLE
+                txt_my_score.text = "${viewModel?.totalVoteCount}"
+
+             }else{
+                lottie_vs_animation.apply {
+                    setAnimation("vs_animation.json")
+                    progress = viewModel?.animationProgress ?: 0f
+                    repeatCount = 0
+                    playAnimation()
+                }
+             }
+
 
             logDebug { "Showing CheerMeter Widget" }
             if (widgetViewModel?.widgetState?.latest() == null)
@@ -310,7 +318,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                 }
                                 handler.removeCallbacksAndMessages(null)
                                 handler.postDelayed({
-                                    txt_my_score.visibility = View.INVISIBLE
+                                   // txt_my_score.visibility = View.INVISIBLE
+                                    txt_my_score.visibility = View.VISIBLE
+                                    txt_my_score.text = "${viewModel?.totalVoteCount}"
                                 }, 500)
                             }
                         }

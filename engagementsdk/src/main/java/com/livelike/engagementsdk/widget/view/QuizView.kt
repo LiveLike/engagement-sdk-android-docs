@@ -163,7 +163,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        textRecyclerView.background = it
+                        lay_textRecyclerView.background = it
                     }
                 }
             }
@@ -182,14 +182,19 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_quiz)
             lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
             titleTextView.gravity = Gravity.START
-            viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
+
+
+            viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList,type)
+
+            // set on click
+            viewModel?.adapter?.onClick =  {
                 viewModel?.adapter?.apply {
                     val currentSelectionId = myDataset[selectedPosition]
                     viewModel?.currentVoteId?.onNext(currentSelectionId.id)
                     widgetLifeCycleEventsListener?.onUserInteract(widgetData)
                 }
                 enableLockButton()
-            }, type)
+            }
 
             widgetsTheme?.let {
                 applyTheme(it)
