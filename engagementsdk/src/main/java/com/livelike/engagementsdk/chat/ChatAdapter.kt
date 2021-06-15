@@ -440,7 +440,7 @@ internal class ChatRecyclerAdapter(
             }
         }
 
-        private fun hideFloatingUI() {
+        internal fun hideFloatingUI() {
             if (chatPopUpView?.isShowing == true)
                 chatPopUpView?.dismiss()
             chatPopUpView = null

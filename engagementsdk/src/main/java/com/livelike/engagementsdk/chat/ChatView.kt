@@ -445,7 +445,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 ) = Unit
             })
 
-
             /**
              * stickers are loaded when emoji btn is clicked
              * if sticker keyboard is already visible, then this image changes to qwerty button
@@ -453,6 +452,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
              * and in case normal keyboard is already visible then this changes to emoji button
              */
             button_emoji.setOnClickListener {
+                hidePopUpReactionPanel()
                 if (sticker_keyboard.visibility == View.GONE) {
                     showStickerKeyboard()
                 } else {
@@ -579,12 +579,19 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             // Added check for image_height greater than 0 so bound position for touch should be above the send icon
             if (!edittext_chat_message.isTouching) {
                 if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
+                    hidePopUpReactionPanel()
                     hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                     hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 }
             }
         }
         return super.dispatchTouchEvent(ev)
+    }
+
+    private fun hidePopUpReactionPanel() {
+        viewModel?.chatAdapter?.currentChatReactionPopUpViewPos?.let {
+            (chatdisplay.findViewHolderForAdapterPosition(it) as? ChatRecyclerAdapter.ViewHolder)?.hideFloatingUI()
+        }
     }
 
     private var isLastItemVisible = false
@@ -607,7 +614,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 ) {
                     val totalItemCount = lm.itemCount
                     val lastVisible = lm.findLastVisibleItemPosition()
-
+                    hidePopUpReactionPanel()
                     val endHasBeenReached = lastVisible + 5 >= totalItemCount
                     if (!autoScroll)
                         isLastItemVisible = if (totalItemCount > 0 && endHasBeenReached) {
@@ -625,6 +632,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         snap_live.setOnClickListener {
+            hidePopUpReactionPanel()
             autoScroll = true
             snapToLive()
         }
@@ -673,6 +681,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
                 setOnFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
+                        hidePopUpReactionPanel()
                         (session as? ChatSession)?.analyticsServiceStream?.latest()
                             ?.trackKeyboardOpen(KeyboardType.STANDARD)
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
