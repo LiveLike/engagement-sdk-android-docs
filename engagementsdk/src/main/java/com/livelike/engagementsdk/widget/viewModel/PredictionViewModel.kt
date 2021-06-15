@@ -364,12 +364,10 @@ internal class PredictionViewModel(
 
                 if (results is Result.Success) {
                     if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_PREDICTION){
-                        logDebug { "interaction-text-prediction-${results.data.interactions.textPrediction?.get(0)?.optionId}" }
                         liveLikeCallback.onResponse(
                             results.data.interactions.textPrediction, null
                         )
                     }else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_PREDICTION){
-                        logDebug { "interaction-image-prediction-${results.data.interactions.imagePrediction?.get(0)?.optionId}" }
                         liveLikeCallback.onResponse(
                             results.data.interactions.imagePrediction, null
                         )

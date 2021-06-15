@@ -59,16 +59,6 @@ class MMLPollWidget(
     }
 
     private fun initView() {
-        pollWidgetModel?.loadInteractionHistory( object : LiveLikeCallback<List<PollWidgetUserInteraction>>(){
-            override fun onResponse(result: List<PollWidgetUserInteraction>?, error: String?) {
-                if(result!=null){
-                    if(result.isNotEmpty()){
-                        Log.d("interaction-poll",result[0].optionId)
-                    }
-                }
-            }
-        })
-
         pollWidgetModel.widgetData.let { liveLikeWidget ->
             txt_title.text = liveLikeWidget.question
             liveLikeWidget.options?.let { list ->

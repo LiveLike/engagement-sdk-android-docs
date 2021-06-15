@@ -274,12 +274,10 @@ internal class QuizViewModel(
 
                 if (results is Result.Success) {
                     if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ){
-                        logDebug { "interaction-text-quiz-${results.data.interactions.textQuiz?.get(0)?.choiceId}" }
                         liveLikeCallback.onResponse(
                             results.data.interactions.textQuiz, null
                         )
                     }else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_QUIZ){
-                        logDebug { "interaction-image-quiz-${results.data.interactions.imageQuiz?.get(0)?.choiceId}" }
                         liveLikeCallback.onResponse(
                             results.data.interactions.imageQuiz, null
                         )

@@ -281,7 +281,6 @@ internal class CheerMeterViewModel(
                     widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
 
                 if (results is Result.Success) {
-                    logDebug { "interaction-cheermeter-${results.data.interactions.cheerMeter?.get(0)?.totalScore}" }
                     liveLikeCallback.onResponse(
                         results.data.interactions.cheerMeter, null
                     )

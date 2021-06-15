@@ -145,7 +145,6 @@ internal class EmojiSliderWidgetViewModel(
                     widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
 
                 if (results is Result.Success) {
-                    logDebug { "interaction-slider-${results.data.interactions.emojiSlider?.get(0)?.magnitude}" }
                     liveLikeCallback.onResponse(
                         results.data.interactions.emojiSlider, null
                     )

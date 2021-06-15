@@ -56,7 +56,9 @@ class CustomPollWidget : ConstraintLayout {
             override fun onResponse(result: List<PollWidgetUserInteraction>?, error: String?) {
                if(result!=null){
                    if(result.isNotEmpty()){
-                       Log.d("interaction-poll",result[0].optionId)
+                       for (element in result) {
+                           Log.d("interaction-poll", element.optionId)
+                       }
                    }
                }
             }
