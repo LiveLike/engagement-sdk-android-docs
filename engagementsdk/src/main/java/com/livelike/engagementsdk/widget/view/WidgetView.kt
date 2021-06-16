@@ -26,6 +26,7 @@ import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
+import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 
@@ -166,6 +167,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 "$widgetType-created"
             }
             val widgetId = widgetResourceJson["id"].asString
+            val programId = widgetResourceJson.get("program_id").asString
             widgetContainerViewModel?.analyticsService = sdk.analyticService.latest()
             widgetContainerViewModel?.currentWidgetViewStream?.onNext(
                 Pair(
@@ -184,7 +186,9 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                             null,
                             SubscriptionManager(),
                             widgetViewThemeAttributes,
-                            engagementSDKTheme
+                            engagementSDKTheme,
+                            WidgetInteractionRepository(context, programId, sdk.userRepository,
+                                sdk.configurationStream.latest()?.programDetailUrlTemplate)
                         )
                 )
             )
