@@ -21,7 +21,8 @@
         android:versionName="1"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
-        <activity android:name=".CustomChatActivity"></activity>
+        <activity android:name=".SponsorTestActivity"></activity>
+        <activity android:name=".CustomChatActivity" />
         <activity
             android:name=".MainActivity2"
             android:label="@string/title_activity_main2"
