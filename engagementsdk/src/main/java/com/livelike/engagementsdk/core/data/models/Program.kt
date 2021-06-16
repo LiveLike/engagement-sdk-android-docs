@@ -25,8 +25,9 @@ internal data class Program(
     val reportUrl: String?,
     val leaderboards: List<LeaderBoardResource>,
     val rewardItems: List<RewardItem>,
+    val sponsors: List<SponsorModel>,
     val widgetInteractionUrl: String,
-    val sponsors: List<SponsorModel>
+
 )
 
 internal data class LeaderBoardResource(
