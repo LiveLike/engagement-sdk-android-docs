@@ -43,6 +43,7 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
+import com.livelike.engagementsdk.sponsorship.Sponsor
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
@@ -103,14 +104,14 @@ class EngagementSDK(
     private val job = SupervisorJob()
 
     // by default sdk calls will run on Default pool and further data layer calls will run o
-    private val sdkScope = CoroutineScope(Dispatchers.Default + job)
+    internal val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
 
     // sdk config-user flow that can be collected by collect which is suspendably instead of using rx style combine on 2 seperate async results
     // TODO add util fun to convert streams to flow
-    private val configurationUserPairFlow = flow {
+    internal val configurationUserPairFlow = flow {
         while (configurationStream.latest() == null || userRepository.currentUserStream.latest() == null) {
             delay(1000)
         }
@@ -668,6 +669,10 @@ class EngagementSDK(
                     }
                 }
             }
+    }
+
+    override fun sponsor(): Sponsor {
+        return Sponsor(this)
     }
 
     /**
