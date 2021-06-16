@@ -335,7 +335,7 @@ internal class ChatViewModel(
                 bitmap.recycle()
             }
         }
-        Glide.with(context)
+        Glide.with(context.applicationContext)
             .`as`(ByteArray::class.java)
             .load(url)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
