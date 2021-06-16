@@ -51,19 +51,6 @@ class CustomQuizWidget : ConstraintLayout {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-
-        // this is added just to test exposed api loadWidgetInteraction
-        quizWidgetModel?.loadInteractionHistory( object : LiveLikeCallback<List<QuizWidgetUserInteraction>>(){
-            override fun onResponse(result: List<QuizWidgetUserInteraction>?, error: String?) {
-                if(result!=null){
-                    if(result.isNotEmpty()){
-                            for (element in result) {
-                                Log.d("interaction-poll", element.choiceId)
-                            }
-                    }
-                }
-            }
-        })
         quizWidgetModel?.widgetData?.let { liveLikeWidget ->
             liveLikeWidget.choices?.let {
                 val adapter =
