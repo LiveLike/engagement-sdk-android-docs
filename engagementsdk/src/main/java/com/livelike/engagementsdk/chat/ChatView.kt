@@ -579,7 +579,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             // Added check for image_height greater than 0 so bound position for touch should be above the send icon
             if (!edittext_chat_message.isTouching) {
                 if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
-                    hidePopUpReactionPanel()
+//                    hidePopUpReactionPanel()
                     hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                     hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 }

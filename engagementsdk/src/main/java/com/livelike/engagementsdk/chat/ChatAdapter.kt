@@ -51,6 +51,7 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
@@ -445,7 +446,8 @@ internal class ChatRecyclerAdapter(
                 chatPopUpView?.dismiss()
             chatPopUpView = null
             lastFloatingUiAnchorView = null
-            if (mRecyclerView?.isComputingLayout == false && mRecyclerView?.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
+            logDebug { "Computing:${mRecyclerView?.isComputingLayout} ,ScrollState: ${mRecyclerView?.scrollState} ,pos:$currentChatReactionPopUpViewPos ,adapt Pos:$adapterPosition" }
+            if (mRecyclerView?.isComputingLayout == false) {
                 //Add check for checking computing and check with current adapter position
                 if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
                     try {
