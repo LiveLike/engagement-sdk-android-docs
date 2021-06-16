@@ -1,11 +1,13 @@
 package com.livelike.engagementsdk.core.data.respository
 
+
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.core.data.models.Program
 import com.livelike.engagementsdk.core.data.models.ProgramModel
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.models.toProgram
+import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
@@ -25,6 +27,8 @@ internal class ProgramRepository(
 ) : BaseRepository() {
 
     internal var program: Program? = null
+    internal var programUrlTemplate:String? =null
+
 
     internal val rewardType: RewardsType by lazy {
         RewardsType.valueOf(
