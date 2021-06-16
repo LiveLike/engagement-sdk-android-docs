@@ -296,7 +296,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                                 .not()
                         ) {
                             snapToLive()
-                        } else if (chatAdapter.isReactionPopUpShowing()) {
+                        } else if (chatAdapter.isReactionPopUpShowing() || viewModel?.isLastItemVisible == false) {
                             showSnapToLive()
                         }
                     }
@@ -607,16 +607,18 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 ) {
                     val totalItemCount = lm.itemCount
                     val lastVisible = lm.findLastVisibleItemPosition()
-
                     val endHasBeenReached = lastVisible + 5 >= totalItemCount
+                    println("ChatView.onScrolled $autoScroll End: $endHasBeenReached Total:$totalItemCount")
+
                     if (!autoScroll)
-                        viewModel?.isLastItemVisible = if (totalItemCount > 0 && endHasBeenReached) {
-                            hideSnapToLive()
-                            true
-                        } else {
-                            showSnapToLive()
-                            false
-                        }
+                        viewModel?.isLastItemVisible =
+                            if (totalItemCount > 0 && endHasBeenReached) {
+                                hideSnapToLive()
+                                true
+                            } else {
+                                showSnapToLive()
+                                false
+                            }
                     if (endHasBeenReached) {
                         autoScroll = false
                     }
