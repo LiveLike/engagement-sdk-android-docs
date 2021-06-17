@@ -292,11 +292,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         // Auto scroll if user is looking at the latest messages
                         autoScroll = true
                         checkEmptyChat()
-                        if (isLastItemVisible && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
+                        if (viewModel?.isLastItemVisible == true && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
                                 .not()
                         ) {
                             snapToLive()
-                        } else if (chatAdapter.isReactionPopUpShowing()) {
+                        } else if (chatAdapter.isReactionPopUpShowing() || viewModel?.isLastItemVisible == false) {
                             showSnapToLive()
                         }
                     }
@@ -579,7 +579,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             // Added check for image_height greater than 0 so bound position for touch should be above the send icon
             if (!edittext_chat_message.isTouching) {
                 if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
-//                    hidePopUpReactionPanel()
                     hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                     hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 }
@@ -594,7 +593,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
-    private var isLastItemVisible = false
+    //private var isLastItemVisible = true
     private var autoScroll = false
 
     /**
@@ -614,16 +613,16 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 ) {
                     val totalItemCount = lm.itemCount
                     val lastVisible = lm.findLastVisibleItemPosition()
-                    hidePopUpReactionPanel()
                     val endHasBeenReached = lastVisible + 5 >= totalItemCount
                     if (!autoScroll)
-                        isLastItemVisible = if (totalItemCount > 0 && endHasBeenReached) {
-                            hideSnapToLive()
-                            true
-                        } else {
-                            showSnapToLive()
-                            false
-                        }
+                        viewModel?.isLastItemVisible =
+                            if (totalItemCount > 0 && endHasBeenReached) {
+                                hideSnapToLive()
+                                true
+                            } else {
+                                showSnapToLive()
+                                false
+                            }
                     if (endHasBeenReached) {
                         autoScroll = false
                     }
