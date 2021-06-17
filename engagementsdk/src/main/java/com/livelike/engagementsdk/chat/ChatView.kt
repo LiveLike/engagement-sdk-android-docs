@@ -292,11 +292,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         // Auto scroll if user is looking at the latest messages
                         autoScroll = true
                         checkEmptyChat()
-                        if (isLastItemVisible && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
+                        if (viewModel?.isLastItemVisible == true && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
                                 .not()
                         ) {
                             snapToLive()
-                        } else if (chatAdapter.isReactionPopUpShowing()) {
+                        } else if (chatAdapter.isReactionPopUpShowing() || viewModel?.isLastItemVisible == false) {
                             showSnapToLive()
                         }
                     }
@@ -587,7 +587,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         return super.dispatchTouchEvent(ev)
     }
 
-    private var isLastItemVisible = false
+    //private var isLastItemVisible = true
     private var autoScroll = false
 
     /**
@@ -607,16 +607,18 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 ) {
                     val totalItemCount = lm.itemCount
                     val lastVisible = lm.findLastVisibleItemPosition()
-
                     val endHasBeenReached = lastVisible + 5 >= totalItemCount
+                    println("ChatView.onScrolled $autoScroll End: $endHasBeenReached Total:$totalItemCount")
+
                     if (!autoScroll)
-                        isLastItemVisible = if (totalItemCount > 0 && endHasBeenReached) {
-                            hideSnapToLive()
-                            true
-                        } else {
-                            showSnapToLive()
-                            false
-                        }
+                        viewModel?.isLastItemVisible =
+                            if (totalItemCount > 0 && endHasBeenReached) {
+                                hideSnapToLive()
+                                true
+                            } else {
+                                showSnapToLive()
+                                false
+                            }
                     if (endHasBeenReached) {
                         autoScroll = false
                     }
