@@ -79,7 +79,6 @@ class WidgetsTimeLineView(
         separator?.let {
             val itemDecoration = DividerItemDecoration(context, VERTICAL)
             itemDecoration.setDrawable(it)
-            timeline_rv.removeItemDecoration(itemDecoration)
             timeline_rv.addItemDecoration(itemDecoration)
         }
     }
