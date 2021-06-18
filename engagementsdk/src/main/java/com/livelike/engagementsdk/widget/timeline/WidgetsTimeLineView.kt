@@ -79,6 +79,7 @@ class WidgetsTimeLineView(
         separator?.let {
             val itemDecoration = DividerItemDecoration(context, VERTICAL)
             itemDecoration.setDrawable(it)
+            timeline_rv.removeItemDecoration(itemDecoration)
             timeline_rv.addItemDecoration(itemDecoration)
         }
     }
@@ -167,7 +168,8 @@ class WidgetsTimeLineView(
                 print("oh my god")
                 if (pair.first == WidgetApiSource.REALTIME_API) {
                     adapter.list.addAll(0, pair.second)
-                    adapter.notifyItemInserted(0)
+                    //adapter.notifyItemInserted(0)
+                    adapter.notifyDataSetChanged()
                     wouldRetreatToActiveWidgetPosition()
                 } else {
                     adapter.list.addAll(pair.second)
