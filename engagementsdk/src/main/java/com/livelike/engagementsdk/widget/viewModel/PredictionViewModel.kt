@@ -203,7 +203,11 @@ internal class PredictionViewModel(
             adapter?.myDataset?.find { it.id == selectedPredictionId }?.is_correct ?: false
         val rootPath =
             if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
-        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
+        animationPath = if(selectedPredictionId.isNotEmpty()){
+            AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
+        }else{
+            ""
+        }
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
