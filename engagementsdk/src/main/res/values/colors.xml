@@ -94,7 +94,7 @@
     <color name="livelike_rank_label_text_color">#fff000</color>
     <color name="livelike_rank_label_gradient_right">#4b28b4</color>
     <color name="livelike_rank_label_gradient_left">#6928b4</color>
-    <color name="livelike_cheer_meter_background_color">#60000000</color>
+    <color name="livelike_cheer_meter_background_color">#000000</color>
     <color name="livelike_cheer_meter_title_color">#FFFFFF</color>
     <color name="cheer_meter_team2_color">#a00028</color>
     <color name="cheer_meter_team2_color2">#fa5064</color>
@@ -104,8 +104,8 @@
     <color name="livelike_image_slider_gradient_start">#fff000</color>
     <color name="livelike_image_slider_gradient_end">#a0ff28</color>
     <color name="livelike_image_slider_bg">#ffffff</color>
-    <color name="livelike_image_slider_widget_bg">#99000000</color>
-    <color name="livelike_image_slider_header_bg">#cc000000</color>
+    <color name="livelike_image_slider_widget_bg">#000000</color>
+    <color name="livelike_image_slider_header_bg">#000000</color>
     <color name="livelike_image_slider_widget_result_end_color">#3C1EFF</color>
     <color name="livelike_image_slider_widget_result_center_color">#FF2D2D</color>
     <color name="livelike_sticker_recent_empty_text_color">#66ffffff</color>
@@ -130,7 +130,7 @@
     <color name="livelike_chat_reaction_selected_background_color">#33000000</color>
     <color name="txt_cheer_meter_team_1_color">#FFFFFF</color>
     <color name="txt_cheer_meter_team_2_color">#ffffff</color>
-    <color name="livelike_cheer_meter_background_bottom_color">#60000000</color>
+    <color name="livelike_cheer_meter_background_bottom_color">#000000</color>
     <color name="livelike_vote_btn_color">#800080</color>
     <color name="livelike_vote_btn_color_pressed">#AA800080</color>
 </resources>
