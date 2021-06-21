@@ -69,6 +69,8 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             else -> viewModel.data.latest()
         }
         image_slider.averageProgress = result?.averageMagnitude ?: image_slider.progress
+        disableLockButton()
+        label_lock.visibility = View.VISIBLE
 
         logDebug { "EmojiSlider Widget showing result value:${image_slider.averageProgress}" }
     }

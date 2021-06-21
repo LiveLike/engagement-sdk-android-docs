@@ -2,22 +2,26 @@ package com.livelike.engagementsdk.widget.viewModel
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.formatIsoZoned8601
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
@@ -37,6 +41,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
+import java.io.IOException
 
 internal class QuizWidget(
     val type: WidgetType,
@@ -81,6 +86,7 @@ internal class QuizViewModel(
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
     internal var timeOutJob: Job? = null
+
 
     init {
         widgetObserver(widgetInfos)
@@ -246,15 +252,49 @@ internal class QuizViewModel(
                 url?.let {
                     voteApi(it, widget.resource.getMergedOptions()!![position].id, userRepository)
                 }
+                if (option != null) {
+                    saveInteraction(option)
+                }
             }
         }
     }
 
     override fun getUserInteraction(): QuizWidgetUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
-            widgetInfos.widgetId,
-            WidgetKind.fromString(widgetInfos.type)
-        )
+                widgetInfos.widgetId,
+                WidgetKind.fromString(widgetInfos.type)
+            )
+    }
+
+    override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<QuizWidgetUserInteraction>>) {
+        uiScope.launch {
+            try {
+                val results =
+                    widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
+
+                if (results is Result.Success) {
+                    if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ){
+                        liveLikeCallback.onResponse(
+                            results.data.interactions.textQuiz, null
+                        )
+                    }else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_QUIZ){
+                        liveLikeCallback.onResponse(
+                            results.data.interactions.imageQuiz, null
+                        )
+                    }
+                }  else if (results is Result.Error) {
+                    liveLikeCallback.onResponse(
+                        null, results.exception.message
+                    )
+                }
+            } catch (e: JsonParseException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            }
+        }
     }
 
     internal fun saveInteraction(option: Option) {

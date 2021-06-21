@@ -56,7 +56,7 @@ internal class ChatViewModel(
     var deletedMessages = hashSetOf<String>()
 
     internal val eventStream: Stream<String> =
-        SubscriptionManager(false)
+        SubscriptionManager(true)
     var currentChatRoom: ChatRoom? = null
         set(value) {
             field = value
@@ -88,6 +88,7 @@ internal class ChatViewModel(
             chatAdapter.chatRepository = value
         }
     var reportUrl: String? = null
+    var isLastItemVisible = true
 
     internal var chatLoaded = false
         set(value) {
@@ -335,7 +336,7 @@ internal class ChatViewModel(
                 bitmap.recycle()
             }
         }
-        Glide.with(context)
+        Glide.with(context.applicationContext)
             .`as`(ByteArray::class.java)
             .load(url)
             .diskCacheStrategy(DiskCacheStrategy.ALL)

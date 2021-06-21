@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.data.respository.UserRepository
+import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.widget.WidgetType
@@ -27,6 +28,8 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
     internal var showTimer = true
     internal var showDismissButton: Boolean = true
     internal val dataClient: WidgetDataClient = WidgetDataClientImpl()
+    internal val llDataClient = EngagementDataClientImpl()
+
 
     internal var timerStartTime: Long? = null
 

@@ -2,15 +2,18 @@ package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
 import android.graphics.Color
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.OptionsItem
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_poll_widget.view.button2
@@ -47,6 +50,20 @@ class CustomPollWidget : ConstraintLayout {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+
+        // this is added just to test exposed api loadWidgetInteraction
+        pollWidgetModel?.loadInteractionHistory( object : LiveLikeCallback<List<PollWidgetUserInteraction>>(){
+            override fun onResponse(result: List<PollWidgetUserInteraction>?, error: String?) {
+               if(result!=null){
+                   if(result.isNotEmpty()){
+                       for (element in result) {
+                           Log.d("interaction-poll", element.optionId)
+                       }
+                   }
+               }
+            }
+        })
+
         pollWidgetModel?.widgetData?.let { liveLikeWidget ->
             liveLikeWidget.options?.let {
                 if (it.size > 2) {

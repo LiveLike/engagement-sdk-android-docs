@@ -1,8 +1,13 @@
 package com.livelike.engagementsdk.core.data.respository
 
+
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.core.data.models.Program
+import com.livelike.engagementsdk.core.data.models.ProgramModel
 import com.livelike.engagementsdk.core.data.models.RewardsType
+import com.livelike.engagementsdk.core.data.models.toProgram
+import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
@@ -22,6 +27,8 @@ internal class ProgramRepository(
 ) : BaseRepository() {
 
     internal var program: Program? = null
+    internal var programUrlTemplate:String? =null
+
 
     internal val rewardType: RewardsType by lazy {
         RewardsType.valueOf(
@@ -33,6 +40,27 @@ internal class ProgramRepository(
      */
     val programGamificationProfileStream: Stream<ProgramGamificationProfile> =
         SubscriptionManager()
+
+    /**
+    * responsible for fetching program resource
+    * @param programDetailUrlTemplate (received in engagement configuration resource)
+    */
+    suspend fun getProgramData(programDetailUrlTemplate:String): Result<ProgramModel> {
+        var results:Result<ProgramModel>? = null
+        results = dataClient.remoteCall<ProgramModel>(
+            programDetailUrlTemplate.replace(
+                TEMPLATE_PROGRAM_ID,
+                programId
+            ),
+            RequestType.GET,
+            accessToken = userRepository.userAccessToken
+        )
+        if (results is Result.Success) {
+            this@ProgramRepository.program = results.data.toProgram()
+        }
+        return results
+    }
+
 
     suspend fun fetchProgramRank() {
         program?.let { program ->
