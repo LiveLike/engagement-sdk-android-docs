@@ -164,7 +164,6 @@ class WidgetsTimeLineView(
                         }
                     }
                 }
-                print("oh my god")
                 if (pair.first == WidgetApiSource.REALTIME_API) {
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
