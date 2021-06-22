@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.utils.addAuthorizationBearer
 import com.livelike.engagementsdk.core.utils.addUserAgent
 import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
@@ -42,7 +43,8 @@ internal interface WidgetDataClient {
         type: RequestType? = null,
         useVoteUrl: Boolean = true,
         userRepository: UserRepository?,
-        widgetId: String? = null
+        widgetId: String? = null,
+        patchVoteUrl:String? = null
     ): String?
 
     fun registerImpression(impressionUrl: String, accessToken: String?)
@@ -68,11 +70,18 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
         type: RequestType?,
         useVoteUrl: Boolean,
         userRepository: UserRepository?,
-        widgetId: String?
+        widgetId: String?,
+        patchVoteUrl: String?
     ): String? {
         return singleRunner.afterPrevious {
             val jsonObject : JsonObject
+
+            if(!patchVoteUrl.isNullOrEmpty()){
+                voteUrl = patchVoteUrl
+            }
+
             if (voteUrl.isEmpty() || !useVoteUrl) {
+                logDebug { "post call $widgetVotingUrl" }
                 jsonObject =
                     postAsync(
                         widgetVotingUrl,
@@ -81,6 +90,7 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                         type ?: RequestType.POST
                     )
             } else {
+                logDebug { "patch call $voteUrl" }
                  jsonObject = postAsync(
                     voteUrl, accessToken, (body ?: voteId?.let {
                          FormBody.Builder()
