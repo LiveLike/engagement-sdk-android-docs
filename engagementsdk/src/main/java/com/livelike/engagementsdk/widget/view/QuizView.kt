@@ -101,6 +101,8 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     animationPath =
                         AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
                 }
+                disableLockButton()
+                label_lock.visibility = View.VISIBLE
                 resultsObserver(viewModel?.results?.latest())
                
                 viewModel?.adapter?.correctOptionId =
