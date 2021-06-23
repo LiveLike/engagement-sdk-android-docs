@@ -183,7 +183,7 @@ class WidgetsTimeLineView(
     private fun lockInteracatedWidgetsWithoutPatchUrl(widgets: List<TimelineWidgetResource>) {
         widgets.forEach {
             val kind = it.liveLikeWidget.kind
-            if (kind?.contains(WidgetKind.POLL.event) == true || kind?.contains(WidgetKind.PREDICTION.event) == true) {
+            if (kind?.contains(WidgetKind.PREDICTION.event) == true) {
                 if ((timeLineViewModel.contentSession as ContentSession)?.widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
                         it.liveLikeWidget.id?:"",
                         WidgetKind.fromString(kind)
