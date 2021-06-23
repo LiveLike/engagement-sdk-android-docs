@@ -87,6 +87,9 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
+                disableLockButton()
+                label_lock.visibility = View.VISIBLE
+                resultsObserver(viewModel?.results?.latest())
                 viewModel?.apply {
                     val isUserCorrect =
                         adapter?.selectedPosition?.let {
@@ -101,10 +104,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     animationPath =
                         AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
                 }
-                disableLockButton()
-                label_lock.visibility = View.VISIBLE
-                resultsObserver(viewModel?.results?.latest())
-               
+
                 viewModel?.adapter?.correctOptionId =
                     viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
                 viewModel?.adapter?.userSelectedOptionId =
