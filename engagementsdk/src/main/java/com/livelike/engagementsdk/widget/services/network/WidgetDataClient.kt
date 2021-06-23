@@ -81,6 +81,7 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
             }
 
             if (voteUrl.isEmpty() || !useVoteUrl) {
+                logDebug { "postcall-$widgetVotingUrl" }
                 jsonObject =
                     postAsync(
                         widgetVotingUrl,
@@ -89,6 +90,7 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                         type ?: RequestType.POST
                     )
             } else {
+                logDebug { "patchcall-$voteUrl" }
                  jsonObject = postAsync(
                     voteUrl, accessToken, (body ?: voteId?.let {
                          FormBody.Builder()
