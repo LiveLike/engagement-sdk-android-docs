@@ -153,7 +153,7 @@ internal class QuizViewModel(
     internal suspend fun lockInteractionAndSubmitVote() {
         adapter?.selectionLocked = true
         vote()
-        delay(500) // Just refactoring, this line was already here
+       // delay(500) // Just refactoring, this line was already here
         widgetState.onNext(WidgetStates.RESULTS)
         resultsState()
     }
@@ -180,7 +180,7 @@ internal class QuizViewModel(
     private fun resultsState() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
-            dismissWidget(DismissAction.TIMEOUT)
+            //dismissWidget(DismissAction.TIMEOUT)
             return
         }
 
