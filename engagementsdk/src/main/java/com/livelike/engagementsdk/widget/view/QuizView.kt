@@ -290,7 +290,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
                         override fun onAnimationEnd(animation: Animator?) {
                             viewModel?.uiScope?.launch {
-                                delay(3000)
+                                delay(13000)
                                 viewModel?.dismissWidget(DismissAction.TIMEOUT)
                             }
                         }
@@ -324,7 +324,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             viewModel?.adapter?.myDataset = options
             textRecyclerView.swapAdapter(viewModel?.adapter, false)
-            viewModel?.adapter?.showPercentage = false
+            viewModel?.adapter?.showPercentage = true
             logDebug { "QuizWidget Showing result total:$totalVotes" }
         }
     }
