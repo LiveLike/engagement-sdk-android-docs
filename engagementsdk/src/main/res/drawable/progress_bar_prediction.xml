@@ -6,8 +6,10 @@
                 <corners android:radius="@dimen/livelike_percent_bar_corner_radius" />
                 <gradient
                     android:angle="@integer/percent_bar_gradient_angle"
-                    android:endColor="@color/livelike_prediction_bar_gradient_right"
-                    android:startColor="@color/livelike_prediction_bar_gradient_left" />
+                    android:endColor="@color/livelike_prediction_title_gradient_right"
+                    android:startColor="@color/livelike_prediction_title_gradient_left"/>
+                   <!-- android:endColor="@color/livelike_prediction_bar_gradient_right"
+                    android:startColor="@color/livelike_prediction_bar_gradient_left"-->
                 <padding
                     android:bottom="@dimen/livelike_prediction_bar_padding_bottom"
                     android:left="@dimen/livelike_prediction_bar_padding_left"
