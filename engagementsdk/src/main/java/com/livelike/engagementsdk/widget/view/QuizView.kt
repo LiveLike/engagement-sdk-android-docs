@@ -290,7 +290,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
                         override fun onAnimationEnd(animation: Animator?) {
                             viewModel?.uiScope?.launch {
-                                delay(13000)
+                                delay(11000)
                                 viewModel?.dismissWidget(DismissAction.TIMEOUT)
                             }
                         }
