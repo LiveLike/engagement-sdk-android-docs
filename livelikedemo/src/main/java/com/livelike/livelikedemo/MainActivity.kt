@@ -197,7 +197,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(playerDetailIntent(drawerDemoActivity))
         }
 
-        chk_show_dismiss.isChecked = player.showNotification
+        //chk_show_dismiss.isChecked = player.showNotification
+        chk_show_dismiss.isChecked = false
         chk_show_dismiss.setOnCheckedChangeListener { buttonView, isChecked ->
             player.showNotification = isChecked
         }
@@ -581,7 +582,7 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     val intent = Intent(this, player.cls.java)
     intent.putExtra("theme", player.theme)
     intent.putExtra("jsonTheme", player.jsonTheme)
-    intent.putExtra("showNotification", player.showNotification)
+    intent.putExtra("showNotification", false)
     intent.putExtra("avatarUrl", player.avatarUrl)
     intent.putExtra("showAvatar", player.showAvatar)
     intent.putExtra("customCheerMeter", player.customCheerMeter)
