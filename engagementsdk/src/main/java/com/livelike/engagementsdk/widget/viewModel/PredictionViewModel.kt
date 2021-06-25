@@ -138,14 +138,15 @@ internal class PredictionViewModel(
                 data.currentData?.apply {
                     val selectedPredictionId =
                         getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
-                    uiScope.launch {
+                    //not sure, why this has been added
+                   /* uiScope.launch {
                         delay(
                             if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(
                                 timeout
                             ) else 0
                         )
                         dismissWidget(DismissAction.TIMEOUT)
-                    }
+                    }*/
                 }
             } else {
                 uiScope.launch {
@@ -226,11 +227,11 @@ internal class PredictionViewModel(
     }
 
     private fun confirmationState(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
-        if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
+        /*if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)
             return
-        }
+        }*/
 
         adapter?.selectionLocked = true
         widgetState.onNext(WidgetStates.RESULTS)
@@ -293,7 +294,8 @@ internal class PredictionViewModel(
                         type = RequestType.POST,
                         accessToken = userRepository.userAccessToken,
                         userRepository = userRepository,
-                        widgetId = currentWidgetId
+                        widgetId = currentWidgetId,
+                        patchVoteUrl = getUserInteraction()?.url
                     )
                 }
             }
@@ -397,7 +399,7 @@ internal class PredictionViewModel(
                 option.id,
                 "",
                 ZonedDateTime.now().formatIsoZoned8601(),
-                option.getMergedVoteUrl(),
+                getUserInteraction()?.url,
                 widgetInfos.widgetId,
                 widgetInfos.type
             )
@@ -419,7 +421,8 @@ internal class PredictionViewModel(
                             selectedOption.id,
                             userRepository.userAccessToken,
                             userRepository = userRepository,
-                            widgetId = currentWidgetId
+                            widgetId = currentWidgetId,
+                            patchVoteUrl = getUserInteraction()?.url
                         )
                     }
 

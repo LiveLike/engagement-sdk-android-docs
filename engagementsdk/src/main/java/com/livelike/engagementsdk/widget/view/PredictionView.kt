@@ -158,6 +158,12 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
 
     private fun lockInteraction() {
         viewModel?.adapter?.selectionLocked = true
+        viewModel?.data?.latest()?.let {
+            val isFollowUp = it.resource.kind.contains("follow-up")
+            if (isFollowUp) {
+                textEggTimer.showCloseButton {  viewModel?.dismissWidget(DismissAction.TIMEOUT) }
+            }
+        }
     }
 
     private fun unLockInteraction() {

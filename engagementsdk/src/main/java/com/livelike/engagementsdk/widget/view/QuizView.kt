@@ -34,6 +34,7 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggT
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
@@ -288,7 +289,10 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                         }
 
                         override fun onAnimationEnd(animation: Animator?) {
-                            viewModel?.dismissWidget(DismissAction.TIMEOUT)
+                            viewModel?.uiScope?.launch {
+                                delay(3000)
+                                viewModel?.dismissWidget(DismissAction.TIMEOUT)
+                            }
                         }
 
                         override fun onAnimationCancel(animation: Animator?) {
