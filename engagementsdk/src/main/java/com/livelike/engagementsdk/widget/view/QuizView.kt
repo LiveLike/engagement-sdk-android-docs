@@ -49,13 +49,15 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel = value as QuizViewModel
         }
 
+    private var isFirstInteraction = false
+
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
         viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
         viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
-        viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
+       // viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
 
     }
 
@@ -70,6 +72,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateWidgetObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
+                isFirstInteraction = false
                 lockInteraction()
             }
             WidgetStates.INTERACTING -> {
@@ -90,7 +93,10 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 onWidgetInteractionCompleted()
                 disableLockButton()
                 label_lock.visibility = View.VISIBLE
-                resultsObserver(viewModel?.results?.latest())
+                viewModel?.results?.subscribe(javaClass.simpleName) {
+                    if (isFirstInteraction)
+                        resultsObserver(viewModel?.results?.latest())
+                }
                 viewModel?.apply {
                     val isUserCorrect =
                         adapter?.selectedPosition?.let {
@@ -195,6 +201,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     val currentSelectionId = myDataset[selectedPosition]
                     viewModel?.currentVoteId?.onNext(currentSelectionId.id)
                     widgetLifeCycleEventsListener?.onUserInteract(widgetData)
+                    isFirstInteraction = true
                 }
                 enableLockButton()
             }
@@ -204,6 +211,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             disableLockButton()
             textRecyclerView.apply {
+                isFirstInteraction = viewModel?.getUserInteraction() !=null
                 this.adapter = viewModel?.adapter
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.choiceId)
                 setHasFixedSize(true)
@@ -324,7 +332,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             viewModel?.adapter?.myDataset = options
             textRecyclerView.swapAdapter(viewModel?.adapter, false)
-            viewModel?.adapter?.showPercentage = true
+            viewModel?.adapter?.showPercentage = false
             logDebug { "QuizWidget Showing result total:$totalVotes" }
         }
     }
