@@ -320,10 +320,6 @@ internal class PredictionViewModel(
        claimPredictionRewards()
     }
 
-    override fun loadUnclaimedInteractions(liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>) {
-
-    }
-
     override fun finish() {
         onDismiss()
         cleanUp()
