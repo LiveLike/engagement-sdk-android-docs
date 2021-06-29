@@ -88,7 +88,6 @@ internal class PredictionViewModel(
     private var programId:String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
-    private var latestUserInteraction : PredictionWidgetUserInteraction? = null
 
     init {
 
