@@ -26,6 +26,11 @@ interface FollowUpWidgetViewModel : LiveLikeWidgetMediator {
     fun claimRewards()
 
     /**
+     * it returns the widget interactions for which rewards has not been claimed
+     */
+    fun loadUnclaimedInteractions(liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>)
+
+    /**
      * it returns the latest user interaction for the widget
      */
     fun getUserInteraction() : PredictionWidgetUserInteraction?
