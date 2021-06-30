@@ -75,6 +75,10 @@ class PredictionWidgetUserInteraction(
     id: String,
     createdAt: String,
     url: String?,
+    @field:SerializedName("is_correct")
+    val isCorrect:Boolean,
+    @field:SerializedName("claim_token")
+    val claimToken:String?,
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
