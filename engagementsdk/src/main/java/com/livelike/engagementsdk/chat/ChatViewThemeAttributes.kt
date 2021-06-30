@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -16,7 +17,7 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 class ChatViewThemeAttributes {
     fun initAttributes(context: Context, typedArray: TypedArray?) {
         typedArray?.apply {
-            chatAvatarCircle = getBoolean(R.styleable.ChatView_chatAvatarCircle, false)
+            chatAvatarCircle = getBoolean(R.styleable.ChatView_chatAvatarCircle, true)
             showStickerSend = getBoolean(R.styleable.ChatView_showStickerSend, true)
             showMessageDateTime = getBoolean(R.styleable.ChatView_showMessageTime, true)
             chatNickNameColor = getColor(
@@ -59,9 +60,9 @@ class ChatViewThemeAttributes {
                     R.styleable.ChatView_chatBubbleBackground,
                     R.drawable.ic_chat_message_bubble_rounded_rectangle
                 )
-                colorBubbleValue.type == TypedValue.TYPE_NULL -> null
+                colorBubbleValue.type == TypedValue.TYPE_NULL -> R.drawable.ic_chat_message_bubble_rounded_rectangle
                 colorBubbleValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorBubbleValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> colorBubbleValue.data
-                else -> null
+                else -> R.drawable.ic_chat_message_bubble_rounded_rectangle
             }
 
             val colorHighlightedBubbleValue = TypedValue()
@@ -73,11 +74,11 @@ class ChatViewThemeAttributes {
             chatReactionMessageBubbleHighlightedBackground = when {
                 colorHighlightedBubbleValue.type == TypedValue.TYPE_REFERENCE || colorHighlightedBubbleValue.type == TypedValue.TYPE_STRING -> getResourceId(
                     R.styleable.ChatView_chatReactionMessageBubbleHighlightedBackground,
-                    R.drawable.ic_chat_message_bubble_rounded_rectangle
+                    R.drawable.ic_chat_message_highlighted_bubble_rounded_rectangle
                 )
-                colorHighlightedBubbleValue.type == TypedValue.TYPE_NULL -> null
+                colorHighlightedBubbleValue.type == TypedValue.TYPE_NULL -> R.drawable.ic_chat_message_highlighted_bubble_rounded_rectangle
                 colorHighlightedBubbleValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorHighlightedBubbleValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> colorHighlightedBubbleValue.data
-                else -> null
+                else -> R.drawable.ic_chat_message_highlighted_bubble_rounded_rectangle
             }
 
             val colorBackValue = TypedValue()
@@ -317,11 +318,11 @@ class ChatViewThemeAttributes {
             chatReactionX =
                 getDimensionPixelSize(
                     R.styleable.ChatView_chatReactionXPosition,
-                    AndroidResource.dpToPx(8)
+                    AndroidResource.dpToPx(120)
                 )
             chatReactionY = getDimensionPixelSize(
                 R.styleable.ChatView_chatReactionYPosition,
-                AndroidResource.dpToPx(40)
+                AndroidResource.dpToPx(-5)
             )
             chatReactionElevation = getDimensionPixelSize(
                 R.styleable.ChatView_chatReactionElevation,
@@ -329,11 +330,11 @@ class ChatViewThemeAttributes {
             ).toFloat()
             chatReactionRadius = getDimensionPixelSize(
                 R.styleable.ChatView_chatReactionRadius,
-                AndroidResource.dpToPx(0)
+                AndroidResource.dpToPx(17)
             ).toFloat()
             chatSelectedReactionRadius = getDimensionPixelSize(
                 R.styleable.ChatView_chatSelectedReactionRadius,
-                AndroidResource.dpToPx(0)
+                AndroidResource.dpToPx(17)
             ).toFloat()
             chatReactionPadding =
                 getDimensionPixelSize(
@@ -353,12 +354,12 @@ class ChatViewThemeAttributes {
             chatAvatarRadius =
                 getDimensionPixelSize(
                     R.styleable.ChatView_chatAvatarRadius,
-                    AndroidResource.dpToPx(0)
+                    AndroidResource.dpToPx(20)
                 )
             chatAvatarMarginLeft =
                 getDimensionPixelSize(
                     R.styleable.ChatView_chatAvatarMarginLeft,
-                    AndroidResource.dpToPx(5)
+                    AndroidResource.dpToPx(13)
                 )
             chatAvatarMarginRight =
                 getDimensionPixelSize(
@@ -413,10 +414,10 @@ class ChatViewThemeAttributes {
             )
 
             chatBubbleMarginLeft = getDimensionPixelOffset(
-                R.styleable.ChatView_chatBubbleMarginLeft, 0
+                R.styleable.ChatView_chatBubbleMarginLeft, 5
             )
             chatBubbleMarginRight = getDimensionPixelOffset(
-                R.styleable.ChatView_chatBubbleMarginRight, 0
+                R.styleable.ChatView_chatBubbleMarginRight, 25
             )
             chatBubbleMarginTop = getDimensionPixelOffset(
                 R.styleable.ChatView_chatBubbleMarginTop, 0
@@ -427,19 +428,19 @@ class ChatViewThemeAttributes {
 
             chatSendPaddingLeft = getDimensionPixelOffset(
                 R.styleable.ChatView_chatSendButtonPaddingLeft,
-                AndroidResource.dpToPx(13)
+                AndroidResource.dpToPx(10)
             )
             chatSendPaddingRight = getDimensionPixelOffset(
                 R.styleable.ChatView_chatSendButtonPaddingRight,
-                AndroidResource.dpToPx(13)
+                AndroidResource.dpToPx(10)
             )
             chatSendPaddingTop = getDimensionPixelOffset(
                 R.styleable.ChatView_chatSendButtonPaddingTop,
-                AndroidResource.dpToPx(0)
+                AndroidResource.dpToPx(6)
             )
             chatSendPaddingBottom = getDimensionPixelOffset(
                 R.styleable.ChatView_chatSendButtonPaddingBottom,
-                AndroidResource.dpToPx(0)
+                AndroidResource.dpToPx(6)
             )
 
             chatMarginLeft = getDimensionPixelOffset(
@@ -558,7 +559,7 @@ class ChatViewThemeAttributes {
             )
             chatReactionCountMarginRight = getDimensionPixelOffset(
                 R.styleable.ChatView_reaction_count_margin_right,
-                AndroidResource.dpToPx(18)
+                AndroidResource.dpToPx(13)
             )
             chatReactionCountMarginTop = getDimensionPixelOffset(
                 R.styleable.ChatView_reaction_count_margin_top,
@@ -572,7 +573,7 @@ class ChatViewThemeAttributes {
                 getFloat(R.styleable.ChatView_reaction_icons_gap_factor, 1.2f)
             chatReactionModerationFlagVisible =
                 getBoolean(R.styleable.ChatView_chatReactionModerationFlagVisible, true)
-            chatUserNameTextStyle = getInt(R.styleable.ChatView_chatUserNameTextStyle, 0)
+            chatUserNameTextStyle = getInt(R.styleable.ChatView_chatUserNameTextStyle, Typeface.BOLD)
             chatUserNameCustomFontPath = getString(R.styleable.ChatView_chatUserNameCustomFontPath)
             chatUserNameTextAllCaps =
                 getBoolean(R.styleable.ChatView_chatUserNameTextAllCaps, false)
@@ -597,7 +598,7 @@ class ChatViewThemeAttributes {
                 getBoolean(R.styleable.ChatView_chatMessageTimeTextAllCaps, false)
             chatMessageTimeTextColor = getColor(
                 R.styleable.ChatView_chatMessageTimeTextColor,
-                ContextCompat.getColor(context, android.R.color.black)
+                ContextCompat.getColor(context, android.R.color.white)
             )
             chatReactionDisplayCountTextStyle =
                 getInt(R.styleable.ChatView_chatReactionDisplayCountTextStyle, 0)
@@ -614,7 +615,7 @@ class ChatViewThemeAttributes {
                 AndroidResource.dpToPx(12)
             )
             chatReactionPanelGravity =
-                getInt(R.styleable.ChatView_chatReactionPanelGravity, Gravity.NO_GRAVITY)
+                getInt(R.styleable.ChatView_chatReactionPanelGravity, Gravity.CENTER or Gravity.TOP)
             chatReactionPanelCountVisibleIfZero =
                 getBoolean(R.styleable.ChatView_chatReactionPanelCountVisibleIfZero, true)
             chatMessageTimeTextLetterSpacing =
@@ -631,24 +632,24 @@ class ChatViewThemeAttributes {
     var chatBubblePaddingRight: Int = 0
     var chatBubblePaddingTop: Int = 0
     var chatBubblePaddingBottom: Int = 0
-    var chatSendPaddingLeft: Int = 0
-    var chatSendPaddingRight: Int = 0
-    var chatSendPaddingTop: Int = 0
-    var chatSendPaddingBottom: Int = 0
+    var chatSendPaddingLeft: Int = AndroidResource.dpToPx(10)
+    var chatSendPaddingRight: Int = AndroidResource.dpToPx(10)
+    var chatSendPaddingTop: Int = AndroidResource.dpToPx(6)
+    var chatSendPaddingBottom: Int = AndroidResource.dpToPx(6)
     var chatMarginLeft: Int = 0
     var chatMarginRight: Int = 0
     var chatMarginTop: Int = 0
     var chatMarginBottom: Int = 0
-    var chatBubbleMarginLeft: Int = 0
-    var chatBubbleMarginRight: Int = 0
+    var chatBubbleMarginLeft: Int = AndroidResource.dpToPx(13)
+    var chatBubbleMarginRight: Int = AndroidResource.dpToPx(25)
     var chatBubbleMarginTop: Int = 0
     var chatBubbleMarginBottom: Int = 0
-    var chatBubbleWidth: Int = 0
-    var chatBackgroundWidth: Int = 0
+    var chatBubbleWidth: Int = LinearLayout.LayoutParams.WRAP_CONTENT
+    var chatBackgroundWidth: Int = ConstraintLayout.LayoutParams.WRAP_CONTENT
     var sendIconWidth: Int = 0
     var sendIconHeight: Int = 0
     var chatInputTextSize: Int = 0
-    var chatBubbleBackgroundRes: Int? = null
+    var chatBubbleBackgroundRes: Int? = R.drawable.ic_chat_message_bubble_rounded_rectangle
     var chatBackgroundRes: Int? = null
     var chatViewBackgroundRes: Drawable? = null
     var chatInputBackgroundRes: Drawable? = null
@@ -668,24 +669,24 @@ class ChatViewThemeAttributes {
     var chatOtherNickNameColor: Int = Color.TRANSPARENT
     var chatNickNameColor: Int = Color.TRANSPARENT
     var chatReactionBackgroundRes: Drawable? = null
-    var chatReactionMessageBubbleHighlightedBackground: Int? = null
+    var chatReactionMessageBubbleHighlightedBackground: Int? = R.drawable.ic_chat_message_highlighted_bubble_rounded_rectangle
     var chatReactionMessageBackHighlightedBackground: Int? = null
     var chatReactionPanelColor: Int = Color.WHITE
     var chatReactionPanelCountColor: Int = Color.BLACK
     var chatReactionDisplayCountColor: Int = Color.WHITE
     var chatReactionFlagTintColor: Int = Color.BLACK
-    var chatReactionX: Int = 0
-    var chatReactionY: Int = 0
+    var chatReactionX: Int = AndroidResource.dpToPx(120)
+    var chatReactionY: Int = AndroidResource.dpToPx(-5)
     var chatReactionElevation: Float = 4f
-    var chatReactionRadius: Float = 4f
-    var chatSelectedReactionRadius: Float = 4f
+    var chatReactionRadius: Float = AndroidResource.dpToPx(20).toFloat()
+    var chatSelectedReactionRadius: Float = AndroidResource.dpToPx(20).toFloat()
     var chatReactionPadding: Int = 0
     var chatAvatarMarginRight: Int = AndroidResource.dpToPx(3)
     var chatAvatarMarginBottom: Int = AndroidResource.dpToPx(5)
     var chatAvatarMarginLeft: Int = AndroidResource.dpToPx(5)
     var chatAvatarMarginTop: Int = AndroidResource.dpToPx(0)
     var chatAvatarRadius: Int = AndroidResource.dpToPx(20)
-    var chatAvatarCircle: Boolean = false
+    var chatAvatarCircle: Boolean = true
     var showStickerSend: Boolean = true
     var chatAvatarWidth: Int = AndroidResource.dpToPx(32)
     var chatAvatarHeight: Int = AndroidResource.dpToPx(32)
@@ -706,13 +707,13 @@ class ChatViewThemeAttributes {
     var chatReactionIconsMarginBottom: Int = AndroidResource.dpToPx(0)
     var chatReactionCountMarginLeft: Int = AndroidResource.dpToPx(0)
     var chatReactionCountMarginTop: Int = AndroidResource.dpToPx(4)
-    var chatReactionCountMarginRight: Int = AndroidResource.dpToPx(18)
+    var chatReactionCountMarginRight: Int = AndroidResource.dpToPx(13)
     var chatReactionCountMarginBottom: Int = AndroidResource.dpToPx(0)
     var chatReactionIconsPositionAtBottom: Boolean = false
     var chatReactionCountPositionAtBottom: Boolean = false
     var chatReactionIconsFactor: Float = 1.2f
     var chatReactionModerationFlagVisible: Boolean = true
-    var chatUserNameTextStyle: Int = 0
+    var chatUserNameTextStyle: Int = Typeface.BOLD
     var chatUserNameCustomFontPath: String? = null
     var chatUserNameTextAllCaps: Boolean = false
     var chatUserNameTextSize: Float = AndroidResource.spToPx(12.0f)
@@ -723,7 +724,7 @@ class ChatViewThemeAttributes {
     var chatMessageTimeTextSize: Float = AndroidResource.spToPx(10.0f)
     var chatMessageTimeTextStyle: Int = 0
     var chatMessageTimeTextAllCaps: Boolean = false
-    var chatMessageTimeTextColor: Int = Color.BLACK
+    var chatMessageTimeTextColor: Int = Color.WHITE
     var chatMessageTimeTextLetterSpacing: Float = 0.0f
     var chatUserNameTextLetterSpacing: Float = 0.0f
     var chatMessageTextLetterSpacing: Float = 0.0f
@@ -732,6 +733,6 @@ class ChatViewThemeAttributes {
     var chatReactionPanelCountCustomFontPath: String? = null
     var chatReactionDisplayCountTextSize: Float = AndroidResource.spToPx(11f)
     var chatReactionDisplaySize: Int = AndroidResource.dpToPx(12)
-    var chatReactionPanelGravity: Int = Gravity.NO_GRAVITY
+    var chatReactionPanelGravity: Int = Gravity.CENTER or Gravity.TOP
     var chatReactionPanelCountVisibleIfZero: Boolean = true
 }
