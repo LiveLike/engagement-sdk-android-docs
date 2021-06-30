@@ -75,7 +75,7 @@ interface LiveLikeContentSession {
     /**
      * if the result is empty that means there is no data further and user reached end of list
      * **/
-    fun getUnclaimedInteractions(liveLikePagination: LiveLikePagination,liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>)
+    fun getWidgetInteractionsWithUnclaimedRewards(liveLikePagination: LiveLikePagination,liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>)
 
 }
 

@@ -202,7 +202,7 @@ internal class ContentSession(
             }
     }
 
-    override fun getUnclaimedInteractions(liveLikePagination: LiveLikePagination,
+    override fun getWidgetInteractionsWithUnclaimedRewards(liveLikePagination: LiveLikePagination,
                                           liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>) {
         uiScope.launch {
             programFlow.collect { program->
