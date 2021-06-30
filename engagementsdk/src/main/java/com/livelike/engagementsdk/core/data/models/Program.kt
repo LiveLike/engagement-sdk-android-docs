@@ -2,7 +2,7 @@ package com.livelike.engagementsdk.core.data.models
 
 import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
-import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
+import com.livelike.engagementsdk.sponsorship.SponsorModel
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 
 internal data class Program(
@@ -24,7 +24,10 @@ internal data class Program(
     val defaultChatRoom: ChatRoom?,
     val reportUrl: String?,
     val leaderboards: List<LeaderBoardResource>,
-    val rewardItems: List<RewardItem>
+    val rewardItems: List<RewardItem>,
+    val sponsors: List<SponsorModel>,
+    val widgetInteractionUrl: String,
+
 )
 
 internal data class LeaderBoardResource(
@@ -153,7 +156,12 @@ internal data class ProgramModel(
     val defaultChatRoom: ChatRoom?,
     val leaderboards: List<LeaderBoardResource>,
     @SerializedName("reward_items")
-    val rewardItems: List<RewardItem>
+    val rewardItems: List<RewardItem>,
+    @field:SerializedName("sponsors")
+    val sponsors: List<SponsorModel>,
+    @SerializedName("widget_interactions_url_template")
+    val widgetInteractionUrl: String?
+
 )
 
 internal fun ProgramModel.toProgram(): Program {
@@ -176,7 +184,9 @@ internal fun ProgramModel.toProgram(): Program {
         defaultChatRoom,
         reportUrl,
         leaderboards,
-        rewardItems
+        rewardItems,
+        sponsors,
+        widgetInteractionUrl ?:""
     )
 }
 

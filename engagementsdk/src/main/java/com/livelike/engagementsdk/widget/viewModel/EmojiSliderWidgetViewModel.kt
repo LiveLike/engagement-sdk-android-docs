@@ -1,32 +1,34 @@
 package com.livelike.engagementsdk.widget.viewModel
 
+import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
-import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.formatIsoZoned8601
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.EmojiSliderUserInteraction
-import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.model.ImageSliderEntity
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
-import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
 import org.threeten.bp.ZonedDateTime
+import java.io.IOException
 
 internal class EmojiSliderWidgetViewModel(
     widgetInfos: WidgetInfos,
@@ -126,6 +128,7 @@ internal class EmojiSliderWidgetViewModel(
             )
         }
         vote(magnitude.toString())
+        saveInteraction(magnitude.toFloat(), data.latest()?.voteUrl)
     }
 
     override fun getUserInteraction(): EmojiSliderUserInteraction? {
@@ -133,6 +136,31 @@ internal class EmojiSliderWidgetViewModel(
             widgetInfos.widgetId,
             WidgetKind.fromString(widgetInfos.type)
         )
+    }
+
+    override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<EmojiSliderUserInteraction>>) {
+        uiScope.launch {
+            try {
+                val results =
+                    widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
+
+                if (results is Result.Success) {
+                    liveLikeCallback.onResponse(
+                        results.data.interactions.emojiSlider, null
+                    )
+                } else if (results is Result.Error) {
+                    liveLikeCallback.onResponse(
+                        null, results.exception.message
+                    )
+                }
+            } catch (e: JsonParseException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            }
+        }
     }
 
     internal fun saveInteraction(magnitude: Float,url : String?) {

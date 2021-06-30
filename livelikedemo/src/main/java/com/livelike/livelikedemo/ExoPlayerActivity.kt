@@ -151,7 +151,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             showChatAvatar = intent.getBooleanExtra("showAvatar", true)
             if (intent.getBooleanExtra("customCheerMeter", false))
-                widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
+                widget_view?.widgetViewFactory = object : LiveLikeWidgetViewFactory {
                     override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
                         return CustomCheerMeter(this@ExoPlayerActivity).apply {
                             cheerMeterWidgetModel = viewModel
@@ -255,7 +255,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                                             error: String?
                                         ) {
                                             result?.let {
-                                                widget_view.displayWidget(
+                                                widget_view?.displayWidget(
                                                     (application as LiveLikeApplication).sdk,
                                                     result
                                                 )
@@ -279,7 +279,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                                                             error: String?
                                                         ) {
                                                             result?.let {
-                                                                widget_view.displayWidget(
+                                                                widget_view?.displayWidget(
                                                                     (application as LiveLikeApplication).sdk,
                                                                     result
                                                                 )
@@ -407,7 +407,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     else -> null
                 }
             )
-            widget_view.setWidgetListener(object : WidgetListener {
+            widget_view?.setWidgetListener(object : WidgetListener {
                 override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
                     if (myWidgetsList.find { it.id == liveLikeWidget.id } == null) {
                         myWidgetsList.add(0, liveLikeWidget)
@@ -416,9 +416,9 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
                 }
             })
-            widget_view.setSession(session)
+            widget_view?.setSession(session)
 
-            widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
+            widget_view?.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
                 override fun onWidgetStateChange(
                     state: WidgetStates,
                     widgetData: LiveLikeWidgetEntity
@@ -451,7 +451,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
 
         if (ThemeRandomizer.themesList.size > 0) {
-            widget_view.applyTheme(ThemeRandomizer.themesList.last())
+            widget_view?.applyTheme(ThemeRandomizer.themesList.last())
         }
 
         getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
@@ -467,10 +467,10 @@ class ExoPlayerActivity : AppCompatActivity() {
         val avatarUrl = intent.getStringExtra("avatarUrl")
         if (session != null) {
             session?.chatSession?.avatarUrl = avatarUrl
-            txt_chat_room_id.visibility = View.INVISIBLE
-            txt_chat_room_title.visibility = View.INVISIBLE
+            txt_chat_room_id?.visibility = View.INVISIBLE
+            txt_chat_room_title?.visibility = View.INVISIBLE
             session?.chatSession?.shouldDisplayAvatar = showChatAvatar
-            chat_view.setSession(session!!.chatSession)
+            chat_view?.setSession(session!!.chatSession)
         }
         player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
     }
@@ -482,7 +482,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private fun playThemeRandomizer() {
         themeRadomizerHandler.postDelayed({
             ThemeRandomizer.nextTheme()?.let {
-                widget_view.applyTheme(it)
+                widget_view?.applyTheme(it)
             }
             playThemeRandomizer()
         }, 5000)
@@ -527,10 +527,10 @@ class ExoPlayerActivity : AppCompatActivity() {
         session?.setWidgetContainer(FrameLayout(applicationContext))
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = null
-        widget_view.widgetLifeCycleEventsListener = null
+        widget_view?.widgetLifeCycleEventsListener = null
         timer.cancel()
         unregisterLogsHandler()
-        chat_view.clearSession()
+        chat_view?.clearSession()
         super.onDestroy()
     }
 

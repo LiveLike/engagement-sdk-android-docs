@@ -51,6 +51,7 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
@@ -440,12 +441,13 @@ internal class ChatRecyclerAdapter(
             }
         }
 
-        private fun hideFloatingUI() {
+        internal fun hideFloatingUI() {
             if (chatPopUpView?.isShowing == true)
                 chatPopUpView?.dismiss()
             chatPopUpView = null
             lastFloatingUiAnchorView = null
-            if (mRecyclerView?.isComputingLayout == false && mRecyclerView?.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
+            logDebug { "Computing:${mRecyclerView?.isComputingLayout} ,ScrollState: ${mRecyclerView?.scrollState} ,pos:$currentChatReactionPopUpViewPos ,adapt Pos:$adapterPosition" }
+            if (mRecyclerView?.isComputingLayout == false) {
                 //Add check for checking computing and check with current adapter position
                 if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
                     try {
@@ -531,7 +533,7 @@ internal class ChatRecyclerAdapter(
 
                     // Cleanup the recycled item
                     chatMessage.text = ""
-                    Glide.with(context).clear(chatMessage)
+                    Glide.with(context.applicationContext).clear(chatMessage)
 
                     chatViewThemeAttribute.apply {
                         v.chatMessage.setTextColor(chatMessageColor)
@@ -662,17 +664,17 @@ internal class ChatRecyclerAdapter(
 
                         // load local image with glide, so that (chatAvatarCircle and chatAvatarRadius) properties can be applied.
                         //more details on https://livelike.atlassian.net/browse/ES-1790
-
+                        // replace context with applicationContext related to ES-2185
                         if (message.senderDisplayPic.isNullOrEmpty()) {
                             //load local image
-                            Glide.with(context)
+                            Glide.with(context.applicationContext)
                                 .load(R.drawable.default_avatar)
                                 .apply(options)
                                 .placeholder(chatUserPicDrawable)
                                 .into(img_chat_avatar)
 
                         } else {
-                            Glide.with(context).load(message.senderDisplayPic)
+                            Glide.with(context.applicationContext).load(message.senderDisplayPic)
                                 .apply(options)
                                 .placeholder(chatUserPicDrawable)
                                 .error(chatUserPicDrawable)
@@ -705,7 +707,7 @@ internal class ChatRecyclerAdapter(
                                 val s = SpannableString(message.message)
                                 replaceWithImages(
                                     s,
-                                    context,
+                                    context.applicationContext,
                                     callback,
                                     false,
                                     message.id,
@@ -722,7 +724,7 @@ internal class ChatRecyclerAdapter(
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
-                                    context,
+                                    context.applicationContext,
                                     stickerPackRepository,
                                     null,
                                     callback,
@@ -747,7 +749,7 @@ internal class ChatRecyclerAdapter(
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
-                                    context,
+                                    context.applicationContext,
                                     stickerPackRepository,
                                     null,
                                     callback,

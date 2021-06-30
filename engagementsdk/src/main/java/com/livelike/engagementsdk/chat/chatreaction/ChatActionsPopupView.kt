@@ -78,7 +78,7 @@ internal class ChatActionsPopupView(
             }
 
             setOnDismissListener(hideFloatingUi)
-            isOutsideTouchable = true
+            isOutsideTouchable = false
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
         initReactions()

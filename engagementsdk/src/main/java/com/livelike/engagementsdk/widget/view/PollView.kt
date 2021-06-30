@@ -182,7 +182,10 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             // TODO: update header background with margin or padding
             titleTextView.gravity = Gravity.START
 
-            viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
+            viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList,type)
+
+            // set on click
+            viewModel?.adapter?.onClick = {
                 val selectedId = viewModel?.adapter?.myDataset?.get(
                     viewModel?.adapter?.selectedPosition ?: -1
                 )?.id ?: ""
@@ -190,7 +193,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 widgetLifeCycleEventsListener?.onUserInteract(widgetData)
                 isFirstInteraction = true
                 viewModel?.saveInteraction(it)
-            }, type)
+            }
+
 
             widgetsTheme?.let {
                 applyTheme(it)

@@ -62,6 +62,7 @@ import kotlinx.android.synthetic.main.activity_main.private_group_label
 import kotlinx.android.synthetic.main.activity_main.progressBar
 import kotlinx.android.synthetic.main.activity_main.sample_app
 import kotlinx.android.synthetic.main.activity_main.sdk_version
+import kotlinx.android.synthetic.main.activity_main.sponsor_test
 import kotlinx.android.synthetic.main.activity_main.textView2
 import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_button
@@ -503,6 +504,9 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, CustomChatActivity::class.java))
             else
                 Toast.makeText(this, "Please wait for events loading", Toast.LENGTH_SHORT).show()
+        }
+        sponsor_test.setOnClickListener {
+            startActivity(Intent(this, SponsorTestActivity::class.java))
         }
 
         (application as LiveLikeApplication).removePublicSession()
