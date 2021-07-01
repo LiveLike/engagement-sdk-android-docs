@@ -73,9 +73,9 @@ interface LiveLikeContentSession {
                             liveLikeCallback: LiveLikeCallback<LeaderboardClient>)
 
     /**
-     * if the result is empty that means there is no data further and user reached end of list
-     * **/
-    fun getWidgetInteractionsWithUnclaimedRewards(liveLikePagination: LiveLikePagination,liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>)
+     * Returns list of interactions for which rewards have not been claimed */
+    fun getWidgetInteractionsWithUnclaimedRewards(liveLikePagination: LiveLikePagination,
+                                                  liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>)
 
 }
 

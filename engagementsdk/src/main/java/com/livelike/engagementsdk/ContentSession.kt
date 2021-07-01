@@ -238,7 +238,6 @@ internal class ContentSession(
                                         }
                                         return@filter WidgetType.fromString(widgetType) != null
                                     }
-                                    return@filter false
                                 }
                                     .let {
                                         liveLikeCallback.onResponse(
