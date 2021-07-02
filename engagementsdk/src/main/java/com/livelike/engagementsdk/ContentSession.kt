@@ -207,11 +207,12 @@ internal class ContentSession(
         uiScope.launch {
             programFlow.collect { program->
                 userRepository.currentUserStream.latest()?.let { user ->
-                    program?.unclaimedWidgetInteractionsUrlTemplate?.replace(
+                    val interactionTemplate = program?.unclaimedWidgetInteractionsUrlTemplate?.replace(
                         "{profile_id}",
                         user.id
-                    ) ?: "".let { url->
+                    ) ?: ""
 
+                    interactionTemplate?.let { url->
                         val url = when (liveLikePagination) {
                             LiveLikePagination.FIRST -> url
                             LiveLikePagination.NEXT -> unclaimedInteractionResponse?.next
@@ -221,6 +222,7 @@ internal class ContentSession(
                             if (url == null) {
                                 liveLikeCallback.onResponse(null, null)
                             } else {
+                                logDebug { "url -> ${url}" }
                                 val jsonObject = widgetDataClient.getUnclaimedInteractions(url,user.accessToken)
                                 unclaimedInteractionResponse =
                                     gson.fromJson(
@@ -228,7 +230,7 @@ internal class ContentSession(
                                         UnclaimedWidgetInteractionList::class.java
                                     )
 
-                                unclaimedInteractionResponse?.results?.filter {
+                               unclaimedInteractionResponse?.results?.filter {
                                     it?.let {
                                         var widgetType = it.widgetKind
                                         widgetType = if (widgetType?.contains("follow-up")) {
@@ -253,10 +255,10 @@ internal class ContentSession(
                             e.printStackTrace()
                             liveLikeCallback.onResponse(null, e.message)
                         }
+
                     }
                 }
             }
-
         }
     }
 

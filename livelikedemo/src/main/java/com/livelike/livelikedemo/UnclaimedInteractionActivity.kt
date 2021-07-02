@@ -1,74 +1,61 @@
 package com.livelike.livelikedemo
 
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
-import com.livelike.livelikedemo.utils.DialogUtils
-import kotlinx.android.synthetic.main.activity_unclaimed_interaction.fetch_interaction
-import kotlinx.android.synthetic.main.activity_unclaimed_interaction.widget_view
+import com.livelike.livelikedemo.adapters.UnclaimedInteractionAdapter
+import kotlinx.android.synthetic.main.activity_sponsor_test.progress_bar
+import kotlinx.android.synthetic.main.activity_unclaimed_interaction.claim_rv
+import kotlinx.android.synthetic.main.activity_unclaimed_interaction.unclaimed_btn
 
 
-class UnclaimedInteractionActivity: AppCompatActivity() {
+class UnclaimedInteractionActivity : AppCompatActivity() {
 
     private var session: LiveLikeContentSession? = null
+    var adapter: UnclaimedInteractionAdapter? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_unclaimed_interaction)
-        session = (application as LiveLikeApplication).createPublicSession((application as LiveLikeApplication)?.channelManager.selectedChannel.llProgram.toString())
+        session =
+            (application as LiveLikeApplication).createPublicSession((application as LiveLikeApplication)?.channelManager.selectedChannel.llProgram.toString())
 
-        fetch_interaction.setOnClickListener { fetchUnclaimedInteractions() }
+        unclaimed_btn.setOnClickListener { fetchUnclaimedInteractions() }
+
     }
 
 
-    private fun fetchUnclaimedInteractions(){
-        var unclaimedWidgetList: ArrayList<LiveLikeWidget> = ArrayList()
+    private fun fetchUnclaimedInteractions() {
+        var unclaimedWidgetList: MutableList<LiveLikeWidget>? = ArrayList<LiveLikeWidget>()
+        progress_bar.visibility = View.VISIBLE
         session?.getWidgetInteractionsWithUnclaimedRewards(
             LiveLikePagination.FIRST,
             object : LiveLikeCallback<List<PredictionWidgetUserInteraction>>() {
                 override fun onResponse(
                     result: List<PredictionWidgetUserInteraction>?,
-                    error: String?)
-                  {
+                    error: String?
+                ) {
+                    progress_bar.visibility = View.GONE
                     result?.let {
-                      //load widget data from the id and kind received from interactions
-                        result.forEach { interaction ->
-                            (application as LiveLikeApplication).sdk.
-                               fetchWidgetDetails(interaction.widgetId,interaction.widgetKind,object : LiveLikeCallback<LiveLikeWidget>(){
-                                   override fun onResponse(
-                                       result: LiveLikeWidget?,
-                                       error: String?
-                                   ) {
-                                       if(result!= null){
-                                           unclaimedWidgetList.add(result)
-                                       }
-                                   }
-                               })
+                        Log.d("unclaimed", "interaction list loaded-> ${result.size}")
+                        // set adapter
+                        unclaimedWidgetList?.let {
+                            adapter = UnclaimedInteractionAdapter(
+                                this@UnclaimedInteractionActivity,
+                                (application as LiveLikeApplication).sdk,session, result
+                            )
+                            claim_rv.layoutManager =
+                                LinearLayoutManager(this@UnclaimedInteractionActivity)
+                            claim_rv.adapter = adapter
                         }
-
-                        // show the widgets
-                        DialogUtils.showMyWidgetsDialog(this@UnclaimedInteractionActivity,
-                            (application as LiveLikeApplication).sdk,
-                            unclaimedWidgetList,
-                            object : LiveLikeCallback<LiveLikeWidget>() {
-                                override fun onResponse(
-                                    result: LiveLikeWidget?,
-                                    error: String?
-                                ) {
-                                    result?.let {
-                                        widget_view.displayWidget(
-                                            (application as LiveLikeApplication).sdk,
-                                            result
-                                        )
-
-                                    }
-                                }
-                            })
-
                     }
                 }
             })
