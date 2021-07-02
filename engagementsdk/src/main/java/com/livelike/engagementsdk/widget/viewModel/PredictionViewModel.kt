@@ -253,7 +253,7 @@ internal class PredictionViewModel(
                     )
 
             }
-            delay(3000)
+            delay(6000)
             dismissWidget(DismissAction.TIMEOUT)
         }
     }
@@ -278,22 +278,25 @@ internal class PredictionViewModel(
     }
 
     private fun claimPredictionRewards(){
-        data.currentData?.let {
-            it.resource.claim_url?.let { url ->
-                uiScope.launch {
-                    dataClient.voteAsync(
-                        url,
-                        useVoteUrl = false,
-                        body = FormBody.Builder()
-                            .add("claim_token", EngagementSDK.predictionWidgetVoteRepository.get(
-                                (getPredictionId(it)?:""))?:"").build(),
-                        type = RequestType.POST,
-                        accessToken = userRepository.userAccessToken,
-                        userRepository = userRepository,
-                        widgetId = currentWidgetId,
-                        patchVoteUrl = getUserInteraction()?.url
-                    )
-                }
+        data.currentData?.let { resources ->
+            val widgetId = if (resources.resource.text_prediction_id.isEmpty()) (resources.resource.image_prediction_id) else (resources.resource.text_prediction_id)
+            widgetInfos.widgetId = widgetId
+            uiScope.launch {
+                widgetInteractionRepository?.fetchRemoteInteractions(widgetInfos)
+                    resources.resource.claim_url?.let { url ->
+                        dataClient.voteAsync(
+                            url,
+                            useVoteUrl = false,
+                            body = FormBody.Builder()
+                                .add("claim_token", getUserInteraction()?.claimToken ?: "").build(),
+                            type = RequestType.POST,
+                            accessToken = userRepository.userAccessToken,
+                            userRepository = userRepository,
+                            widgetId = currentWidgetId,
+                            patchVoteUrl = getUserInteraction()?.url
+                        )
+                    }
+
             }
         }
     }

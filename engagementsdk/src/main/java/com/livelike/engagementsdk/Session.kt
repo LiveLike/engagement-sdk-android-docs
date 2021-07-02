@@ -124,5 +124,5 @@ class WidgetInfos(
     /** The data used to define the widget */
     val payload: JsonObject,
     /** The id of the widget */
-    val widgetId: String
+    var widgetId: String
 )
