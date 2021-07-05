@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
     val player = PlayerInfo(
         "Exo Player",
         ExoPlayerActivity::class,
-        R.style.Default,
+        R.style.AppTheme,
         true
 
     )
@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity() {
     val onlyWidget = PlayerInfo(
         "Widget Only",
         WidgetOnlyActivity::class,
-        R.style.Default,
+        R.style.AppTheme,
         true
     )
 
@@ -285,7 +285,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         themes_button.setOnClickListener {
-            val channels = arrayListOf("Default", "Turner", "Custom Chat Reaction")
+            val channels = arrayListOf("Default", "Turner", "Custom Chat Reaction", "None")
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a theme!")
                 setItems(channels.toTypedArray()) { _, which ->
@@ -303,7 +303,7 @@ class MainActivity : AppCompatActivity() {
                             EngagementSDK.enableDebug = false
                             R.style.CustomChatReactionTheme
                         }
-                        else -> R.style.Default
+                        else -> R.style.AppTheme
                     }
                     onlyWidget.theme = when (which) {
                         0 -> R.style.Default
@@ -315,7 +315,7 @@ class MainActivity : AppCompatActivity() {
                             EngagementSDK.enableDebug = false
                             R.style.CustomChatReactionTheme
                         }
-                        else -> R.style.Default
+                        else -> R.style.AppTheme
                     }
                 }
                 create()
