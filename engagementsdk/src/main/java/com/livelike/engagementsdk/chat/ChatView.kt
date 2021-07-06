@@ -564,7 +564,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      */
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         val v = context.scanForActivity()?.currentFocus
-
         if (v != null &&
             (ev?.action == MotionEvent.ACTION_UP || ev?.action == MotionEvent.ACTION_MOVE) &&
             (v is EditText || v is ChatView) &&
@@ -611,6 +610,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     dx: Int,
                     dy: Int
                 ) {
+                    hidePopUpReactionPanel()
                     val totalItemCount = lm.itemCount
                     val lastVisible = lm.findLastVisibleItemPosition()
                     val endHasBeenReached = lastVisible + 5 >= totalItemCount

@@ -25,7 +25,7 @@ internal class SynchronizedMessagingClient(
     private var publishSyncMessagesJob: Job
 
     private val messageComparator : Comparator<ClientMessage> =
-        Comparator<ClientMessage> { o1, o2 ->
+        Comparator<ClientMessage>{ o1, o2 ->
             when {
                 o1.timeStamp.timeSinceEpochInMs > o2.timeStamp.timeSinceEpochInMs -> {
                     return@Comparator 1
