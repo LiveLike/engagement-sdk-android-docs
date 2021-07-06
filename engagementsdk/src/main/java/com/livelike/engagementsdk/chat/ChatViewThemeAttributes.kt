@@ -598,7 +598,7 @@ class ChatViewThemeAttributes {
                 getBoolean(R.styleable.ChatView_chatMessageTimeTextAllCaps, false)
             chatMessageTimeTextColor = getColor(
                 R.styleable.ChatView_chatMessageTimeTextColor,
-                ContextCompat.getColor(context, android.R.color.white)
+                ContextCompat.getColor(context, R.color.livelike_chatMessage_timestamp_text_color)
             )
             chatReactionDisplayCountTextStyle =
                 getInt(R.styleable.ChatView_chatReactionDisplayCountTextStyle, 0)

@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
     val player = PlayerInfo(
         "Exo Player",
         ExoPlayerActivity::class,
-        R.style.AppTheme,
+        R.style.Default,
         true
 
     )
@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity() {
     val onlyWidget = PlayerInfo(
         "Widget Only",
         WidgetOnlyActivity::class,
-        R.style.AppTheme,
+        R.style.Default,
         true
     )
 
