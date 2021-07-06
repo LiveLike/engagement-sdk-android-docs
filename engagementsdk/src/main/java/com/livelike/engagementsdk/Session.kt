@@ -10,6 +10,7 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetIntercep
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
+import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 
 /**
@@ -67,10 +68,14 @@ interface LiveLikeContentSession {
     /** Returns list of reward item associated to entered program */
     fun getRewardItems() : List<RewardItem>
 
-//    /** Returns list of leaderboards associated to entered program */
-  fun getLeaderboardClients(leaderBoardId: List<String>,
+    /** Returns list of leaderboards associated to entered program */
+    fun getLeaderboardClients(leaderBoardId: List<String>,
                             liveLikeCallback: LiveLikeCallback<LeaderboardClient>)
 
+    /**
+     * Returns list of interactions for which rewards have not been claimed */
+    fun getWidgetInteractionsWithUnclaimedRewards(liveLikePagination: LiveLikePagination,
+                                                  liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>)
 
 }
 

@@ -56,6 +56,8 @@ internal interface WidgetDataClient {
 
     suspend fun getWidgetDataFromIdAndKind(id: String, kind: String): JsonObject?
     suspend fun getAllPublishedWidgets(url: String): JsonObject?
+    suspend fun getUnclaimedInteractions(url: String,accessToken: String?): JsonObject?
+
 }
 
 internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClient {
@@ -176,6 +178,20 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                 .build()
             apiCallback(client, request, it)
         }
+
+    override suspend fun getUnclaimedInteractions(url: String,accessToken: String?): JsonObject? =
+        suspendCoroutine<JsonObject> {
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url(url)
+                .addAuthorizationBearer(accessToken)
+                .get()
+                .addUserAgent()
+                .build()
+            apiCallback(client, request, it)
+        }
+
+
 
     override fun registerImpression(impressionUrl: String, accessToken: String?) {
         if (impressionUrl.isNullOrEmpty()) {

@@ -9,7 +9,6 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
@@ -27,8 +26,6 @@ import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
-import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
-import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
