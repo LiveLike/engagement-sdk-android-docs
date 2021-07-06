@@ -34,6 +34,7 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggT
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
@@ -48,13 +49,15 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel = value as QuizViewModel
         }
 
+    private var isFirstInteraction = false
+
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
         viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
         viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
-        viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
+       // viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
 
     }
 
@@ -69,6 +72,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateWidgetObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
+                isFirstInteraction = false
                 lockInteraction()
             }
             WidgetStates.INTERACTING -> {
@@ -87,60 +91,78 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
-                viewModel?.apply {
-                    val isUserCorrect =
-                        adapter?.selectedPosition?.let {
-                            if (it > -1) {
-                                return@let adapter?.myDataset?.get(it)?.is_correct
+                disableLockButton()
+                label_lock.visibility = View.VISIBLE
+                viewModel?.results?.subscribe(javaClass.simpleName) {
+                    if (isFirstInteraction) {
+                        resultsObserver(viewModel?.results?.latest())
+                    }
+                }
+
+                if(isFirstInteraction) {
+                    viewModel?.apply {
+                        val isUserCorrect =
+                            adapter?.selectedPosition?.let {
+                                if (it > -1) {
+                                    return@let adapter?.myDataset?.get(it)?.is_correct
+                                }
+                                return@let false
                             }
-                            return@let false
+                                ?: false
+                        val rootPath =
+                            if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
+                        animationPath =
+                            AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
+
+                    }
+
+
+                    viewModel?.adapter?.correctOptionId =
+                        viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
+                    viewModel?.adapter?.userSelectedOptionId =
+                        viewModel?.adapter?.selectedPosition?.let { it1 ->
+                            if (it1 > -1)
+                                return@let viewModel?.adapter?.myDataset?.get(it1)?.id
+                            return@let null
+                        } ?: ""
+
+
+                    textRecyclerView.swapAdapter(viewModel?.adapter, false)
+                    textRecyclerView.adapter?.notifyItemChanged(0)
+                }
+
+                    followupAnimation.apply {
+                        if(isFirstInteraction) {
+                            setAnimation(viewModel?.animationPath)
+                            progress = viewModel?.animationProgress ?: 0f
+                            logDebug { "Animation: ${viewModel?.animationPath}" }
+                            addAnimatorUpdateListener { valueAnimator ->
+                                viewModel?.animationProgress = valueAnimator.animatedFraction
+                            }
+                            if (progress != 1f) {
+                                resumeAnimation()
+                            }
+                            visibility = if (showResultAnimation) {
+                                View.VISIBLE
+                            } else {
+                                View.GONE
+                            }
+                        }else{
+                            visibility = View.GONE
                         }
-                            ?: false
-                    val rootPath =
-                        if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
-                    animationPath =
-                        AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
-                }
-                resultsObserver(viewModel?.results?.latest())
-               
-                viewModel?.adapter?.correctOptionId =
-                    viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
-                viewModel?.adapter?.userSelectedOptionId =
-                    viewModel?.adapter?.selectedPosition?.let { it1 ->
-                        if (it1 > -1)
-                            return@let viewModel?.adapter?.myDataset?.get(it1)?.id
-                        return@let null
-                    } ?: ""
+                    }
 
-                textRecyclerView.swapAdapter(viewModel?.adapter, false)
-                textRecyclerView.adapter?.notifyItemChanged(0)
+                    viewModel?.points?.let {
+                        if (!shouldShowPointTutorial() && it > 0) {
+                            pointView.startAnimation(it, true)
+                            wouldShowProgressionMeter(
+                                viewModel?.rewardsType,
+                                viewModel?.gamificationProfile?.latest(),
+                                progressionMeterView
+                            )
+                        }
+                    }
 
-                followupAnimation.apply {
-                    setAnimation(viewModel?.animationPath)
-                    progress = viewModel?.animationProgress ?: 0f
-                    logDebug { "Animation: ${viewModel?.animationPath}" }
-                    addAnimatorUpdateListener { valueAnimator ->
-                        viewModel?.animationProgress = valueAnimator.animatedFraction
-                    }
-                    if (progress != 1f) {
-                        resumeAnimation()
-                    }
-                    visibility = if(showResultAnimation) {
-                        View.VISIBLE
-                    }else{
-                        View.GONE
-                    }
-                }
-                viewModel?.points?.let {
-                    if (!shouldShowPointTutorial() && it > 0) {
-                        pointView.startAnimation(it, true)
-                        wouldShowProgressionMeter(
-                            viewModel?.rewardsType,
-                            viewModel?.gamificationProfile?.latest(),
-                            progressionMeterView
-                        )
-                    }
-                }
             }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {
@@ -192,6 +214,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     val currentSelectionId = myDataset[selectedPosition]
                     viewModel?.currentVoteId?.onNext(currentSelectionId.id)
                     widgetLifeCycleEventsListener?.onUserInteract(widgetData)
+                    isFirstInteraction = true
                 }
                 enableLockButton()
             }
@@ -201,6 +224,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             disableLockButton()
             textRecyclerView.apply {
+                isFirstInteraction = viewModel?.getUserInteraction() !=null
                 this.adapter = viewModel?.adapter
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.choiceId)
                 setHasFixedSize(true)
@@ -280,13 +304,19 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 }
             }
             WidgetStates.RESULTS -> {
+                if(!isFirstInteraction){
+                    viewModel?.dismissWidget(DismissAction.TIMEOUT)
+                }
                 followupAnimation.apply {
                     addAnimatorListener(object : Animator.AnimatorListener {
                         override fun onAnimationRepeat(animation: Animator?) {
                         }
 
                         override fun onAnimationEnd(animation: Animator?) {
-                            viewModel?.dismissWidget(DismissAction.TIMEOUT)
+                            viewModel?.uiScope?.launch {
+                                    delay(11000)
+                                viewModel?.dismissWidget(DismissAction.TIMEOUT)
+                            }
                         }
 
                         override fun onAnimationCancel(animation: Animator?) {

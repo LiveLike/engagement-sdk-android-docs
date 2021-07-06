@@ -527,6 +527,16 @@
                     android:text="Sponsor"
                     app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
 
+                <Button
+                    android:id="@+id/unclaimed_interaction"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="Get Unclaimed Interactions"
+                    app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
+
+
+
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

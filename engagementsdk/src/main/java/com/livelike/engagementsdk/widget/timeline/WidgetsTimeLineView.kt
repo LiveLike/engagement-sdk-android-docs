@@ -144,7 +144,7 @@ class WidgetsTimeLineView(
     private fun subscribeForTimelineWidgets() {
         timeLineViewModel.timeLineWidgetsStream.subscribe(this) { pair ->
             pair?.let {
-                lockInteracatedWidgetsWithoutPatchUrl(pair.second) // will remove this logic when backend adds patch_url
+               // lockInteracatedWidgetsWithoutPatchUrl(pair.second) // will remove this logic when backend adds patch_url
                 lockAlreadyInteractedQuizAndEmojiSlider(pair.second)
                 wouldLockPredictionWidgets(pair.second) // if follow up is received lock prediction interaction
                 // changing timeout value for widgets when widgetTimerController is configured
@@ -164,7 +164,6 @@ class WidgetsTimeLineView(
                         }
                     }
                 }
-                print("oh my god")
                 if (pair.first == WidgetApiSource.REALTIME_API) {
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
@@ -184,7 +183,7 @@ class WidgetsTimeLineView(
     private fun lockInteracatedWidgetsWithoutPatchUrl(widgets: List<TimelineWidgetResource>) {
         widgets.forEach {
             val kind = it.liveLikeWidget.kind
-            if (kind?.contains(WidgetKind.POLL.event) == true || kind?.contains(WidgetKind.PREDICTION.event) == true) {
+            if (kind?.contains(WidgetKind.PREDICTION.event) == true) {
                 if ((timeLineViewModel.contentSession as ContentSession)?.widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
                         it.liveLikeWidget.id?:"",
                         WidgetKind.fromString(kind)

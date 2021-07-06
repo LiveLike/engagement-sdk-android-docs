@@ -144,6 +144,8 @@ internal class WidgetInteractionRepository(
             WidgetType.IMAGE_PREDICTION -> "image_prediction"
             WidgetType.CHEER_METER -> "cheer_meter"
             WidgetType.IMAGE_SLIDER -> "emoji_slider"
+            WidgetType.TEXT_PREDICTION_FOLLOW_UP -> "text_prediction"
+            WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> "image_prediction"
             else ->""
         }
 

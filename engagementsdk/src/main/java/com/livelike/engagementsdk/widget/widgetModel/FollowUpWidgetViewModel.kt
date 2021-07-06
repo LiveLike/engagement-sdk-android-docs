@@ -25,6 +25,7 @@ interface FollowUpWidgetViewModel : LiveLikeWidgetMediator {
      **/
     fun claimRewards()
 
+
     /**
      * it returns the latest user interaction for the widget
      */

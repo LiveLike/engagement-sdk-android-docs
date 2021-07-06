@@ -43,18 +43,21 @@ internal class FilteringWidgetsMessagingClient(
             resource?.let {
                 when (widgetType) {
                     WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> {
-                        if (getWidgetPredictionVotedAnswerIdOrEmpty(resource.image_prediction_id).isNotEmpty()) {
+                      /*  if (getWidgetPredictionVotedAnswerIdOrEmpty(resource.image_prediction_id).isNotEmpty()) {
                             listener?.onClientMessageEvent(client, event)
                         } else {
                             // Do nothing, filter this event
-                        }
+                        }*/
+                        listener?.onClientMessageEvent(client, event)
                     }
                     WidgetType.TEXT_PREDICTION_FOLLOW_UP -> {
-                        if (getWidgetPredictionVotedAnswerIdOrEmpty(resource.text_prediction_id).isNotEmpty()) {
+                      /*  if (getWidgetPredictionVotedAnswerIdOrEmpty(resource.text_prediction_id).isNotEmpty()) {
                             listener?.onClientMessageEvent(client, event)
                         } else {
                             // Do nothing, filter this event
-                        }
+                        }*/
+                        // commented this, since follow up should be received even when user doesn't interact
+                        listener?.onClientMessageEvent(client, event)
                     }
                     else -> {
                         if (widgetType != null) {

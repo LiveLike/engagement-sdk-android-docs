@@ -35,8 +35,10 @@ import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
+import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.PublishedWidgetListResponse
+import com.livelike.engagementsdk.widget.data.models.UnclaimedWidgetInteractionList
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
@@ -94,6 +96,7 @@ internal class ContentSession(
 
     private var widgetThemeAttributes: WidgetViewThemeAttributes? = null
     private var publishedWidgetListResponse: PublishedWidgetListResponse? = null
+    private var unclaimedInteractionResponse: UnclaimedWidgetInteractionList? = null
     internal var isSetSessionCalled = false
 
     internal var widgetInteractionRepository: WidgetInteractionRepository
@@ -197,6 +200,66 @@ internal class ContentSession(
                 }
 
             }
+    }
+
+    override fun getWidgetInteractionsWithUnclaimedRewards(liveLikePagination: LiveLikePagination,
+                                          liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>) {
+        uiScope.launch {
+            programFlow.collect { program->
+                userRepository.currentUserStream.latest()?.let { user ->
+                    val interactionTemplate = program?.unclaimedWidgetInteractionsUrlTemplate?.replace(
+                        "{profile_id}",
+                        user.id
+                    ) ?: ""
+
+                    interactionTemplate?.let { url->
+                        val url = when (liveLikePagination) {
+                            LiveLikePagination.FIRST -> url
+                            LiveLikePagination.NEXT -> unclaimedInteractionResponse?.next
+                            LiveLikePagination.PREVIOUS -> unclaimedInteractionResponse?.previous
+                        }
+                        try {
+                            if (url == null) {
+                                liveLikeCallback.onResponse(null, null)
+                            } else {
+                                logDebug { "url -> ${url}" }
+                                val jsonObject = widgetDataClient.getUnclaimedInteractions(url,user.accessToken)
+                                unclaimedInteractionResponse =
+                                    gson.fromJson(
+                                        jsonObject.toString(),
+                                        UnclaimedWidgetInteractionList::class.java
+                                    )
+
+                               unclaimedInteractionResponse?.results?.filter {
+                                    it?.let {
+                                        var widgetType = it.widgetKind
+                                        widgetType = if (widgetType?.contains("follow-up")) {
+                                            "$widgetType-updated"
+                                        } else {
+                                            "$widgetType-created"
+                                        }
+                                        return@filter WidgetType.fromString(widgetType) != null
+                                    }
+                                }
+                                    .let {
+                                        liveLikeCallback.onResponse(
+                                            it
+                                            , null
+                                        )
+                                    }
+                            }
+                        } catch (e: JsonParseException) {
+                            e.printStackTrace()
+                            liveLikeCallback.onResponse(null, e.message)
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                            liveLikeCallback.onResponse(null, e.message)
+                        }
+
+                    }
+                }
+            }
+        }
     }
 
 

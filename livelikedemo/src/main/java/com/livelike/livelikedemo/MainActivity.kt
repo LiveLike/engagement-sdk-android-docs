@@ -71,6 +71,7 @@ import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.timeline_two
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.txt_nickname_server
+import kotlinx.android.synthetic.main.activity_main.unclaimed_interaction
 import kotlinx.android.synthetic.main.activity_main.view_pager_sample
 import kotlinx.android.synthetic.main.activity_main.widget_viewModel
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
@@ -197,7 +198,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(playerDetailIntent(drawerDemoActivity))
         }
 
-        chk_show_dismiss.isChecked = player.showNotification
+        //chk_show_dismiss.isChecked = player.showNotification
+        chk_show_dismiss.isChecked = false
         chk_show_dismiss.setOnCheckedChangeListener { buttonView, isChecked ->
             player.showNotification = isChecked
         }
@@ -258,6 +260,12 @@ class MainActivity : AppCompatActivity() {
         leaderboard_button.setOnClickListener {
             startActivity(Intent(this, LeaderBoardActivity::class.java))
         }
+
+        unclaimed_interaction.setOnClickListener {
+            startActivity(Intent(this, UnclaimedInteractionActivity::class.java))
+        }
+
+
         private_group_button.setOnClickListener {
             AlertDialog.Builder(this).apply {
                 setTitle("Select a private group")
@@ -581,7 +589,7 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     val intent = Intent(this, player.cls.java)
     intent.putExtra("theme", player.theme)
     intent.putExtra("jsonTheme", player.jsonTheme)
-    intent.putExtra("showNotification", player.showNotification)
+    intent.putExtra("showNotification", false)
     intent.putExtra("avatarUrl", player.avatarUrl)
     intent.putExtra("showAvatar", player.showAvatar)
     intent.putExtra("customCheerMeter", player.customCheerMeter)
