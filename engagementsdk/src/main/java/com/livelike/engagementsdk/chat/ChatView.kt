@@ -586,7 +586,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             var outsideStickerKeyboardBound =
                 (v.bottom - sticker_keyboard.height - button_chat_send.height - button_emoji.height)
             if (button_chat_send.height == 0) {
-                outsideStickerKeyboardBound -= 110
+                outsideStickerKeyboardBound -= chatAttribute.sendIconHeight
             }
             // Added check for image_height greater than 0 so bound position for touch should be above the send icon
             if (!edittext_chat_message.isTouching) {
