@@ -238,8 +238,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         swipeToRefresh.setOnRefreshListener {
-            if (viewModel?.chatLoaded == true)
+            if (viewModel?.chatLoaded == true) {
                 viewModel?.loadPreviousMessages()
+                hidePopUpReactionPanel()
+            }
             else
                 swipeToRefresh.isRefreshing = false
         }
