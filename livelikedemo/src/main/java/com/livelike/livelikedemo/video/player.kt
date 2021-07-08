@@ -2,7 +2,8 @@ package com.livelike.livelikedemo.video
 
 import android.content.Context
 import android.net.Uri
-import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.MediaItem
+
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
@@ -22,9 +23,10 @@ data class PlayerState(
 class ExoPlayerImpl(private val context: Context, private val playerView: PlayerView) :
     VideoPlayer {
 
-    private var player: SimpleExoPlayer? =
+    /*private var player: SimpleExoPlayer? =
         ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector())
-            .also { playerView.player = it }
+            .also { playerView.player = it }*/
+    private var player: SimpleExoPlayer? = SimpleExoPlayer.Builder(context).build().also { playerView.player = it }
     private var mediaSource: MediaSource = buildMediaSource(Uri.EMPTY)
     private var playerState = PlayerState()
 
@@ -36,13 +38,14 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         /** here exoplayer instance was getting created each time, so a check has been added if the instance of player
         has not been created before then only instantiation is needed else not */
         if(player == null) {
-            player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector())
-                .also { playerView.player = it }
+            player = SimpleExoPlayer.Builder(context).build().also { playerView.player = it }
         }
 
         mediaSource = if (useHls) buildHLSMediaSource(uri) else buildMediaSource(uri)
         playerState = state
-        player?.prepare(mediaSource)
+        player?.setMediaSource(mediaSource)
+        player?.prepare()
+        //player?.prepare(mediaSource)
         with(playerState) {
             player?.playWhenReady = whenReady
             player?.seekToDefaultPosition()
@@ -61,14 +64,14 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     private fun buildMediaSource(uri: Uri): HlsMediaSource {
         return HlsMediaSource.Factory(
             DefaultDataSourceFactory(context, "LLDemoApp")
-        ).createMediaSource(uri)
+        ).createMediaSource(MediaItem.fromUri(uri))
     }
 
     /** responsible for building media sources, the player needs media source instance to
      * play the content */
     private fun buildHLSMediaSource(uri: Uri): HlsMediaSource {
         return HlsMediaSource.Factory(DefaultDataSourceFactory(context, "LLDemoApp"))
-            .createMediaSource(uri)
+            .createMediaSource(MediaItem.fromUri(uri))
     }
 
     override fun playMedia(uri: Uri, startState: PlayerState) {
@@ -78,7 +81,9 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
 
     /** responsible for starting the player, with the media source provided */
     override fun start() {
-        player?.prepare(mediaSource)
+        player?.setMediaSource(mediaSource)
+        player?.prepare()
+        //player?.prepare(mediaSource)
         player?.playWhenReady = true
         player?.seekToDefaultPosition()
     }
