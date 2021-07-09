@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.utils.addAuthorizationBearer
 import com.livelike.engagementsdk.core.utils.addUserAgent
 import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
@@ -42,7 +43,8 @@ internal interface WidgetDataClient {
         type: RequestType? = null,
         useVoteUrl: Boolean = true,
         userRepository: UserRepository?,
-        widgetId: String? = null
+        widgetId: String? = null,
+        patchVoteUrl:String? = null
     ): String?
 
     fun registerImpression(impressionUrl: String, accessToken: String?)
@@ -54,6 +56,8 @@ internal interface WidgetDataClient {
 
     suspend fun getWidgetDataFromIdAndKind(id: String, kind: String): JsonObject?
     suspend fun getAllPublishedWidgets(url: String): JsonObject?
+    suspend fun getUnclaimedInteractions(url: String,accessToken: String?): JsonObject?
+
 }
 
 internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClient {
@@ -68,10 +72,16 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
         type: RequestType?,
         useVoteUrl: Boolean,
         userRepository: UserRepository?,
-        widgetId: String?
+        widgetId: String?,
+        patchVoteUrl: String?
     ): String? {
         return singleRunner.afterPrevious {
             val jsonObject : JsonObject
+
+            if(!patchVoteUrl.isNullOrEmpty()){
+                voteUrl = patchVoteUrl
+            }
+
             if (voteUrl.isEmpty() || !useVoteUrl) {
                 jsonObject =
                     postAsync(
@@ -168,6 +178,20 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                 .build()
             apiCallback(client, request, it)
         }
+
+    override suspend fun getUnclaimedInteractions(url: String,accessToken: String?): JsonObject? =
+        suspendCoroutine<JsonObject> {
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url(url)
+                .addAuthorizationBearer(accessToken)
+                .get()
+                .addUserAgent()
+                .build()
+            apiCallback(client, request, it)
+        }
+
+
 
     override fun registerImpression(impressionUrl: String, accessToken: String?) {
         if (impressionUrl.isNullOrEmpty()) {

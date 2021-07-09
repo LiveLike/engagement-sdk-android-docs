@@ -9,7 +9,6 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
@@ -27,8 +26,6 @@ import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
-import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
-import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
@@ -88,7 +85,6 @@ internal class PredictionViewModel(
     private var programId:String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
-    private var latestUserInteraction : PredictionWidgetUserInteraction? = null
 
     init {
 
@@ -138,14 +134,15 @@ internal class PredictionViewModel(
                 data.currentData?.apply {
                     val selectedPredictionId =
                         getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
-                    uiScope.launch {
+                    //not sure, why this has been added
+                   /* uiScope.launch {
                         delay(
                             if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(
                                 timeout
                             ) else 0
                         )
                         dismissWidget(DismissAction.TIMEOUT)
-                    }
+                    }*/
                 }
             } else {
                 uiScope.launch {
@@ -203,7 +200,11 @@ internal class PredictionViewModel(
             adapter?.myDataset?.find { it.id == selectedPredictionId }?.is_correct ?: false
         val rootPath =
             if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
-        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
+        animationPath = if(selectedPredictionId.isNotEmpty()){
+            AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
+        }else{
+            ""
+        }
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
@@ -222,11 +223,11 @@ internal class PredictionViewModel(
     }
 
     private fun confirmationState(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
-        if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
+        /*if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)
             return
-        }
+        }*/
 
         adapter?.selectionLocked = true
         widgetState.onNext(WidgetStates.RESULTS)
@@ -252,7 +253,7 @@ internal class PredictionViewModel(
                     )
 
             }
-            delay(3000)
+            delay(6000)
             dismissWidget(DismissAction.TIMEOUT)
         }
     }
@@ -277,21 +278,25 @@ internal class PredictionViewModel(
     }
 
     private fun claimPredictionRewards(){
-        data.currentData?.let {
-            it.resource.claim_url?.let { url ->
-                uiScope.launch {
-                    dataClient.voteAsync(
-                        url,
-                        useVoteUrl = false,
-                        body = FormBody.Builder()
-                            .add("claim_token", EngagementSDK.predictionWidgetVoteRepository.get(
-                                (getPredictionId(it)?:""))?:"").build(),
-                        type = RequestType.POST,
-                        accessToken = userRepository.userAccessToken,
-                        userRepository = userRepository,
-                        widgetId = currentWidgetId
-                    )
-                }
+        data.currentData?.let { resources ->
+            val widgetId = if (resources.resource.text_prediction_id.isEmpty()) (resources.resource.image_prediction_id) else (resources.resource.text_prediction_id)
+            widgetInfos.widgetId = widgetId
+            uiScope.launch {
+                widgetInteractionRepository?.fetchRemoteInteractions(widgetInfos)
+                    resources.resource.claim_url?.let { url ->
+                        dataClient.voteAsync(
+                            url,
+                            useVoteUrl = false,
+                            body = FormBody.Builder()
+                                .add("claim_token", getUserInteraction()?.claimToken ?: "").build(),
+                            type = RequestType.POST,
+                            accessToken = userRepository.userAccessToken,
+                            userRepository = userRepository,
+                            widgetId = currentWidgetId,
+                            patchVoteUrl = getUserInteraction()?.url
+                        )
+                    }
+
             }
         }
     }
@@ -393,7 +398,9 @@ internal class PredictionViewModel(
                 option.id,
                 "",
                 ZonedDateTime.now().formatIsoZoned8601(),
-                option.getMergedVoteUrl(),
+                getUserInteraction()?.url,
+                false,
+                "",
                 widgetInfos.widgetId,
                 widgetInfos.type
             )
@@ -415,7 +422,8 @@ internal class PredictionViewModel(
                             selectedOption.id,
                             userRepository.userAccessToken,
                             userRepository = userRepository,
-                            widgetId = currentWidgetId
+                            widgetId = currentWidgetId,
+                            patchVoteUrl = getUserInteraction()?.url
                         )
                     }
 

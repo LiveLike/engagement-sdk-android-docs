@@ -227,6 +227,18 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
         callback.addView(edittext_chat_message)
 
+        chatdisplay.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
+            if (bottom < oldBottom) {
+                viewModel?.chatAdapter?.itemCount?.let {
+                    if (it > 0) {
+                        chatdisplay.post {
+                            chatdisplay.smoothScrollToPosition(it - 1)
+                        }
+                    }
+                }
+            }
+        }
+
         swipeToRefresh.setOnRefreshListener {
             if (viewModel?.chatLoaded == true)
                 viewModel?.loadPreviousMessages()

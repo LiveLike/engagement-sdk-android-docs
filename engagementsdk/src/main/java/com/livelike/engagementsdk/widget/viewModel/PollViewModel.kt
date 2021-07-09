@@ -133,14 +133,15 @@ internal class PollViewModel(
             adapter?.run {
                 val option = myDataset[selectedPosition]
                 if(lastestVotedOptionId != option.id){
-                    val url = option.getMergedVoteUrl()
+                    var url = option.getMergedVoteUrl()
                     lastestVotedOptionId = option.id
                     url?.let {
                         dataClient.voteAsync(
                             it,
                             option.id,
                             userRepository.userAccessToken,
-                            userRepository = userRepository
+                            userRepository = userRepository,
+                            patchVoteUrl = getUserInteraction()?.url
                         )
                     }
                 }
@@ -154,7 +155,7 @@ internal class PollViewModel(
                 option.id,
                 "",
                 ZonedDateTime.now().formatIsoZoned8601(),
-                option.getMergedVoteUrl(),
+                getUserInteraction()?.url,
                 widgetInfos.widgetId,
                 widgetInfos.type
             )
