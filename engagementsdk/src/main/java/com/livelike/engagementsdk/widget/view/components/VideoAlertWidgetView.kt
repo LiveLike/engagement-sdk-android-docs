@@ -15,7 +15,6 @@ import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -39,6 +38,7 @@ import kotlinx.android.synthetic.main.video_widget.view.playerView
 import kotlinx.android.synthetic.main.video_widget.view.sound_view
 import kotlinx.android.synthetic.main.video_widget.view.thumbnailView
 import kotlinx.android.synthetic.main.video_widget.view.widgetContainer
+
 
 
 internal class VideoAlertWidgetView : SpecifiedWidgetView {
@@ -136,6 +136,12 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
                 widgetContainer?.background =
                     AndroidResource.createDrawable(themeComponent.body)
+
+                AndroidResource.updateThemeForView(
+                    linkText,
+                    themeComponent.body,
+                    fontFamilyProvider
+                )
             }
         }
     }
@@ -180,7 +186,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         }
 
         if (resourceAlert.video_url.isNotEmpty()){
-            playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
             initializePlayer(resourceAlert.video_url)
             setFrameThumbnail(resourceAlert.video_url)
         }
@@ -234,9 +239,10 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
                     logDebug { "onPlayerStateChanged: media is actually playing" }
 
-                } else if (playWhenReady && playbackState == Player.STATE_ENDED) {
+                } else if (playbackState == Player.STATE_ENDED) {
                     setFrameThumbnail(videoUrl)
                     initializePlayer(videoUrl)
+                    logDebug { "onPlayerStateChanged: media playing ended" }
 
                 } else if (playWhenReady) {
                     // might be idle (plays after prepare()),
