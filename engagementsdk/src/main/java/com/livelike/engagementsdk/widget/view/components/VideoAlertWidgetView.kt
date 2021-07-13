@@ -73,7 +73,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         viewModel?.data?.subscribe(javaClass) {
             logDebug { "showing the Video WidgetView" }
             it?.let {
-                logDebug { "videourl-> ${it.video_url}" }
                 inflate(context, it)
             }
         }

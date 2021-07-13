@@ -12,14 +12,14 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
-import com.livelike.engagementsdk.widget.widgetModel.VideoWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal class VideoWidgetViewModel(val widgetInfos: WidgetInfos,
                            private val analyticsService: AnalyticsService,
                            private val onDismiss: () -> Unit
-) : BaseViewModel(analyticsService),VideoWidgetModel {
+) : BaseViewModel(analyticsService),VideoAlertWidgetModel {
 
 
     private var timeoutStarted = false
@@ -81,6 +81,15 @@ internal class VideoWidgetViewModel(val widgetInfos: WidgetInfos,
         onDismiss()
         cleanup()
         viewModelJob.cancel()
+    }
+
+    override fun alertLinkClicked(url: String) {
+        onClickLink(url)
+        data.latest()?.program_id?.let {
+            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
+                it
+            )
+        }
     }
 
     override val widgetData: LiveLikeWidget
