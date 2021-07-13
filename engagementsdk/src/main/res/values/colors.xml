@@ -90,6 +90,9 @@
     <color name="livelike_neutral_bar_gradient_right">@color/livelike_default_bar_gradient_right
     </color>
 
+    <color name="livelike_video_alert_body_text_color">@color/livelike_default_text_color</color>
+    <color name="livelike_video_alert_link_text_color">@color/livelike_default_text_color</color>
+
     <!--  Gamification -->
     <color name="livelike_rank_label_text_color">#fff000</color>
     <color name="livelike_rank_label_gradient_right">#4b28b4</color>

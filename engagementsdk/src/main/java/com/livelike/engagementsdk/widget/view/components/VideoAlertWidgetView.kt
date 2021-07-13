@@ -27,6 +27,7 @@ import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.VideoWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import kotlinx.android.synthetic.main.video_widget.view.bodyText
 import kotlinx.android.synthetic.main.video_widget.view.ic_play
 import kotlinx.android.synthetic.main.video_widget.view.ic_sound
 import kotlinx.android.synthetic.main.video_widget.view.labelText
@@ -38,6 +39,7 @@ import kotlinx.android.synthetic.main.video_widget.view.playerView
 import kotlinx.android.synthetic.main.video_widget.view.sound_view
 import kotlinx.android.synthetic.main.video_widget.view.thumbnailView
 import kotlinx.android.synthetic.main.video_widget.view.widgetContainer
+
 
 
 
@@ -161,6 +163,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             LayoutInflater.from(context)
                 .inflate(R.layout.video_widget, this, true) as ConstraintLayout
         }
+        bodyText.text = resourceAlert.text
         labelText.text = resourceAlert.title
         linkText.text = resourceAlert.link_label
 
@@ -183,6 +186,13 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             val params = widgetContainer.layoutParams as LayoutParams
             widgetContainer.layoutParams = params
             widgetContainer.requestLayout()
+        }
+
+        if (resourceAlert.text.isNotEmpty()) {
+            bodyText.visibility = View.VISIBLE
+            bodyText.text = resourceAlert.text
+        }else{
+            bodyText.visibility = View.GONE
         }
 
         if (resourceAlert.video_url.isNotEmpty()){

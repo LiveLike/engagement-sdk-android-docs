@@ -52,7 +52,11 @@
     <dimen name="widget_option_item_padding_end">64dp</dimen>
     <dimen name="widget_option_item_padding_top">2dp</dimen>
 
+    <!-- video widget-->
     <dimen name="livelike_video_widget_label_text_size">16sp</dimen>
+    <dimen name="livelike_video_alert_body_text_size">14sp</dimen>
+    <dimen name="livelike_video_alert_link_text_size">14sp</dimen>
+    <dimen name="livelike_video_alert_label_text_size">12sp</dimen>
 
 
 
@@ -201,6 +205,10 @@
     <dimen name="livelike_link_arrow_margin_right">16dp</dimen>
     <dimen name="livelike_vote_btn_radius">6dp</dimen>
     <item name="livelike_snap_live_horizontal_bias" format="float" type="dimen">1.0</item>
-    <dimen name="video_title_padding_left">16dp</dimen>
-    <dimen name="video_title_padding_right">16dp</dimen>
+    <dimen name="livelike_video_title_padding_left">16dp</dimen>
+    <dimen name="livelike_video_title_padding_right">16dp</dimen>
+    <dimen name="livelike_video_alert_body_text_margin_top">12dp</dimen>
+    <dimen name="livelike_video_alert_body_text_margin_bottom">10dp</dimen>
+
+
 </resources>
