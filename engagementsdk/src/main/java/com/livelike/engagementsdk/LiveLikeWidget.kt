@@ -94,6 +94,8 @@ data class LiveLikeWidget(
     val text: String? = null,
     @field:SerializedName("image_url")
     val imageUrl: String? = null,
+    @field:SerializedName("video_url")
+    val videoUrl: String? = null,
     @field:SerializedName("link_url")
     val linkUrl: String? = null,
     @field:SerializedName("link_label")

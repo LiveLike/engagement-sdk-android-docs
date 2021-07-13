@@ -70,7 +70,9 @@ internal data class Alert(
     val image_url: String = "",
     val link_url: String = "",
     val link_label: String = "",
-    val impression_url: String = ""
+    val impression_url: String = "",
+    val video_url:String = "",
+    val interaction_url:String = ""
 )
 
  data class Option(
