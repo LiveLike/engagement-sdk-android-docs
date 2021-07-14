@@ -35,6 +35,7 @@ import kotlinx.android.synthetic.main.video_widget.view.linkArrow
 import kotlinx.android.synthetic.main.video_widget.view.linkBackground
 import kotlinx.android.synthetic.main.video_widget.view.linkText
 import kotlinx.android.synthetic.main.video_widget.view.mute_tv
+import kotlinx.android.synthetic.main.video_widget.view.playbackErrorTv
 import kotlinx.android.synthetic.main.video_widget.view.playerView
 import kotlinx.android.synthetic.main.video_widget.view.progress_bar
 import kotlinx.android.synthetic.main.video_widget.view.sound_view
@@ -229,7 +230,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     }
 
 
-    // initialize the exoplayer
+    /** initialize the exoplayer */
     private fun initializePlayer(videoUrl: String) {
         if (mPlayer == null) {
             mPlayer = SimpleExoPlayer.Builder(context).build()
@@ -245,6 +246,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                 if (playWhenReady && playbackState == Player.STATE_READY) {
                     // media actually playing
                     progress_bar.visibility = View.GONE
+                    playbackErrorTv.visibility = View.GONE
                     sound_view.visibility = VISIBLE
                     thumbnailView.visibility = GONE
                     playerView.visibility = VISIBLE
@@ -274,6 +276,11 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
             override fun onPlayerError(error: ExoPlaybackException) {
                 progress_bar.visibility = GONE
+                ic_play.visibility = GONE
+                playerView.visibility = GONE
+                playbackErrorTv.visibility = VISIBLE
+                playbackErrorTv.text = "Can't play this video"
+
                 when (error.type) {
                     ExoPlaybackException.TYPE_SOURCE -> logError {
                         "TYPE_SOURCE: " + error.sourceException.message}
@@ -284,7 +291,9 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                     ExoPlaybackException.TYPE_UNEXPECTED -> logError {
                         "TYPE_UNEXPECTED: " + error.unexpectedException.message
                     }
-
+                    ExoPlaybackException.TYPE_REMOTE -> logError {
+                        "TYPE_REMOTE: " + error.message
+                    }
                 }
             }
         })
