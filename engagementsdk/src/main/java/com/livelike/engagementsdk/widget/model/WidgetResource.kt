@@ -72,7 +72,8 @@ internal data class Alert(
     val image_url: String = "",
     val link_url: String = "",
     val link_label: String = "",
-    val impression_url: String = "",
+    @SerializedName("impression_url")
+    val impressionUrl: String = "",
     @SerializedName("video_url")
     val videoUrl:String = ""
 )
