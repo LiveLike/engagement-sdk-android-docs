@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.video_widget.view.linkBackground
 import kotlinx.android.synthetic.main.video_widget.view.linkText
 import kotlinx.android.synthetic.main.video_widget.view.mute_tv
 import kotlinx.android.synthetic.main.video_widget.view.playerView
+import kotlinx.android.synthetic.main.video_widget.view.progress_bar
 import kotlinx.android.synthetic.main.video_widget.view.sound_view
 import kotlinx.android.synthetic.main.video_widget.view.thumbnailView
 import kotlinx.android.synthetic.main.video_widget.view.widgetContainer
@@ -235,11 +236,12 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         playerView.useController = false
         val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
         mPlayer?.setMediaItem(mediaItem)
-        unMute()
+        mute()
         mPlayer?.addListener(object : Player.Listener {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 if (playWhenReady && playbackState == Player.STATE_READY) {
                     // media actually playing
+                    progress_bar.visibility = View.GONE
                     sound_view.visibility = VISIBLE
                     thumbnailView.visibility = GONE
                     playerView.visibility = VISIBLE
@@ -250,15 +252,15 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                     logDebug { "onPlayerStateChanged: media is actually playing" }
 
                 } else if (playbackState == Player.STATE_ENDED) {
+                    mPlayer?.pause()
+                    mPlayer?.seekTo(0)
                     setFrameThumbnail(videoUrl)
-                    initializePlayer(videoUrl)
                     logDebug { "onPlayerStateChanged: media playing ended" }
 
-                } else if (playWhenReady) {
-                    // might be idle (plays after prepare()),
+                } else if (playWhenReady && playbackState == Player.STATE_BUFFERING) {
                     // buffering (plays when data available)
-                    // or ended (plays when seek away from end)
-                    //setFrameThumbnail(videoUrl)
+                        ic_play.visibility = GONE
+                        progress_bar.visibility = View.VISIBLE
                     logDebug { "onPlayerStateChanged: buffering" }
                 } else {
                     // player paused in any state
@@ -268,6 +270,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             }
 
             override fun onPlayerError(error: ExoPlaybackException) {
+                progress_bar.visibility = GONE
                 when (error.type) {
                     ExoPlaybackException.TYPE_SOURCE -> logError {
                         "TYPE_SOURCE: " + error.sourceException.message}
