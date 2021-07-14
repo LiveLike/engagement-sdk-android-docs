@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.widget.view.components
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.AttributeSet
@@ -13,8 +12,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -192,7 +189,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             widgetContainer.requestLayout()
         } else {
             val params = widgetContainer.layoutParams as LayoutParams
-            //widgetContainer.layoutParams = params
+            widgetContainer.layoutParams = params
             widgetContainer.requestLayout()
         }
 
@@ -226,6 +223,14 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             }
         }
 
+        widgetContainer.setOnClickListener {
+            if (mPlayer?.isPlaying == true) {
+                pause()
+            } else {
+                play()
+            }
+        }
+
         widgetsTheme?.let {
             applyTheme(it)
         }
@@ -252,8 +257,8 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                     sound_view.visibility = VISIBLE
                     thumbnailView.visibility = GONE
                     playerView.visibility = VISIBLE
-                    ic_play.visibility = VISIBLE
-                    ic_play.setImageResource(R.drawable.ic_pause_button)
+                    ic_play.visibility = GONE
+                    //ic_play.setImageResource(R.drawable.ic_pause_button)
                     ic_sound.visibility = VISIBLE
 
                     logDebug { "onPlayerStateChanged: media is actually playing" }
@@ -319,6 +324,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     /** responsible for stopping the video */
     private fun pause() {
         mPlayer?.pause()
+        ic_play.visibility = View.VISIBLE
         ic_play.setImageResource(R.drawable.ic_play_button)
     }
 
