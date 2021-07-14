@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.widget.view.components
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.AttributeSet
@@ -11,6 +12,9 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -41,8 +45,6 @@ import kotlinx.android.synthetic.main.video_widget.view.progress_bar
 import kotlinx.android.synthetic.main.video_widget.view.sound_view
 import kotlinx.android.synthetic.main.video_widget.view.thumbnailView
 import kotlinx.android.synthetic.main.video_widget.view.widgetContainer
-
-
 
 
 internal class VideoAlertWidgetView : SpecifiedWidgetView {
@@ -190,7 +192,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             widgetContainer.requestLayout()
         } else {
             val params = widgetContainer.layoutParams as LayoutParams
-            widgetContainer.layoutParams = params
+            //widgetContainer.layoutParams = params
             widgetContainer.requestLayout()
         }
 
@@ -240,7 +242,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         playerView.useController = false
         val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
         mPlayer?.setMediaItem(mediaItem)
-        mute()
+        unMute()
         mPlayer?.addListener(object : Player.Listener {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 if (playWhenReady && playbackState == Player.STATE_READY) {
@@ -302,6 +304,14 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
     /** responsible for playing the video */
     private fun play() {
+        viewModel?.data?.latest()?.program_id?.let {
+            viewModel?.analyticsService?.trackVideoAlertPlayed(
+                widgetId,
+                it,
+                viewModel?.data?.latest()?.video_url.toString(),
+                viewModel?.data?.latest()?.kind.toString()
+            )
+        }
         mPlayer?.playWhenReady = true
         mPlayer?.play()
     }
@@ -346,6 +356,8 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             Glide.with(context.applicationContext)
                 .asBitmap()
                 .load(videoUrl)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .thumbnail(0.1f)
                 .into(thumbnailView)
         }
     }

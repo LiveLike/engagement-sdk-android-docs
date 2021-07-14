@@ -17,7 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal class VideoWidgetViewModel(val widgetInfos: WidgetInfos,
-                           private val analyticsService: AnalyticsService,
+                           val analyticsService: AnalyticsService,
                            private val onDismiss: () -> Unit
 ) : BaseViewModel(analyticsService),VideoAlertWidgetModel {
 
