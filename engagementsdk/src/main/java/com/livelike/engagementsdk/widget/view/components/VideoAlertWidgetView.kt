@@ -168,6 +168,10 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         labelText.text = resourceAlert.title
         linkText.text = resourceAlert.link_label
 
+        if (resourceAlert.video_url.isNotEmpty()) {
+            setFrameThumbnail(resourceAlert.video_url)
+        }
+
         if (!resourceAlert.link_url.isNullOrEmpty()) {
             linkBackground.setOnClickListener {
                 openBrowser(context, resourceAlert.link_url)
@@ -198,7 +202,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
         if (resourceAlert.video_url.isNotEmpty()){
             initializePlayer(resourceAlert.video_url)
-            setFrameThumbnail(resourceAlert.video_url)
         }
 
         ic_play.setOnClickListener {
