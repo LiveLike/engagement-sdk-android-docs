@@ -1,5 +1,7 @@
 package com.livelike.engagementsdk.widget.model
 
+import com.google.gson.annotations.SerializedName
+
 internal open class Resource(
     val id: String = "",
     val url: String = "",
@@ -71,7 +73,8 @@ internal data class Alert(
     val link_url: String = "",
     val link_label: String = "",
     val impression_url: String = "",
-    val video_url:String = ""
+    @SerializedName("video_url")
+    val videoUrl:String = ""
 )
 
  data class Option(

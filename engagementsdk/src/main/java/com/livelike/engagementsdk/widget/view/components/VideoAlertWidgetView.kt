@@ -168,9 +168,9 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         labelText.text = resourceAlert.title
         linkText.text = resourceAlert.link_label
 
-        if (resourceAlert.video_url.isNotEmpty()) {
-            setFrameThumbnail(resourceAlert.video_url)
-            initializePlayer(resourceAlert.video_url)
+        if (resourceAlert.videoUrl.isNotEmpty()) {
+            setFrameThumbnail(resourceAlert.videoUrl)
+            initializePlayer(resourceAlert.videoUrl)
         }
 
         if (!resourceAlert.link_url.isNullOrEmpty()) {
@@ -315,7 +315,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             viewModel?.analyticsService?.trackVideoAlertPlayed(
                 widgetId,
                 it,
-                viewModel?.data?.latest()?.video_url.toString(),
+                viewModel?.data?.latest()?.videoUrl.toString(),
                 viewModel?.data?.latest()?.kind.toString()
             )
         }
