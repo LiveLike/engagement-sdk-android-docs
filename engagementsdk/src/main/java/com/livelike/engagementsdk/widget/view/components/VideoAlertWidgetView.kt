@@ -170,6 +170,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
         if (resourceAlert.video_url.isNotEmpty()) {
             setFrameThumbnail(resourceAlert.video_url)
+            initializePlayer(resourceAlert.video_url)
         }
 
         if (!resourceAlert.link_url.isNullOrEmpty()) {
@@ -200,18 +201,15 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             bodyText.visibility = View.GONE
         }
 
-        if (resourceAlert.video_url.isNotEmpty()){
-            initializePlayer(resourceAlert.video_url)
-        }
+        setOnClickListeners()
 
-        ic_play.setOnClickListener {
-            if (mPlayer?.isPlaying == true) {
-                pause()
-            } else {
-                play()
-            }
+        widgetsTheme?.let {
+            applyTheme(it)
         }
+    }
 
+
+    private fun setOnClickListeners(){
         sound_view.setOnClickListener {
             val currentVolume = mPlayer?.volume
             if (currentVolume != null) {
@@ -223,7 +221,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             }
         }
 
-        widgetContainer.setOnClickListener {
+        ic_play.setOnClickListener {
             if (mPlayer?.isPlaying == true) {
                 pause()
             } else {
@@ -231,8 +229,12 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             }
         }
 
-        widgetsTheme?.let {
-            applyTheme(it)
+        widgetContainer.setOnClickListener {
+            if (mPlayer?.isPlaying == true) {
+                pause()
+            } else {
+                play()
+            }
         }
     }
 
