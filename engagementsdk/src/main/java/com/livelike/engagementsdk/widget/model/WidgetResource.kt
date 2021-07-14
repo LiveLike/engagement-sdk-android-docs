@@ -71,7 +71,7 @@ internal data class Alert(
     val link_url: String = "",
     val link_label: String = "",
     val impression_url: String = "",
-    val video_url:String = "",
+    val video_url:String = ""
 )
 
  data class Option(
