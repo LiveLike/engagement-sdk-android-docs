@@ -102,53 +102,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     }
 
 
-    private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
-        when (widgetStates) {
-            WidgetStates.READY -> {
-                viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
-            }
-            WidgetStates.INTERACTING -> {
-                viewModel?.data?.latest()?.let {
-                    viewModel?.startDismissTimout(it.timeout) {
-                        viewModel?.widgetState?.onNext(WidgetStates.FINISHED)
-                    }
-                }
-            }
-            WidgetStates.FINISHED -> {
-                removeAllViews()
-                parent?.let { (it as ViewGroup).removeAllViews() }
-            }
-        }
-    }
-
-    override fun applyTheme(theme: WidgetsTheme) {
-        super.applyTheme(theme)
-        viewModel?.data?.latest()?.let { _ ->
-            theme.getThemeLayoutComponent(WidgetType.VIDEO_ALERT)?.let { themeComponent ->
-                AndroidResource.updateThemeForView(
-                    labelText,
-                    themeComponent.title,
-                    fontFamilyProvider
-                )
-                if (themeComponent.header?.background != null) {
-                    labelText?.background = AndroidResource.createDrawable(themeComponent.header)
-                }
-                themeComponent.header?.padding?.let {
-                    AndroidResource.setPaddingForView(labelText, themeComponent.header.padding)
-                }
-
-                widgetContainer?.background =
-                    AndroidResource.createDrawable(themeComponent.body)
-
-                AndroidResource.updateThemeForView(
-                    linkText,
-                    themeComponent.body,
-                    fontFamilyProvider
-                )
-            }
-        }
-    }
-
     override fun moveToNextState() {
         super.moveToNextState()
         if (widgetViewModel?.widgetState?.latest() == WidgetStates.INTERACTING) {
@@ -205,6 +158,35 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
         widgetsTheme?.let {
             applyTheme(it)
+        }
+    }
+
+
+    override fun applyTheme(theme: WidgetsTheme) {
+        super.applyTheme(theme)
+        viewModel?.data?.latest()?.let { _ ->
+            theme.getThemeLayoutComponent(WidgetType.VIDEO_ALERT)?.let { themeComponent ->
+                AndroidResource.updateThemeForView(
+                    labelText,
+                    themeComponent.title,
+                    fontFamilyProvider
+                )
+                if (themeComponent.header?.background != null) {
+                    labelText?.background = AndroidResource.createDrawable(themeComponent.header)
+                }
+                themeComponent.header?.padding?.let {
+                    AndroidResource.setPaddingForView(labelText, themeComponent.header.padding)
+                }
+
+                widgetContainer?.background =
+                    AndroidResource.createDrawable(themeComponent.body)
+
+                AndroidResource.updateThemeForView(
+                    linkText,
+                    themeComponent.body,
+                    fontFamilyProvider
+                )
+            }
         }
     }
 
@@ -371,8 +353,28 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     }
 
 
+    private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
+            }
+            WidgetStates.INTERACTING -> {
+                viewModel?.data?.latest()?.let {
+                    viewModel?.startDismissTimeout(it.timeout) {
+                        viewModel?.widgetState?.onNext(WidgetStates.FINISHED)
+                    }
+                }
+            }
+            WidgetStates.FINISHED -> {
+                removeAllViews()
+                parent?.let { (it as ViewGroup).removeAllViews() }
+            }
+        }
+    }
+
+
     private fun openBrowser(context: Context, linkUrl: String) {
-        viewModel?.onClickLink(linkUrl)
+        viewModel?.onVideoAlertClickLink(linkUrl)
         val universalLinkIntent =
             Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl)).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         if (universalLinkIntent.resolveActivity(context.packageManager) != null) {

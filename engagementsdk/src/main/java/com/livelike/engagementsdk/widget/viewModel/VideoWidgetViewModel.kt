@@ -16,10 +16,11 @@ import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-internal class VideoWidgetViewModel(val widgetInfos: WidgetInfos,
-                           val analyticsService: AnalyticsService,
-                           private val onDismiss: () -> Unit
-) : BaseViewModel(analyticsService),VideoAlertWidgetModel {
+internal class VideoWidgetViewModel(
+    val widgetInfos: WidgetInfos,
+    val analyticsService: AnalyticsService,
+    private val onDismiss: () -> Unit
+) : BaseViewModel(analyticsService), VideoAlertWidgetModel {
 
 
     private var timeoutStarted = false
@@ -27,7 +28,7 @@ internal class VideoWidgetViewModel(val widgetInfos: WidgetInfos,
         SubscriptionManager()
 
     private var currentWidgetId: String = ""
-    private var programId:String = ""
+    private var programId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
@@ -37,31 +38,48 @@ internal class VideoWidgetViewModel(val widgetInfos: WidgetInfos,
         widgetState.onNext(WidgetStates.READY)
         interactionData.widgetDisplayed()
         currentWidgetId = widgetInfos.widgetId
-        programId =  data?.currentData?.program_id.toString()
+        programId = data?.currentData?.program_id.toString()
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
     }
 
 
-    fun onClickLink(linkUrl: String) {
-        interactionData.incrementInteraction()
-        currentWidgetType?.let { widgetType ->
-            data.latest()?.program_id?.let {
-                analyticsService.trackAlertLinkOpened(
-                    currentWidgetId,
-                    it,
-                    linkUrl,
-                    currentWidgetType
-                )
-            }
-            data.latest()?.program_id?.let {
-                analyticsService.trackWidgetInteraction(
-                    widgetType.toAnalyticsString(),
-                    currentWidgetId,
-                    it,
-                    interactionData
-                )
+    override fun alertLinkClicked(url: String) {
+        onVideoAlertClickLink(url)
+        data.latest()?.program_id?.let {
+            trackWidgetEngagedAnalytics(
+                currentWidgetType, currentWidgetId,
+                it
+            )
+        }
+    }
+
+    override val widgetData: LiveLikeWidget
+        get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
+
+
+    override fun markAsInteractive() {
+        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
+    }
+
+
+    fun startDismissTimeout(timeout: String, onDismiss: () -> Unit) {
+        if (!timeoutStarted && timeout.isNotEmpty()) {
+            timeoutStarted = true
+            uiScope.launch {
+                delay(AndroidResource.parseDuration(timeout))
+                dismissWidget(DismissAction.TIMEOUT)
+                onDismiss()
+                timeoutStarted = false
             }
         }
+    }
+
+    private fun cleanup() {
+        data.onNext(null)
+        timeoutStarted = false
+        currentWidgetType = null
+        currentWidgetId = ""
+        interactionData.reset()
     }
 
 
@@ -83,43 +101,26 @@ internal class VideoWidgetViewModel(val widgetInfos: WidgetInfos,
         viewModelJob.cancel()
     }
 
-    override fun alertLinkClicked(url: String) {
-        onClickLink(url)
-        data.latest()?.program_id?.let {
-            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
-                it
-            )
-        }
-    }
-
-    override val widgetData: LiveLikeWidget
-        get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
-
-
-
-    override fun markAsInteractive() {
-        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
-    }
-
-
-    fun startDismissTimout(timeout: String, onDismiss: () -> Unit) {
-        if (!timeoutStarted && timeout.isNotEmpty()) {
-            timeoutStarted = true
-            uiScope.launch {
-                delay(AndroidResource.parseDuration(timeout))
-                dismissWidget(DismissAction.TIMEOUT)
-                onDismiss()
-                timeoutStarted = false
+    fun onVideoAlertClickLink(linkUrl: String) {
+        interactionData.incrementInteraction()
+        currentWidgetType?.let { widgetType ->
+            data.latest()?.program_id?.let {
+                analyticsService.trackAlertLinkOpened(
+                    currentWidgetId,
+                    it,
+                    linkUrl,
+                    currentWidgetType
+                )
+            }
+            data.latest()?.program_id?.let {
+                analyticsService.trackWidgetInteraction(
+                    widgetType.toAnalyticsString(),
+                    currentWidgetId,
+                    it,
+                    interactionData
+                )
             }
         }
-    }
-
-    private fun cleanup() {
-        data.onNext(null)
-        timeoutStarted = false
-        currentWidgetType = null
-        currentWidgetId = ""
-        interactionData.reset()
     }
 
     override fun finish() {
