@@ -103,7 +103,7 @@
             android:orientation="horizontal"
             android:visibility="invisible"
             android:background="@drawable/video_alert_volume_button_background"
-            android:layout_marginBottom="5dp">
+            android:layout_marginBottom="16dp">
 
             <ImageView
                 android:id="@+id/ic_sound"
