@@ -88,22 +88,10 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bodyText"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/linkBackground"
             android:contentDescription="@string/image"
             />
 
-        <!--<TextView
-            android:id="@+id/playbackErrorTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:textColor="@color/livelike_white"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bodyText"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:contentDescription="@string/image"
-            />-->
 
         <LinearLayout
             android:id="@+id/sound_view"
@@ -114,12 +102,14 @@
             app:layout_constraintBottom_toTopOf="@id/linkBackground"
             android:orientation="horizontal"
             android:visibility="invisible"
-            android:layout_marginBottom="4dp">
+            android:background="@drawable/video_alert_volume_button_background"
+            android:layout_marginBottom="5dp">
 
             <ImageView
                 android:id="@+id/ic_sound"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingLeft="2dp"
                 app:srcCompat="@drawable/ic_volume_off"
                 android:contentDescription="@string/image"
                 />
@@ -128,7 +118,8 @@
                 android:id="@+id/mute_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
+                android:paddingRight="3dp"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="3dp"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"

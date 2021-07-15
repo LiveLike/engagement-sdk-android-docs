@@ -115,6 +115,7 @@
     <color name="livelike_chatMessage_timestamp_text_color">#666666</color>
 
     <color name="livelike_alert_background_color">#000000</color>
+    <color name="livelike_video_alert_volume_background_color">#66ffffff</color>
     <color name="livelike_social_background_color">#000000</color>
     <color name="livelike_slider_background_color">#000000</color>
     <color name="chat_bottom_bar_gradient_end_color">#00000000</color>
