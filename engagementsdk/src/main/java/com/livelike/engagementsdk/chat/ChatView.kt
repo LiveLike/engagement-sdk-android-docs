@@ -230,8 +230,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         chatdisplay.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
             if (bottom < oldBottom) {
                 viewModel?.chatAdapter?.itemCount?.let {
-                    chatdisplay.post {
-                        chatdisplay.smoothScrollToPosition(it - 1)
+                    if (it > 0) {
+                        chatdisplay.post {
+                            chatdisplay.smoothScrollToPosition(it - 1)
+                        }
                     }
                 }
             }
