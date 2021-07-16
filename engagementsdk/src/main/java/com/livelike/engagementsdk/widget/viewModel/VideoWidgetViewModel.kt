@@ -29,7 +29,7 @@ internal class VideoWidgetViewModel(
 
     private var currentWidgetId: String = ""
     private var programId: String = ""
-    private var currentWidgetType: WidgetType? = null
+    var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
 

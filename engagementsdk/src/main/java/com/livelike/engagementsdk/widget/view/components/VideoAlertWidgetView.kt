@@ -29,6 +29,7 @@ import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.model.Alert
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.VideoWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
@@ -306,12 +307,14 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     /** responsible for playing the video */
     private fun play() {
         viewModel?.data?.latest()?.program_id?.let {
-            viewModel?.analyticsService?.trackVideoAlertPlayed(
-                viewModel?.data?.latest()?.kind.toString(),
-                widgetId,
-                it,
-                viewModel?.data?.latest()?.videoUrl.toString()
-            )
+            viewModel?.currentWidgetType?.toAnalyticsString()?.let { widgetType ->
+                viewModel?.analyticsService?.trackVideoAlertPlayed(
+                    widgetType,
+                    widgetId,
+                    it,
+                    viewModel?.data?.latest()?.videoUrl.toString()
+                )
+            }
         }
         sound_view.visibility = VISIBLE
         mPlayer?.playWhenReady = true
