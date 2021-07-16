@@ -120,7 +120,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         labelText.text = resourceAlert.title
         linkText.text = resourceAlert.link_label
 
-        if (resourceAlert.videoUrl.isNotEmpty()) {
+        if (!resourceAlert.videoUrl.isNullOrEmpty()) {
             setFrameThumbnail(resourceAlert.videoUrl)
             initializePlayer(resourceAlert.videoUrl)
         }
@@ -146,7 +146,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             widgetContainer.requestLayout()
         }
 
-        if (resourceAlert.text.isNotEmpty()) {
+        if (!resourceAlert.text.isNullOrEmpty()) {
             bodyText.visibility = View.VISIBLE
             bodyText.text = resourceAlert.text
         }else{
