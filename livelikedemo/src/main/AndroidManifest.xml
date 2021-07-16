@@ -41,7 +41,9 @@
             android:theme="@style/Default" />
         <activity android:name=".WidgetOnlyActivity" />
         <activity android:name=".WidgetStandaloneActivity" />
-        <activity android:name=".ExoPlayerActivity" />
+        <activity
+            android:name=".ExoPlayerActivity"
+            android:configChanges="orientation|screenSize" />
         <activity android:name=".TwoSessionActivity" />
         <activity android:name=".UnclaimedInteractionActivity"/>
         <activity android:name=".MainActivity">
