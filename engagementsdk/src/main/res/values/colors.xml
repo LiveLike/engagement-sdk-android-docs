@@ -138,4 +138,5 @@
     <color name="livelike_vote_btn_color">#800080</color>
     <color name="livelike_vote_btn_color_pressed">#AA800080</color>
     <color name="livelike_video_alert_link_background_color">#222426</color>
+    <color name="livelike_video_loader_color">#ffffff</color>
 </resources>

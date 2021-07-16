@@ -2,12 +2,16 @@ package com.livelike.engagementsdk.widget.view.components
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Outline
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
@@ -111,6 +115,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         }
     }
 
+
     private fun inflate(context: Context, resourceAlert: Alert) {
         if (!inflated) {
             inflated = true
@@ -134,10 +139,16 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             linkArrow.visibility = View.GONE
             linkBackground.visibility = View.GONE
             linkText.visibility = View.GONE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                setPlayerViewCornersRound(isOnlyBottomCornersToBeRounded = true)
+            }
         }
 
         if (resourceAlert.title.isNullOrEmpty()) {
             labelText.visibility = GONE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                setPlayerViewCornersRound(isOnlyBottomCornersToBeRounded = false)
+            }
             val params = widgetContainer.layoutParams as LayoutParams
             params.topMargin = AndroidResource.dpToPx(0)
             widgetContainer.requestLayout()
@@ -374,6 +385,22 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             }
         }
     }
+
+     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+     private fun setPlayerViewCornersRound(isOnlyBottomCornersToBeRounded:Boolean){
+         playerView.outlineProvider = object : ViewOutlineProvider() {
+             override fun getOutline(view: View, outline: Outline) {
+                 val corner = 20f
+                 if(isOnlyBottomCornersToBeRounded) {
+                     outline.setRoundRect(0, -corner.toInt(), view.width, view.height, corner)
+                 }else{
+                     outline.setRoundRect(0, 0, view.width, view.height, 10f) // for making all corners rounded
+                 }
+             }
+         }
+
+         playerView.clipToOutline = true
+     }
 
 
     private fun openBrowser(context: Context, linkUrl: String) {
