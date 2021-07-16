@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.video_widget.view.linkArrow
 import kotlinx.android.synthetic.main.video_widget.view.linkBackground
 import kotlinx.android.synthetic.main.video_widget.view.linkText
 import kotlinx.android.synthetic.main.video_widget.view.mute_tv
+import kotlinx.android.synthetic.main.video_widget.view.playbackErrorTv
 import kotlinx.android.synthetic.main.video_widget.view.playerView
 import kotlinx.android.synthetic.main.video_widget.view.progress_bar
 import kotlinx.android.synthetic.main.video_widget.view.sound_view
@@ -236,7 +237,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                 if (playWhenReady && playbackState == Player.STATE_READY) {
                     // media actually playing
                     progress_bar.visibility = View.GONE
-                    // playbackErrorTv.visibility = View.GONE
+                     playbackErrorTv.visibility = View.GONE
                     sound_view.visibility = VISIBLE
                     thumbnailView.visibility = GONE
                     playerView.visibility = VISIBLE
@@ -267,8 +268,9 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                 progress_bar.visibility = GONE
                 ic_play.visibility = GONE
                 playerView.visibility = INVISIBLE
-                //playbackErrorTv.visibility = VISIBLE
-                //playbackErrorTv.text = "Can't play this video"
+                playbackErrorTv.visibility = VISIBLE
+                sound_view.visibility = GONE
+
 
                 when (error.type) {
                     ExoPlaybackException.TYPE_SOURCE -> logError {

@@ -61,6 +61,7 @@
             android:id="@+id/playerView"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:background="@android:color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bodyText"
@@ -90,6 +91,20 @@
             app:layout_constraintTop_toBottomOf="@id/bodyText"
             app:layout_constraintBottom_toTopOf="@id/linkBackground"
             android:contentDescription="@string/image"
+            />
+
+
+        <TextView
+            android:id="@+id/playbackErrorTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/livelike_playback_error"
+            android:textColor="@color/livelike_white"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bodyText"
+            app:layout_constraintBottom_toTopOf="@id/linkBackground"
             />
 
 
