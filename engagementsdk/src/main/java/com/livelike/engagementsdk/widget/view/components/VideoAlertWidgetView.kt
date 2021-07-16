@@ -307,10 +307,10 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     private fun play() {
         viewModel?.data?.latest()?.program_id?.let {
             viewModel?.analyticsService?.trackVideoAlertPlayed(
+                viewModel?.data?.latest()?.kind.toString(),
                 widgetId,
                 it,
-                viewModel?.data?.latest()?.videoUrl.toString(),
-                viewModel?.data?.latest()?.kind.toString()
+                viewModel?.data?.latest()?.videoUrl.toString()
             )
         }
         sound_view.visibility = VISIBLE
