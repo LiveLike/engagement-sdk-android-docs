@@ -701,6 +701,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         (session as? ChatSession)?.analyticsServiceStream?.latest()
                             ?.trackKeyboardOpen(KeyboardType.STANDARD)
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
+                        viewModel?.chatAdapter?.isKeyboardOpen = true
                     }
                 }
             }
@@ -739,6 +740,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatAttribute.apply {
                 button_emoji.setImageDrawable(chatStickerKeyboardSendDrawable)
             }
+            viewModel?.chatAdapter?.isKeyboardOpen = true
         }
     }
 
@@ -788,6 +790,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         edittext_chat_message.requestFocus()
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm!!.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+        viewModel?.chatAdapter?.isKeyboardOpen = true
     }
 
 
