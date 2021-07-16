@@ -149,7 +149,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         if (!resourceAlert.text.isNullOrEmpty()) {
             bodyText.visibility = View.VISIBLE
             bodyText.text = resourceAlert.text
-        }else{
+        } else {
             bodyText.visibility = View.GONE
         }
 
@@ -190,7 +190,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     }
 
 
-    private fun setOnClickListeners(){
+    private fun setOnClickListeners() {
         sound_view.setOnClickListener {
             val currentVolume = mPlayer?.volume
             if (currentVolume != null) {
@@ -236,26 +236,25 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                 if (playWhenReady && playbackState == Player.STATE_READY) {
                     // media actually playing
                     progress_bar.visibility = View.GONE
-                   // playbackErrorTv.visibility = View.GONE
+                    // playbackErrorTv.visibility = View.GONE
                     sound_view.visibility = VISIBLE
                     thumbnailView.visibility = GONE
                     playerView.visibility = VISIBLE
                     ic_play.visibility = GONE
-                    //ic_play.setImageResource(R.drawable.ic_pause_button)
                     ic_sound.visibility = VISIBLE
 
                     logDebug { "onPlayerStateChanged: media is actually playing" }
 
                 } else if (playbackState == Player.STATE_ENDED) {
                     mPlayer?.pause()
+                    sound_view.visibility = GONE
                     mPlayer?.seekTo(0)
                     setFrameThumbnail(videoUrl)
                     logDebug { "onPlayerStateChanged: media playing ended" }
 
                 } else if (playWhenReady && playbackState == Player.STATE_BUFFERING) {
-                    // buffering (plays when data available)
-                        ic_play.visibility = GONE
-                        progress_bar.visibility = View.VISIBLE
+                    ic_play.visibility = GONE
+                    progress_bar.visibility = View.VISIBLE
                     logDebug { "onPlayerStateChanged: buffering" }
                 } else {
                     // player paused in any state
@@ -273,7 +272,8 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
                 when (error.type) {
                     ExoPlaybackException.TYPE_SOURCE -> logError {
-                        "TYPE_SOURCE: " + error.sourceException.message}
+                        "TYPE_SOURCE: " + error.sourceException.message
+                    }
 
                     ExoPlaybackException.TYPE_RENDERER -> logError {
                         "TYPE_RENDERER: " + error.rendererException.message
@@ -300,6 +300,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                 viewModel?.data?.latest()?.kind.toString()
             )
         }
+        sound_view.visibility = VISIBLE
         mPlayer?.playWhenReady = true
         mPlayer?.play()
     }
@@ -307,6 +308,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     /** responsible for stopping the video */
     private fun pause() {
         mPlayer?.pause()
+        sound_view.visibility = GONE
         ic_play.visibility = View.VISIBLE
         ic_play.setImageResource(R.drawable.ic_play_button)
     }
