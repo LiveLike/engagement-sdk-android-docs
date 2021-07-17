@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.widget.view.components
 import android.content.Context
 import android.content.Intent
 import android.graphics.Outline
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,10 +17,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -61,7 +58,10 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
     private var inflated = false
     var viewModel: VideoWidgetViewModel? = null
-    private var mPlayer: SimpleExoPlayer? = null
+    private var mediaPlayer: MediaPlayer? = null
+    private var isMuted: Boolean = false
+    private var playedAtLeastOnce:Boolean = false
+    private var stopPosition: Int = 0
 
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? =
@@ -129,7 +129,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
         if (!resourceAlert.videoUrl.isNullOrEmpty()) {
             setFrameThumbnail(resourceAlert.videoUrl)
-            initializePlayer(resourceAlert.videoUrl)
         }
 
         if (!resourceAlert.link_url.isNullOrEmpty()) {
@@ -203,109 +202,90 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     }
 
 
+    /** sets the listeners */
     private fun setOnClickListeners() {
         sound_view.setOnClickListener {
-            val currentVolume = mPlayer?.volume
-            if (currentVolume != null) {
-                if (currentVolume == 0f) {
-                    unMute()
-                } else {
-                    mute()
-                }
+            if (isMuted) {
+                unMute()
+            } else {
+                mute()
             }
+
         }
 
         ic_play.setOnClickListener {
-            if (mPlayer?.isPlaying == true) {
+            if (playerView?.isPlaying == true) {
                 pause()
             } else {
+                ic_play.visibility = View.GONE
+                progress_bar.visibility = View.VISIBLE
                 play()
             }
         }
 
         widgetContainer.setOnClickListener {
-            if (mPlayer?.isPlaying == true) {
+            if (playerView?.isPlaying == true) {
                 pause()
             } else {
-                play()
+                if(stopPosition > 0){ //already running
+                    resume()
+                }else {
+                    play()
+                }
             }
         }
     }
 
 
-    /** initialize the exoplayer */
+    /** sets the video view */
     private fun initializePlayer(videoUrl: String) {
-        if (mPlayer == null) {
-            mPlayer = SimpleExoPlayer.Builder(context).build()
+        try {
+            val uri = Uri.parse(videoUrl)
+            playerView.setVideoURI(uri)
+            playerView.seekTo(stopPosition)
+            playerView.requestFocus()
+            playerView.start()
+            unMute()
 
-        }
-        playerView.player = mPlayer
-        playerView.useController = false
-        val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
-        mPlayer?.setMediaItem(mediaItem)
-        unMute()
-        mPlayer?.addListener(object : Player.Listener {
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                if (playWhenReady && playbackState == Player.STATE_READY) {
-                    // media actually playing
+            // perform set on prepared listener event on video view
+            try {
+                playerView.setOnPreparedListener { mp ->
+                    // do something when video is ready to play
+                    this.mediaPlayer = mp
+                    playedAtLeastOnce = true
                     progress_bar.visibility = View.GONE
-                     playbackErrorTv.visibility = View.GONE
+                    playbackErrorTv.visibility = View.GONE
                     sound_view.visibility = VISIBLE
-                    thumbnailView.visibility = GONE
-                    playerView.visibility = VISIBLE
-                    ic_play.visibility = GONE
                     ic_sound.visibility = VISIBLE
+                }
 
-                    logDebug { "onPlayerStateChanged: media is actually playing" }
-
-                } else if (playbackState == Player.STATE_ENDED) {
-                    mPlayer?.pause()
+                playerView.setOnCompletionListener {
+                    playerView?.stopPlayback()
                     sound_view.visibility = GONE
-                    mPlayer?.seekTo(0)
                     setFrameThumbnail(videoUrl)
-                    logDebug { "onPlayerStateChanged: media playing ended" }
+                }
 
-                } else if (playWhenReady && playbackState == Player.STATE_BUFFERING) {
+
+                playerView.setOnErrorListener { mediaPlayer, i, i1 ->
+                    logError { "Error on playback" }
+                    progress_bar.visibility = GONE
                     ic_play.visibility = GONE
-                    progress_bar.visibility = View.VISIBLE
-                    logDebug { "onPlayerStateChanged: buffering" }
-                } else {
-                    // player paused in any state
-                    logDebug { "onPlayerStateChanged: paused" }
+                    playerView.visibility = INVISIBLE
+                    playbackErrorTv.visibility = VISIBLE
+                    sound_view.visibility = GONE
+                    true
                 }
-
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-
-            override fun onPlayerError(error: ExoPlaybackException) {
-                progress_bar.visibility = GONE
-                ic_play.visibility = GONE
-                playerView.visibility = INVISIBLE
-                playbackErrorTv.visibility = VISIBLE
-                sound_view.visibility = GONE
-
-
-                when (error.type) {
-                    ExoPlaybackException.TYPE_SOURCE -> logError {
-                        "TYPE_SOURCE: " + error.sourceException.message
-                    }
-
-                    ExoPlaybackException.TYPE_RENDERER -> logError {
-                        "TYPE_RENDERER: " + error.rendererException.message
-                    }
-                    ExoPlaybackException.TYPE_UNEXPECTED -> logError {
-                        "TYPE_UNEXPECTED: " + error.unexpectedException.message
-                    }
-                    ExoPlaybackException.TYPE_REMOTE -> logError {
-                        "TYPE_REMOTE: " + error.message
-                    }
-                }
-            }
-        })
-        mPlayer?.prepare()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     /** responsible for playing the video */
     private fun play() {
+        progress_bar.visibility = View.VISIBLE
         viewModel?.data?.latest()?.program_id?.let {
             viewModel?.currentWidgetType?.toAnalyticsString()?.let { widgetType ->
                 viewModel?.analyticsService?.trackVideoAlertPlayed(
@@ -316,14 +296,25 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                 )
             }
         }
-        sound_view.visibility = VISIBLE
-        mPlayer?.playWhenReady = true
-        mPlayer?.play()
+        thumbnailView.visibility = View.GONE
+        playerView.visibility = View.VISIBLE
+        viewModel?.data?.latest()?.videoUrl?.let { initializePlayer(it) }
     }
+
+
+    /** responsible for resuming the video from where it was stopped */
+    private fun resume(){
+        progress_bar.visibility = GONE
+        ic_play.visibility = GONE
+        playerView.seekTo(stopPosition)
+        playerView.start()
+    }
+
 
     /** responsible for stopping the video */
     private fun pause() {
-        mPlayer?.pause()
+        stopPosition = playerView.currentPosition
+        playerView.pause()
         sound_view.visibility = GONE
         ic_play.visibility = View.VISIBLE
         ic_play.setImageResource(R.drawable.ic_play_button)
@@ -332,22 +323,36 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
     /** responsible for stopping the player and releasing it */
     private fun release() {
-        mPlayer?.stop()
-        mPlayer?.release()
-        mPlayer?.setVideoSurfaceHolder(null)
-        mPlayer = null
+        try {
+            playedAtLeastOnce = false
+            if (mediaPlayer != null && mediaPlayer!!.isPlaying) {
+                mediaPlayer?.stop()
+                mediaPlayer?.release()
+                mediaPlayer = null
+            }
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+        }
     }
+
+    /** checks if the player is paused */
+    fun isPaused(): Boolean {
+        return !mediaPlayer!!.isPlaying && playedAtLeastOnce
+    }
+
 
     /** mutes the video */
     private fun mute() {
-        mPlayer?.volume = 0f
+        isMuted = true
+        mediaPlayer?.setVolume(0f, 0f)
         ic_sound.setImageResource(R.drawable.ic_volume_on)
         mute_tv.text = context.resources.getString(R.string.livelike_unmute_label)
     }
 
     /** unmute the video */
     private fun unMute() {
-        mPlayer?.volume = 4f
+        isMuted = false
+        mediaPlayer?.setVolume(1f,1f)
         ic_sound.setImageResource(R.drawable.ic_volume_off)
         mute_tv.text = context.resources.getString(R.string.livelike_mute_label)
     }
@@ -389,21 +394,27 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         }
     }
 
-     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-     private fun setPlayerViewCornersRound(isOnlyBottomCornersToBeRounded:Boolean){
-         playerView.outlineProvider = object : ViewOutlineProvider() {
-             override fun getOutline(view: View, outline: Outline) {
-                 val corner = 20f
-                 if(isOnlyBottomCornersToBeRounded) {
-                     outline.setRoundRect(0, -corner.toInt(), view.width, view.height, corner)
-                 }else{
-                     outline.setRoundRect(0, 0, view.width, view.height, 10f) // for making all corners rounded
-                 }
-             }
-         }
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun setPlayerViewCornersRound(isOnlyBottomCornersToBeRounded: Boolean) {
+        playerView.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                val corner = 20f
+                if (isOnlyBottomCornersToBeRounded) {
+                    outline.setRoundRect(0, -corner.toInt(), view.width, view.height, corner)
+                } else {
+                    outline.setRoundRect(
+                        0,
+                        0,
+                        view.width,
+                        view.height,
+                        10f
+                    ) // for making all corners rounded
+                }
+            }
+        }
 
-         playerView.clipToOutline = true
-     }
+        playerView.clipToOutline = true
+    }
 
 
     private fun openBrowser(context: Context, linkUrl: String) {
@@ -415,7 +426,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         }
     }
 
-
 }
+
 
 
