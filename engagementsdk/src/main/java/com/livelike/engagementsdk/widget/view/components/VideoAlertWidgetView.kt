@@ -19,7 +19,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
@@ -305,6 +304,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             }
         }
         ic_play.visibility = View.GONE
+        playbackErrorTv.visibility = View.GONE
         thumbnailView.visibility = View.GONE
         playerView.visibility = View.VISIBLE
         viewModel?.data?.latest()?.videoUrl?.let { initializePlayer(it) }
@@ -319,6 +319,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         }else{
             unMute()
         }
+        playbackErrorTv.visibility = GONE
         progress_bar.visibility = GONE
         ic_play.visibility = GONE
         playerView.seekTo(stopPosition)
@@ -377,6 +378,8 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     private fun setFrameThumbnail(videoUrl: String) {
         thumbnailView.visibility = VISIBLE
         ic_play.visibility = VISIBLE
+        progress_bar.visibility = GONE
+        playbackErrorTv.visibility = GONE
         ic_play.setImageResource(R.drawable.ic_play_button)
         playerView.visibility = INVISIBLE
         var requestOptions = RequestOptions()
