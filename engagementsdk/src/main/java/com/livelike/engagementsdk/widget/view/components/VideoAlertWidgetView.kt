@@ -17,6 +17,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -276,9 +280,13 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                     true
                 }
             } catch (e: Exception) {
+                progress_bar.visibility = GONE
+                playbackErrorTv.visibility = VISIBLE
                 e.printStackTrace()
             }
         } catch (e: Exception) {
+            progress_bar.visibility = GONE
+            playbackErrorTv.visibility = VISIBLE
             e.printStackTrace()
         }
     }
@@ -296,6 +304,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                 )
             }
         }
+        ic_play.visibility = View.GONE
         thumbnailView.visibility = View.GONE
         playerView.visibility = View.VISIBLE
         viewModel?.data?.latest()?.videoUrl?.let { initializePlayer(it) }
@@ -304,6 +313,12 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
     /** responsible for resuming the video from where it was stopped */
     private fun resume(){
+        sound_view.visibility = VISIBLE
+        if(isMuted){
+            mute()
+        }else{
+            unMute()
+        }
         progress_bar.visibility = GONE
         ic_play.visibility = GONE
         playerView.seekTo(stopPosition)
@@ -364,10 +379,20 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         ic_play.visibility = VISIBLE
         ic_play.setImageResource(R.drawable.ic_play_button)
         playerView.visibility = INVISIBLE
+        var requestOptions = RequestOptions()
+
         if (videoUrl.isNotEmpty()) {
+            requestOptions = if(viewModel?.data?.latest()?.title.isNullOrEmpty()){
+                requestOptions.transforms(CenterCrop(), GranularRoundedCorners(16f,16f,16f,16f))
+
+            }else{
+                requestOptions.transforms(CenterCrop(), GranularRoundedCorners(0f,0f,16f,16f))
+
+            }
             Glide.with(context.applicationContext)
                 .asBitmap()
                 .load(videoUrl)
+                .apply(requestOptions)
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .thumbnail(0.1f)
                 .into(thumbnailView)
@@ -407,7 +432,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                         0,
                         view.width,
                         view.height,
-                        10f
+                        corner
                     ) // for making all corners rounded
                 }
             }
