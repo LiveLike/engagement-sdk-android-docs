@@ -269,7 +269,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                 }
 
 
-                playerView.setOnErrorListener { mediaPlayer, i, i1 ->
+                playerView.setOnErrorListener { _, _, _ ->
                     logError { "Error on playback" }
                     progress_bar.visibility = GONE
                     ic_play.visibility = GONE

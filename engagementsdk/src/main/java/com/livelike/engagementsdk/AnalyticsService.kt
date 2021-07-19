@@ -10,6 +10,7 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.findStickerCodes
 import com.livelike.engagementsdk.chat.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
 import org.json.JSONObject
@@ -711,7 +712,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put(ALERT_ID, alertId)
         properties.put(PROGRAM_ID, programId)
         properties.put(LINK_URL, linkUrl)
-        properties.put(WIDGET_TYPE, widgetType?.getType() ?: "")
+        properties.put(WIDGET_TYPE, widgetType?.toAnalyticsString() ?: "")
         mixpanel.track(KEY_EVENT_ALERT_LINK_OPENED, properties)
         eventObservers[clientId]?.invoke(KEY_EVENT_ALERT_LINK_OPENED, properties)
         Log.d(
