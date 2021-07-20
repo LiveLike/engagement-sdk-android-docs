@@ -129,6 +129,8 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         bodyText.text = resourceAlert.text
         labelText.text = resourceAlert.title
         linkText.text = resourceAlert.link_label
+        sound_view.visibility = View.GONE
+        playbackErrorTv.visibility = View.GONE
 
         if (!resourceAlert.videoUrl.isNullOrEmpty()) {
             setFrameThumbnail(resourceAlert.videoUrl)
@@ -304,11 +306,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     /** responsible for resuming the video from where it was stopped */
     private fun resume(){
         sound_view.visibility = VISIBLE
-        if(isMuted){
-            mute()
-        }else{
-            unMute()
-        }
         playbackErrorTv.visibility = GONE
         progress_bar.visibility = GONE
         ic_play.visibility = GONE
@@ -332,7 +329,8 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     private fun release() {
         try {
             playedAtLeastOnce = false
-            if (mediaPlayer != null && mediaPlayer!!.isPlaying) {
+            if (playerView != null && playerView.isPlaying) {
+                playerView.stopPlayback()
                 mediaPlayer?.stop()
                 mediaPlayer?.release()
                 mediaPlayer = null
@@ -350,18 +348,27 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
     /** mutes the video */
     private fun mute() {
-        isMuted = true
-        mediaPlayer?.setVolume(0f, 0f)
-        ic_sound.setImageResource(R.drawable.ic_volume_on)
-        mute_tv.text = context.resources.getString(R.string.livelike_unmute_label)
+        try {
+            isMuted = true
+            mediaPlayer?.setVolume(0f, 0f)
+            ic_sound.setImageResource(R.drawable.ic_volume_on)
+            mute_tv.text = context.resources.getString(R.string.livelike_unmute_label)
+        }catch (e: IllegalStateException) {
+            e.printStackTrace()
+        }
+
     }
 
     /** unmute the video */
     private fun unMute() {
-        isMuted = false
-        mediaPlayer?.setVolume(1f,1f)
-        ic_sound.setImageResource(R.drawable.ic_volume_off)
-        mute_tv.text = context.resources.getString(R.string.livelike_mute_label)
+        try {
+            isMuted = false
+            mediaPlayer?.setVolume(1f, 1f)
+            ic_sound.setImageResource(R.drawable.ic_volume_off)
+            mute_tv.text = context.resources.getString(R.string.livelike_mute_label)
+        }catch (e: IllegalStateException) {
+            e.printStackTrace()
+        }
     }
 
 
