@@ -216,16 +216,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
         }
 
-        ic_play.setOnClickListener {
-            if (playerView?.isPlaying == true) {
-                pause()
-            } else {
-                ic_play.visibility = View.GONE
-                progress_bar.visibility = View.VISIBLE
-                play()
-            }
-        }
-
         widgetContainer.setOnClickListener {
             if (playerView?.isPlaying == true) {
                 pause()
@@ -333,6 +323,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         playerView.pause()
         sound_view.visibility = GONE
         ic_play.visibility = View.VISIBLE
+        playbackErrorTv.visibility = View.GONE
         ic_play.setImageResource(R.drawable.ic_play_button)
     }
 
@@ -374,7 +365,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     }
 
 
-    /** extract thumbnail fro the video url */
+    /** extract thumbnail from the video url */
     private fun setFrameThumbnail(videoUrl: String) {
         thumbnailView.visibility = VISIBLE
         ic_play.visibility = VISIBLE
