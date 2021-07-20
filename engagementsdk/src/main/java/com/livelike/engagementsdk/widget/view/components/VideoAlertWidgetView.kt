@@ -151,6 +151,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
         if (resourceAlert.title.isNullOrEmpty()) {
             labelText.visibility = GONE
+            widgetContainer.setBackgroundResource(R.drawable.video_alert_all_rounded_corner)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 setPlayerViewCornersRound(isOnlyBottomCornersToBeRounded = false)
             }
@@ -158,6 +159,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             params.topMargin = AndroidResource.dpToPx(0)
             widgetContainer.requestLayout()
         } else {
+            widgetContainer.setBackgroundResource(R.drawable.video_alert_rounded_corner_black_background)
             val params = widgetContainer.layoutParams as LayoutParams
             widgetContainer.layoutParams = params
             widgetContainer.requestLayout()

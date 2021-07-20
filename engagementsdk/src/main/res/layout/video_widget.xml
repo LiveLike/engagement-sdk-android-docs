@@ -174,7 +174,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="@bool/livelike_widget_component_layout_transition_enabled"
-            android:background="@drawable/video_alert_rounded_corner_with_background"
+            android:background="@drawable/video_alert_bottom_rounded_corner_with_background"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

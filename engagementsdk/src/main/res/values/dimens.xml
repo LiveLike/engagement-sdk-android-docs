@@ -209,6 +209,7 @@
     <dimen name="livelike_video_title_padding_right">16dp</dimen>
     <dimen name="livelike_video_alert_body_text_margin_top">12dp</dimen>
     <dimen name="livelike_video_alert_body_text_margin_bottom">10dp</dimen>
+    <dimen name="livelike_video_alert_body_corner_radius">6dp</dimen>
 
 
 </resources>
