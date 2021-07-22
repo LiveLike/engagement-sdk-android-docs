@@ -1,7 +1,7 @@
 package com.livelike.engagementsdk.core.data.models
 
 
-abstract class LLPaginatedResult<T : Any> {
+ class LLPaginatedResult<out T> {
 
     internal val previous: String? = null
     internal val next: String? = null
