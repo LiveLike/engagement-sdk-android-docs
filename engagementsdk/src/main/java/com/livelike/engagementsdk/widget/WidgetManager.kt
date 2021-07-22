@@ -74,12 +74,6 @@ internal class WidgetManager(
 
     init {
         widgetInterceptorSubscribe()
-        currentWidgetViewStream.subscribe(this) {
-            widgetOnScreen = (it != null)
-            if (messageQueue.isNotEmpty()) {
-                publishNextInQueue()
-            }
-        }
     }
 
     private fun widgetInterceptorSubscribe() {
