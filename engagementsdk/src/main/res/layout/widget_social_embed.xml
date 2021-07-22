@@ -60,6 +60,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
+        android:id="@+id/widgetContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/social_embed_rounded_corner_with_background"
