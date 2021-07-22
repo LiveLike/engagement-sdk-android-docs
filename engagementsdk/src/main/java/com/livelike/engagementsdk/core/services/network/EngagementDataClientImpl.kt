@@ -151,7 +151,9 @@ internal open class EngagementDataClientImpl : DataClient,
                         responseData.extractBoolean("chat_enabled"),
                         null,
                         responseData.extractStringOrEmpty("url"),
-                        responseData.extractStringOrEmpty("chat_room_memberships_url")
+                        responseData.extractStringOrEmpty("chat_room_memberships_url"),
+                        responseData.extractStringOrEmpty("custom_data"),
+                        responseData.extractStringOrEmpty("badges_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -190,7 +192,8 @@ internal open class EngagementDataClientImpl : DataClient,
                         null,
                         responseData.extractStringOrEmpty("url"),
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
-                        responseData.extractStringOrEmpty("custom_data")
+                        responseData.extractStringOrEmpty(  "custom_data"),
+                        responseData.extractStringOrEmpty("badges_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
