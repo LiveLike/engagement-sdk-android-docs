@@ -103,23 +103,38 @@
             />
 
 
-        <TextView
-            android:id="@+id/playbackErrorTv"
+        <LinearLayout
+            android:id="@+id/playbackErrorView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:drawableLeft="@drawable/ic_play_disabled"
-            android:text="@string/livelike_playback_error"
-            android:gravity="center"
-            android:textColor="@color/livelike_white"
-            android:textDirection="locale"
-            android:textAlignment="gravity"
+            android:orientation="horizontal"
+            android:visibility="visible"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bodyText"
             app:layout_constraintBottom_toTopOf="@id/linkBackground"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_play_disabled"
+              />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/livelike_playback_error"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/livelike_white"
+            android:textDirection="locale"
+            android:textAlignment="gravity"
+
             />
 
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/sound_view"

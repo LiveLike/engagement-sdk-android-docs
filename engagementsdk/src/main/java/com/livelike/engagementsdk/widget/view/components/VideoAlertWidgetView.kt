@@ -41,7 +41,7 @@ import kotlinx.android.synthetic.main.video_widget.view.linkArrow
 import kotlinx.android.synthetic.main.video_widget.view.linkBackground
 import kotlinx.android.synthetic.main.video_widget.view.linkText
 import kotlinx.android.synthetic.main.video_widget.view.mute_tv
-import kotlinx.android.synthetic.main.video_widget.view.playbackErrorTv
+import kotlinx.android.synthetic.main.video_widget.view.playbackErrorView
 import kotlinx.android.synthetic.main.video_widget.view.playerView
 import kotlinx.android.synthetic.main.video_widget.view.progress_bar
 import kotlinx.android.synthetic.main.video_widget.view.sound_view
@@ -130,7 +130,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         labelText.text = resourceAlert.title
         linkText.text = resourceAlert.link_label
         sound_view.visibility = View.GONE
-        playbackErrorTv.visibility = View.GONE
+        playbackErrorView.visibility = View.GONE
 
         if (!resourceAlert.videoUrl.isNullOrEmpty()) {
             setFrameThumbnail(resourceAlert.videoUrl)
@@ -221,7 +221,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         }
 
         widgetContainer.setOnClickListener {
-            if (playerView?.isPlaying == true) {
+          if (playerView?.isPlaying == true) {
                 pause()
             } else {
                 if(stopPosition > 0){ //already running
@@ -239,7 +239,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         try {
             val uri = Uri.parse(videoUrl)
             playerView.setVideoURI(uri)
-            playerView.seekTo(stopPosition)
+           // playerView.seekTo(stopPosition)
             playerView.requestFocus()
             playerView.start()
             unMute()
@@ -251,7 +251,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                     this.mediaPlayer = mp
                     playedAtLeastOnce = true
                     progress_bar.visibility = View.GONE
-                    playbackErrorTv.visibility = View.GONE
+                    playbackErrorView.visibility = View.GONE
                     sound_view.visibility = VISIBLE
                     ic_sound.visibility = VISIBLE
                 }
@@ -268,18 +268,18 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                     progress_bar.visibility = GONE
                     ic_play.visibility = GONE
                     playerView.visibility = INVISIBLE
-                    playbackErrorTv.visibility = VISIBLE
+                    playbackErrorView.visibility = VISIBLE
                     sound_view.visibility = GONE
                     true
                 }
             } catch (e: Exception) {
                 progress_bar.visibility = GONE
-                playbackErrorTv.visibility = VISIBLE
+                playbackErrorView.visibility = VISIBLE
                 e.printStackTrace()
             }
         } catch (e: Exception) {
             progress_bar.visibility = GONE
-            playbackErrorTv.visibility = VISIBLE
+            playbackErrorView.visibility = VISIBLE
             e.printStackTrace()
         }
     }
@@ -298,7 +298,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             }
         }
         ic_play.visibility = View.GONE
-        playbackErrorTv.visibility = View.GONE
+        playbackErrorView.visibility = View.GONE
         thumbnailView.visibility = View.GONE
         playerView.visibility = View.VISIBLE
         viewModel?.data?.latest()?.videoUrl?.let { initializePlayer(it) }
@@ -308,11 +308,16 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     /** responsible for resuming the video from where it was stopped */
     private fun resume(){
         sound_view.visibility = VISIBLE
-        playbackErrorTv.visibility = GONE
+        playbackErrorView.visibility = GONE
         progress_bar.visibility = GONE
         ic_play.visibility = GONE
         playerView.seekTo(stopPosition)
-        playerView.start()
+        if(playerView.currentPosition == 0){
+            play()
+        }else{
+            playerView.start()
+        }
+
     }
 
 
@@ -322,7 +327,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         playerView.pause()
         sound_view.visibility = GONE
         ic_play.visibility = View.VISIBLE
-        playbackErrorTv.visibility = View.GONE
+        playbackErrorView.visibility = View.GONE
         ic_play.setImageResource(R.drawable.ic_play_button)
     }
 
@@ -333,6 +338,8 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             playedAtLeastOnce = false
             if (playerView != null && playerView.isPlaying) {
                 playerView.stopPlayback()
+                playerView.seekTo(0)
+                stopPosition = 0
                 mediaPlayer?.stop()
                 mediaPlayer?.release()
                 mediaPlayer = null
@@ -379,7 +386,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         thumbnailView.visibility = VISIBLE
         ic_play.visibility = VISIBLE
         progress_bar.visibility = GONE
-        playbackErrorTv.visibility = GONE
+        playbackErrorView.visibility = GONE
         ic_play.setImageResource(R.drawable.ic_play_button)
         playerView.visibility = INVISIBLE
         var requestOptions = RequestOptions()
