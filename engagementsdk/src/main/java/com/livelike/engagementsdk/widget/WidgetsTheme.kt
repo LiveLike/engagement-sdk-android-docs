@@ -50,6 +50,7 @@ data class CheerMeterTheme(
 
 class AlertWidgetThemeComponent : WidgetBaseThemeComponent()
 
+class SocialEmbedThemeComponent : WidgetBaseThemeComponent()
 
 data class WidgetsTheme(
     val alert: AlertWidgetThemeComponent? = null,
@@ -58,6 +59,7 @@ data class WidgetsTheme(
     val poll: OptionsWidgetThemeComponent? = null,
     val prediction: OptionsWidgetThemeComponent? = null,
     val quiz: OptionsWidgetThemeComponent? = null,
+    val socialEmbed: SocialEmbedThemeComponent? =null,
     val videoAlert: AlertWidgetThemeComponent? = null,
 ) : BaseTheme() {
     override fun validate(): String? {
@@ -65,6 +67,7 @@ data class WidgetsTheme(
         ?: poll?.validate()
         ?: prediction?.validate()
         ?: quiz?.validate()
+        ?: socialEmbed?.validate()
         ?: videoAlert?.validate()
     }
 
@@ -77,6 +80,7 @@ data class WidgetsTheme(
             WidgetType.TEXT_PREDICTION_FOLLOW_UP, WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> prediction
             WidgetType.IMAGE_SLIDER -> imageSlider
             WidgetType.CHEER_METER -> cheerMeter
+            WidgetType.SOCIAL_EMBED -> socialEmbed
             WidgetType.VIDEO_ALERT -> videoAlert
             else -> null
         }
