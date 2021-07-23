@@ -28,7 +28,6 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggT
 
 internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(context) {
 
-
     var viewModel: SocialEmbedViewModel? = null
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
@@ -80,7 +79,6 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
         }
     }
 
-
     private fun inflate(context: Context, liveLikeWidget: LiveLikeWidget) {
         if (titleView == null) {
             LayoutInflater.from(context)
@@ -92,10 +90,14 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                 web_view.settings.javaScriptEnabled = true
                 web_view.settings.domStorageEnabled = true
 
-                showTimer(liveLikeWidget.timeout ?: "", textEggTimer, {
-                }, {
-                    viewModel?.dismissWidget(it)
-                })
+                showTimer(
+                    liveLikeWidget.timeout ?: "", textEggTimer,
+                    {
+                    },
+                    {
+                        viewModel?.dismissWidget(it)
+                    }
+                )
                 web_view.loadDataWithBaseURL(
                     oembed.oEmbed.providerUrl,
                     oembed.oEmbed.html, "text/html", "utf-8", ""
@@ -139,10 +141,7 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                         }
                         return true
                     }
-
-
                 }
-
             }
         }
     }
@@ -154,10 +153,4 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
             ContextCompat.startActivity(context, universalLinkIntent, Bundle.EMPTY)
         }
     }
-
-
 }
-
-
-
-

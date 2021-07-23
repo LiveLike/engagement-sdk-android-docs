@@ -278,8 +278,15 @@ internal class ImageSlider @JvmOverloads constructor(
         drawThumb(canvas)
         resultDrawable?.let {
             canvas.translate(
-                (((averageProgress
-                    ?: 0f) * trackDrawable.bounds.width()) + trackDrawable.bounds.left), 0f
+                (
+                    (
+                        (
+                            averageProgress
+                                ?: 0f
+                            ) * trackDrawable.bounds.width()
+                        ) + trackDrawable.bounds.left
+                    ),
+                0f
             )
             it.mLottieDrawable.draw(canvas)
         }

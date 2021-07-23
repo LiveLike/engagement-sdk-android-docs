@@ -2,10 +2,10 @@ package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
 import android.os.Handler
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.GridLayoutManager
 import android.util.AttributeSet
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.GridLayoutManager
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.livelikedemo.R
@@ -75,12 +75,12 @@ class CustomPredictionWidget :
                         adapter.notifyDataSetChanged()
                     }
                 }
-                if(isFollowUp){
+                if (isFollowUp) {
                     it.forEach { op ->
                         adapter.optionIdCount[op?.id!!] = op.voteCount ?: 0
                     }
                     adapter.isFollowUp = true
-                    adapter.selectedIndex = it.indexOfFirst { option-> option?.id == followUpWidgetViewModel?.getPredictionVoteId() }
+                    adapter.selectedIndex = it.indexOfFirst { option -> option?.id == followUpWidgetViewModel?.getPredictionVoteId() }
                     adapter.notifyDataSetChanged()
                     followUpWidgetViewModel?.claimRewards()
                 }
@@ -90,10 +90,12 @@ class CustomPredictionWidget :
             }
 
             val handler = Handler()
-            handler.postDelayed({
-                finish()
-            }, (liveLikeWidget.timeout ?: "").parseDuration())
-
+            handler.postDelayed(
+                {
+                    finish()
+                },
+                (liveLikeWidget.timeout ?: "").parseDuration()
+            )
         }
     }
 
@@ -102,10 +104,8 @@ class CustomPredictionWidget :
         followUpWidgetViewModel?.finish()
     }
 
-
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         predictionWidgetViewModel?.voteResults?.unsubscribe(this)
     }
 }
-

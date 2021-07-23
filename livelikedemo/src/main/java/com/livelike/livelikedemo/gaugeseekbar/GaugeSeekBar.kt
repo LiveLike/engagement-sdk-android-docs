@@ -9,25 +9,19 @@ import android.graphics.Canvas
 import android.graphics.PointF
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import androidx.annotation.DimenRes
-import androidx.annotation.FloatRange
-import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import androidx.annotation.DimenRes
+import androidx.annotation.FloatRange
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.livelike.livelikedemo.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import java.io.IOException
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
-
 
 class GaugeSeekBar : View {
 
@@ -328,7 +322,6 @@ class GaugeSeekBar : View {
                     // clear it here as you can no longer have the bitmap
                 }
             })
-
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -338,5 +331,4 @@ class GaugeSeekBar : View {
             thumbEntity?.draw(canvas, progress)
         }
     }
-
 }

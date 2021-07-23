@@ -25,7 +25,6 @@ internal abstract class PubnubSubscribeCallbackAdapter : SubscribeCallback() {
     override fun status(pubnub: PubNub, pnStatus: PNStatus) {
     }
 
-
     override fun messageAction(pubnub: PubNub, pnMessageActionResult: PNMessageActionResult) {
     }
 
@@ -46,5 +45,4 @@ internal abstract class PubnubSubscribeCallbackAdapter : SubscribeCallback() {
 
     override fun channel(pubnub: PubNub, pnChannelMetadataResult: PNChannelMetadataResult) {
     }
-
 }

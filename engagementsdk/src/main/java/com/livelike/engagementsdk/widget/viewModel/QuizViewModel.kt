@@ -9,7 +9,6 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
@@ -87,7 +86,6 @@ internal class QuizViewModel(
 
     internal var timeOutJob: Job? = null
 
-
     init {
         widgetObserver(widgetInfos)
     }
@@ -114,19 +112,23 @@ internal class QuizViewModel(
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
         if (widgetInfos != null &&
-            (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_QUIZ ||
-                    WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ)
+            (
+                WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_QUIZ ||
+                    WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ
+                )
         ) {
             val resource =
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
-                subscribeWidgetResults(resource.subscribe_channel,sdkConfiguration,userRepository.currentUserStream,widgetInfos.widgetId,results)
-                data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
-                    QuizWidget(
-                        it,
-                        resource
-                    )
-                })
+                subscribeWidgetResults(resource.subscribe_channel, sdkConfiguration, userRepository.currentUserStream, widgetInfos.widgetId, results)
+                data.onNext(
+                    WidgetType.fromString(widgetInfos.type)?.let {
+                        QuizWidget(
+                            it,
+                            resource
+                        )
+                    }
+                )
             }
             currentWidgetId = widgetInfos.widgetId
             programId = data.latest()?.resource?.program_id.toString()
@@ -153,22 +155,21 @@ internal class QuizViewModel(
     internal suspend fun lockInteractionAndSubmitVote() {
         adapter?.selectionLocked = true
         vote()
-       // delay(500) // Just refactoring, this line was already here
+        // delay(500) // Just refactoring, this line was already here
         widgetState.onNext(WidgetStates.RESULTS)
         resultsState()
     }
 
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-                analyticsService.trackWidgetDismiss(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    programId,
-                    interactionData,
-                    adapter?.selectionLocked,
-                    action
-                )
-
+            analyticsService.trackWidgetDismiss(
+                it.toAnalyticsString(),
+                currentWidgetId,
+                programId,
+                interactionData,
+                adapter?.selectionLocked,
+                action
+            )
         }
         widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Quiz Widget, reason:${action.name}" }
@@ -180,7 +181,7 @@ internal class QuizViewModel(
     private fun resultsState() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
-            //dismissWidget(DismissAction.TIMEOUT)
+            // dismissWidget(DismissAction.TIMEOUT)
             return
         }
 
@@ -201,13 +202,12 @@ internal class QuizViewModel(
             }
 //            state.onNext("results")
             currentWidgetType?.let {
-                    analyticsService.trackWidgetInteraction(
-                        it.toAnalyticsString(),
-                        currentWidgetId,
-                        programId,
-                        interactionData
-                    )
-
+                analyticsService.trackWidgetInteraction(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    programId,
+                    interactionData
+                )
             }
         }
     }
@@ -241,9 +241,10 @@ internal class QuizViewModel(
         get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun lockInAnswer(optionID: String) {
-            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
-                programId
-            )
+        trackWidgetEngagedAnalytics(
+            currentWidgetType, currentWidgetId,
+            programId
+        )
 
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
@@ -261,9 +262,9 @@ internal class QuizViewModel(
 
     override fun getUserInteraction(): QuizWidgetUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
-                widgetInfos.widgetId,
-                WidgetKind.fromString(widgetInfos.type)
-            )
+            widgetInfos.widgetId,
+            WidgetKind.fromString(widgetInfos.type)
+        )
     }
 
     override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<QuizWidgetUserInteraction>>) {
@@ -273,16 +274,16 @@ internal class QuizViewModel(
                     widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
 
                 if (results is Result.Success) {
-                    if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ){
+                    if (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ) {
                         liveLikeCallback.onResponse(
                             results.data.interactions.textQuiz, null
                         )
-                    }else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_QUIZ){
+                    } else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_QUIZ) {
                         liveLikeCallback.onResponse(
                             results.data.interactions.imageQuiz, null
                         )
                     }
-                }  else if (results is Result.Error) {
+                } else if (results is Result.Error) {
                     liveLikeCallback.onResponse(
                         null, results.exception.message
                     )

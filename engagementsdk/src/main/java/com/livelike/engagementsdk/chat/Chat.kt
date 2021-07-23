@@ -13,7 +13,7 @@ internal interface ChatRenderer {
     /**
      * called whenever messages are loaded from history call or at fist time load call
      **/
-    fun displayChatMessages(messages : List<ChatMessage>)
+    fun displayChatMessages(messages: List<ChatMessage>)
     fun deleteChatMessage(messageId: String)
     fun updateChatMessageTimeToken(messageId: String, timetoken: String)
     fun loadingCompleted()
@@ -66,8 +66,9 @@ internal data class ChatMessage(
                     "nickname": "$senderDisplayName",
                     "message_id": "$id",
                     "message": "${message?.trim()}",
-                    "pubnub_timetoken":${timetoken}
-                }""".trimIndent()
+                    "pubnub_timetoken":$timetoken
+                }
+        """.trimIndent()
     }
 
     override fun equals(other: Any?): Boolean {

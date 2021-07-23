@@ -82,5 +82,4 @@ class NewIntractableTimelineViewModel constructor(
         application.publicSession = null
         super.onCleared()
     }
-
 }

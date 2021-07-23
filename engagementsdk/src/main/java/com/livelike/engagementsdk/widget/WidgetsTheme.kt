@@ -17,7 +17,7 @@ abstract class WidgetBaseThemeComponent() : BaseTheme() {
 
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
-        ?: header?.validate() ?: timer?.validate() ?: timer?.validate()
+            ?: header?.validate() ?: timer?.validate() ?: timer?.validate()
     }
 }
 
@@ -27,8 +27,8 @@ data class ImageSliderTheme(
 ) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
-        ?: header?.validate() ?: marker?.validate() ?: timer?.validate() ?: timer?.validate()
-        ?: track?.validate()
+            ?: header?.validate() ?: marker?.validate() ?: timer?.validate() ?: timer?.validate()
+            ?: track?.validate()
     }
 }
 
@@ -41,10 +41,10 @@ data class CheerMeterTheme(
 ) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
-        ?: header?.validate()
-        ?: sideABar?.validate() ?: sideAButton?.validate() ?: sideBBar?.validate()
-        ?: sideAButton?.validate() ?: timer?.validate() ?: title?.validate()
-        ?: versus?.validate()
+            ?: header?.validate()
+            ?: sideABar?.validate() ?: sideAButton?.validate() ?: sideBBar?.validate()
+            ?: sideAButton?.validate() ?: timer?.validate() ?: title?.validate()
+            ?: versus?.validate()
     }
 }
 
@@ -60,9 +60,9 @@ data class WidgetsTheme(
 ) : BaseTheme() {
     override fun validate(): String? {
         return alert?.validate() ?: cheerMeter?.validate() ?: imageSlider?.validate()
-        ?: poll?.validate()
-        ?: prediction?.validate()
-        ?: quiz?.validate()
+            ?: poll?.validate()
+            ?: prediction?.validate()
+            ?: quiz?.validate()
     }
 
     fun getThemeLayoutComponent(widgetType: WidgetType): WidgetBaseThemeComponent? {
@@ -124,16 +124,16 @@ data class OptionsWidgetThemeComponent(
 ) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
         return super.validate() ?: correctOption?.validate() ?: correctOptionBar?.validate()
-        ?: correctOptionDescription?.validate() ?: correctOptionImage?.validate()
-        ?: correctOptionPercentage?.validate()
-        ?: incorrectOption?.validate() ?: incorrectOptionBar?.validate()
-        ?: incorrectOptionDescription?.validate() ?: incorrectOptionImage?.validate()
-        ?: incorrectOptionPercentage?.validate() ?: selectedOption?.validate()
-        ?: selectedOptionBar?.validate() ?: selectedOptionDescription?.validate()
-        ?: selectedOptionImage?.validate() ?: selectedOptionPercentage?.validate()
-        ?: unselectedOption?.validate()
-        ?: unselectedOptionBar?.validate() ?: unselectedOptionDescription?.validate()
-        ?: unselectedOptionImage?.validate() ?: unselectedOptionPercentage?.validate()
+            ?: correctOptionDescription?.validate() ?: correctOptionImage?.validate()
+            ?: correctOptionPercentage?.validate()
+            ?: incorrectOption?.validate() ?: incorrectOptionBar?.validate()
+            ?: incorrectOptionDescription?.validate() ?: incorrectOptionImage?.validate()
+            ?: incorrectOptionPercentage?.validate() ?: selectedOption?.validate()
+            ?: selectedOptionBar?.validate() ?: selectedOptionDescription?.validate()
+            ?: selectedOptionImage?.validate() ?: selectedOptionPercentage?.validate()
+            ?: unselectedOption?.validate()
+            ?: unselectedOptionBar?.validate() ?: unselectedOptionDescription?.validate()
+            ?: unselectedOptionImage?.validate() ?: unselectedOptionPercentage?.validate()
     }
 }
 

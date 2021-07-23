@@ -1,14 +1,23 @@
 package com.livelike.livelikedemo.gaugeseekbar
 
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.ColorFilter
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.PixelFormat
+import android.graphics.PointF
+import android.graphics.RectF
+import android.graphics.SweepGradient
 
-class TrackDrawable(position: PointF,
-                    private val radiusPx: Float,
-                    private val margin: Float,
-                    private val gradientArray: IntArray,
-                    private val startAngle: Float,
-                    private val trackWidthPx: Float,
-                    gradientPositionsArray: FloatArray? = null) : DrawableEntity(position) {
+class TrackDrawable(
+    position: PointF,
+    private val radiusPx: Float,
+    private val margin: Float,
+    private val gradientArray: IntArray,
+    private val startAngle: Float,
+    private val trackWidthPx: Float,
+    gradientPositionsArray: FloatArray? = null
+) : DrawableEntity(position) {
 
     private val gradientPositionsArray: FloatArray = gradientPositionsArray ?: FloatArray(gradientArray.size) { it.toFloat() / gradientArray.size }
 
@@ -50,15 +59,19 @@ class TrackDrawable(position: PointF,
 
     override fun draw(canvas: Canvas) {
         val angle = (360 - (startAngle * 2))
-        val rect = RectF(centerPosition.x - radiusPx + margin,
-                centerPosition.y - radiusPx + margin,
-                centerPosition.x + radiusPx - margin,
-                centerPosition.y + radiusPx - margin)
-        canvas.drawArc(rect,
-                90f + startAngle,
-                angle,
-                false,
-                progressPaint)
+        val rect = RectF(
+            centerPosition.x - radiusPx + margin,
+            centerPosition.y - radiusPx + margin,
+            centerPosition.x + radiusPx - margin,
+            centerPosition.y + radiusPx - margin
+        )
+        canvas.drawArc(
+            rect,
+            90f + startAngle,
+            angle,
+            false,
+            progressPaint
+        )
     }
 
     override fun setAlpha(alpha: Int) {}

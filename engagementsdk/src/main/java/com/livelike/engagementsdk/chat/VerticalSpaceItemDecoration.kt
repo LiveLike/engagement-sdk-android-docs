@@ -1,8 +1,8 @@
 package com.livelike.engagementsdk.chat
 
 import android.graphics.Rect
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 
 class VerticalSpaceItemDecoration(private val verticalSpaceHeight: Int) :
     RecyclerView.ItemDecoration() {

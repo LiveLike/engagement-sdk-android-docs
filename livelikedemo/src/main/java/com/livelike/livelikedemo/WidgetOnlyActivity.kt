@@ -13,15 +13,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.google.gson.JsonParser
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
-import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
-import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVote
@@ -253,9 +250,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         this.imageSliderWidgetModel = imageSliderWidgetModel
                     }
                 }
-
             }
-
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object :
             UserProfileDelegate {
@@ -272,22 +267,22 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
         }
 
-
-        widget_view.postDelayed({
-            val availableRewards = session.getRewardItems().joinToString { rewardItem ->
-                rewardItem.name
-            }
-            // check added to prevent crash - ES - 1466
-            if (!(isFinishing || isDestroyed)) {
-                AlertDialog.Builder(this).apply {
-                    setTitle("Welcome! You have chance to win rewards!")
-                        .setMessage(availableRewards)
-                        .create()
-                }.show()
-            }
-
-        }, 2000)
-
+        widget_view.postDelayed(
+            {
+                val availableRewards = session.getRewardItems().joinToString { rewardItem ->
+                    rewardItem.name
+                }
+                // check added to prevent crash - ES - 1466
+                if (!(isFinishing || isDestroyed)) {
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Welcome! You have chance to win rewards!")
+                            .setMessage(availableRewards)
+                            .create()
+                    }.show()
+                }
+            },
+            2000
+        )
 
         EngagementSDK.predictionWidgetVoteRepository = object : PredictionWidgetVoteRepository {
             val predictionWidgetVoteRepository = LocalPredictionWidgetVoteRepository()
@@ -304,9 +299,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             override fun get(predictionWidgetID: String): String? {
                 return predictionWidgetVoteRepository.get(predictionWidgetID)
             }
-
         }
-
     }
 
     override fun onResume() {
@@ -696,7 +689,6 @@ class WidgetOnlyActivity : AppCompatActivity() {
         EngagementSDK.predictionWidgetVoteRepository = LocalPredictionWidgetVoteRepository()
         super.onDestroy()
     }
-
 }
 
 data class PostType(

@@ -3,12 +3,10 @@ package com.livelike.livelikedemo.video
 import android.content.Context
 import android.net.Uri
 import com.google.android.exoplayer2.MediaItem
-
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.livelike.livelikepreintegrators.PlayerProvider
@@ -30,14 +28,13 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     private var mediaSource: MediaSource = buildMediaSource(Uri.EMPTY)
     private var playerState = PlayerState()
 
-
     /** initialization of exoplayer with provided media source */
     private fun initializePlayer(uri: Uri, state: PlayerState, useHls: Boolean = true) {
         playerView.requestFocus()
 
         /** here exoplayer instance was getting created each time, so a check has been added if the instance of player
-        has not been created before then only instantiation is needed else not */
-        if(player == null) {
+         has not been created before then only instantiation is needed else not */
+        if (player == null) {
             player = SimpleExoPlayer.Builder(context).build().also { playerView.player = it }
         }
 
@@ -45,7 +42,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         playerState = state
         player?.setMediaSource(mediaSource)
         player?.prepare()
-        //player?.prepare(mediaSource)
+        // player?.prepare(mediaSource)
         with(playerState) {
             player?.playWhenReady = whenReady
             player?.seekToDefaultPosition()
@@ -78,16 +75,14 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         initializePlayer(uri, startState)
     }
 
-
     /** responsible for starting the player, with the media source provided */
     override fun start() {
         player?.setMediaSource(mediaSource)
         player?.prepare()
-        //player?.prepare(mediaSource)
+        // player?.prepare(mediaSource)
         player?.playWhenReady = true
         player?.seekToDefaultPosition()
     }
-
 
     /** responsible for stopping the player */
     override fun stop() {
@@ -99,7 +94,6 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         player?.playWhenReady = false
         player?.stop()
     }
-
 
     /** responsible for stopping the player and releasing it */
     override fun release() {

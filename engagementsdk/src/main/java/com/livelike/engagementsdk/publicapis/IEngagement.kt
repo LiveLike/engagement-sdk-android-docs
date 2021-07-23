@@ -11,7 +11,6 @@ import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
-import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.sponsorship.Sponsor
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
@@ -34,12 +33,10 @@ interface IEngagement {
      */
     val userStream: Stream<LiveLikeUserApi>
 
-     /* Set user profile delegate to intercept any user related updates like rewards */
+    /* Set user profile delegate to intercept any user related updates like rewards */
     var userProfileDelegate: UserProfileDelegate?
 
-
     var leaderBoardDelegate: LeaderBoardDelegate?
-
 
     /** Override the default auto-generated chat nickname **/
     fun updateChatNickname(nickname: String)
@@ -105,26 +102,27 @@ interface IEngagement {
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     )
 
-
     fun getLeaderBoardEntryForCurrentUserProfile(
         leaderBoardId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     )
 
-     fun getLeaderboardClients(
+    fun getLeaderboardClients(
         leaderBoardId: List<String>,
         liveLikeCallback: LiveLikeCallback<LeaderboardClient>
     )
 
-    fun getChatUserMutedStatus(chatRoomId: String,
-                               liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>)
+    fun getChatUserMutedStatus(
+        chatRoomId: String,
+        liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>
+    )
 
     fun getCurrentUserDetails(liveLikeCallback: LiveLikeCallback<LiveLikeUserApi>)
 
     /**
      * Returns the sponsor client
      */
-    fun sponsor() : Sponsor
+    fun sponsor(): Sponsor
 
     fun close()
 }

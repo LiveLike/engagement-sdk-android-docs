@@ -149,7 +149,8 @@ internal class WidgetProvider {
                     gson.fromJson(
                         widgetInfos.payload,
                         Badge::class.java
-                    ), onDismiss, analyticsService, animationEventsStream
+                    ),
+                    onDismiss, analyticsService, animationEventsStream
                 )
             }
             CHEER_METER -> CheerMeterView(context).apply {
@@ -201,7 +202,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     internal var fontFamilyProvider: FontFamilyProvider? = null
 
     // initially it will be false, when widget moves to interaction state it will be turned on to show it to user in result state
-    protected var showResultAnimation:Boolean = false
+    protected var showResultAnimation: Boolean = false
 
     var widgetId: String = ""
     lateinit var widgetInfos: WidgetInfos
@@ -218,10 +219,13 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         super.onAttachedToWindow()
         widgetData =
             gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java)
-        postDelayed({
-            widgetData.height = height
-            widgetLifeCycleEventsListener?.onWidgetPresented(widgetData)
-        }, 500)
+        postDelayed(
+            {
+                widgetData.height = height
+                widgetLifeCycleEventsListener?.onWidgetPresented(widgetData)
+            },
+            500
+        )
         subscribeWidgetStateAndPublishToLifecycleListener()
     }
 
@@ -257,8 +261,8 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         var animationLength = AndroidResource.parseDuration(time).toFloat()
         var remainingAnimationLength = animationLength
         if (widgetViewModel?.timerStartTime != null) {
-            remainingAnimationLength = animationLength - (Calendar.getInstance().timeInMillis - (widgetViewModel?.timerStartTime?:0)).toFloat()
-        }else{
+            remainingAnimationLength = animationLength - (Calendar.getInstance().timeInMillis - (widgetViewModel?.timerStartTime ?: 0)).toFloat()
+        } else {
             widgetViewModel?.timerStartTime = Calendar.getInstance().timeInMillis
         }
         val animationEggTimerProgress = (animationLength - remainingAnimationLength) / animationLength
@@ -270,7 +274,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
                     remainingAnimationLength,
                     onUpdate,
                     dismissAction,
-                    widgetViewModel?.showDismissButton?:true
+                    widgetViewModel?.showDismissButton ?: true
                 )
             }
         }
@@ -304,20 +308,24 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     open fun setState(widgetStates: WidgetStates) {
         val nextStateOrdinal = widgetStates.ordinal
         widgetViewModel?.widgetState?.onNext(
-            WidgetStates.values()[min(
-                nextStateOrdinal,
-                WidgetStates.FINISHED.ordinal
-            )]
+            WidgetStates.values()[
+                min(
+                    nextStateOrdinal,
+                    WidgetStates.FINISHED.ordinal
+                )
+            ]
         )
     }
 
     open fun moveToNextState() {
         val nextStateOrdinal = (widgetViewModel?.widgetState?.latest()?.ordinal ?: 0) + 1
         widgetViewModel?.widgetState?.onNext(
-            WidgetStates.values()[min(
-                nextStateOrdinal,
-                WidgetStates.FINISHED.ordinal
-            )]
+            WidgetStates.values()[
+                min(
+                    nextStateOrdinal,
+                    WidgetStates.FINISHED.ordinal
+                )
+            ]
         )
     }
 }

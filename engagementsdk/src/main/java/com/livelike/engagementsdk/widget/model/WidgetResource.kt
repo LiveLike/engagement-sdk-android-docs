@@ -52,7 +52,7 @@ internal open class Resource(
     }
 
     open fun toLiveLikeWidgetResult(): LiveLikeWidgetResult {
-            return LiveLikeWidgetResult( getMergedOptions(), null)
+        return LiveLikeWidgetResult(getMergedOptions(), null)
     }
 }
 
@@ -73,7 +73,7 @@ internal data class Alert(
     val impression_url: String = ""
 )
 
- data class Option(
+data class Option(
     val id: String,
     val url: String = "",
     val description: String = "",
@@ -115,4 +115,3 @@ internal data class Alert(
         vote_count = option.vote_count
     }
 }
-

@@ -1,17 +1,14 @@
 package com.livelike.engagementsdk.widget.view.components
 
 import android.animation.Animator
-import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.view.closeButton
 import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.view.eggTimer
-
 
 class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
     ConstraintLayout(context, attr) {
@@ -38,13 +35,12 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
         // commenting this part, as this is not working properly since timer is getting reset (we haven't called playAnimation(),
         // instead we are calling pauseAnimation)
 
-        //eggTimer.resumeAnimation()
+        // eggTimer.resumeAnimation()
 
         eggTimer.playAnimation()
         eggTimer.pauseAnimation()
         eggTimer.progress = progress
         eggTimer.resumeAnimation()
-
 
         showEggTimer()
         eggTimer.addAnimatorListener(object : Animator.AnimatorListener {

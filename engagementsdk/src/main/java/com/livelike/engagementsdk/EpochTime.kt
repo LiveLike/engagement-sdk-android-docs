@@ -62,8 +62,8 @@ internal fun String.parseISO8601(): ZonedDateTime? {
 
 private val ISO_DATE_TIME_PATTERN = Pattern.compile(
     "(\\d\\d\\d\\d)\\-(\\d\\d)\\-(\\d\\d)[Tt]" +
-            "(\\d\\d):(\\d\\d):(\\d\\d)([\\.,](\\d+))?" +
-            "([Zz]|((\\+|\\-)(\\d?\\d):?(\\d\\d)))?"
+        "(\\d\\d):(\\d\\d):(\\d\\d)([\\.,](\\d+))?" +
+        "([Zz]|((\\+|\\-)(\\d?\\d):?(\\d\\d)))?"
 )
 
 /**

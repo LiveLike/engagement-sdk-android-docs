@@ -41,10 +41,9 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
 
     var userProfileDelegate: UserProfileDelegate? = null
 
-    var leaderBoardDelegate: LeaderBoardDelegate?=null
+    var leaderBoardDelegate: LeaderBoardDelegate? = null
 
-    val rewardItemMapCache : MutableMap<String,RewardItem>  = mutableMapOf()
-
+    val rewardItemMapCache: MutableMap<String, RewardItem> = mutableMapOf()
 
     /**
      * Create or init user according to passed access token.
@@ -54,9 +53,11 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
     fun initUser(userAccessToken: String?, profileUrl: String) {
         this.profileUrl = profileUrl
         if (userAccessToken == null || userAccessToken.isEmpty()) {
-            logError { "The EngagementSDK is creating a new User Profile because it was initialized without an existing Access Token.\n" +
+            logError {
+                "The EngagementSDK is creating a new User Profile because it was initialized without an existing Access Token.\n" +
                     "The created User Profile will be counted towards the Monthly Active Users (MAU) calculation.\n" +
-                    "For more information: https://docs.livelike.com/docs/user-profiles" }
+                    "For more information: https://docs.livelike.com/docs/user-profiles"
+            }
             dataClient.createUserData(profileUrl) {
                 publishUser(it)
             }

@@ -19,7 +19,6 @@ open class EpochTimeUnitTest {
         assert("2021-22-22T06:55:03,000000+00:00".parseISODateTime() == null)
     }
 
-
     companion object {
         @DataPoints
         @JvmField
@@ -31,5 +30,4 @@ open class EpochTimeUnitTest {
             "2020-09-04T16:40:53Z",
         )
     }
-
 }

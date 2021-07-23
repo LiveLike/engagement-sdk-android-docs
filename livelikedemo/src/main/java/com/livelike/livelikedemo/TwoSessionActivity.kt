@@ -5,9 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.WindowManager
 import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeContentSession
-import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.livelikedemo.channel.ChannelManager
@@ -27,12 +25,13 @@ class TwoSessionActivity : Activity() {
         val sharedPref = getSharedPreferences("app", Context.MODE_PRIVATE)
         channelManager = (application as LiveLikeApplication).channelManager
 
-        engagementSDK = EngagementSDK(BuildConfig.APP_CLIENT_ID, applicationContext,
+        engagementSDK = EngagementSDK(
+            BuildConfig.APP_CLIENT_ID, applicationContext,
             object : ErrorDelegate() {
                 override fun onError(error: String) {
-
                 }
-            }, accessTokenDelegate = object : AccessTokenDelegate {
+            },
+            accessTokenDelegate = object : AccessTokenDelegate {
                 override fun getAccessToken(): String? {
                     return sharedPref.getString("access", null)
                 }
@@ -45,10 +44,8 @@ class TwoSessionActivity : Activity() {
                     widget_view.setSession(session)
 
                     chat_view.setSession(session.chatSession)
-
-
                 }
-            })
-
+            }
+        )
     }
 }

@@ -108,7 +108,6 @@ class EngagementSDK(
 
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
-
     // sdk config-user flow that can be collected by collect which is suspendably instead of using rx style combine on 2 seperate async results
     // TODO add util fun to convert streams to flow
     internal val configurationUserPairFlow = flow {
@@ -117,7 +116,6 @@ class EngagementSDK(
         }
         emit(Pair(userRepository.currentUserStream.latest()!!, configurationStream.latest()!!))
     }
-
 
     /**
      * SDK Initialization logic.
@@ -227,7 +225,8 @@ class EngagementSDK(
                                     chatRoomResult.data.id,
                                     chatRoomResult.data.title,
                                     chatRoomResult.data.visibility
-                                ), null
+                                ),
+                                null
                             )
                         } else if (chatRoomResult is Result.Error) {
                             liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
@@ -272,7 +271,8 @@ class EngagementSDK(
                                     chatRoomResult.data.id,
                                     chatRoomResult.data.title,
                                     chatRoomResult.data.visibility
-                                ), null
+                                ),
+                                null
                             )
                         } else if (chatRoomResult is Result.Error) {
                             liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
@@ -483,13 +483,16 @@ class EngagementSDK(
                 ) { program, error ->
                     when {
                         program?.leaderboards != null -> {
-                            liveLikeCallback.onResponse(program.leaderboards.map {
-                                LeaderBoard(
-                                    it.id,
-                                    it.name,
-                                    it.rewardItem.toReward()
-                                )
-                            }, null)
+                            liveLikeCallback.onResponse(
+                                program.leaderboards.map {
+                                    LeaderBoard(
+                                        it.id,
+                                        it.name,
+                                        it.rewardItem.toReward()
+                                    )
+                                },
+                                null
+                            )
                         }
                         error != null -> {
                             liveLikeCallback.onResponse(null, error)
@@ -512,10 +515,10 @@ class EngagementSDK(
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
                     val url = "${
-                        it.leaderboardDetailUrlTemplate?.replace(
-                            TEMPLATE_LEADER_BOARD_ID,
-                            leaderBoardId
-                        )
+                    it.leaderboardDetailUrlTemplate?.replace(
+                        TEMPLATE_LEADER_BOARD_ID,
+                        leaderBoardId
+                    )
                     }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
                         url,
@@ -527,8 +530,7 @@ class EngagementSDK(
                             result.data.toLeadBoard(),
                             null
                         )
-                        //leaderBoardDelegate?.leaderBoard(result.data.toLeadBoard(),result.data)
-
+                        // leaderBoardDelegate?.leaderBoard(result.data.toLeadBoard(),result.data)
                     } else if (result is Result.Error) {
                         liveLikeCallback.onResponse(null, result.exception.message)
                     }
@@ -536,7 +538,6 @@ class EngagementSDK(
             }
         }
     }
-
 
     override fun getLeaderboardClients(
         leaderBoardId: List<String>,
@@ -552,77 +553,75 @@ class EngagementSDK(
 
                         val job = ArrayList<Job>()
                         for (i in 0 until leaderBoardId.size.toInt()) {
-                            job.add(launch {
-                                val url = "${
+                            job.add(
+                                launch {
+                                    val url = "${
                                     it.leaderboardDetailUrlTemplate?.replace(
                                         TEMPLATE_LEADER_BOARD_ID,
                                         leaderBoardId.get(i)
                                     )
-                                }"
-                                val result = dataClient.remoteCall<LeaderBoardResource>(
-                                    url,
-                                    requestType = RequestType.GET,
-                                    accessToken = null
-                                )
-                                if (result is Result.Success) {
-                                    user?.let { user ->
-                                        val result2 =
-                                            getLeaderBoardEntry(it, result.data.id, user.id)
-                                        if (result2 is Result.Success) {
-                                            leaderBoardDelegate?.leaderBoard(
-                                                LeaderBoardForClient(
-                                                    result.data.id,
-                                                    result.data.name,
-                                                    result.data.rewardItem
-                                                ), LeaderboardPlacement(
-                                                    result2.data.rank,
-                                                    result2.data.percentile_rank.toString(),
-                                                    result2.data.score
-                                                )
-                                            )
-//                                            leaderBoardClientList.add(LeaderboardClient(result.data.id,result.data.name,result.data.rewardItem,LeaderboardPlacement(result2.data.rank
-//                                            ,result2.data.percentile_rank.toString(),result2.data.score),leaderBoardDelegate!!))
-                                            liveLikeCallback.onResponse(
-                                                LeaderboardClient(
-                                                    result.data.id,
-                                                    result.data.name,
-                                                    result.data.rewardItem,
+                                    }"
+                                    val result = dataClient.remoteCall<LeaderBoardResource>(
+                                        url,
+                                        requestType = RequestType.GET,
+                                        accessToken = null
+                                    )
+                                    if (result is Result.Success) {
+                                        user?.let { user ->
+                                            val result2 =
+                                                getLeaderBoardEntry(it, result.data.id, user.id)
+                                            if (result2 is Result.Success) {
+                                                leaderBoardDelegate?.leaderBoard(
+                                                    LeaderBoardForClient(
+                                                        result.data.id,
+                                                        result.data.name,
+                                                        result.data.rewardItem
+                                                    ),
                                                     LeaderboardPlacement(
                                                         result2.data.rank,
                                                         result2.data.percentile_rank.toString(),
                                                         result2.data.score
+                                                    )
+                                                )
+//                                            leaderBoardClientList.add(LeaderboardClient(result.data.id,result.data.name,result.data.rewardItem,LeaderboardPlacement(result2.data.rank
+//                                            ,result2.data.percentile_rank.toString(),result2.data.score),leaderBoardDelegate!!))
+                                                liveLikeCallback.onResponse(
+                                                    LeaderboardClient(
+                                                        result.data.id,
+                                                        result.data.name,
+                                                        result.data.rewardItem,
+                                                        LeaderboardPlacement(
+                                                            result2.data.rank,
+                                                            result2.data.percentile_rank.toString(),
+                                                            result2.data.score
+                                                        ),
+                                                        leaderBoardDelegate!!
                                                     ),
-                                                    leaderBoardDelegate!!
-                                                ), null
-                                            )
-                                        } else if (result2 is Result.Error) {
-                                            leaderBoardDelegate?.leaderBoard(
-                                                LeaderBoardForClient(
-                                                    result.data.id,
-                                                    result.data.name,
-                                                    result.data.rewardItem
-                                                ),
-                                                LeaderboardPlacement(0, " ", 0)
-                                            )
-
-                                        }
+                                                    null
+                                                )
+                                            } else if (result2 is Result.Error) {
+                                                leaderBoardDelegate?.leaderBoard(
+                                                    LeaderBoardForClient(
+                                                        result.data.id,
+                                                        result.data.name,
+                                                        result.data.rewardItem
+                                                    ),
+                                                    LeaderboardPlacement(0, " ", 0)
+                                                )
+                                            }
 //
+                                        }
+                                    } else if (result is Result.Error) {
+                                        liveLikeCallback.onResponse(null, result.exception.message)
                                     }
-
-                                } else if (result is Result.Error) {
-                                    liveLikeCallback.onResponse(null, result.exception.message)
                                 }
-                            })
-
-
+                            )
                         }
-
                     }
                 }
             }
         }
     }
-
 
     override fun getChatUserMutedStatus(
         chatRoomId: String,
@@ -663,7 +662,8 @@ class EngagementSDK(
                                     it.accessToken,
                                     it.id,
                                     it.custom_data
-                                ), null
+                                ),
+                                null
                             )
                         }
                     }
@@ -709,7 +709,6 @@ class EngagementSDK(
         }
     }
 
-
     private var leaderBoardEntryResult: HashMap<String, LeaderBoardEntryResult> = hashMapOf()
     private val leaderBoardEntryPaginationQueue =
         Queue<Pair<LiveLikePagination, Pair<String, LiveLikeCallback<LeaderBoardEntryPaginationResult>>>>()
@@ -744,10 +743,10 @@ class EngagementSDK(
                     val entriesUrl = when (pair.first) {
                         LiveLikePagination.FIRST -> {
                             val url = "${
-                                it.leaderboardDetailUrlTemplate?.replace(
-                                    TEMPLATE_LEADER_BOARD_ID,
-                                    leaderBoardId
-                                )
+                            it.leaderboardDetailUrlTemplate?.replace(
+                                TEMPLATE_LEADER_BOARD_ID,
+                                leaderBoardId
+                            )
                             }"
                             val result = dataClient.remoteCall<LeaderBoardResource>(
                                 url,
@@ -817,10 +816,10 @@ class EngagementSDK(
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
                     val url = "${
-                        it.leaderboardDetailUrlTemplate?.replace(
-                            TEMPLATE_LEADER_BOARD_ID,
-                            leaderBoardId
-                        )
+                    it.leaderboardDetailUrlTemplate?.replace(
+                        TEMPLATE_LEADER_BOARD_ID,
+                        leaderBoardId
+                    )
                     }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
                         url,
@@ -849,19 +848,21 @@ class EngagementSDK(
             }
         }
 
-        getLeaderBoardDetails(leaderBoardId, object : LiveLikeCallback<LeaderBoard>() {
-            override fun onResponse(result: LeaderBoard?, error: String?) {
-                result?.let {
-                    uiScope.launch {
+        getLeaderBoardDetails(
+            leaderBoardId,
+            object : LiveLikeCallback<LeaderBoard>() {
+                override fun onResponse(result: LeaderBoard?, error: String?) {
+                    result?.let {
+                        uiScope.launch {
+                        }
+                    }
+                    error?.let {
+                        liveLikeCallback.onResponse(null, error)
                     }
                 }
-                error?.let {
-                    liveLikeCallback.onResponse(null, error)
-                }
             }
-        })
+        )
     }
-
 
     internal suspend fun getLeaderBoardEntry(
         sdkConfig: SdkConfiguration,
@@ -869,10 +870,10 @@ class EngagementSDK(
         profileId: String
     ): Result<LeaderBoardEntry> {
         val url = "${
-            sdkConfig.leaderboardDetailUrlTemplate?.replace(
-                TEMPLATE_LEADER_BOARD_ID,
-                leaderBoardId
-            )
+        sdkConfig.leaderboardDetailUrlTemplate?.replace(
+            TEMPLATE_LEADER_BOARD_ID,
+            leaderBoardId
+        )
         }"
         val result = dataClient.remoteCall<LeaderBoardResource>(
             url,
@@ -896,7 +897,6 @@ class EngagementSDK(
         }
     }
 
-
     override fun getLeaderBoardEntryForCurrentUserProfile(
         leaderBoardId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
@@ -908,7 +908,6 @@ class EngagementSDK(
             }
         }
     }
-
 
     fun fetchWidgetDetails(
         widgetId: String,
@@ -1045,7 +1044,7 @@ class EngagementSDK(
         @SerializedName("pubnub_presence_timeout")
         val pubnubPresenceTimeout: Int,
 
-        )
+    )
 
     companion object {
         @JvmStatic

@@ -9,7 +9,6 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
@@ -74,8 +73,7 @@ internal class PollViewModel(
     val currentVoteId: SubscriptionManager<String?> =
         SubscriptionManager()
     private val debouncer = currentVoteId.debounce()
-    var lastestVotedOptionId:String? = ""
-
+    var lastestVotedOptionId: String? = ""
 
     var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
@@ -84,12 +82,12 @@ internal class PollViewModel(
     var voteUrl: String? = null
     var animationEggTimerProgress = 0f
     private var currentWidgetId: String = ""
-    private var programId:String = ""
+    private var programId: String = ""
     private var currentWidgetType: WidgetType? = null
 
     private val interactionData = AnalyticsWidgetInteractionInfo()
     private val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
-    private var latestPollUserInteraction : PollWidgetUserInteraction? = null
+    private var latestPollUserInteraction: PollWidgetUserInteraction? = null
 
     init {
 
@@ -132,7 +130,7 @@ internal class PollViewModel(
         uiScope.launch {
             adapter?.run {
                 val option = myDataset[selectedPosition]
-                if(lastestVotedOptionId != option.id){
+                if (lastestVotedOptionId != option.id) {
                     var url = option.getMergedVoteUrl()
                     lastestVotedOptionId = option.id
                     url?.let {
@@ -164,19 +162,23 @@ internal class PollViewModel(
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
         if (widgetInfos != null &&
-            (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL ||
-                    WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL)
+            (
+                WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL ||
+                    WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL
+                )
         ) {
             val resource =
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
-                subscribeWidgetResults(resource.subscribe_channel,sdkConfiguration,userRepository.currentUserStream,widgetInfos.widgetId,results)
-                data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
-                    PollWidget(
-                        it,
-                        resource
-                    )
-                })
+                subscribeWidgetResults(resource.subscribe_channel, sdkConfiguration, userRepository.currentUserStream, widgetInfos.widgetId, results)
+                data.onNext(
+                    WidgetType.fromString(widgetInfos.type)?.let {
+                        PollWidget(
+                            it,
+                            resource
+                        )
+                    }
+                )
             }
             currentWidgetId = widgetInfos.widgetId
             programId = data.currentData?.resource?.program_id.toString()
@@ -197,15 +199,14 @@ internal class PollViewModel(
 
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-                analyticsService.trackWidgetDismiss(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    programId,
-                    interactionData,
-                    adapter?.selectionLocked,
-                    action
-                )
-
+            analyticsService.trackWidgetDismiss(
+                it.toAnalyticsString(),
+                currentWidgetId,
+                programId,
+                interactionData,
+                adapter?.selectionLocked,
+                action
+            )
         }
         widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Poll Widget, reason:${action.name}" }
@@ -235,13 +236,12 @@ internal class PollViewModel(
             }
 
             currentWidgetType?.let {
-                    analyticsService.trackWidgetInteraction(
-                        it.toAnalyticsString(),
-                        currentWidgetId,
-                        programId,
-                        interactionData
-                    )
-
+                analyticsService.trackWidgetInteraction(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    programId,
+                    interactionData
+                )
             }
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
@@ -289,9 +289,10 @@ internal class PollViewModel(
         get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun submitVote(optionID: String) {
-            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
-                programId
-            )
+        trackWidgetEngagedAnalytics(
+            currentWidgetType, currentWidgetId,
+            programId
+        )
 
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
@@ -305,49 +306,47 @@ internal class PollViewModel(
                 }
             }
         }
-
     }
 
     override fun getUserInteraction(): PollWidgetUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
-                widgetInfos.widgetId,
-                WidgetKind.fromString(widgetInfos.type)
-            )
+            widgetInfos.widgetId,
+            WidgetKind.fromString(widgetInfos.type)
+        )
     }
 
     override fun loadInteractionHistory(
-        liveLikeCallback: LiveLikeCallback<List<PollWidgetUserInteraction>>) {
-            uiScope.launch {
-                try {
-                    val results =
-                        widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
+        liveLikeCallback: LiveLikeCallback<List<PollWidgetUserInteraction>>
+    ) {
+        uiScope.launch {
+            try {
+                val results =
+                    widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
 
-                    if (results is Result.Success) {
-                        if(WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL){
-                            liveLikeCallback.onResponse(
-                                results.data.interactions.textPoll, null
-                            )
-                        }else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL){
-                            liveLikeCallback.onResponse(
-                                results.data.interactions.imagePoll, null
-                            )
-                        }
-                    } else if (results is Result.Error) {
+                if (results is Result.Success) {
+                    if (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL) {
                         liveLikeCallback.onResponse(
-                            null, results.exception.message
+                            results.data.interactions.textPoll, null
+                        )
+                    } else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL) {
+                        liveLikeCallback.onResponse(
+                            results.data.interactions.imagePoll, null
                         )
                     }
-                } catch (e: JsonParseException) {
-                    e.printStackTrace()
-                    liveLikeCallback.onResponse(null, e.message)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    liveLikeCallback.onResponse(null, e.message)
+                } else if (results is Result.Error) {
+                    liveLikeCallback.onResponse(
+                        null, results.exception.message
+                    )
                 }
+            } catch (e: JsonParseException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
             }
-
+        }
     }
-
 
     override val widgetData: LiveLikeWidget
         get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)

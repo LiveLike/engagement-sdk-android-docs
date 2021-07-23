@@ -101,7 +101,6 @@ internal class ContentSession(
 
     internal var widgetInteractionRepository: WidgetInteractionRepository
 
-
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         widgetThemeAttributes = widgetViewThemeAttributes
     }
@@ -111,8 +110,8 @@ internal class ContentSession(
         liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
     ) {
         uiScope.launch {
-            programFlow.collect {program->
-                program?.timelineUrl?.let { url->
+            programFlow.collect { program ->
+                program?.timelineUrl?.let { url ->
 
                     val url = when (liveLikePagination) {
                         LiveLikePagination.FIRST -> url
@@ -157,8 +156,7 @@ internal class ContentSession(
                             }
                                 .let {
                                     liveLikeCallback.onResponse(
-                                        it
-                                        , null
+                                        it, null
                                     )
                                 }
                         }
@@ -170,9 +168,7 @@ internal class ContentSession(
                         liveLikeCallback.onResponse(null, e.message)
                     }
                 }
-
             }
-
         }
     }
 
@@ -198,21 +194,22 @@ internal class ContentSession(
                         currentUserPlacementDidChange
                     )
                 }
-
             }
     }
 
-    override fun getWidgetInteractionsWithUnclaimedRewards(liveLikePagination: LiveLikePagination,
-                                          liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>) {
+    override fun getWidgetInteractionsWithUnclaimedRewards(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>
+    ) {
         uiScope.launch {
-            programFlow.collect { program->
+            programFlow.collect { program ->
                 userRepository.currentUserStream.latest()?.let { user ->
                     val interactionTemplate = program?.unclaimedWidgetInteractionsUrlTemplate?.replace(
                         "{profile_id}",
                         user.id
                     ) ?: ""
 
-                    interactionTemplate?.let { url->
+                    interactionTemplate?.let { url ->
                         val url = when (liveLikePagination) {
                             LiveLikePagination.FIRST -> url
                             LiveLikePagination.NEXT -> unclaimedInteractionResponse?.next
@@ -222,15 +219,15 @@ internal class ContentSession(
                             if (url == null) {
                                 liveLikeCallback.onResponse(null, null)
                             } else {
-                                logDebug { "url -> ${url}" }
-                                val jsonObject = widgetDataClient.getUnclaimedInteractions(url,user.accessToken)
+                                logDebug { "url -> $url" }
+                                val jsonObject = widgetDataClient.getUnclaimedInteractions(url, user.accessToken)
                                 unclaimedInteractionResponse =
                                     gson.fromJson(
                                         jsonObject.toString(),
                                         UnclaimedWidgetInteractionList::class.java
                                     )
 
-                               unclaimedInteractionResponse?.results?.filter {
+                                unclaimedInteractionResponse?.results?.filter {
                                     it?.let {
                                         var widgetType = it.widgetKind
                                         widgetType = if (widgetType?.contains("follow-up")) {
@@ -243,8 +240,7 @@ internal class ContentSession(
                                 }
                                     .let {
                                         liveLikeCallback.onResponse(
-                                            it
-                                            , null
+                                            it, null
                                         )
                                     }
                             }
@@ -255,13 +251,11 @@ internal class ContentSession(
                             e.printStackTrace()
                             liveLikeCallback.onResponse(null, e.message)
                         }
-
                     }
                 }
             }
         }
     }
-
 
     private val llDataClient =
         EngagementDataClientImpl()
@@ -371,8 +365,10 @@ internal class ContentSession(
         }
 
         widgetInteractionRepository =
-           WidgetInteractionRepository(context = applicationContext, programID = programId,
-               userRepository = userRepository, programUrlTemplate = programRepository.programUrlTemplate)
+            WidgetInteractionRepository(
+                context = applicationContext, programID = programId,
+                userRepository = userRepository, programUrlTemplate = programRepository.programUrlTemplate
+            )
     }
 
     private fun startObservingForGamificationAnalytics(
@@ -500,5 +496,4 @@ internal class ContentSession(
         analyticServiceStream.latest()?.trackLastChatStatus(false)
         analyticServiceStream.latest()?.trackLastWidgetStatus(false)
     }
-
 }

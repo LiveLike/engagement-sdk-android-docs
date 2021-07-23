@@ -38,7 +38,8 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @Suppress("USELESS_ELVIS")
-internal open class EngagementDataClientImpl : DataClient,
+internal open class EngagementDataClientImpl :
+    DataClient,
     EngagementSdkDataClient {
 
     // TODO better error handling for network calls plus better code organisation for that  we can use retrofit if size is ok to go with or write own annotation processor
@@ -95,7 +96,7 @@ internal open class EngagementDataClientImpl : DataClient,
                                 // Program Url is the only required field
                                 error("Program Url not present in response.")
                             }
-                            respondWith(parsedObject.toProgram(),null)
+                            respondWith(parsedObject.toProgram(), null)
                         }
                     }
                 }

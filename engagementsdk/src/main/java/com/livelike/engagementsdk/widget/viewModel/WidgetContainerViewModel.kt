@@ -30,7 +30,6 @@ import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
 class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
 
-
     private lateinit var currentWidgetId: String
     private lateinit var currentWidgetType: String
     var enableDefaultWidgetTransition: Boolean = true
@@ -58,8 +57,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     var swipeDismissTouchListener: View.OnTouchListener? = null
 
     var widgetViewViewFactory: LiveLikeWidgetViewFactory? = null
-    var isLayoutTransitionEnabled:Boolean? = null
-
+    var isLayoutTransitionEnabled: Boolean? = null
 
     @SuppressLint("ClickableViewAccessibility")
     fun setWidgetContainer(
@@ -77,13 +75,12 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 }
 
                 override fun onDismiss(view: View?, token: Any?) {
-                    if(dismissWidget == null){
-                            analyticsService?.trackWidgetDismiss(
-                                currentWidgetType, currentWidgetId, programId,null, null,
-                                DismissAction.SWIPE
-                            )
-
-                    }else {
+                    if (dismissWidget == null) {
+                        analyticsService?.trackWidgetDismiss(
+                            currentWidgetType, currentWidgetId, programId, null, null,
+                            DismissAction.SWIPE
+                        )
+                    } else {
                         dismissWidget?.invoke(DismissAction.SWIPE)
                     }
                     if (currentWidgetViewStream.latest() != null) {
@@ -92,7 +89,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     dismissWidget = null
                     removeViews()
                 }
-            })
+            }
+        )
         if (enableDefaultWidgetTransition) {
             widgetContainer.setOnTouchListener(
                 swipeDismissTouchListener
@@ -107,7 +105,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         }
         // Show / Hide animation
         // changes because of ES-1572
-        if(isLayoutTransitionEnabled!!) {
+        if (isLayoutTransitionEnabled!!) {
             widgetContainer.layoutTransition = LayoutTransition()
         }
     }
@@ -190,11 +188,10 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     widgetType ?: ""
                 )?.toAnalyticsString() ?: ""
                 currentWidgetId = widgetId
-                    analyticsService?.trackWidgetDisplayed(
-                        currentWidgetType, widgetId, programId,
-                        linkUrl
-                    )
-
+                analyticsService?.trackWidgetDisplayed(
+                    currentWidgetType, widgetId, programId,
+                    linkUrl
+                )
             }
         }
     }
@@ -221,8 +218,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         widgetContainer?.removeAllViews()
         widgetContainer?.apply {
             if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    !isInLayout
-                } else {
+                !isInLayout
+            } else {
                     true
                 }
             ) requestLayout()

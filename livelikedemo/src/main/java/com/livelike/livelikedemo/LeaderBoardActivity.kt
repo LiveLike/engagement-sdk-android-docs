@@ -2,27 +2,19 @@ package com.livelike.livelikedemo
 
 import android.app.ProgressDialog
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.livelike.engagementsdk.LiveLikeUser
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
-
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
-import com.livelike.engagementsdk.widget.domain.Reward
-import com.livelike.engagementsdk.widget.domain.RewardSource
-import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
-import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
-import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
 import kotlinx.android.synthetic.main.activity_leader_board.btn_current_user
 import kotlinx.android.synthetic.main.activity_leader_board.btn_fetch
 import kotlinx.android.synthetic.main.activity_leader_board.btn_first
@@ -60,7 +52,8 @@ class LeaderBoardActivity : AppCompatActivity() {
                                     showToast(error)
                                 }
                             }
-                        })
+                        }
+                    )
                 }
             }
         })
@@ -107,8 +100,7 @@ class LeaderBoardActivity : AppCompatActivity() {
                 false
             )
 //        ed_txt_program_id.setText("47c14e1d-5786-401e-a850-22c5a91a5399") //QA
-        ed_txt_program_id.setText("6834f1fd-f24d-4538-ba51-63544f9d78eb")//Prod
-
+        ed_txt_program_id.setText("6834f1fd-f24d-4538-ba51-63544f9d78eb") // Prod
 
         rcyl_leader_board_entries.adapter = adapter
         btn_fetch.setOnClickListener {
@@ -116,7 +108,8 @@ class LeaderBoardActivity : AppCompatActivity() {
             if (programId.isNotEmpty()) {
                 prg_fetch_leader_boards.visibility = View.VISIBLE
                 (application as LiveLikeApplication).sdk.getLeaderBoardsForProgram(
-                    programId, object : LiveLikeCallback<List<LeaderBoard>>() {
+                    programId,
+                    object : LiveLikeCallback<List<LeaderBoard>>() {
                         override fun onResponse(result: List<LeaderBoard>?, error: String?) {
                             prg_fetch_leader_boards.visibility = View.INVISIBLE
                             result?.let {
@@ -150,7 +143,8 @@ class LeaderBoardActivity : AppCompatActivity() {
         btn_current_user.setOnClickListener {
             leaderBoardId?.let { id ->
                 dialog?.show()
-                (application as LiveLikeApplication).sdk.getLeaderBoardEntryForCurrentUserProfile(id,
+                (application as LiveLikeApplication).sdk.getLeaderBoardEntryForCurrentUserProfile(
+                    id,
                     object : LiveLikeCallback<LeaderBoardEntry>() {
                         override fun onResponse(result: LeaderBoardEntry?, error: String?) {
                             dialog?.dismiss()
@@ -161,7 +155,8 @@ class LeaderBoardActivity : AppCompatActivity() {
                                 showToast(it)
                             }
                         }
-                    })
+                    }
+                )
             }
         }
         btn_sort_down.setOnClickListener {
@@ -206,7 +201,8 @@ class LeaderBoardActivity : AppCompatActivity() {
                             showToast(error)
                         }
                     }
-                })
+                }
+            )
         }
     }
 

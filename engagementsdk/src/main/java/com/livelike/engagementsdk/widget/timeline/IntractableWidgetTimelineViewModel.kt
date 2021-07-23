@@ -4,17 +4,16 @@ import com.livelike.engagementsdk.widget.timeline.WidgetApiSource
 import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 
-
 /** This class is responsible for managing intractable widgets in timeline.
  * By default all widgets will be intractable without timer.
  * @contentSession: object of LiveLikeContentSession
  * predicate for filtering the widgets to only specific kind of widgets
  */
 class IntractableWidgetTimelineViewModel
-    (contentSession: LiveLikeContentSession, predicate: (LiveLikeWidget) -> Boolean = { _ -> true }) :
+(contentSession: LiveLikeContentSession, predicate: (LiveLikeWidget) -> Boolean = { _ -> true }) :
     WidgetTimeLineViewModel(
-    contentSession,predicate) {
-
+        contentSession, predicate
+    ) {
 
     /**
      * Decides widget interaction, if widgets will be intractable or not
@@ -32,5 +31,4 @@ class IntractableWidgetTimelineViewModel
         }
         return if (isInteractive) WidgetStates.INTERACTING else WidgetStates.RESULTS
     }
-
 }

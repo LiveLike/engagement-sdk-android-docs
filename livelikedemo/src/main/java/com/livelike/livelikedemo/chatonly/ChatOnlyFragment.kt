@@ -24,11 +24,11 @@ import kotlinx.android.synthetic.main.fragment_chat_only.txt_chat_room_members_c
 import kotlinx.android.synthetic.main.fragment_chat_only.txt_chat_room_title
 import kotlinx.android.synthetic.main.fragment_chat_only.txt_chat_room_visibility
 
-
 class ChatOnlyFragment : Fragment() {
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -42,7 +42,8 @@ class ChatOnlyFragment : Fragment() {
             val id = txt_chat_room_id.text.toString()
             if (id.isNotEmpty()) {
                 prg_members.visibility = View.VISIBLE
-                (activity?.application as? LiveLikeApplication)?.sdk?.getMembersOfChatRoom(id,
+                (activity?.application as? LiveLikeApplication)?.sdk?.getMembersOfChatRoom(
+                    id,
                     LiveLikePagination.FIRST,
                     object : LiveLikeCallback<List<LiveLikeUser>>() {
                         override fun onResponse(result: List<LiveLikeUser>?, error: String?) {
@@ -55,8 +56,10 @@ class ChatOnlyFragment : Fragment() {
                                 if (list.isNotEmpty()) {
                                     AlertDialog.Builder(context).apply {
                                         setTitle("Room Members")
-                                        setItems(list.map { it.nickname }
-                                            .toTypedArray()) { _, which ->
+                                        setItems(
+                                            list.map { it.nickname }
+                                                .toTypedArray()
+                                        ) { _, which ->
                                             // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
                                         }
                                         create()
@@ -64,7 +67,8 @@ class ChatOnlyFragment : Fragment() {
                                 }
                             }
                         }
-                    })
+                    }
+                )
             } else {
                 showToast("Select Room")
             }
@@ -87,7 +91,8 @@ class ChatOnlyFragment : Fragment() {
                                         showToast(it)
                                     }
                                 }
-                            })
+                            }
+                        )
                     }
                 })
             }
@@ -101,7 +106,6 @@ class ChatOnlyFragment : Fragment() {
         }
     }
 
-
     private fun updateData(result: ChatRoomInfo?) {
         result?.let {
             txt_chat_room_title.text = it.title ?: "No Title"
@@ -114,7 +118,6 @@ class ChatOnlyFragment : Fragment() {
     fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
-
 
     interface VisibilityInterface {
         fun onSelectItem(visibility: Visibility)

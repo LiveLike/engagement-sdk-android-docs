@@ -1,10 +1,9 @@
 package com.livelike.livelikedemo.ui.main
 
 import android.content.Context
-import androidx.constraintlayout.widget.ConstraintLayout
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.livelikedemo.R
@@ -29,7 +28,6 @@ class MMLChatView(
             custom_chat_view.emptyChatBackgroundView = emptyView
             custom_chat_view.allowMediaFromKeyboard = false
         }
-
     }
 
     override fun onAttachedToWindow() {

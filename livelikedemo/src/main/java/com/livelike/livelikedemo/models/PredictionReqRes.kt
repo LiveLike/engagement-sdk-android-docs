@@ -46,4 +46,3 @@ data class PredictionResponse(
     val initial_magnitude: String? = null,
     val vote_url: String? = null
 )
-

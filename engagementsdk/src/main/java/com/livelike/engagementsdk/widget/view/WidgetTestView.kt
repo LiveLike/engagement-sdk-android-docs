@@ -1,9 +1,9 @@
 package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
-import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.data.models.RewardsType

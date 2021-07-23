@@ -2,10 +2,10 @@ package com.livelike.livelikedemo.customwidgets.timeline
 
 import MMLAlertWidget
 import MMLPollWidget
-import com.livelike.engagementsdk.widget.timeline.TimelineWidgetResource
 import android.content.Context
 import android.view.View
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
+import com.livelike.engagementsdk.widget.timeline.TimelineWidgetResource
 import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
@@ -22,20 +22,21 @@ class TimeLineWidgetFactory(
 ) : LiveLikeWidgetViewFactory {
 
     override fun createCheerMeterView(cheerMeterWidgetModel: CheerMeterWidgetmodel): View? {
-       return null
-
+        return null
     }
 
     override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
-        return MMLAlertWidget(context, alertWidgetModel,
-            widgetList?.find { it.liveLikeWidget.id == alertWidgetModel.widgetData.id },isWidgetActive(alertWidgetModel))
+        return MMLAlertWidget(
+            context, alertWidgetModel,
+            widgetList?.find { it.liveLikeWidget.id == alertWidgetModel.widgetData.id }, isWidgetActive(alertWidgetModel)
+        )
     }
 
     override fun createQuizWidgetView(
         quizWidgetModel: QuizWidgetModel,
         isImage: Boolean
     ): View? {
-       return null
+        return null
     }
 
     override fun createPredictionWidgetView(

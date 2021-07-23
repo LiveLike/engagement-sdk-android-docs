@@ -115,7 +115,6 @@ data class LeaderboardPlacement(
     @SerializedName("score") val score: Int
 )
 
-
 data class LeaderBoardEntryPaginationResult(
     val count: Int = 0,
     val hasPrevious: Boolean = false,
@@ -189,8 +188,8 @@ internal fun ProgramModel.toProgram(): Program {
         leaderboards,
         rewardItems,
         sponsors,
-        widgetInteractionUrl ?:"",
-        unclaimedWidgetInteractionsUrlTemplate ?:"",
+        widgetInteractionUrl ?: "",
+        unclaimedWidgetInteractionsUrlTemplate ?: "",
     )
 }
 

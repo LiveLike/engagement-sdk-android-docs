@@ -1,19 +1,16 @@
 
 import android.content.Context
-import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.livelike.engagementsdk.OptionsItem
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.timeline.TimelineWidgetResource
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
@@ -44,7 +41,7 @@ class MMLPollWidget(
     private var pollWidgetModel: PollWidgetModel,
     var timelineWidgetResource: TimelineWidgetResource? = null,
     private var isImage: Boolean = false,
-    private val isActive : Boolean = false
+    private val isActive: Boolean = false
 ) : ConstraintLayout(context) {
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
@@ -97,9 +94,9 @@ class MMLPollWidget(
                 } else {
                     adapter.pollListener = object : PollListAdapter.PollListener {
                         override fun onSelectOption(optionsItem: OptionsItem) {
-                                optionsItem.id?.let {
-                                    pollWidgetModel.submitVote(it)
-                                }
+                            optionsItem.id?.let {
+                                pollWidgetModel.submitVote(it)
+                            }
                         }
                     }
                     adapter.notifyDataSetChanged()
@@ -137,7 +134,6 @@ class MMLPollWidget(
             }
         }
     }
-
 }
 
 class PollListAdapter(
@@ -163,11 +159,11 @@ class PollListAdapter(
                 when (isImage) {
                     true -> R.layout.mml_poll_image_list_item
                     else -> R.layout.mml_poll_text_list_item
-                }, p0, false
+                },
+                p0, false
             )
         )
     }
-
 
     override fun onBindViewHolder(holder: PollListAdapter.PollListItemViewHolder, index: Int) {
         val item = list[index]
@@ -179,7 +175,7 @@ class PollListAdapter(
             if (optionIdCount.containsKey(item.id)) {
                 holder.itemView.progressBar.visibility = View.VISIBLE
                 holder.itemView.textView2.visibility = View.VISIBLE
-                 val total = optionIdCount.values.reduce { acc, i -> acc + i }
+                val total = optionIdCount.values.reduce { acc, i -> acc + i }
                 val percent = when (total > 0) {
                     true -> (optionIdCount[item.id!!]!!.toFloat() / total.toFloat()) * 100
                     else -> 0F
@@ -250,11 +246,7 @@ class PollListAdapter(
             else
                 holder.itemView.lay_poll_text_option.setOnClickListener(null)
         }
-
     }
 
     override fun getItemCount(): Int = list.size
-
 }
-
-

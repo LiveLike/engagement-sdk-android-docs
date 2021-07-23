@@ -18,7 +18,6 @@ import com.livelike.engagementsdk.widget.view.components.imageslider.ScaleDrawab
 import com.livelike.engagementsdk.widget.view.components.imageslider.ThumbDrawable
 import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
-import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
@@ -153,10 +152,10 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                 image_slider.positionListener = { magnitude ->
                     viewModel.currentVote.onNext(
                         "${
-                            magnitude.toBigDecimal().setScale(
-                                2,
-                                RoundingMode.UP
-                            ).toFloat()
+                        magnitude.toBigDecimal().setScale(
+                            2,
+                            RoundingMode.UP
+                        ).toFloat()
                         }"
                     )
                 }
@@ -174,10 +173,9 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
         label_lock.visibility = View.VISIBLE
         viewModel?.run {
             timeOutJob?.cancel()
-            onInteractionCompletion{}
+            onInteractionCompletion {}
         }
     }
-
 
     fun enableLockButton() {
         lay_lock.visibility = VISIBLE

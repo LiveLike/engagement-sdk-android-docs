@@ -26,6 +26,4 @@ data class PollRequestResponse(
     val translatable_fields: List<String>? = null,
     val unique_impression_count: Int? = null,
     val url: String? = null
-) {
-
-}
+)

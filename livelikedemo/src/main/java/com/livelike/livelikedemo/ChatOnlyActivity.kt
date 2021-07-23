@@ -17,7 +17,6 @@ import com.livelike.livelikedemo.chatonly.ChatOnlyHomeFragment
 import kotlinx.android.synthetic.main.activity_chat_only.container
 import kotlinx.android.synthetic.main.activity_chat_only.prg_chat
 
-
 class ChatOnlyActivity : AppCompatActivity() {
     internal var privateGroupChatsession: LiveLikeChatSession? = null
     internal var chatRoomInfo: ChatRoomInfo? = null
@@ -31,7 +30,6 @@ class ChatOnlyActivity : AppCompatActivity() {
             .commit()
     }
 
-
     internal fun changeChatRoom(
         chatRoomId: String,
         showAvatar: Boolean? = null,
@@ -41,16 +39,17 @@ class ChatOnlyActivity : AppCompatActivity() {
         val session = sessionMap[chatRoomId]
         privateGroupChatsession =
             session ?: (application as LiveLikeApplication).createPrivateSessionForMultiple(
-                errorDelegate = object : ErrorDelegate() {
-                    override fun onError(error: String) {
-                        checkForNetworkToRecreateActivity()
-                    }
-                }, timecodeGetter = object : EngagementSDK.TimecodeGetter {
-                    override fun getTimecode(): EpochTime {
-                        return EpochTime(0)
-                    }
+            errorDelegate = object : ErrorDelegate() {
+                override fun onError(error: String) {
+                    checkForNetworkToRecreateActivity()
                 }
-            )
+            },
+            timecodeGetter = object : EngagementSDK.TimecodeGetter {
+                override fun getTimecode(): EpochTime {
+                    return EpochTime(0)
+                }
+            }
+        )
         showAvatar?.let {
             privateGroupChatsession?.shouldDisplayAvatar = it
         }
@@ -60,11 +59,14 @@ class ChatOnlyActivity : AppCompatActivity() {
         sessionMap[chatRoomId] = privateGroupChatsession!!
 
         // empty chat room id case verified
-        privateGroupChatsession?.connectToChatRoom(chatRoomId, object : LiveLikeCallback<Unit>() {
-            override fun onResponse(result: Unit?, error: String?) {
-                println("ChatOnlyActivity.onResponse -> $result -> $error")
+        privateGroupChatsession?.connectToChatRoom(
+            chatRoomId,
+            object : LiveLikeCallback<Unit>() {
+                override fun onResponse(result: Unit?, error: String?) {
+                    println("ChatOnlyActivity.onResponse -> $result -> $error")
+                }
             }
-        })
+        )
         (application as LiveLikeApplication).sdk.getChatRoom(
             chatRoomId,
             object : LiveLikeCallback<ChatRoomInfo>() {
@@ -76,20 +78,24 @@ class ChatOnlyActivity : AppCompatActivity() {
                         .addToBackStack("chat")
                         .commit()
                 }
-            })
+            }
+        )
     }
 
     private fun checkForNetworkToRecreateActivity() {
-        container.postDelayed({
-            if (isNetworkConnected()) {
-                container.post {
-                    startActivity(intent)
-                    finish()
+        container.postDelayed(
+            {
+                if (isNetworkConnected()) {
+                    container.post {
+                        startActivity(intent)
+                        finish()
+                    }
+                } else {
+                    checkForNetworkToRecreateActivity()
                 }
-            } else {
-                checkForNetworkToRecreateActivity()
-            }
-        }, 1000)
+            },
+            1000
+        )
     }
 
     internal fun selectVisibility(visibilityInterface: ChatOnlyFragment.VisibilityInterface) {
@@ -102,5 +108,4 @@ class ChatOnlyActivity : AppCompatActivity() {
             create()
         }.show()
     }
-
 }
