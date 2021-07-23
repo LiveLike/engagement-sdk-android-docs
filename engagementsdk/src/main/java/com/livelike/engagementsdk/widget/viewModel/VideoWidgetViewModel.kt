@@ -43,7 +43,7 @@ internal class VideoWidgetViewModel(
     }
 
 
-    override fun alertLinkClicked(url: String) {
+    override fun videoAlertLinkClicked(url: String) {
         onVideoAlertClickLink(url)
         data.latest()?.program_id?.let {
             trackWidgetEngagedAnalytics(
@@ -51,6 +51,10 @@ internal class VideoWidgetViewModel(
                 it
             )
         }
+    }
+
+    override fun registerPlayStarted() {
+        trackPlayStarted()
     }
 
     override val widgetData: LiveLikeWidget
@@ -118,6 +122,20 @@ internal class VideoWidgetViewModel(
                     currentWidgetId,
                     it,
                     interactionData
+                )
+            }
+        }
+    }
+
+
+    fun trackPlayStarted(){
+        data.latest()?.program_id?.let {
+            currentWidgetType?.toAnalyticsString()?.let { widgetType ->
+                analyticsService.trackVideoAlertPlayed(
+                    widgetType,
+                    currentWidgetId,
+                    it,
+                    data.latest()?.videoUrl.toString()
                 )
             }
         }

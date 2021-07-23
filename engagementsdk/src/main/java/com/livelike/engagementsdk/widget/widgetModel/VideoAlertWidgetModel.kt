@@ -4,6 +4,8 @@ import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
 
 interface VideoAlertWidgetModel:LiveLikeWidgetMediator{
 
-    fun alertLinkClicked(url : String)
+    fun videoAlertLinkClicked(url : String)
+
+    fun registerPlayStarted()
 }
 

@@ -287,16 +287,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     /** responsible for playing the video */
     private fun play() {
         progress_bar.visibility = View.VISIBLE
-        viewModel?.data?.latest()?.program_id?.let {
-            viewModel?.currentWidgetType?.toAnalyticsString()?.let { widgetType ->
-                viewModel?.analyticsService?.trackVideoAlertPlayed(
-                    widgetType,
-                    widgetId,
-                    it,
-                    viewModel?.data?.latest()?.videoUrl.toString()
-                )
-            }
-        }
+        viewModel?.registerPlayStarted()
         ic_play.visibility = View.GONE
         playbackErrorView.visibility = View.GONE
         thumbnailView.visibility = View.GONE
