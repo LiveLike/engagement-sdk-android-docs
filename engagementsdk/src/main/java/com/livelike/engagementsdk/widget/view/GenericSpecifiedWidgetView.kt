@@ -77,9 +77,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                 isViewInflated = true
                 if (widgetViewModel?.widgetState?.latest() == null)
                     widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
-
             }
-
         }
         if (entity == null) {
             isViewInflated = false
@@ -114,11 +112,15 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                     unLockInteraction()
                     showResultAnimation = true
                     viewModel?.data?.latest()?.timeout?.let { timeout ->
-                        showTimer(timeout, textEggTimer, {
-                            viewModel?.animationEggTimerProgress = it
-                        }, {
-                            viewModel?.dismissWidget(it)
-                        })
+                        showTimer(
+                            timeout, textEggTimer,
+                            {
+                                viewModel?.animationEggTimerProgress = it
+                            },
+                            {
+                                viewModel?.dismissWidget(it)
+                            }
+                        )
                     }
                     lay_lock.visibility = View.VISIBLE
                     viewModel?.results?.subscribe(javaClass.simpleName) {
@@ -129,8 +131,8 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                 WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                     lockInteraction()
                     onWidgetInteractionCompleted()
-                    viewModel?.results?.subscribe(javaClass.simpleName) {  showResults() }
-                   // showResults()
+                    viewModel?.results?.subscribe(javaClass.simpleName) { showResults() }
+                    // showResults()
                     viewModel.confirmInteraction()
                 }
             }
@@ -138,10 +140,8 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
             if (viewModel?.enableDefaultWidgetTransition) {
                 defaultStateTransitionManager(it)
             }
-
         }
     }
-
 
     internal abstract fun lockInteraction()
 

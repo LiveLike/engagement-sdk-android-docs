@@ -1,8 +1,8 @@
 package com.livelike.livelikedemo
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.sponsorship.Sponsor
 import com.livelike.engagementsdk.sponsorship.SponsorModel
@@ -10,8 +10,6 @@ import kotlinx.android.synthetic.main.activity_sponsor_test.fetch_sponsor
 import kotlinx.android.synthetic.main.activity_sponsor_test.program_id_et
 import kotlinx.android.synthetic.main.activity_sponsor_test.progress_bar
 import kotlinx.android.synthetic.main.activity_sponsor_test.sponsor_result
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class SponsorTestActivity : AppCompatActivity() {
 
@@ -23,7 +21,6 @@ class SponsorTestActivity : AppCompatActivity() {
         sponsor = (application as LiveLikeApplication).sdk.sponsor()
 
         setContentView(R.layout.activity_sponsor_test)
-
 
         fetch_sponsor.setOnClickListener {
 
@@ -45,11 +42,9 @@ class SponsorTestActivity : AppCompatActivity() {
                                 }
                             }
                         }
-                    })
+                    }
+                )
             }
-
         }
-
     }
-
 }

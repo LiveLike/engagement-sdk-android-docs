@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.widget.data.models
 
 import com.google.gson.annotations.SerializedName
 
-
 /**
 * User interaction Api response model class
 **/
@@ -29,4 +28,4 @@ internal data class Interactions(
     @field:SerializedName("image-prediction")
     val imagePrediction: List<PredictionWidgetUserInteraction>?,
 
-    )
+)

@@ -7,6 +7,5 @@ interface ISponsor {
     /**
      * Fetch sponsor associated to the specified program Id
      **/
-    fun fetchByProgramId(programId:String , callback: LiveLikeCallback<List<SponsorModel>>)
-
+    fun fetchByProgramId(programId: String, callback: LiveLikeCallback<List<SponsorModel>>)
 }

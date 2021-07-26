@@ -1,15 +1,14 @@
 package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
-import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_image_slider.view.gauge_seek_bar
 import kotlinx.android.synthetic.main.custom_image_slider.view.imageButton3
 import kotlinx.android.synthetic.main.custom_image_slider.view.imageButton4
 import kotlinx.android.synthetic.main.custom_image_slider.view.txt_result
-
 
 class CustomImageSlider : ConstraintLayout {
 
@@ -64,6 +63,4 @@ class CustomImageSlider : ConstraintLayout {
         super.onDetachedFromWindow()
         imageSliderWidgetModel.voteResults.unsubscribe(this)
     }
-
-
 }

@@ -146,7 +146,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     init {
         context.scanForActivity()?.window?.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-                    or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
         context.obtainStyledAttributes(
             attrs,
@@ -276,7 +276,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         return DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER.format(dateTime)
     }
 
-
     /**
      * chat session is loaded through this
      */
@@ -307,7 +306,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         autoScroll = true
                         checkEmptyChat()
                         if (viewModel?.isLastItemVisible == true && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
-                                .not()
+                            .not()
                         ) {
                             snapToLive()
                         } else if (chatAdapter.isReactionPopUpShowing() || viewModel?.isLastItemVisible == false) {
@@ -490,7 +489,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
-
     /**
      * stickers keyboard initialization process
      */
@@ -609,7 +607,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
-    //private var isLastItemVisible = true
+    // private var isLastItemVisible = true
     private var autoScroll = false
 
     /**
@@ -725,7 +723,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
-
     /**
      * used for showing sticker keyboard / sticker view
      **/
@@ -761,9 +758,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun wouldUpdateChatInputAccessibiltyFocus(time: Long = 500) {
-        chatInput.postDelayed({
-            edittext_chat_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-        }, time)
+        chatInput.postDelayed(
+            {
+                edittext_chat_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+            },
+            time
+        )
     }
 
     /**
@@ -782,7 +782,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         setBackButtonInterceptor(this)
     }
 
-
     /**
      * this is used to show default keyboard
      **/
@@ -792,7 +791,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         imm!!.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
         viewModel?.chatAdapter?.isKeyboardOpen = true
     }
-
 
     /**
      * use this to listen messages sent from this view
@@ -806,7 +804,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         hideKeyboard(KeyboardHideReason.EXPLICIT_CALL)
         hideStickerKeyboard(KeyboardHideReason.EXPLICIT_CALL)
     }
-
 
     /**
      * This function is used to send message, that user enters
@@ -881,7 +878,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         animateSnapToLiveButton()
     }
 
-
     private fun animateSnapToLiveButton() {
         snapToLiveAnimation?.cancel()
 
@@ -919,13 +915,19 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 val lm = rv.layoutManager as LinearLayoutManager
                 val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
                 if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
-                    chatdisplay.postDelayed({
-                        rv.smoothScrollToPosition(it)
-                    }, 200)
+                    chatdisplay.postDelayed(
+                        {
+                            rv.smoothScrollToPosition(it)
+                        },
+                        200
+                    )
                 } else {
-                    chatdisplay.postDelayed({
-                        rv.scrollToPosition(it - 1)
-                    }, 200)
+                    chatdisplay.postDelayed(
+                        {
+                            rv.scrollToPosition(it - 1)
+                        },
+                        200
+                    )
                 }
             }
         }
@@ -938,7 +940,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        //added to dismiss popup reaction panel on fragment replace
+        // added to dismiss popup reaction panel on fragment replace
         viewModel?.chatAdapter?.chatPopUpView?.dismiss()
     }
 

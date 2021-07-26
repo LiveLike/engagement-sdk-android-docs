@@ -2,19 +2,15 @@ package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
 import android.graphics.Color
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.RecyclerView
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.OptionsItem
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
-import com.livelike.engagementsdk.widget.data.models.QuizWidgetUserInteraction
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_quiz_widget.view.button2
@@ -68,10 +64,12 @@ class CustomQuizWidget : ConstraintLayout {
 
                     op?.let { option ->
                         Toast.makeText(
-                            context, when (option.is_correct) {
+                            context,
+                            when (option.is_correct) {
                                 true -> "Correct"
                                 else -> "Incorrect"
-                            }, Toast.LENGTH_SHORT
+                            },
+                            Toast.LENGTH_SHORT
                         ).show()
                     }
                     result?.choices?.let { options ->
@@ -85,9 +83,7 @@ class CustomQuizWidget : ConstraintLayout {
             imageView2.setOnClickListener {
                 quizWidgetModel?.finish()
             }
-
         }
-
     }
 
     override fun onDetachedFromWindow() {
@@ -117,7 +113,8 @@ class QuizListAdapter(
                 when (isImage) {
                     true -> R.layout.quiz_image_list_item
                     else -> R.layout.quiz_list_item
-                }, p0, false
+                },
+                p0, false
             )
         )
     }
@@ -173,7 +170,6 @@ class QuizListAdapter(
                 }
             }
         }
-
     }
 
     override fun getItemCount(): Int = list.size

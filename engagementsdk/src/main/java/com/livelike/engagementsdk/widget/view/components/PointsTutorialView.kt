@@ -33,15 +33,18 @@ class PointsTutorialView(context: Context, attr: AttributeSet? = null) :
                 pointsTutoView.startAnimation(getTotalPoints())
 
                 if (rewardType == RewardsType.BADGES) {
-                    postDelayed({
-                        points_progression_meter_switcher.showNext()
-                        progressionMeterView.visibility = View.GONE
-                        wouldShowProgressionMeter(
-                            rewardType,
-                            programGamificationProfile,
-                            progressionMeterView
-                        )
-                    }, 1300)
+                    postDelayed(
+                        {
+                            points_progression_meter_switcher.showNext()
+                            progressionMeterView.visibility = View.GONE
+                            wouldShowProgressionMeter(
+                                rewardType,
+                                programGamificationProfile,
+                                progressionMeterView
+                            )
+                        },
+                        1300
+                    )
                 }
             }
         }

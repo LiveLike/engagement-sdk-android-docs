@@ -86,10 +86,12 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
             })
         }
         animatorSet.play(badgeTranslateDownCenter).with(badgeScaleUp)
-            .before(AnimatorSet().apply {
-                startDelay = 1000
-                playTogether(badgeTranslateDownBox, badgeScaleDown)
-            })
+            .before(
+                AnimatorSet().apply {
+                    startDelay = 1000
+                    playTogether(badgeTranslateDownBox, badgeScaleDown)
+                }
+            )
         animatorSet.start()
     }
 

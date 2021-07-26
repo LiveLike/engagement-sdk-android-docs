@@ -53,7 +53,6 @@ fun unregisterLogsHandler() {
     handler = null
 }
 
-
 internal inline fun <reified T> T.log(level: LogLevel, message: () -> Any?) {
     if (level >= minimumLogLevel) {
         message().let {

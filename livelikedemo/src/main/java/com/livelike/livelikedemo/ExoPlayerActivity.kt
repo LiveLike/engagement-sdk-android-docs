@@ -138,14 +138,17 @@ class ExoPlayerActivity : AppCompatActivity() {
                 dialog.showDialog(this@ExoPlayerActivity)
             }
 
-            timer.schedule(object : TimerTask() {
-                override fun run() {
-                    runOnUiThread {
-                        val pdtTime = player?.getPDT() ?: 0
-                        videoTimestamp?.text = Date(pdtTime).toString()
+            timer.schedule(
+                object : TimerTask() {
+                    override fun run() {
+                        runOnUiThread {
+                            val pdtTime = player?.getPDT() ?: 0
+                            videoTimestamp?.text = Date(pdtTime).toString()
+                        }
                     }
-                }
-            }, 0, 100)
+                },
+                0, 100
+            )
 
             setUpAdClickListeners()
 
@@ -180,7 +183,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
 
                     override fun createPredictionFollowupWidgetView(
-                        followUpWidgetViewModel: FollowUpWidgetViewModel, isImage: Boolean
+                        followUpWidgetViewModel: FollowUpWidgetViewModel,
+                        isImage: Boolean
                     ): View? {
                         return null
                     }
@@ -195,9 +199,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     override fun createImageSliderWidgetView(imageSliderWidgetModel: ImageSliderWidgetModel): View? {
                         return null
                     }
-
                 }
-
 
             selectChannelButton.setOnClickListener {
                 channelManager?.let { cm ->
@@ -232,7 +234,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                     getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                         PREF_MY_WIDGETS,
                         null
-                    ), object : TypeToken<List<LiveLikeWidget>>() {}.type
+                    ),
+                    object : TypeToken<List<LiveLikeWidget>>() {}.type
                 ) ?: arrayListOf()
 
             btn_my_widgets.setOnClickListener {
@@ -246,7 +249,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                             ).toTypedArray()
                         ) { _, which ->
                             if (which == 0) {
-                                DialogUtils.showMyWidgetsDialog(context,
+                                DialogUtils.showMyWidgetsDialog(
+                                    context,
                                     (application as LiveLikeApplication).sdk,
                                     myWidgetsList,
                                     object : LiveLikeCallback<LiveLikeWidget>() {
@@ -261,16 +265,19 @@ class ExoPlayerActivity : AppCompatActivity() {
                                                 )
                                             }
                                         }
-                                    })
+                                    }
+                                )
                             } else {
-                                session?.getPublishedWidgets(LiveLikePagination.FIRST,
+                                session?.getPublishedWidgets(
+                                    LiveLikePagination.FIRST,
                                     object : LiveLikeCallback<List<LiveLikeWidget>>() {
                                         override fun onResponse(
                                             result: List<LiveLikeWidget>?,
                                             error: String?
                                         ) {
                                             result?.map { it!! }.let {
-                                                DialogUtils.showMyWidgetsDialog(context,
+                                                DialogUtils.showMyWidgetsDialog(
+                                                    context,
                                                     (application as LiveLikeApplication).sdk,
                                                     ArrayList(it),
                                                     object : LiveLikeCallback<LiveLikeWidget>() {
@@ -285,10 +292,12 @@ class ExoPlayerActivity : AppCompatActivity() {
                                                                 )
                                                             }
                                                         }
-                                                    })
+                                                    }
+                                                )
                                             }
                                         }
-                                    })
+                                    }
+                                )
                             }
                         }
                     create()
@@ -391,13 +400,13 @@ class ExoPlayerActivity : AppCompatActivity() {
     private fun initializeLiveLikeSDK(channel: Channel) {
         registerLogsHandler(object :
                 (String) -> Unit {
-            override fun invoke(text: String) {
-                Handler(mainLooper).post {
-                    logsPreview.text = "$text \n\n ${logsPreview.text}"
-                    fullLogs.text = "$text \n\n ${fullLogs.text}"
+                override fun invoke(text: String) {
+                    Handler(mainLooper).post {
+                        logsPreview.text = "$text \n\n ${logsPreview.text}"
+                        fullLogs.text = "$text \n\n ${fullLogs.text}"
+                    }
                 }
-            }
-        })
+            })
 
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createPublicSession(
@@ -426,7 +435,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
 
                 override fun onUserInteract(widgetData: LiveLikeWidgetEntity) {
-
                 }
 
                 override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {
@@ -480,12 +488,15 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
 
     private fun playThemeRandomizer() {
-        themeRadomizerHandler.postDelayed({
-            ThemeRandomizer.nextTheme()?.let {
-                widget_view?.applyTheme(it)
-            }
-            playThemeRandomizer()
-        }, 5000)
+        themeRadomizerHandler.postDelayed(
+            {
+                ThemeRandomizer.nextTheme()?.let {
+                    widget_view?.applyTheme(it)
+                }
+                playThemeRandomizer()
+            },
+            5000
+        )
     }
 
     private fun addLogs(logs: String?) {

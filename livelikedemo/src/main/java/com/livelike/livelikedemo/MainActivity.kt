@@ -199,14 +199,14 @@ class MainActivity : AppCompatActivity() {
             startActivity(playerDetailIntent(drawerDemoActivity))
         }
 
-        //chk_show_dismiss.isChecked = player.showNotification
+        // chk_show_dismiss.isChecked = player.showNotification
         chk_show_dismiss.isChecked = false
         chk_show_dismiss.setOnCheckedChangeListener { buttonView, isChecked ->
             player.showNotification = isChecked
         }
         chk_show_avatar.isChecked = player.showAvatar
         chk_show_avatar.setOnCheckedChangeListener { buttonView, isChecked ->
-            player.showAvatar = isChecked;
+            player.showAvatar = isChecked
         }
 
         chk_custom_widgets_ui.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -265,7 +265,6 @@ class MainActivity : AppCompatActivity() {
         unclaimed_interaction.setOnClickListener {
             startActivity(Intent(this, UnclaimedInteractionActivity::class.java))
         }
-
 
         private_group_button.setOnClickListener {
             AlertDialog.Builder(this).apply {
@@ -331,10 +330,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         themes_json_button.setOnClickListener {
-            DialogUtils.showFilePicker(this,
+            DialogUtils.showFilePicker(
+                this,
                 DialogSelectionListener { files ->
                     setupJsonThemesFilePath(files)
-                })
+                }
+            )
         }
 
         events_label.text = channelManager.selectedChannel.name
@@ -384,7 +385,8 @@ class MainActivity : AppCompatActivity() {
                         }
                         progressBar.visibility = View.GONE
                     }
-                })
+                }
+            )
         }
 
         btn_join.setOnClickListener {
@@ -434,24 +436,24 @@ class MainActivity : AppCompatActivity() {
         }
         btn_user_details.setOnClickListener {
             (application as LiveLikeApplication).sdk.getCurrentUserDetails(object :
-                LiveLikeCallback<LiveLikeUserApi>() {
-                override fun onResponse(result: LiveLikeUserApi?, error: String?) {
-                    result?.let {
-                        Toast.makeText(
-                            applicationContext,
-                            "API CustomData: ${it.custom_data}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    LiveLikeCallback<LiveLikeUserApi>() {
+                    override fun onResponse(result: LiveLikeUserApi?, error: String?) {
+                        result?.let {
+                            Toast.makeText(
+                                applicationContext,
+                                "API CustomData: ${it.custom_data}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        error?.let {
+                            Toast.makeText(
+                                applicationContext,
+                                "$it",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                    error?.let {
-                        Toast.makeText(
-                            applicationContext,
-                            "$it",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            })
+                })
         }
 
         btn_nick_name.setOnClickListener {
@@ -598,7 +600,8 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     intent.putExtra("showAvatar", player.showAvatar)
     intent.putExtra("customCheerMeter", player.customCheerMeter)
     intent.putExtra(
-        "keyboardClose", when (player.theme) {
+        "keyboardClose",
+        when (player.theme) {
             R.style.MMLChatTheme -> player.keyboardClose
             else -> true
         }

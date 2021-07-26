@@ -26,18 +26,16 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     /*private var player: SimpleExoPlayer? =
         ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector())
             .also { playerView.player = it }*/
-    private var player: SimpleExoPlayer? =
-        SimpleExoPlayer.Builder(context).build().also { playerView.player = it }
+    private var player: SimpleExoPlayer? = SimpleExoPlayer.Builder(context).build().also { playerView.player = it }
     private var mediaSource: MediaSource = buildMediaSource(Uri.EMPTY)
     private var playerState = PlayerState()
-
 
     /** initialization of exoplayer with provided media source */
     private fun initializePlayer(uri: Uri, state: PlayerState, useHls: Boolean = true) {
         playerView.requestFocus()
 
         /** here exoplayer instance was getting created each time, so a check has been added if the instance of player
-        has not been created before then only instantiation is needed else not */
+         has not been created before then only instantiation is needed else not */
         if (player == null) {
             player = SimpleExoPlayer.Builder(context).build().also { playerView.player = it }
         }
@@ -46,7 +44,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         playerState = state
         player?.setMediaSource(mediaSource)
         player?.prepare()
-        //player?.prepare(mediaSource)
+        // player?.prepare(mediaSource)
         with(playerState) {
             player?.playWhenReady = whenReady
             player?.seekToDefaultPosition()
@@ -58,7 +56,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         var pdt = 0L
         Handler(Looper.getMainLooper()).post {
             // things to do on the main thread
-            pdt = getExoplayerPdtTime(object : PlayerProvider {
+            pdt  = getExoplayerPdtTime(object : PlayerProvider {
                 override fun get(): SimpleExoPlayer? {
                     return player
                 }
@@ -90,16 +88,14 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         initializePlayer(uri, startState)
     }
 
-
     /** responsible for starting the player, with the media source provided */
     override fun start() {
         player?.setMediaSource(mediaSource)
         player?.prepare()
-        //player?.prepare(mediaSource)
+        // player?.prepare(mediaSource)
         player?.playWhenReady = true
         player?.seekToDefaultPosition()
     }
-
 
     /** responsible for stopping the player */
     override fun stop() {
@@ -111,7 +107,6 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         player?.playWhenReady = false
         player?.stop()
     }
-
 
     /** responsible for stopping the player and releasing it */
     override fun release() {

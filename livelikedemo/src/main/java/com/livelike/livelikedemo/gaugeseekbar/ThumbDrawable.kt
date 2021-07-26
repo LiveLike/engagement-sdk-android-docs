@@ -1,6 +1,10 @@
 package com.livelike.livelikedemo.gaugeseekbar
 
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.Paint
+import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 
 class ThumbDrawable(thumbColor: Int) : Drawable() {
@@ -39,5 +43,5 @@ class ThumbDrawable(thumbColor: Int) : Drawable() {
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
-    override fun setColorFilter(colorFilter: ColorFilter?) {}
+    override fun setColorFilter(colorFilter: ColorFilter?) = Unit
 }

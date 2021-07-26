@@ -62,7 +62,6 @@ internal class ChatQueue(upstream: MessagingClient) :
         }
     }
 
-
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         when (event.message.get("event").asString) {
             ChatViewModel.EVENT_NEW_MESSAGE -> {

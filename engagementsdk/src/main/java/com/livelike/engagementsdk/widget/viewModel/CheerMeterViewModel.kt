@@ -7,7 +7,6 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -65,7 +64,7 @@ internal class CheerMeterViewModel(
     val results: Stream<Resource> =
         SubscriptionManager()
     val
-            voteEnd: SubscriptionManager<Boolean> =
+    voteEnd: SubscriptionManager<Boolean> =
         SubscriptionManager()
     val data: SubscriptionManager<CheerMeterWidget> =
         SubscriptionManager()
@@ -77,20 +76,19 @@ internal class CheerMeterViewModel(
     var animationEggTimerProgress = 0f
     var animationProgress = 0f
 
-    private val vote  = SubscriptionManager<Int>()
-    private val debounceVote =   vote.debounce()
+    private val vote = SubscriptionManager<Int>()
+    private val debounceVote = vote.debounce()
 
     init {
 
         widgetObserver(widgetInfos)
-        //restoring the cheer meter score from interaction history
+        // restoring the cheer meter score from interaction history
         totalVoteCount = getUserInteraction()?.totalScore ?: 0
 
         debounceVote.subscribe(this) {
             wouldSendVote()
         }
     }
-
 
     fun incrementVoteCount(teamIndex: Int) {
         interactionData.incrementInteraction()
@@ -128,14 +126,14 @@ internal class CheerMeterViewModel(
             }
 
             voteState.voteCount -= count
-           // TODO  only on success count should be subtracted
+            // TODO  only on success count should be subtracted
         }
     }
 
     fun voteEnd() {
         currentWidgetType?.let {
             // interaction event will only be fired if interaction cunt is more than 0 and if not logged before
-            if(interactionData.interactionCount > 0 && !isWidgetInteractedEventLogged) {
+            if (interactionData.interactionCount > 0 && !isWidgetInteractedEventLogged) {
                 isWidgetInteractedEventLogged = true
                 data.latest()?.resource?.program_id?.let { programId ->
                     analyticsService.trackWidgetInteraction(
@@ -164,13 +162,15 @@ internal class CheerMeterViewModel(
                         )
                     )
                 }
-                subscribeWidgetResults(resource.subscribe_channel,sdkConfiguration,userRepository.currentUserStream,widgetInfos.widgetId,results)
-                data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
-                    CheerMeterWidget(
-                        it,
-                        resource
-                    )
-                })
+                subscribeWidgetResults(resource.subscribe_channel, sdkConfiguration, userRepository.currentUserStream, widgetInfos.widgetId, results)
+                data.onNext(
+                    WidgetType.fromString(widgetInfos.type)?.let {
+                        CheerMeterWidget(
+                            it,
+                            resource
+                        )
+                    }
+                )
             }
             currentWidgetId = widgetInfos.widgetId
             programId = data.latest()?.resource?.program_id.toString()
@@ -249,15 +249,14 @@ internal class CheerMeterViewModel(
     override val widgetData: LiveLikeWidget
         get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
 
-
     override val voteResults: Stream<LiveLikeWidgetResult>
         get() = results.map { it.toLiveLikeWidgetResult() }
 
-
     override fun submitVote(optionID: String) {
-            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
-                programId
-            )
+        trackWidgetEngagedAnalytics(
+            currentWidgetType, currentWidgetId,
+            programId
+        )
 
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
@@ -269,9 +268,9 @@ internal class CheerMeterViewModel(
 
     override fun getUserInteraction(): CheerMeterUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
-                widgetInfos.widgetId,
-                WidgetKind.fromString(widgetInfos.type)
-            )
+            widgetInfos.widgetId,
+            WidgetKind.fromString(widgetInfos.type)
+        )
     }
 
     override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<CheerMeterUserInteraction>>) {
@@ -284,7 +283,7 @@ internal class CheerMeterViewModel(
                     liveLikeCallback.onResponse(
                         results.data.interactions.cheerMeter, null
                     )
-                }  else if (results is Result.Error) {
+                } else if (results is Result.Error) {
                     liveLikeCallback.onResponse(
                         null, results.exception.message
                     )
@@ -311,7 +310,6 @@ internal class CheerMeterViewModel(
             )
         )
     }
-
 }
 
 data class CheerMeterVoteState(

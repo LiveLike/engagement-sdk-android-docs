@@ -27,7 +27,6 @@ internal class LogAnalyticsMessagingClient(
     }
 
     override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
-
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {

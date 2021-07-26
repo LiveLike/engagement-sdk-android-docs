@@ -1,8 +1,8 @@
 package com.livelike.livelikedemo
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
@@ -12,7 +12,6 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.livelikedemo.channel.ChannelManager
 import kotlinx.android.synthetic.main.activity_leader_board_position_actitivty.leaderBoardLayout
-
 
 class LeaderBoardPositionActitivty : AppCompatActivity() {
 
@@ -27,7 +26,6 @@ class LeaderBoardPositionActitivty : AppCompatActivity() {
         session = (application as LiveLikeApplication).createPublicSession(
             channelManager.selectedChannel.llProgram.toString(), allowTimeCodeGetter = false
         )
-
 
         (application as LiveLikeApplication).sdk.getLeaderBoardsForProgram(
             channelManager.selectedChannel.llProgram.toString(),
@@ -49,13 +47,12 @@ class LeaderBoardPositionActitivty : AppCompatActivity() {
 
                                     result?.let {
                                         result
-
                                     }
                                     error?.let {
-
                                     }
                                 }
-                            })
+                            }
+                        )
                         (applicationContext as LiveLikeApplication).sdk.leaderBoardDelegate =
                             object :
                                 LeaderBoardDelegate {
@@ -70,17 +67,13 @@ class LeaderBoardPositionActitivty : AppCompatActivity() {
                                         textViewRow.text = "\"LeaderBoardName\" + ${leaderBoard.name} + \"Rank: \"+ ${currentUserPlacementDidChange.rank}+ \"Percentile\"+ ${currentUserPlacementDidChange.rankPercentile} + \"Score \"+ ${currentUserPlacementDidChange.score}"
                                         leaderBoardLayout.addView(textViewRow)
                                     }
-
                                 }
-
                             }
                     }
                     error?.let {
-
                     }
                 }
-            })
+            }
+        )
     }
-
-
 }

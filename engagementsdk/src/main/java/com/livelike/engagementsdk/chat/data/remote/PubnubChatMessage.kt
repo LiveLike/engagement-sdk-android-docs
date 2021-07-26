@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.chat.data.remote
 
-import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
 internal data class PubnubChatMessage(

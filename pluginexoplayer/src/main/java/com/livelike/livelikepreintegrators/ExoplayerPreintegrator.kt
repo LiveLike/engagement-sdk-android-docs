@@ -17,11 +17,14 @@ fun EngagementSDK.createExoplayerSession(
     playerProvider: PlayerProvider,
     programId: String
 ): LiveLikeContentSession {
-    return this.createContentSession(programId, object : EngagementSDK.TimecodeGetter {
-        override fun getTimecode(): EpochTime {
-            return EpochTime(getExoplayerPdtTime(playerProvider))
+    return this.createContentSession(
+        programId,
+        object : EngagementSDK.TimecodeGetter {
+            override fun getTimecode(): EpochTime {
+                return EpochTime(getExoplayerPdtTime(playerProvider))
+            }
         }
-    })
+    )
 }
 
 fun getExoplayerPdtTime(playerProvider: PlayerProvider): Long {

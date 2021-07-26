@@ -6,11 +6,11 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import android.util.TypedValue
 import android.view.Gravity
 import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 
@@ -143,7 +143,6 @@ class ChatViewThemeAttributes {
                     R.drawable.ic_chat_emoji_ios_category_smileysandpeople
                 )
             }
-
 
             val sendKeyboardStickerDrawable = TypedValue()
             getValue(R.styleable.ChatView_chatStickerKeyboardSendDrawable, sendKeyboardStickerDrawable)

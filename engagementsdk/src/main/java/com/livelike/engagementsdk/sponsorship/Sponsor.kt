@@ -5,7 +5,6 @@ import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.widget.model.Resource
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -13,8 +12,7 @@ import kotlinx.coroutines.launch
 * Sponsor client allowing to fetch all sponsor related stuff from Livelike's CMS
 */
 
-class Sponsor(private val sdk : EngagementSDK)  : ISponsor {
-
+class Sponsor(private val sdk: EngagementSDK) : ISponsor {
 
     override fun fetchByProgramId(
         programId: String,
@@ -38,5 +36,4 @@ class Sponsor(private val sdk : EngagementSDK)  : ISponsor {
             }
         }
     }
-
 }

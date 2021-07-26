@@ -1,6 +1,5 @@
 package com.livelike.livelikedemo.viewmodels
 
-import IntractableWidgetTimelineViewModel
 import androidx.lifecycle.AndroidViewModel
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession

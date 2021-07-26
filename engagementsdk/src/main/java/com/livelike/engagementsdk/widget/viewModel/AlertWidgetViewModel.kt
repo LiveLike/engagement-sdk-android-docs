@@ -20,13 +20,13 @@ internal class AlertWidgetViewModel(
     val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     private val onDismiss: () -> Unit
-) : BaseViewModel(analyticsService) , AlertWidgetModel {
+) : BaseViewModel(analyticsService), AlertWidgetModel {
     private var timeoutStarted = false
     var data: SubscriptionManager<Alert?> =
         SubscriptionManager()
 
     private var currentWidgetId: String = ""
-    private var programId:String = ""
+    private var programId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
@@ -35,7 +35,7 @@ internal class AlertWidgetViewModel(
         widgetState.onNext(WidgetStates.READY)
         interactionData.widgetDisplayed()
         currentWidgetId = widgetInfos.widgetId
-        programId =  data?.currentData?.program_id.toString()
+        programId = data?.currentData?.program_id.toString()
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
     }
 
@@ -63,15 +63,14 @@ internal class AlertWidgetViewModel(
 
     internal fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-                analyticsService.trackWidgetDismiss(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    programId,
-                    interactionData,
-                    false,
-                    action
-                )
-
+            analyticsService.trackWidgetDismiss(
+                it.toAnalyticsString(),
+                currentWidgetId,
+                programId,
+                interactionData,
+                false,
+                action
+            )
         }
         logDebug { "dismiss Alert Widget, reason:${action.name}" }
         onDismiss()
@@ -88,11 +87,11 @@ internal class AlertWidgetViewModel(
         trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
     }
 
-
-    override fun alertLinkClicked(url : String) {
+    override fun alertLinkClicked(url: String) {
         onClickLink(url)
         data.latest()?.program_id?.let {
-            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
+            trackWidgetEngagedAnalytics(
+                currentWidgetType, currentWidgetId,
                 it
             )
         }
@@ -100,7 +99,6 @@ internal class AlertWidgetViewModel(
 
     override val widgetData: LiveLikeWidget
         get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
-
 
     fun startDismissTimout(timeout: String, onDismiss: () -> Unit) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
@@ -125,5 +123,4 @@ internal class AlertWidgetViewModel(
     override fun onClear() {
         cleanup()
     }
-
 }

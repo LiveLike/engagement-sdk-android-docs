@@ -17,27 +17,28 @@ abstract class WidgetUserInteractionBase(
 
     companion object {
         internal fun <T : WidgetUserInteractionBase> getWidgetClass(widgetKind: String): Class<T> {
-            return (when {
-                widgetKind == "emoji-slider" -> {
-                    EmojiSliderUserInteraction::class.java
+            return (
+                when {
+                    widgetKind == "emoji-slider" -> {
+                        EmojiSliderUserInteraction::class.java
+                    }
+                    widgetKind.contains("quiz") -> {
+                        QuizWidgetUserInteraction::class.java
+                    }
+                    widgetKind.contains("poll") -> {
+                        PollWidgetUserInteraction::class.java
+                    }
+                    widgetKind.contains("prediction") -> {
+                        PredictionWidgetUserInteraction::class.java
+                    }
+                    else -> {
+                        CheerMeterUserInteraction::class.java
+                    }
                 }
-                widgetKind.contains("quiz") -> {
-                    QuizWidgetUserInteraction::class.java
-                }
-                widgetKind.contains("poll") -> {
-                    PollWidgetUserInteraction::class.java
-                }
-                widgetKind.contains("prediction") -> {
-                    PredictionWidgetUserInteraction::class.java
-                }
-                else -> {
-                    CheerMeterUserInteraction::class.java
-                }
-            }) as Class<T>
+                ) as Class<T>
         }
     }
 }
-
 
 class EmojiSliderUserInteraction(
     val magnitude: Float,
@@ -47,7 +48,6 @@ class EmojiSliderUserInteraction(
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
-
 
 class QuizWidgetUserInteraction(
     @field:SerializedName("choice_id")
@@ -76,9 +76,9 @@ class PredictionWidgetUserInteraction(
     createdAt: String,
     url: String?,
     @field:SerializedName("is_correct")
-    val isCorrect:Boolean,
+    val isCorrect: Boolean,
     @field:SerializedName("claim_token")
-    val claimToken:String?,
+    val claimToken: String?,
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
@@ -102,7 +102,7 @@ enum class WidgetKind(val event: String) {
 
     companion object {
         private val map = values().associateBy(WidgetKind::event)
-        fun fromString(type: String) = map[type]?:POLL
+        fun fromString(type: String) = map[type] ?: POLL
     }
 
     fun getType(): String {

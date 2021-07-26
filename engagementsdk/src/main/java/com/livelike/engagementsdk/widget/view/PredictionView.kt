@@ -77,13 +77,16 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
 
                 // show timer while widget interaction mode
                 viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
-                    showTimer(timeout, textEggTimer, {
-                        viewModel?.animationEggTimerProgress = it
-                    }, {
-                        viewModel?.dismissWidget(it)
-                    })
+                    showTimer(
+                        timeout, textEggTimer,
+                        {
+                            viewModel?.animationEggTimerProgress = it
+                        },
+                        {
+                            viewModel?.dismissWidget(it)
+                        }
+                    )
                 }
-
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
@@ -91,22 +94,22 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 viewModel?.apply {
                     if (followUp) {
                         followupAnimation?.apply {
-                                if (viewModel?.animationPath?.isNotEmpty() == true)
-                                    setAnimation(
-                                        viewModel?.animationPath
-                                    )
-                                progress = viewModel?.animationProgress!!
-                                addAnimatorUpdateListener { valueAnimator ->
-                                    viewModel?.animationProgress = valueAnimator.animatedFraction
-                                }
-                                if (progress != 1f) {
-                                    resumeAnimation()
-                                }
-                                visibility = if (showResultAnimation) {
-                                    View.VISIBLE
-                                } else {
-                                    View.GONE
-                                }
+                            if (viewModel?.animationPath?.isNotEmpty() == true)
+                                setAnimation(
+                                    viewModel?.animationPath
+                                )
+                            progress = viewModel?.animationProgress!!
+                            addAnimatorUpdateListener { valueAnimator ->
+                                viewModel?.animationProgress = valueAnimator.animatedFraction
+                            }
+                            if (progress != 1f) {
+                                resumeAnimation()
+                            }
+                            visibility = if (showResultAnimation) {
+                                View.VISIBLE
+                            } else {
+                                View.GONE
+                            }
                         }
                         viewModel?.points?.let {
                             if (!shouldShowPointTutorial() && it > 0) {
@@ -124,29 +127,29 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                                 resultsObserver(it)
                         }
 
-                            confirmationMessage?.apply {
-                                if(isFirstInteraction) {
-                                    text =
-                                        viewModel?.data?.currentData?.resource?.confirmation_message
-                                            ?: ""
-                                    viewModel?.animationPath?.let {
-                                        viewModel?.animationProgress?.let { it1 ->
-                                            startAnimation(
-                                                it,
-                                                it1
-                                            )
-                                        }
-                                    }
-                                    subscribeToAnimationUpdates { value ->
-                                        viewModel?.animationProgress = value
-                                    }
-                                    visibility = if (showResultAnimation) {
-                                        View.VISIBLE
-                                    } else {
-                                        View.GONE
+                        confirmationMessage?.apply {
+                            if (isFirstInteraction) {
+                                text =
+                                    viewModel?.data?.currentData?.resource?.confirmation_message
+                                    ?: ""
+                                viewModel?.animationPath?.let {
+                                    viewModel?.animationProgress?.let { it1 ->
+                                        startAnimation(
+                                            it,
+                                            it1
+                                        )
                                     }
                                 }
+                                subscribeToAnimationUpdates { value ->
+                                    viewModel?.animationProgress = value
+                                }
+                                visibility = if (showResultAnimation) {
+                                    View.VISIBLE
+                                } else {
+                                    View.GONE
+                                }
                             }
+                        }
 
                         viewModel?.points?.let {
                             if (!shouldShowPointTutorial() && it > 0) {
@@ -172,7 +175,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
         viewModel?.data?.latest()?.let {
             val isFollowUp = it.resource.kind.contains("follow-up")
             if (isFollowUp) {
-                textEggTimer.showCloseButton {  viewModel?.dismissWidget(DismissAction.TIMEOUT) }
+                textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
             }
         }
     }
@@ -182,7 +185,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             val isFollowUp = it.resource.kind.contains("follow-up")
             if (!isFollowUp) {
                 viewModel?.adapter?.selectionLocked = false
-                //marked widget as interactive
+                // marked widget as interactive
                 viewModel?.markAsInteractive()
             }
         }
@@ -268,8 +271,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     ?: ""
             )
 
-          // set on click
-            viewModel?.adapter?.onClick =  {
+            // set on click
+            viewModel?.adapter?.onClick = {
                 viewModel?.adapter?.notifyDataSetChanged()
                 viewModel?.onOptionClicked()
                 isFirstInteraction = true
@@ -292,7 +295,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 }
 
             textRecyclerView.apply {
-                isFirstInteraction = viewModel?.getUserInteraction() !=null
+                isFirstInteraction = viewModel?.getUserInteraction() != null
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.optionId)
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
@@ -301,12 +304,11 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             if (isFollowUp) {
                 val selectedPredictionId =
                     getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
-                    viewModel?.followupState(
-                        selectedPredictionId,
-                        resource.correct_option_id,
-                        widgetViewThemeAttributes
-                    )
-
+                viewModel?.followupState(
+                    selectedPredictionId,
+                    resource.correct_option_id,
+                    widgetViewThemeAttributes
+                )
             }
 
             logDebug { "showing PredictionView Widget" }

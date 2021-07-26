@@ -3,8 +3,8 @@ package com.livelike.livelikedemo.channel
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import androidx.annotation.NonNull
 import android.util.Log
+import androidx.annotation.NonNull
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
 import okhttp3.Call
 import okhttp3.Callback
@@ -87,7 +87,6 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                     }
                 }
             }
-
         })
     }
 

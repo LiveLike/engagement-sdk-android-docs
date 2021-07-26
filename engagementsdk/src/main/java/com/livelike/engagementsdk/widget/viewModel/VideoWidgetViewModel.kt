@@ -22,7 +22,6 @@ internal class VideoWidgetViewModel(
     private val onDismiss: () -> Unit
 ) : BaseViewModel(analyticsService), VideoAlertWidgetModel {
 
-
     private var timeoutStarted = false
     var data: SubscriptionManager<Alert?> =
         SubscriptionManager()
@@ -32,7 +31,6 @@ internal class VideoWidgetViewModel(
     var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
-
     init {
         data.onNext(gson.fromJson(widgetInfos.payload.toString(), Alert::class.java) ?: null)
         widgetState.onNext(WidgetStates.READY)
@@ -41,7 +39,6 @@ internal class VideoWidgetViewModel(
         programId = data?.currentData?.program_id.toString()
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
     }
-
 
     override fun videoAlertLinkClicked(url: String) {
         onVideoAlertClickLink(url)
@@ -60,11 +57,9 @@ internal class VideoWidgetViewModel(
     override val widgetData: LiveLikeWidget
         get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
 
-
     override fun markAsInteractive() {
         trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
     }
-
 
     fun startDismissTimeout(timeout: String, onDismiss: () -> Unit) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
@@ -86,7 +81,6 @@ internal class VideoWidgetViewModel(
         interactionData.reset()
     }
 
-
     internal fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
             analyticsService.trackWidgetDismiss(
@@ -97,7 +91,6 @@ internal class VideoWidgetViewModel(
                 false,
                 action
             )
-
         }
         logDebug { "dismiss Video Widget, reason:${action.name}" }
         onDismiss()
@@ -127,8 +120,7 @@ internal class VideoWidgetViewModel(
         }
     }
 
-
-    fun trackPlayStarted(){
+    fun trackPlayStarted() {
         data.latest()?.program_id?.let {
             currentWidgetType?.toAnalyticsString()?.let { widgetType ->
                 analyticsService.trackVideoAlertPlayed(
@@ -149,6 +141,4 @@ internal class VideoWidgetViewModel(
     override fun onClear() {
         cleanup()
     }
-
-
 }

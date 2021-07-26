@@ -15,7 +15,6 @@ import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
 interface LiveLikeWidgetViewFactory {
 
-
     fun createCheerMeterView(
         cheerMeterWidgetModel: CheerMeterWidgetmodel
     ): View?
@@ -25,24 +24,26 @@ interface LiveLikeWidgetViewFactory {
     ): View?
 
     fun createQuizWidgetView(
-        quizWidgetModel: QuizWidgetModel, isImage: Boolean
+        quizWidgetModel: QuizWidgetModel,
+        isImage: Boolean
     ): View?
 
     fun createPredictionWidgetView(
-        predictionViewModel : PredictionWidgetViewModel, isImage: Boolean
+        predictionViewModel: PredictionWidgetViewModel,
+        isImage: Boolean
     ): View?
 
     fun createPredictionFollowupWidgetView(
-        followUpWidgetViewModel : FollowUpWidgetViewModel, isImage: Boolean
+        followUpWidgetViewModel: FollowUpWidgetViewModel,
+        isImage: Boolean
     ): View?
 
     fun createPollWidgetView(
-        pollWidgetModel: PollWidgetModel, isImage: Boolean
+        pollWidgetModel: PollWidgetModel,
+        isImage: Boolean
     ): View?
 
     fun createImageSliderWidgetView(
         imageSliderWidgetModel: ImageSliderWidgetModel
     ): View?
-
-
 }

@@ -37,14 +37,13 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_mute
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_refresh
 
-
 class ChatOnlyHomeFragment : Fragment() {
 
     private var chatRoomList: ArrayList<ChatRoomInfo> = arrayListOf()
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -67,10 +66,11 @@ class ChatOnlyHomeFragment : Fragment() {
                 object : LiveLikeCallback<ChatRoomInfo>() {
                     override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         val response = when {
-                            result != null -> "${
+                            result != null ->
+                                "${
                                 result.title
                                     ?: "No Title"
-                            }(${result.id}),  Room Id copy to clipboard"
+                                }(${result.id}),  Room Id copy to clipboard"
                             else -> error
                         }
                         var clipboard =
@@ -82,7 +82,8 @@ class ChatOnlyHomeFragment : Fragment() {
                         ed_chat_room_title.setText("")
                         prg_create.visibility = View.INVISIBLE
                     }
-                })
+                }
+            )
         }
         btn_join.setOnClickListener {
             val id = ed_chat_room_id.text.toString()
@@ -91,7 +92,8 @@ class ChatOnlyHomeFragment : Fragment() {
                 return@setOnClickListener
             }
             prg_join.visibility = View.VISIBLE
-            (activity?.application as? LiveLikeApplication)?.sdk?.addCurrentUserToChatRoom(id,
+            (activity?.application as? LiveLikeApplication)?.sdk?.addCurrentUserToChatRoom(
+                id,
                 object : LiveLikeCallback<ChatRoomMembership>() {
                     override fun onResponse(result: ChatRoomMembership?, error: String?) {
                         result?.let {
@@ -104,9 +106,9 @@ class ChatOnlyHomeFragment : Fragment() {
                         prg_join.visibility = View.INVISIBLE
                         btn_refresh.callOnClick()
                     }
-                })
+                }
+            )
         }
-
 
         btn_mute_status.setOnClickListener {
             val id = ed_chat_room_id.text.toString()
@@ -115,7 +117,8 @@ class ChatOnlyHomeFragment : Fragment() {
                 return@setOnClickListener
             }
             prg_join.visibility = View.VISIBLE
-            (activity?.application as? LiveLikeApplication)?.sdk?.getChatUserMutedStatus(id,
+            (activity?.application as? LiveLikeApplication)?.sdk?.getChatUserMutedStatus(
+                id,
                 object : LiveLikeCallback<ChatUserMuteStatus>() {
                     override fun onResponse(result: ChatUserMuteStatus?, error: String?) {
                         result?.let {
@@ -130,7 +133,8 @@ class ChatOnlyHomeFragment : Fragment() {
                         }
                         prg_mute.visibility = View.INVISIBLE
                     }
-                })
+                }
+            )
         }
         btn_refresh.setOnClickListener {
             prg_refresh.visibility = View.VISIBLE
@@ -147,9 +151,9 @@ class ChatOnlyHomeFragment : Fragment() {
                             showToast(it)
                         }
                     }
-                })
+                }
+            )
         }
-
 
         btn_change.setOnClickListener {
             AlertDialog.Builder(context).apply {
@@ -202,7 +206,8 @@ class ChatOnlyHomeFragment : Fragment() {
                             prg_delete.visibility = View.INVISIBLE
 //                            btn_refresh.callOnClick()
                         }
-                    })
+                    }
+                )
             } else {
                 showToast("Select Room")
             }
@@ -210,11 +215,11 @@ class ChatOnlyHomeFragment : Fragment() {
 
         btn_visibility.setOnClickListener {
             (activity as? ChatOnlyActivity)?.selectVisibility(object :
-                ChatOnlyFragment.VisibilityInterface {
-                override fun onSelectItem(visibility: Visibility) {
-                    btn_visibility.text = visibility.name
-                }
-            })
+                    ChatOnlyFragment.VisibilityInterface {
+                    override fun onSelectItem(visibility: Visibility) {
+                        btn_visibility.text = visibility.name
+                    }
+                })
         }
         btn_refresh.callOnClick()
     }

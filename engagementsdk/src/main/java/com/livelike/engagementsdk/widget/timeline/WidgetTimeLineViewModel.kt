@@ -59,7 +59,7 @@ open class WidgetTimeLineViewModel(
                         val widgets = list.map {
                             TimelineWidgetResource(
                                 decideWidgetInteraction(it, WidgetApiSource.HISTORY_API),
-                                it,WidgetApiSource.HISTORY_API
+                                it, WidgetApiSource.HISTORY_API
                             )
                         }
                         filteredWidgets.addAll(widgets.filter { predicate.invoke(it.liveLikeWidget) })
@@ -80,12 +80,13 @@ open class WidgetTimeLineViewModel(
                         logDebug { "timeline list finished" }
                         widgetEventStream.onNext(WIDGET_TIMELINE_END)
                     } else if (filteredWidgets.isEmpty()) {
-                        //to load more widget if the filtered widget is empty, a use case if user wants to show only a specific widget and it is not available in first page
+                        // to load more widget if the filtered widget is empty, a use case if user wants to show only a specific widget and it is not available in first page
                         // so it will until it reaches end or that page that contain that specific widget
                         loadPastPublishedWidgets(LiveLikePagination.NEXT)
                     }
                 }
-            })
+            }
+        )
     }
 
     /**
@@ -99,7 +100,6 @@ open class WidgetTimeLineViewModel(
             loadPastPublishedWidgets(LiveLikePagination.NEXT)
         }
     }
-
 
     /**
      * observe the live (real time) widgets
@@ -165,9 +165,7 @@ open class WidgetTimeLineViewModel(
         const val WIDGET_LOADING_STARTED = "loading-started"
         const val WIDGET_TIMELINE_END = "timeline-reached"
     }
-
 }
-
 
 // Timeline view will have default implementation
 interface DecideWidgetInteractivity {

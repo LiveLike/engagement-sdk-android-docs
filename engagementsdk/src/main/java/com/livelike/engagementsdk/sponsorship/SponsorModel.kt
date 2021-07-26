@@ -8,7 +8,7 @@ data class SponsorModel(
     @field:SerializedName("name")
     val name: String,
     @field:SerializedName("client_id")
-    val clientId : String,
+    val clientId: String,
     @field:SerializedName("logo_url")
-    val logoUrl : String
+    val logoUrl: String
 )

@@ -1,9 +1,9 @@
 package com.livelike.livelikedemo
 
 import EngagementViewModelFactory
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
 import kotlinx.android.synthetic.main.activity_widget.widget_view
@@ -48,10 +48,8 @@ class WidgetActivity : AppCompatActivity() {
 //            }
 //        }
 
-
         // You just need to add it on your session instance
         // mainViewModel?.getSession()?.widgetInterceptor = interceptor
-
     }
 
     override fun onPause() {
@@ -68,7 +66,4 @@ class WidgetActivity : AppCompatActivity() {
 //        super.onDestroy()
 //        mainViewModel?.closeSession()
 //    }
-
-
 }
-

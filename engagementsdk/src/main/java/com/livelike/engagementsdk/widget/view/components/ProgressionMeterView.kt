@@ -6,10 +6,10 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
-import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.animators.buildRotationAnimator
 import com.livelike.engagementsdk.core.utils.animators.buildScaleAnimator
@@ -57,39 +57,40 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
 
         val newBadgeEarned = totalPointsToNextbadge <= currentPointsForNextBadge + newPoints
         if (newBadgeEarned) {
-            gamification_badge_iv.postDelayed({
-                colorMatrix = ColorMatrix()
-                colorMatrix.setSaturation(1f)
-                filter = ColorMatrixColorFilter(colorMatrix)
-                gamification_badge_iv.colorFilter = filter
-                gamification_badge_iv.buildRotationAnimator(2000).apply {
-                    addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            super.onAnimationEnd(animation)
-                            new_badge_label.visibility = View.VISIBLE
-                            val listener = object : Animator.AnimatorListener {
-                                override fun onAnimationRepeat(animation: Animator?) {
+            gamification_badge_iv.postDelayed(
+                {
+                    colorMatrix = ColorMatrix()
+                    colorMatrix.setSaturation(1f)
+                    filter = ColorMatrixColorFilter(colorMatrix)
+                    gamification_badge_iv.colorFilter = filter
+                    gamification_badge_iv.buildRotationAnimator(2000).apply {
+                        addListener(object : AnimatorListenerAdapter() {
+                            override fun onAnimationEnd(animation: Animator?) {
+                                super.onAnimationEnd(animation)
+                                new_badge_label.visibility = View.VISIBLE
+                                val listener = object : Animator.AnimatorListener {
+                                    override fun onAnimationRepeat(animation: Animator?) {
+                                    }
 
+                                    override fun onAnimationEnd(animation: Animator?) {
+                                        animate().translationY(60f).alpha(0f).setStartDelay(600).start()
+                                    }
+
+                                    override fun onAnimationCancel(animation: Animator?) {
+                                    }
+
+                                    override fun onAnimationStart(animation: Animator?) {
+                                    }
                                 }
-
-                                override fun onAnimationEnd(animation: Animator?) {
-                                    animate().translationY(60f).alpha(0f).setStartDelay(600).start()
-                                }
-
-                                override fun onAnimationCancel(animation: Animator?) {
-                                }
-
-                                override fun onAnimationStart(animation: Animator?) {
-                                }
-
+                                val animator = new_badge_label.buildScaleAnimator(0f, 1f, 300)
+                                animator.addListener(listener)
+                                animator.start()
                             }
-                            val animator = new_badge_label.buildScaleAnimator(0f, 1f, 300)
-                            animator.addListener(listener)
-                            animator.start()
-                        }
-                    })
-                }.start()
-            }, 500)
+                        })
+                    }.start()
+                },
+                500
+            )
         } else {
             new_badge_label.visibility = View.GONE
         }
