@@ -38,6 +38,7 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedAccess
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
 import com.livelike.engagementsdk.core.utils.map
+import com.livelike.engagementsdk.gamification.Badges
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
@@ -675,6 +676,10 @@ class EngagementSDK(
         return Sponsor(this)
     }
 
+    override fun badges(): Badges {
+        return Badges(configurationStream, dataClient, sdkScope)
+    }
+
     /**
      * Closing all the services , stream and clear the variable
      * TODO: all stream close,instance clear
@@ -1034,6 +1039,8 @@ class EngagementSDK(
         val createChatRoomUrl: String,
         @SerializedName("profile_url")
         val profileUrl: String,
+        @SerializedName("profile_detail_url_template")
+        val profileDetailUrlTemplate: String,
         @SerializedName("program_detail_url_template")
         val programDetailUrlTemplate: String,
         @SerializedName("pubnub_origin")
