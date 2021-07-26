@@ -194,7 +194,7 @@ internal open class EngagementDataClientImpl :
                         null,
                         responseData.extractStringOrEmpty("url"),
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
-                        responseData.extractStringOrEmpty(  "custom_data"),
+                        responseData.extractStringOrEmpty("custom_data"),
                         responseData.extractStringOrEmpty("badges_url")
                     )
                     logVerbose { user }

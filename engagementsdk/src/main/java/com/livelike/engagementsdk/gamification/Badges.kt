@@ -5,14 +5,8 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.TEMPLATE_PROFILE_ID
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.chat.services.network.ChatDataClient
 import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
-import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryResult
-import com.livelike.engagementsdk.core.data.respository.BaseRepository
-import com.livelike.engagementsdk.core.data.respository.UserRepository
-import com.livelike.engagementsdk.core.exceptionhelpers.safeRemoteApiCall
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.core.services.network.EngagementSdkDataClient
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.toFlow
@@ -20,11 +14,8 @@ import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.gamification.models.ProfileBadge
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 
 class Badges internal constructor(
     private val applicationResourceStream: Stream<EngagementSDK.SdkConfiguration>,
@@ -32,9 +23,7 @@ class Badges internal constructor(
     private val sdkScope: CoroutineScope
 ) {
 
-
     private var profileBadgesResultMap = mutableMapOf<String, LLPaginatedResult<ProfileBadge>>()
-
 
     /**
      * fetch all the badges associated to provided profile id in pages
@@ -62,7 +51,8 @@ class Badges internal constructor(
                         dataClient.remoteCall<LiveLikeUser>(
                             it.profileDetailUrlTemplate.replace(
                                 TEMPLATE_PROFILE_ID, profileId
-                            ), RequestType.GET, null, null
+                            ),
+                            RequestType.GET, null, null
                         ).run {
                             if (this is Result.Success) {
                                 fetchUrl = this.data.badgesUrl
@@ -93,9 +83,6 @@ class Badges internal constructor(
                     liveLikeCallback.processResult(this)
                 }
             }
-
         }
     }
-
-
 }

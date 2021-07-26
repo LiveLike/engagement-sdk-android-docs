@@ -75,7 +75,7 @@ internal data class Alert(
     @SerializedName("impression_url")
     val impressionUrl: String = "",
     @SerializedName("video_url")
-    val videoUrl:String = ""
+    val videoUrl: String = ""
 )
 
 data class Option(

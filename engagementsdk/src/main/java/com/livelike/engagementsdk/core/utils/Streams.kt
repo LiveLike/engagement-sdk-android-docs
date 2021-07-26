@@ -107,8 +107,7 @@ internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 300L): Subscri
             return mgr
         }
 
-
-internal fun <T> Stream<T>.toFlow() : Flow<T?>{
+internal fun <T> Stream<T>.toFlow(): Flow<T?> {
     return flow {
         while (this@toFlow.latest() == null) {
             delay(1000)

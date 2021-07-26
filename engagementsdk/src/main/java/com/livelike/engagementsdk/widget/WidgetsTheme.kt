@@ -59,16 +59,16 @@ data class WidgetsTheme(
     val poll: OptionsWidgetThemeComponent? = null,
     val prediction: OptionsWidgetThemeComponent? = null,
     val quiz: OptionsWidgetThemeComponent? = null,
-    val socialEmbed: SocialEmbedThemeComponent? =null,
+    val socialEmbed: SocialEmbedThemeComponent? = null,
     val videoAlert: AlertWidgetThemeComponent? = null,
 ) : BaseTheme() {
     override fun validate(): String? {
         return alert?.validate() ?: cheerMeter?.validate() ?: imageSlider?.validate()
-        ?: poll?.validate()
-        ?: prediction?.validate()
-        ?: quiz?.validate()
-        ?: socialEmbed?.validate()
-        ?: videoAlert?.validate()
+            ?: poll?.validate()
+            ?: prediction?.validate()
+            ?: quiz?.validate()
+            ?: socialEmbed?.validate()
+            ?: videoAlert?.validate()
     }
 
     fun getThemeLayoutComponent(widgetType: WidgetType): WidgetBaseThemeComponent? {

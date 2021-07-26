@@ -151,7 +151,6 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
             widgetsTheme?.let {
                 applyTheme(it)
             }
-
         }
     }
 

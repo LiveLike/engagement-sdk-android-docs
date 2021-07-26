@@ -128,7 +128,7 @@ interface IEngagement {
     /**
      * Returns the Badges client
      */
-    fun badges() : Badges
+    fun badges(): Badges
 
     fun close()
 }

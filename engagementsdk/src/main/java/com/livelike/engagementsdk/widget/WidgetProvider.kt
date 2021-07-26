@@ -94,7 +94,6 @@ internal class WidgetProvider {
                 widgetViewModel = VideoWidgetViewModel(widgetInfos, analyticsService, onDismiss)
             }
 
-
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
                 this.widgetsTheme = liveLikeEngagementTheme?.widgets

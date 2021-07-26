@@ -110,8 +110,12 @@ interface AnalyticsService {
         isRemoved: Boolean
     )
 
-    fun trackVideoAlertPlayed(kind: String,
-                              id: String,programId: String,videoUrl:String)
+    fun trackVideoAlertPlayed(
+        kind: String,
+        id: String,
+        programId: String,
+        videoUrl: String
+    )
     fun destroy()
 }
 
