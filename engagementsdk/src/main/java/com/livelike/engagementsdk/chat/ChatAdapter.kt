@@ -87,6 +87,7 @@ internal class ChatRecyclerAdapter(
     internal var analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
+    var isKeyboardOpen: Boolean = false
     internal var chatRoomId: String? = null
     private var lastFloatingUiAnchorView: View? = null
     var chatRepository: ChatRepository? = null
@@ -148,6 +149,7 @@ internal class ChatRecyclerAdapter(
         private var message: ChatMessage? = null
         private val bounceAnimation: Animation =
             AnimationUtils.loadAnimation(v.context, R.anim.bounce_animation)
+
         @SuppressLint("StringFormatInvalid")
         private val dialogOptions = listOf(
             v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
@@ -231,7 +233,10 @@ internal class ChatRecyclerAdapter(
             if (chatPopUpView?.isShowing == true) {
                 hideFloatingUI()
             } else {
-                wouldShowFloatingUi(view)
+                if (!isKeyboardOpen)
+                    wouldShowFloatingUi(view)
+                else
+                    isKeyboardOpen = false
             }
         }
 

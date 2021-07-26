@@ -159,6 +159,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                     }
 
                     override fun onTabSelected(p0: TabLayout.Tab?) {
+                        logDebug { "Sticker Tab Selected :${p0?.position}" }
                         p0?.let {
                             pager.smoothScrollToPosition(p0.position)
                         }

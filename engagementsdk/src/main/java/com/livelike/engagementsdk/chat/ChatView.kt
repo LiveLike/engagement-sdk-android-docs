@@ -240,8 +240,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         swipeToRefresh.setOnRefreshListener {
-            if (viewModel?.chatLoaded == true)
+            if (viewModel?.chatLoaded == true) {
                 viewModel?.loadPreviousMessages()
+                hidePopUpReactionPanel()
+            }
             else
                 swipeToRefresh.isRefreshing = false
         }
@@ -583,8 +585,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             v.getLocationOnScreen(scrcoords)
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
-            val outsideStickerKeyboardBound =
+            var outsideStickerKeyboardBound =
                 (v.bottom - sticker_keyboard.height - button_chat_send.height - button_emoji.height)
+            if (button_chat_send.height == 0) {
+                outsideStickerKeyboardBound -= chatAttribute.sendIconHeight
+            }
             // Added check for image_height greater than 0 so bound position for touch should be above the send icon
             if (!edittext_chat_message.isTouching) {
                 if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
@@ -694,6 +699,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         (session as? ChatSession)?.analyticsServiceStream?.latest()
                             ?.trackKeyboardOpen(KeyboardType.STANDARD)
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
+                        viewModel?.chatAdapter?.isKeyboardOpen = true
                     }
                 }
             }
@@ -704,6 +710,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      * used for hiding sticker keyboard / sticker view
      **/
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
+        logDebug { "HideSticker Keyboard: $reason" }
         chatAttribute.apply {
             button_emoji.setImageDrawable(chatStickerSendDrawable)
         }
@@ -730,6 +737,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatAttribute.apply {
                 button_emoji.setImageDrawable(chatStickerKeyboardSendDrawable)
             }
+            viewModel?.chatAdapter?.isKeyboardOpen = true
         }
     }
 
@@ -762,6 +770,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      * this is used to hide default keyboard
      **/
     private fun hideKeyboard(reason: KeyboardHideReason) {
+        logDebug { "Hide Keyboard : $reason" }
         val inputManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(
@@ -780,6 +789,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         edittext_chat_message.requestFocus()
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm!!.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+        viewModel?.chatAdapter?.isKeyboardOpen = true
     }
 
     /**
