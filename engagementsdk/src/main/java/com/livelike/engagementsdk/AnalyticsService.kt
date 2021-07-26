@@ -10,6 +10,7 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.findStickerCodes
 import com.livelike.engagementsdk.chat.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
 import org.json.JSONObject
@@ -109,6 +110,9 @@ interface AnalyticsService {
         reactionId: String,
         isRemoved: Boolean
     )
+
+    fun trackVideoAlertPlayed(kind: String,
+                              id: String,programId: String,videoUrl:String)
     fun destroy()
 }
 
@@ -135,6 +139,18 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d(
             "[Analytics]",
             "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $isRemoved"
+        )
+    }
+
+    override fun trackVideoAlertPlayed(
+        kind: String,
+        id: String,
+        programId: String,
+        videoUrl: String
+    ) {
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId $videoUrl"
         )
     }
 
@@ -659,6 +675,25 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         )
     }
 
+    override fun trackVideoAlertPlayed(
+        kind: String,
+        id: String,
+        programId: String,
+        videoUrl: String
+    ) {
+        val properties = JSONObject()
+        properties.put("Widget ID", id)
+        properties.put("Widget Type", kind)
+        properties.put(PROGRAM_ID, programId)
+        properties.put(VIDEO_URL, videoUrl)
+        mixpanel.track(KEY_EVENT_VIDEO_ALERT_PLAY_STARTED, properties)
+        eventObservers[clientId]?.invoke(KEY_EVENT_VIDEO_ALERT_PLAY_STARTED, properties)
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}]$id $programId $videoUrl"
+        )
+    }
+
     override fun destroy() {
         mixpanel.flush()
         Log.d(
@@ -677,7 +712,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put(ALERT_ID, alertId)
         properties.put(PROGRAM_ID, programId)
         properties.put(LINK_URL, linkUrl)
-        properties.put(WIDGET_TYPE, widgetType?.getType() ?: "")
+        properties.put(WIDGET_TYPE, widgetType?.toAnalyticsString() ?: "")
         mixpanel.track(KEY_EVENT_ALERT_LINK_OPENED, properties)
         eventObservers[clientId]?.invoke(KEY_EVENT_ALERT_LINK_OPENED, properties)
         Log.d(
@@ -913,6 +948,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         const val KEY_EVENT_CHAT_REACTION_ADDED = "Chat Reaction Added"
         const val KEY_EVENT_CHAT_REACTION_REMOVED = "Chat Reaction Removed"
         const val KEY_EVENT_ALERT_LINK_OPENED = "Alert Link Opened"
+        const val KEY_EVENT_VIDEO_ALERT_PLAY_STARTED = "Video Alert Play Started"
     }
 }
 
@@ -939,6 +975,7 @@ const val CHAT_MESSAGE_ID = "Chat Message ID"
 const val ALERT_ID = "Alert Id"
 const val PROGRAM_ID = "Program ID"
 const val LINK_URL = "Link URL"
+const val VIDEO_URL = "Video URL"
 const val CHAT_REACTION_ID = "Chat Reaction ID"
 const val CHAT_ROOM_ID = "Chat Room ID"
 const val WIDGET_TYPE = "Widget Type"

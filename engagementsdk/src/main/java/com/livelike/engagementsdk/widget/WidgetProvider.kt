@@ -34,6 +34,7 @@ import com.livelike.engagementsdk.widget.WidgetType.TEXT_POLL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_QUIZ
+import com.livelike.engagementsdk.widget.WidgetType.VIDEO_ALERT
 import com.livelike.engagementsdk.widget.data.models.Badge
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.view.AlertWidgetView
@@ -46,6 +47,7 @@ import com.livelike.engagementsdk.widget.view.QuizView
 import com.livelike.engagementsdk.widget.view.SocialEmbedWidgetView
 import com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
+import com.livelike.engagementsdk.widget.view.components.VideoAlertWidgetView
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
@@ -56,6 +58,7 @@ import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
+import com.livelike.engagementsdk.widget.viewModel.VideoWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -84,6 +87,14 @@ internal class WidgetProvider {
                 this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = AlertWidgetViewModel(widgetInfos, analyticsService, onDismiss)
             }
+
+            VIDEO_ALERT -> VideoAlertWidgetView(context).apply {
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
+                widgetViewModel = VideoWidgetViewModel(widgetInfos, analyticsService, onDismiss)
+            }
+
+
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
                 this.widgetsTheme = liveLikeEngagementTheme?.widgets

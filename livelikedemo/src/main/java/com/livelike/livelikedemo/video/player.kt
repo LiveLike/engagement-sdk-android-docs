@@ -2,6 +2,8 @@ package com.livelike.livelikedemo.video
 
 import android.content.Context
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import com.google.android.exoplayer2.MediaItem
 
 import com.google.android.exoplayer2.Player
@@ -54,11 +56,22 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     }
 
     override fun getPDT(): Long {
-        return getExoplayerPdtTime(object : PlayerProvider {
+        var pdt = 0L
+        Handler(Looper.getMainLooper()).post {
+            // things to do on the main thread
+            pdt  = getExoplayerPdtTime(object : PlayerProvider {
+                override fun get(): SimpleExoPlayer? {
+                    return player
+                }
+            })
+
+        }
+        /*return getExoplayerPdtTime(object : PlayerProvider {
             override fun get(): SimpleExoPlayer? {
                 return player
             }
-        })
+        })*/
+        return pdt
     }
 
     private fun buildMediaSource(uri: Uri): HlsMediaSource {
