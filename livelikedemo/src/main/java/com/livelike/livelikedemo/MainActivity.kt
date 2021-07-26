@@ -32,6 +32,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
+import kotlinx.android.synthetic.main.activity_main.badges_collection
 import kotlinx.android.synthetic.main.activity_main.btn_avatar
 import kotlinx.android.synthetic.main.activity_main.btn_avatar_remove
 import kotlinx.android.synthetic.main.activity_main.btn_create
@@ -517,6 +518,9 @@ class MainActivity : AppCompatActivity() {
         }
         sponsor_test.setOnClickListener {
             startActivity(Intent(this, SponsorTestActivity::class.java))
+        }
+        badges_collection.setOnClickListener {
+            startActivity(Intent(this, BadgesCollectionActivity::class.java))
         }
 
         (application as LiveLikeApplication).removePublicSession()

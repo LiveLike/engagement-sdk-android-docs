@@ -1,5 +1,7 @@
 package com.livelike.engagementsdk
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * A LiveLikeUser is the representation of a user in the library.
  *
@@ -18,5 +20,7 @@ data class LiveLikeUser(
     var userPic: String? = null,
     var url: String,
     var chat_room_memberships_url: String,
-    var custom_data: String? = null
+    var custom_data: String? = null,
+    @SerializedName("badges_url")
+    var badgesUrl : String
 )

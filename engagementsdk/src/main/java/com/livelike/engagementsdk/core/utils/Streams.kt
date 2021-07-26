@@ -4,6 +4,9 @@ import android.os.Handler
 import android.os.Looper
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.exceptionhelpers.safeCodeBlockCall
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.util.concurrent.ConcurrentHashMap
 
 internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = true) :
@@ -103,3 +106,13 @@ internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 300L): Subscri
 
             return mgr
         }
+
+
+internal fun <T> Stream<T>.toFlow() : Flow<T?>{
+    return flow {
+        while (this@toFlow.latest() == null) {
+            delay(1000)
+        }
+        emit(this@toFlow.latest())
+    }
+}

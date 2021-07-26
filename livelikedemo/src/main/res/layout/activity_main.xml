@@ -528,6 +528,14 @@
                     app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
 
                 <Button
+                    android:id="@+id/badges_collection"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="Badges Collection"
+                    app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
+
+                <Button
                     android:id="@+id/unclaimed_interaction"
                     style="@style/TestAppButton"
                     android:layout_width="match_parent"

@@ -8,7 +8,6 @@ buildscript {
         targetSdkVersion = 30
 
         // App dependencies
-        bugsnagVersion = "4+"
         appcompatVersion = "1.2.0"
         constraintLayoutVersion = "2.0.4"
         dokkaVersion = "0.10.0"
@@ -44,7 +43,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion"
         classpath "com.github.dcendents:android-maven-gradle-plugin:$mavenPluginVersion"
-        classpath "com.bugsnag:bugsnag-android-gradle-plugin:$bugsnagVersion"
     }
 
 }

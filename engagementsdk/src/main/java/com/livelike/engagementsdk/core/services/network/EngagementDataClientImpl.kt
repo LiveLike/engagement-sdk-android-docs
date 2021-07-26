@@ -6,6 +6,7 @@ import android.webkit.URLUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.core.data.models.Program
@@ -152,7 +153,9 @@ internal open class EngagementDataClientImpl :
                         responseData.extractBoolean("chat_enabled"),
                         null,
                         responseData.extractStringOrEmpty("url"),
-                        responseData.extractStringOrEmpty("chat_room_memberships_url")
+                        responseData.extractStringOrEmpty("chat_room_memberships_url"),
+                        responseData.extractStringOrEmpty("custom_data"),
+                        responseData.extractStringOrEmpty("badges_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -191,7 +194,8 @@ internal open class EngagementDataClientImpl :
                         null,
                         responseData.extractStringOrEmpty("url"),
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
-                        responseData.extractStringOrEmpty("custom_data")
+                        responseData.extractStringOrEmpty(  "custom_data"),
+                        responseData.extractStringOrEmpty("badges_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -239,7 +243,7 @@ internal open class EngagementDataClientImpl :
                     val responseString = execute.body?.string()
                     val data: T = gson.fromJson<T>(
                         responseString,
-                        T::class.java
+                        object : TypeToken<T>() {}.type
                     )
                     Result.Success(
                         data
