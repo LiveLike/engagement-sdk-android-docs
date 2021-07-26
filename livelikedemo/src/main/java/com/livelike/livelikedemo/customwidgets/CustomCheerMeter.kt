@@ -3,9 +3,9 @@ package com.livelike.livelikedemo.customwidgets
 import android.content.Context
 import android.os.CountDownTimer
 import android.os.Handler
-import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.util.Log
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.livelikedemo.R
@@ -20,7 +20,6 @@ import kotlinx.android.synthetic.main.custom_cheer_meter.view.txt_team2
 import org.threeten.bp.Duration
 import org.threeten.bp.format.DateTimeParseException
 
-
 /**
  * TODO: document your custom view class.
  */
@@ -28,7 +27,6 @@ class CustomCheerMeter : ConstraintLayout {
 
     private lateinit var mCountDownTimer: CountDownTimer
     var cheerMeterWidgetModel: CheerMeterWidgetmodel? = null
-
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -90,10 +88,13 @@ class CustomCheerMeter : ConstraintLayout {
             }
 
             val handler = Handler()
-            handler.postDelayed({
-                cheerMeterWidgetModel?.finish()
-                mCountDownTimer.onFinish()
-            }, (livelikeWidget.timeout ?: "").parseDuration())
+            handler.postDelayed(
+                {
+                    cheerMeterWidgetModel?.finish()
+                    mCountDownTimer.onFinish()
+                },
+                (livelikeWidget.timeout ?: "").parseDuration()
+            )
 
             var i = 0
             val timer = (livelikeWidget.timeout ?: "").parseDuration()
@@ -104,13 +105,12 @@ class CustomCheerMeter : ConstraintLayout {
                 }
 
                 override fun onFinish() {
-                    //Do what you want
+                    // Do what you want
                     i++
                     progress_bar.progress = 100
                 }
             }
             mCountDownTimer.start()
-
         }
     }
 
@@ -118,8 +118,6 @@ class CustomCheerMeter : ConstraintLayout {
         super.onDetachedFromWindow()
         cheerMeterWidgetModel?.voteResults?.unsubscribe(this.javaClass)
     }
-
-
 }
 fun String.parseDuration(): Long {
     var timeout = 7000L

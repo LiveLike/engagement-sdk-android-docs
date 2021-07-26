@@ -102,42 +102,44 @@ internal class ChatViewModel(
         }
 
     override fun displayChatMessages(messages: List<ChatMessage>) {
-        Log.d("custom","messages")
+        Log.d("custom", "messages")
 
         messages.forEach {
             replaceImageMessageContentWithImageUrl(it)
         }
 
-        messageList.addAll(0, messages.filter {
-            !deletedMessages.contains(it.id) && !getBlockedUsers()
-                .contains(it.senderId) && (it.messageEvent != PubnubChatEventType.CUSTOM_MESSAGE_CREATED)
-        }.map {
-            it.isFromMe = userStream.latest()?.id == it.senderId
-            it
-        })
+        messageList.addAll(
+            0,
+            messages.filter {
+                !deletedMessages.contains(it.id) && !getBlockedUsers()
+                    .contains(it.senderId) && (it.messageEvent != PubnubChatEventType.CUSTOM_MESSAGE_CREATED)
+            }.map {
+                it.isFromMe = userStream.latest()?.id == it.senderId
+                it
+            }
+        )
 
         notifyNewChatMessages()
     }
 
-
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {
             "Chat display message: ${message.message} check1:${
-                message.channel != currentChatRoom?.channels?.chat?.get(
-                    CHAT_PROVIDER
-                )
+            message.channel != currentChatRoom?.channels?.chat?.get(
+                CHAT_PROVIDER
+            )
             } check blocked:${
-                getBlockedUsers()
-                    .contains(message.senderId)
+            getBlockedUsers()
+                .contains(message.senderId)
             } check deleted:${deletedMessages.contains(message.id)}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
 
         // if custom message is received, ignore that, custom messages doesn't need to be shown in UI
-        if(message.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) return
+        if (message.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) return
 
         if (getBlockedUsers()
-                .contains(message.senderId)
+            .contains(message.senderId)
         ) {
             logDebug { "user is blocked" }
             return
@@ -148,9 +150,11 @@ internal class ChatViewModel(
         }
 
         replaceImageMessageContentWithImageUrl(message)
-        messageList.add(message.apply {
-            isFromMe = userStream.latest()?.id == senderId
-        })
+        messageList.add(
+            message.apply {
+                isFromMe = userStream.latest()?.id == senderId
+            }
+        )
 
         notifyNewChatMessages()
     }
@@ -167,7 +171,7 @@ internal class ChatViewModel(
     private fun replaceImageMessageContentWithImageUrl(
         message: ChatMessage
     ) {
-        val  imageUrl = message.imageUrl
+        val imageUrl = message.imageUrl
         if (message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()) {
             message.message = CHAT_MESSAGE_IMAGE_TEMPLATE.replace("message", imageUrl)
         }
@@ -350,7 +354,6 @@ internal class ChatViewModel(
                 ) {
                     try {
                         uiScope.launch(Dispatchers.IO) {
-
                         }
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -369,6 +372,6 @@ internal class ChatViewModel(
         const val EVENT_REACTION_ADDED = "reaction-added"
         const val EVENT_REACTION_REMOVED = "reaction-removed"
         const val EVENT_MESSAGE_CANNOT_SEND =
-            "message_cannot_send"  // case 0 : occurs when user is muted inside a room and sends a message
+            "message_cannot_send" // case 0 : occurs when user is muted inside a room and sends a message
     }
 }

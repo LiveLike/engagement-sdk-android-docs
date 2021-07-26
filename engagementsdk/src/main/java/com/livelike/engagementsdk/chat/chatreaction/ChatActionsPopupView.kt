@@ -5,8 +5,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
-import androidx.core.content.ContextCompat
-import androidx.cardview.widget.CardView
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -18,6 +16,8 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
@@ -201,7 +201,8 @@ internal class ChatActionsPopupView(
                     RelativeLayout.LayoutParams.MATCH_PARENT
                 ).apply {
                     addRule(RelativeLayout.CENTER_IN_PARENT)
-                })
+                }
+            )
             relativeLayout.addView(
                 countView,
                 RelativeLayout.LayoutParams(
@@ -210,7 +211,8 @@ internal class ChatActionsPopupView(
                 ).apply {
                     addRule(RelativeLayout.ALIGN_TOP, imageView.id)
                     addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-                })
+                }
+            )
             cardView.addView(relativeLayout)
             reactionsBox.addView(
                 cardView,
@@ -223,11 +225,13 @@ internal class ChatActionsPopupView(
             } else {
                 View.INVISIBLE
             }
-        contentView.chat_reaction_background_card.postDelayed({
-            contentView.chat_reaction_background_card.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-        }, 500)
+        contentView.chat_reaction_background_card.postDelayed(
+            {
+                contentView.chat_reaction_background_card.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+            },
+            500
+        )
     }
-
 }
 
 internal interface SelectReactionListener {

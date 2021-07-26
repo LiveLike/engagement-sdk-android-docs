@@ -28,28 +28,35 @@ class SampleAppActivity : AppCompatActivity() {
     private fun initSDK() {
         channelManager = (application as LiveLikeApplication).channelManager
         engagementSDK =
-            EngagementSDK(BuildConfig.APP_CLIENT_ID, applicationContext, object : ErrorDelegate() {
-                override fun onError(error: String) {
-                    android.os.Handler(Looper.getMainLooper()).postDelayed({
-                        initSDK()
-                    }, 1000)
-                }
-            }, accessTokenDelegate = object : AccessTokenDelegate {
-                override fun getAccessToken(): String? {
-                    return getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
-                        PREF_USER_ACCESS_TOKEN_1,
-                        null
-                    ).apply {
-                        println("Token:$this")
+            EngagementSDK(
+                BuildConfig.APP_CLIENT_ID, applicationContext,
+                object : ErrorDelegate() {
+                    override fun onError(error: String) {
+                        android.os.Handler(Looper.getMainLooper()).postDelayed(
+                            {
+                                initSDK()
+                            },
+                            1000
+                        )
+                    }
+                },
+                accessTokenDelegate = object : AccessTokenDelegate {
+                    override fun getAccessToken(): String? {
+                        return getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
+                            PREF_USER_ACCESS_TOKEN_1,
+                            null
+                        ).apply {
+                            println("Token:$this")
+                        }
+                    }
+
+                    override fun storeAccessToken(accessToken: String?) {
+                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(
+                            PREF_USER_ACCESS_TOKEN_1, accessToken
+                        ).apply()
                     }
                 }
-
-                override fun storeAccessToken(accessToken: String?) {
-                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(
-                        PREF_USER_ACCESS_TOKEN_1, accessToken
-                    ).apply()
-                }
-            })
+            )
         channelManager.selectedChannel.let { channel ->
             if (channel != ChannelManager.NONE_CHANNEL) {
                 session =
@@ -60,7 +67,8 @@ class SampleAppActivity : AppCompatActivity() {
                             override fun onError(error: String) {
                                 println("Error:$error")
                             }
-                        })
+                        }
+                    )
                 chat_view.setSession(session!!.chatSession)
 
                 widget_view.setSession(session!!)

@@ -11,11 +11,9 @@ public class widgetViewModel constructor(
 
     var publicSession: LiveLikeContentSession? = null
 
-
     private val channelManager = application.channelManager
 
     private val engagementSDK = application.sdk
-
 
     private val contentSession =
         createPublicSession(getChannelManager().selectedChannel.llProgram.toString())

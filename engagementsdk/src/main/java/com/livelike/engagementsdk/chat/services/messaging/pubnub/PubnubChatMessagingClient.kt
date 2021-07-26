@@ -110,7 +110,8 @@ internal class PubnubChatMessagingClient(
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         val pubnubChatEvent = PubnubChatEvent(
-            clientMessage.messageEvent.key, clientMessage.toPubnubChatMessage(
+            clientMessage.messageEvent.key,
+            clientMessage.toPubnubChatMessage(
                 when (timeSinceEpoch.timeSinceEpochInMs) {
                     0L -> null
                     else -> ZonedDateTime.ofInstant(
@@ -158,10 +159,12 @@ internal class PubnubChatMessagingClient(
             .message(
                 pubnubChatEvent
             )
-            .meta(JsonObject().apply {
-                addProperty("sender_id", pubnubChatEvent.payload.senderId)
-                addProperty("language", "en-us")
-            })
+            .meta(
+                JsonObject().apply {
+                    addProperty("sender_id", pubnubChatEvent.payload.senderId)
+                    addProperty("language", "en-us")
+                }
+            )
             .channel(channel)
             .async { result, status ->
                 logDebug { "pub status code: " + status.statusCode }
@@ -308,25 +311,30 @@ internal class PubnubChatMessagingClient(
                                         PREF_CHAT_ROOM_MSG_RECEIVED,
                                         GsonBuilder().create().toJson(map)
                                     ).apply()
-                                processPubnubChatEvent(message.message.asJsonObject.apply {
-                                    addProperty("pubnubToken", message.timetoken)
-                                }, channel, message.timetoken)?.let {
+                                processPubnubChatEvent(
+                                    message.message.asJsonObject.apply {
+                                        addProperty("pubnubToken", message.timetoken)
+                                    },
+                                    channel, message.timetoken
+                                )?.let {
                                     listener?.onClientMessageEvent(client, it)
                                 }
                             } else {
                             }
                         }
                         else -> {
-                            processPubnubChatEvent(message.message.asJsonObject.apply {
-                                addProperty("pubnubToken", message.timetoken)
-                            }, channel, message.timetoken)?.let {
+                            processPubnubChatEvent(
+                                message.message.asJsonObject.apply {
+                                    addProperty("pubnubToken", message.timetoken)
+                                },
+                                channel, message.timetoken
+                            )?.let {
                                 listener?.onClientMessageEvent(client, it)
                             }
                         }
                     }
                 }
             }
-
 
             override fun messageAction(
                 pubnub: PubNub,
@@ -558,11 +566,13 @@ internal class PubnubChatMessagingClient(
     fun addMessageAction(channel: String, messageTimetoken: Long, value: String) {
         pubnub.addMessageAction()
             .channel(channel)
-            .messageAction(PNMessageAction().apply {
-                type = REACTION_CREATED
-                this.value = value
-                this.messageTimetoken = messageTimetoken
-            }).async { result, status ->
+            .messageAction(
+                PNMessageAction().apply {
+                    type = REACTION_CREATED
+                    this.value = value
+                    this.messageTimetoken = messageTimetoken
+                }
+            ).async { result, status ->
                 if (!status.isError) {
                     val clientMessage = ClientMessage(
                         JsonObject().apply {
@@ -653,9 +663,9 @@ internal class PubnubChatMessagingClient(
                 .sync()
             logDebug {
                 "Count Read channel : $channel lasttimestamp:${
-                    convertToTimeToken(
-                        startTimestamp
-                    )
+                convertToTimeToken(
+                    startTimestamp
+                )
                 } count:${countResult?.channels?.get(channel) ?: 0}"
             }
             Result.Success(countResult?.channels?.get(channel) ?: 0)
@@ -688,10 +698,11 @@ internal class PubnubChatMessagingClient(
         val msg = JsonObject().apply {
             addProperty("event", ChatViewModel.EVENT_LOADING_COMPLETE)
         }
-        //TODO: remove one event once the default chat is merged with custom chat
+        // TODO: remove one event once the default chat is merged with custom chat
         listener?.onClientMessageEvents(this, arrayListOf())
         listener?.onClientMessageEvent(
-            this, ClientMessage(
+            this,
+            ClientMessage(
                 msg, channel,
                 EpochTime(0)
             )

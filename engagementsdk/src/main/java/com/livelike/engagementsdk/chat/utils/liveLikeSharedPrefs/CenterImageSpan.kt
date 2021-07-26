@@ -10,7 +10,7 @@ import android.text.style.ImageSpan
  * the image with surrounding text inside a textview
  */
 
-class CenterImageSpan(drawable: Drawable): ImageSpan(drawable) {
+class CenterImageSpan(drawable: Drawable) : ImageSpan(drawable) {
     /**
      * update the text line height
      */
@@ -23,8 +23,7 @@ class CenterImageSpan(drawable: Drawable): ImageSpan(drawable) {
     ): Int {
         val drawable = drawable
         val rect = drawable.bounds
-        if (fm != null)
-        {
+        if (fm != null) {
             val fmPaint = paint.fontMetricsInt
             val fontHeight = fmPaint.descent - fmPaint.ascent
             val drHeight = rect.bottom - rect.top
@@ -36,7 +35,6 @@ class CenterImageSpan(drawable: Drawable): ImageSpan(drawable) {
         }
         return rect.right
     }
-
 
     /**
      * see detail message in android.text.TextLine
@@ -52,8 +50,15 @@ class CenterImageSpan(drawable: Drawable): ImageSpan(drawable) {
      * @param paint the work paint
      */
     override fun draw(
-        canvas: Canvas, text: CharSequence, start: Int, end: Int,
-        x: Float, top: Int, y: Int, bottom: Int, paint: Paint
+        canvas: Canvas,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        x: Float,
+        top: Int,
+        y: Int,
+        bottom: Int,
+        paint: Paint
     ) {
         val drawable = drawable
         canvas.save()

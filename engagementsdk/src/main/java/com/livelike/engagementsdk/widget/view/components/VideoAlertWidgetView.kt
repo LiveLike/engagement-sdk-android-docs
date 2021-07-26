@@ -29,7 +29,6 @@ import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.model.Alert
-import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.VideoWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
@@ -48,7 +47,6 @@ import kotlinx.android.synthetic.main.video_widget.view.sound_view
 import kotlinx.android.synthetic.main.video_widget.view.thumbnailView
 import kotlinx.android.synthetic.main.video_widget.view.widgetContainer
 
-
 internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
     constructor(context: Context) : super(context)
@@ -63,9 +61,8 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     var viewModel: VideoWidgetViewModel? = null
     private var mediaPlayer: MediaPlayer? = null
     private var isMuted: Boolean = false
-    private var playedAtLeastOnce:Boolean = false
+    private var playedAtLeastOnce: Boolean = false
     private var stopPosition: Int = 0
-
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? =
         {
@@ -101,14 +98,12 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         }
     }
 
-
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         viewModel?.data?.unsubscribe(javaClass)
         viewModel?.widgetState?.unsubscribe(javaClass)
         release()
     }
-
 
     override fun moveToNextState() {
         super.moveToNextState()
@@ -118,7 +113,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             super.moveToNextState()
         }
     }
-
 
     private fun inflate(context: Context, resourceAlert: Alert) {
         if (!inflated) {
@@ -179,7 +173,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         }
     }
 
-
     override fun applyTheme(theme: WidgetsTheme) {
         super.applyTheme(theme)
         viewModel?.data?.latest()?.let { _ ->
@@ -208,7 +201,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         }
     }
 
-
     /** sets the listeners */
     private fun setOnClickListeners() {
         sound_view.setOnClickListener {
@@ -217,29 +209,27 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             } else {
                 mute()
             }
-
         }
 
         widgetContainer.setOnClickListener {
-          if (playerView?.isPlaying == true) {
+            if (playerView?.isPlaying == true) {
                 pause()
             } else {
-                if(stopPosition > 0){ //already running
+                if (stopPosition > 0) { // already running
                     resume()
-                }else {
+                } else {
                     play()
                 }
             }
         }
     }
 
-
     /** sets the video view */
     private fun initializePlayer(videoUrl: String) {
         try {
             val uri = Uri.parse(videoUrl)
             playerView.setVideoURI(uri)
-           // playerView.seekTo(stopPosition)
+            // playerView.seekTo(stopPosition)
             playerView.requestFocus()
             playerView.start()
             unMute()
@@ -261,7 +251,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                     sound_view.visibility = GONE
                     setFrameThumbnail(videoUrl)
                 }
-
 
                 playerView.setOnErrorListener { _, _, _ ->
                     logError { "Error on playback" }
@@ -295,22 +284,19 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         viewModel?.data?.latest()?.videoUrl?.let { initializePlayer(it) }
     }
 
-
     /** responsible for resuming the video from where it was stopped */
-    private fun resume(){
+    private fun resume() {
         sound_view.visibility = VISIBLE
         playbackErrorView.visibility = GONE
         progress_bar.visibility = GONE
         ic_play.visibility = GONE
         playerView.seekTo(stopPosition)
-        if(playerView.currentPosition == 0){
+        if (playerView.currentPosition == 0) {
             play()
-        }else{
+        } else {
             playerView.start()
         }
-
     }
-
 
     /** responsible for stopping the video */
     private fun pause() {
@@ -321,7 +307,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         playbackErrorView.visibility = View.GONE
         ic_play.setImageResource(R.drawable.ic_play_button)
     }
-
 
     /** responsible for stopping the player and releasing it */
     private fun release() {
@@ -345,7 +330,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         return !mediaPlayer!!.isPlaying && playedAtLeastOnce
     }
 
-
     /** mutes the video */
     private fun mute() {
         try {
@@ -353,10 +337,9 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             mediaPlayer?.setVolume(0f, 0f)
             ic_sound.setImageResource(R.drawable.ic_volume_on)
             mute_tv.text = context.resources.getString(R.string.livelike_unmute_label)
-        }catch (e: IllegalStateException) {
+        } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
-
     }
 
     /** unmute the video */
@@ -366,11 +349,10 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             mediaPlayer?.setVolume(1f, 1f)
             ic_sound.setImageResource(R.drawable.ic_volume_off)
             mute_tv.text = context.resources.getString(R.string.livelike_mute_label)
-        }catch (e: IllegalStateException) {
+        } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
     }
-
 
     /** extract thumbnail from the video url */
     private fun setFrameThumbnail(videoUrl: String) {
@@ -383,12 +365,10 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         var requestOptions = RequestOptions()
 
         if (videoUrl.isNotEmpty()) {
-            requestOptions = if(viewModel?.data?.latest()?.title.isNullOrEmpty()){
-                requestOptions.transforms(CenterCrop(), GranularRoundedCorners(16f,16f,16f,16f))
-
-            }else{
-                requestOptions.transforms(CenterCrop(), GranularRoundedCorners(0f,0f,16f,16f))
-
+            requestOptions = if (viewModel?.data?.latest()?.title.isNullOrEmpty()) {
+                requestOptions.transforms(CenterCrop(), GranularRoundedCorners(16f, 16f, 16f, 16f))
+            } else {
+                requestOptions.transforms(CenterCrop(), GranularRoundedCorners(0f, 0f, 16f, 16f))
             }
             Glide.with(context.applicationContext)
                 .asBitmap()
@@ -399,7 +379,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                 .into(thumbnailView)
         }
     }
-
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
         when (widgetStates) {
@@ -442,7 +421,6 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         playerView.clipToOutline = true
     }
 
-
     private fun openBrowser(context: Context, linkUrl: String) {
         viewModel?.onVideoAlertClickLink(linkUrl)
         val universalLinkIntent =
@@ -451,8 +429,4 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             ContextCompat.startActivity(context, universalLinkIntent, Bundle.EMPTY)
         }
     }
-
 }
-
-
-

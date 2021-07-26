@@ -61,7 +61,6 @@ fun Matcher.allMatches(): List<String> {
     return allMatches
 }
 
-
 const val STICKER_SIZE = 100
 
 fun replaceWithStickers(
@@ -113,7 +112,7 @@ fun replaceWithStickers(
                             drawable.reset()
                             drawable.start()
                             drawable.callback = callback
-                            //val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_CENTER)
+                            // val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_CENTER)
                             val span = CenterImageSpan(drawable)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onMatch?.invoke()
@@ -136,7 +135,7 @@ fun replaceWithStickers(
                     ) {
                         try {
                             setupBounds(drawable, edittext_chat_message, size)
-                            //val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
+                            // val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             val span = CenterImageSpan(drawable)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onMatch?.invoke()

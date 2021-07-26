@@ -19,13 +19,12 @@ import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
  */
 interface LiveLikeContentSession {
 
-
     /** The analytics services **/
     val chatSession: LiveLikeChatSession
 
     var contentSessionleaderBoardDelegate: LeaderBoardDelegate?
 
-   val  widgetStream : Stream<LiveLikeWidget>
+    val widgetStream: Stream<LiveLikeWidget>
 
 //    /** All the new incoming widgets on current session will be published on this stream */
 //    val widgetStream : Stream<LiveLikeWidget>
@@ -66,17 +65,20 @@ interface LiveLikeContentSession {
     fun getPublishedWidgets(liveLikePagination: LiveLikePagination, liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>)
 
     /** Returns list of reward item associated to entered program */
-    fun getRewardItems() : List<RewardItem>
+    fun getRewardItems(): List<RewardItem>
 
     /** Returns list of leaderboards associated to entered program */
-    fun getLeaderboardClients(leaderBoardId: List<String>,
-                            liveLikeCallback: LiveLikeCallback<LeaderboardClient>)
+    fun getLeaderboardClients(
+        leaderBoardId: List<String>,
+        liveLikeCallback: LiveLikeCallback<LeaderboardClient>
+    )
 
     /**
      * Returns list of interactions for which rewards have not been claimed */
-    fun getWidgetInteractionsWithUnclaimedRewards(liveLikePagination: LiveLikePagination,
-                                                  liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>)
-
+    fun getWidgetInteractionsWithUnclaimedRewards(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>
+    )
 }
 
 /**

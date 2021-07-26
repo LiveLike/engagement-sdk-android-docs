@@ -330,7 +330,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
     private fun updateViewProgressBar(drawableId: Int, component: ViewStyleProps? = null) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
         component?.let {
-            //TODO: the progress drawable has some UI issue,need to recheck and update
+            // TODO: the progress drawable has some UI issue,need to recheck and update
             val progressDrawable = AndroidResource.createDrawable(component)
             val layerDrawable =
                 LayerDrawable(

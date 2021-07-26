@@ -7,7 +7,7 @@ interface LiveLikeWidgetMediator {
     /**
      * widget data holder
      */
-    val widgetData : LiveLikeWidget
+    val widgetData: LiveLikeWidget
 
     /**
      * call this to cleanup the viewModel and its association
@@ -19,5 +19,4 @@ interface LiveLikeWidgetMediator {
      * It should be called when the widget is opened first time for user interaction
      **/
     fun markAsInteractive()
-
 }

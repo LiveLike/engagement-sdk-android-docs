@@ -22,7 +22,7 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
     override fun onNext(data1: T?) {
         // TODO add debug log with class name appended
         logDebug { "subscription Manger: ${observerMap.size},data:$data1" }
-        //Important change if not working properly revert back
+        // Important change if not working properly revert back
         currentData = data1
         safeCodeBlockCall({
             observerMap.forEach {
@@ -100,15 +100,14 @@ internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 300L): Subscri
             }
 
             source.subscribe(source::class.java.simpleName) {
-                    handler.removeCallbacksAndMessages(null)
-                    handler.postDelayed(runnable(), duration)
+                handler.removeCallbacksAndMessages(null)
+                handler.postDelayed(runnable(), duration)
             }
 
             return mgr
         }
 
-
-internal fun <T> Stream<T>.toFlow() : Flow<T?>{
+internal fun <T> Stream<T>.toFlow(): Flow<T?> {
     return flow {
         while (this@toFlow.latest() == null) {
             delay(1000)

@@ -1,10 +1,10 @@
 package com.livelike.engagementsdk.widget.util
 
 import android.content.Context
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.roundToInt
 
 // This layout takes up all the space available and disable scrolling

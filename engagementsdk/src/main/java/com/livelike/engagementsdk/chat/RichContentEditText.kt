@@ -3,15 +3,15 @@ package com.livelike.engagementsdk.chat
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import androidx.core.view.inputmethod.EditorInfoCompat
-import androidx.core.view.inputmethod.InputConnectionCompat
-import androidx.appcompat.widget.AppCompatEditText
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.view.inputmethod.EditorInfoCompat
+import androidx.core.view.inputmethod.InputConnectionCompat
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
@@ -57,8 +57,10 @@ class RichContentEditText : AppCompatEditText {
 
             val callback =
                 InputConnectionCompat.OnCommitContentListener { inputContentInfo, flags, opts ->
-                    val lacksPermission = (flags and
-                            InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0
+                    val lacksPermission = (
+                        flags and
+                            InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION
+                        ) != 0
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && lacksPermission) {
                         try {
                             inputContentInfo.requestPermission()

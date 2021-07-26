@@ -4,11 +4,13 @@ import android.graphics.Canvas
 import android.graphics.PointF
 import android.graphics.drawable.Drawable
 
-class ThumbEntity(private val centerPosition: PointF,
-                  private var progress: Float,
-                  private val startAngle: Float,
-                  private val thumbRadius: Float,
-                  private val thumbDrawable: Drawable) {
+class ThumbEntity(
+    private val centerPosition: PointF,
+    private var progress: Float,
+    private val startAngle: Float,
+    private val thumbRadius: Float,
+    private val thumbDrawable: Drawable
+) {
 
     companion object {
         private const val DEGREE_TO_RADIAN_RATIO = 0.0174533
@@ -35,9 +37,10 @@ class ThumbEntity(private val centerPosition: PointF,
         val indicatorY = Math.cos(angle) * seekbarRadius + centerPosition.y
 
         thumbDrawable.setBounds(
-                (indicatorX - thumbRadius).toInt(),
-                (indicatorY - thumbRadius).toInt(),
-                (indicatorX + thumbRadius).toInt(),
-                (indicatorY + thumbRadius).toInt())
+            (indicatorX - thumbRadius).toInt(),
+            (indicatorY - thumbRadius).toInt(),
+            (indicatorX + thumbRadius).toInt(),
+            (indicatorY + thumbRadius).toInt()
+        )
     }
 }

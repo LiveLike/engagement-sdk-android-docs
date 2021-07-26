@@ -1,11 +1,11 @@
 package com.livelike.engagementsdk.chat.data.remote
 
 import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CUSTOM_MESSAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_DELETED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CUSTOM_MESSAGE_CREATED
 
 internal data class PubnubChatEvent<T>(
     @SerializedName("event")

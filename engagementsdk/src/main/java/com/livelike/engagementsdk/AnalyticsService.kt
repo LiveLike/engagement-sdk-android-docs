@@ -17,7 +17,6 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.regex.Matcher
 
 /**
  * The base interface for the analytics. This will log events to any remote analytics provider.
@@ -111,8 +110,12 @@ interface AnalyticsService {
         isRemoved: Boolean
     )
 
-    fun trackVideoAlertPlayed(kind: String,
-                              id: String,programId: String,videoUrl:String)
+    fun trackVideoAlertPlayed(
+        kind: String,
+        id: String,
+        programId: String,
+        videoUrl: String
+    )
     fun destroy()
 }
 
@@ -806,7 +809,6 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         eventObservers[clientId]?.invoke(KEY_WIDGET_BECAME_INTERACTIVE, properties)
     }
 
-
     override fun trackWidgetReceived(kind: String, id: String) {
         val properties = JSONObject()
         properties.put("Widget Type", kind)
@@ -834,7 +836,6 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             DismissAction.SWIPE -> "Swipe"
             else -> ""
         }
-
 
         val interactionState =
             if (interactable == null) null else (if (interactable) "Open To Interaction" else "Closed To Interaction")

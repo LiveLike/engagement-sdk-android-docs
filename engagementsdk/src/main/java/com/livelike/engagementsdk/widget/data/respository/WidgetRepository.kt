@@ -6,8 +6,4 @@ import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 internal open class WidgetRepository : BaseRepository() {
 
     val widgetDataClient = WidgetDataClientImpl()
-
-
-
-
 }

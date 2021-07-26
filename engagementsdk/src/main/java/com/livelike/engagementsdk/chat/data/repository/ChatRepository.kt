@@ -14,7 +14,6 @@ import com.livelike.engagementsdk.core.services.network.Result
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
-
 internal class ChatRepository(
     private val subscribeKey: String,
     private val authKey: String,
@@ -70,12 +69,15 @@ internal class ChatRepository(
         visibility: Visibility?
     ) = when {
         title.isNullOrEmpty()
-            .not() && visibility != null -> """{"visibility":"${visibility.name}","title":"$title"}"""
-            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        title.isNullOrEmpty().not() && visibility == null -> """{"title":"$title"}"""
-            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        title.isNullOrEmpty() && visibility != null -> """{"visibility":"${visibility.name}"}"""
-            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+            .not() && visibility != null ->
+            """{"visibility":"${visibility.name}","title":"$title"}"""
+                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        title.isNullOrEmpty().not() && visibility == null ->
+            """{"title":"$title"}"""
+                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        title.isNullOrEmpty() && visibility != null ->
+            """{"visibility":"${visibility.name}"}"""
+                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         else -> byteArrayOf().toRequestBody(null, 0)
     }
 

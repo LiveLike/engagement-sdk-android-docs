@@ -116,12 +116,12 @@ internal class WidgetManager(
         super.onClientMessageEvent(client, event)
         logDebug { "Message received at WidgetManager" }
         val payload = event.message["payload"].asJsonObject
-            widgetStream.onNext(
-                gson.fromJson(
-                    payload.toString(),
-                    LiveLikeWidget::class.java
-                )
+        widgetStream.onNext(
+            gson.fromJson(
+                payload.toString(),
+                LiveLikeWidget::class.java
             )
+        )
         messageQueue.add(MessageHolder(client, event))
         if (!widgetOnScreen) {
             publishNextInQueue()
@@ -220,9 +220,12 @@ internal class WidgetManager(
                 val message = ClientMessage(
                     JsonObject().apply {
                         addProperty("event", "points-tutorial")
-                        add("payload", JsonObject().apply {
-                            addProperty("id", "gameification")
-                        })
+                        add(
+                            "payload",
+                            JsonObject().apply {
+                                addProperty("id", "gameification")
+                            }
+                        )
                         addProperty("priority", 3)
                     }
                 )

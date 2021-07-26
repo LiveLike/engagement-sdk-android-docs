@@ -41,7 +41,7 @@ class WidgetsTimeLineView(
     private var showingSnapToLive: Boolean = false
     private var isFirstItemVisible = false
     private var autoScrollTimeline = false
-    private var separator:Drawable? = null
+    private var separator: Drawable? = null
 
     // The minimum amount of items to have below your current scroll position
     // before loading more.
@@ -56,7 +56,6 @@ class WidgetsTimeLineView(
             adapter.widgetViewFactory = value
             field = value
         }
-
 
     /**
      * configuring this controlled will allow to control the timer in widget
@@ -82,7 +81,6 @@ class WidgetsTimeLineView(
             timeline_rv.addItemDecoration(itemDecoration)
         }
     }
-
 
     init {
         inflate(context, R.layout.livelike_timeline_view, this)
@@ -144,7 +142,7 @@ class WidgetsTimeLineView(
     private fun subscribeForTimelineWidgets() {
         timeLineViewModel.timeLineWidgetsStream.subscribe(this) { pair ->
             pair?.let {
-               // lockInteracatedWidgetsWithoutPatchUrl(pair.second) // will remove this logic when backend adds patch_url
+                // lockInteracatedWidgetsWithoutPatchUrl(pair.second) // will remove this logic when backend adds patch_url
                 lockAlreadyInteractedQuizAndEmojiSlider(pair.second)
                 wouldLockPredictionWidgets(pair.second) // if follow up is received lock prediction interaction
                 // changing timeout value for widgets when widgetTimerController is configured
@@ -185,7 +183,7 @@ class WidgetsTimeLineView(
             val kind = it.liveLikeWidget.kind
             if (kind?.contains(WidgetKind.PREDICTION.event) == true) {
                 if ((timeLineViewModel.contentSession as ContentSession)?.widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
-                        it.liveLikeWidget.id?:"",
+                        it.liveLikeWidget.id ?: "",
                         WidgetKind.fromString(kind)
                     ) != null
                 ) {
@@ -193,7 +191,6 @@ class WidgetsTimeLineView(
                 }
             }
         }
-
     }
 
     private fun lockAlreadyInteractedQuizAndEmojiSlider(widgets: List<TimelineWidgetResource>) {
@@ -201,7 +198,7 @@ class WidgetsTimeLineView(
             val kind = it.liveLikeWidget.kind
             if (kind == WidgetKind.IMAGE_SLIDER.event || kind?.contains(WidgetKind.QUIZ.event) == true) {
                 if ((timeLineViewModel.contentSession as ContentSession)?.widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
-                        it.liveLikeWidget.id?:"",
+                        it.liveLikeWidget.id ?: "",
                         WidgetKind.fromString(kind)
                     ) != null
                 ) {
@@ -292,7 +289,6 @@ class WidgetsTimeLineView(
                 WidgetTimeLineViewModel.WIDGET_LOADING_COMPLETE -> {
                     timeLineViewModel.uiScope.launch {
                         hideLoadingSpinnerForTimeline()
-
                     }
                 }
 
@@ -304,7 +300,7 @@ class WidgetsTimeLineView(
                 }
 
                 WidgetTimeLineViewModel.WIDGET_LOADING_STARTED -> {
-                    //adding this line for case if in first page the filter widget data is empty and we are loading next page as automatically
+                    // adding this line for case if in first page the filter widget data is empty and we are loading next page as automatically
                     if (adapter.itemCount == 0) {
                         timeLineViewModel.uiScope.launch {
                             showLoadingSpinnerForTimeline()
@@ -314,7 +310,6 @@ class WidgetsTimeLineView(
             }
         }
     }
-
 
     private fun showLoadingSpinnerForTimeline() {
         loadingSpinnerTimeline.visibility = View.VISIBLE
@@ -326,7 +321,6 @@ class WidgetsTimeLineView(
         loadingSpinnerTimeline.visibility = View.GONE
         timeline_rv.visibility = View.VISIBLE
     }
-
 
     /**
      * used for hiding the Snap to live button
@@ -342,7 +336,6 @@ class WidgetsTimeLineView(
         animateSnapToLiveButton()
     }
 
-
     /**
      * used for showing the Snap to Live button
      **/
@@ -355,18 +348,19 @@ class WidgetsTimeLineView(
         animateSnapToLiveButton()
     }
 
-
     private fun snapToLiveForTimeline() {
         timeline_rv?.let { rv ->
             hideSnapToLiveForWidgets()
             timeLineViewModel.timeLineWidgets?.size?.let {
-                timeline_rv.postDelayed({
-                    rv.smoothScrollToPosition(0)
-                }, 200)
+                timeline_rv.postDelayed(
+                    {
+                        rv.smoothScrollToPosition(0)
+                    },
+                    200
+                )
             }
         }
     }
-
 
     private fun animateSnapToLiveButton() {
         snapToLiveAnimation?.cancel()
@@ -401,12 +395,10 @@ class WidgetsTimeLineView(
         snapToLiveAnimation?.start()
     }
 
-
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         unsubscribeForTimelineWidgets()
     }
-
 
     private fun unsubscribeForTimelineWidgets() {
         timeLineViewModel.timeLineWidgetsStream.unsubscribe(this)
@@ -417,8 +409,5 @@ class WidgetsTimeLineView(
         const val TIMELINE_SNAP_TO_LIVE_ANIMATION_DURATION = 400F
         const val TIMELINE_SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
         const val TIMELINE_SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
-
     }
-
-
 }

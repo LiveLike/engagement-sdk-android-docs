@@ -24,8 +24,8 @@ internal class SynchronizedMessagingClient(
     private val queueMap: MutableMap<String, PriorityQueue<ClientMessage>> = mutableMapOf()
     private var publishSyncMessagesJob: Job
 
-    private val messageComparator : Comparator<ClientMessage> =
-        Comparator<ClientMessage>{ o1, o2 ->
+    private val messageComparator: Comparator<ClientMessage> =
+        Comparator<ClientMessage> { o1, o2 ->
             when {
                 o1.timeStamp.timeSinceEpochInMs > o2.timeStamp.timeSinceEpochInMs -> {
                     return@Comparator 1
@@ -140,16 +140,15 @@ internal class SynchronizedMessagingClient(
         queueMap[event.channel] = queue
     }
 
-
     fun processQueueForScheduledEvent() {
-            queueMap.keys.forEach {
-                val queue = queueMap[it]
-                queue?.let {
-                    while (queue.peek() != null && shouldPublishEvent(queue.peek())) {
-                        publishEvent(queue.remove())
-                    }
+        queueMap.keys.forEach {
+            val queue = queueMap[it]
+            queue?.let {
+                while (queue.peek() != null && shouldPublishEvent(queue.peek())) {
+                    publishEvent(queue.remove())
                 }
             }
+        }
     }
 
     private fun publishEvent(event: ClientMessage) {
@@ -159,27 +158,25 @@ internal class SynchronizedMessagingClient(
     private fun shouldPublishEvent(event: ClientMessage): Boolean {
         val timeStamp = timeSource()
         return timeStamp <= EpochTime(0) || // Timesource return 0 - sync disabled
-                event.timeStamp <= EpochTime(0) || // Event time is 0 - bypass sync
-                (event.timeStamp <= timeStamp && event.timeStamp >= timeStamp - validEventBufferMs)
+            event.timeStamp <= EpochTime(0) || // Event time is 0 - bypass sync
+            (event.timeStamp <= timeStamp && event.timeStamp >= timeStamp - validEventBufferMs)
     }
 
     private fun shouldDismissEvent(event: ClientMessage): Boolean =
         event.timeStamp > EpochTime(0) &&
-                (event.timeStamp < timeSource() - validEventBufferMs)
+            (event.timeStamp < timeSource() - validEventBufferMs)
 
     private fun logDismissedEvent(event: ClientMessage) =
         logVerbose {
             "Dismissed Client Message: ${event.message} -- the message was too old! eventTime" +
-                    event.timeStamp.timeSinceEpochInMs +
-                    " : timeSourceTime" + timeSource().timeSinceEpochInMs
+                event.timeStamp.timeSinceEpochInMs +
+                " : timeSourceTime" + timeSource().timeSinceEpochInMs
         }
 
     override fun destroy() {
         super.destroy()
         publishSyncMessagesJob.cancel()
-
     }
-
 }
 
 // Extension for MessagingClient to be synced

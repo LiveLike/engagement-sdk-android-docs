@@ -1,8 +1,8 @@
 package com.livelike.engagementsdk.widget.view.components
 
 import android.content.Context
-import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.R
 import kotlinx.android.synthetic.main.atom_widget_confirmation_message.view.confirmMessageAnimation
 

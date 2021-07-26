@@ -87,12 +87,11 @@ internal fun PubnubChatEventType.toChatMessageType(): ChatMessageType {
         PubnubChatEventType.IMAGE_DELETED -> ChatMessageType.IMAGE_DELETED
         PubnubChatEventType.IMAGE_CREATED -> ChatMessageType.IMAGE_CREATED
         PubnubChatEventType.CUSTOM_MESSAGE_CREATED -> ChatMessageType.CUSTOM_MESSAGE_CREATED
-
     }
 }
 
-//TODO: check for the requirement else remove this method
-//internal fun PubnubChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
+// TODO: check for the requirement else remove this method
+// internal fun PubnubChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
 //    // TODO will require to bump to major version as id needs to be string
 //    return LiveLikeChatMessage(
 //        senderNickname,
@@ -101,8 +100,7 @@ internal fun PubnubChatEventType.toChatMessageType(): ChatMessageType {
 //        "",
 //        messageId.hashCode().toLong()
 //    )
-//}
-
+// }
 
 internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
     var epochTimeStamp = 0L

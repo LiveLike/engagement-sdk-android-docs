@@ -22,5 +22,5 @@ data class LiveLikeUser(
     var chat_room_memberships_url: String,
     var custom_data: String? = null,
     @SerializedName("badges_url")
-    var badgesUrl : String
+    var badgesUrl: String
 )

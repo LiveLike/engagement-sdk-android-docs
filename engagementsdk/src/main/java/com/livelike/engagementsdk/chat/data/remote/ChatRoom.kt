@@ -36,7 +36,7 @@ internal data class ChatRoom(
     @SerializedName("visibility")
     val visibility: Visibility? = null,
     @SerializedName("muted_status_url_template")
-    val mutedStatusUrlTemplate: String?=null
+    val mutedStatusUrlTemplate: String? = null
 
 )
 
