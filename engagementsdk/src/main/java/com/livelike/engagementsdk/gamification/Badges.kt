@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.toFlow
 import com.livelike.engagementsdk.core.utils.validateUuid
+import com.livelike.engagementsdk.gamification.models.Badge
 import com.livelike.engagementsdk.gamification.models.ProfileBadge
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.coroutines.CoroutineScope
@@ -61,11 +62,7 @@ class Badges internal constructor(
                     }
                 }
             } else {
-                fetchUrl = when (liveLikePagination) {
-                    LiveLikePagination.NEXT -> result.next
-                    LiveLikePagination.PREVIOUS -> result.previous
-                    else -> null
-                }
+                fetchUrl = result.getPaginationUrl(liveLikePagination)
             }
 
             if (fetchUrl == null) {
@@ -85,4 +82,47 @@ class Badges internal constructor(
             }
         }
     }
+
+
+    private var lastApplicationBadgePage: LLPaginatedResult<Badge>? = null
+
+    /**
+     * fetch all the badges associated to the client id passed at initialization of sdk
+     * to fetch next page function need to be called again with LiveLikePagination.NEXT and for first call as LiveLikePagination.FIRST
+     **/
+    fun getApplicationBadges(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<Badge>>
+    ) {
+        var fetchUrl: String? = null
+        sdkScope.launch {
+            if (lastApplicationBadgePage == null || liveLikePagination == LiveLikePagination.FIRST) {
+                applicationResourceStream.toFlow().collect { applicatoionResource ->
+                    applicatoionResource?.let {
+                        fetchUrl = it.badgesUrl
+                    }
+                }
+            } else {
+                fetchUrl = lastApplicationBadgePage?.getPaginationUrl(liveLikePagination)
+            }
+
+            if (fetchUrl == null) {
+                liveLikeCallback.onResponse(null, "No more data")
+            } else {
+                dataClient.remoteCall<LLPaginatedResult<Badge>>(
+                    fetchUrl ?: "",
+                    RequestType.GET,
+                    null,
+                    null
+                ).run {
+                    if (this is Result.Success) {
+                        lastApplicationBadgePage = this.data
+                    }
+                    liveLikeCallback.processResult(this)
+                }
+            }
+        }
+    }
+
+
 }
