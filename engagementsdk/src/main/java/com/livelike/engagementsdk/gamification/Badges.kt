@@ -83,7 +83,6 @@ class Badges internal constructor(
         }
     }
 
-
     private var lastApplicationBadgePage: LLPaginatedResult<Badge>? = null
 
     /**
@@ -123,6 +122,4 @@ class Badges internal constructor(
             }
         }
     }
-
-
 }
