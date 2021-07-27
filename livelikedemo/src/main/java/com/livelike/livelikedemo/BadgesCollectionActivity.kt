@@ -22,14 +22,12 @@ import kotlinx.android.synthetic.main.activity_badges_collection.fetch_badges_pr
 import kotlinx.android.synthetic.main.activity_badges_collection.load_more
 import kotlinx.android.synthetic.main.activity_badges_collection.profile_id_tv
 
-    class BadgesCollectionActivity : AppCompatActivity() {
+class BadgesCollectionActivity : AppCompatActivity() {
 
-
-        var isProfileBadges = false
+    var isProfileBadges = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         setContentView(R.layout.activity_badges_collection)
 
@@ -59,7 +57,6 @@ import kotlinx.android.synthetic.main.activity_badges_collection.profile_id_tv
                                     error,
                                     Toast.LENGTH_LONG
                                 ).show()
-
                             }
                             result?.let {
                                 badgeListAdapter.badges.clear()
@@ -70,19 +67,22 @@ import kotlinx.android.synthetic.main.activity_badges_collection.profile_id_tv
                             }
                         }
                     }
-                })
+                }
+            )
         }
 
         fetch_application_badge.setOnClickListener {
             isProfileBadges = false
-            badgesClient.getApplicationBadges(LiveLikePagination.FIRST,
+            badgesClient.getApplicationBadges(
+                LiveLikePagination.FIRST,
                 object :
                     LiveLikeCallback<LLPaginatedResult<Badge>>() {
                     override fun onResponse(result: LLPaginatedResult<Badge>?, error: String?) {
                         badgeListAdapter.badges.clear()
                         addBadgesToAdapter(error, result, badgeListAdapter)
                     }
-                })
+                }
+            )
         }
 
         load_more.setOnClickListener {
@@ -109,43 +109,44 @@ import kotlinx.android.synthetic.main.activity_badges_collection.profile_id_tv
                                 }
                             }
                         }
-                    })
+                    }
+                )
             } else {
-                badgesClient.getApplicationBadges(LiveLikePagination.NEXT,
+                badgesClient.getApplicationBadges(
+                    LiveLikePagination.NEXT,
                     object :
                         LiveLikeCallback<LLPaginatedResult<Badge>>() {
                         override fun onResponse(result: LLPaginatedResult<Badge>?, error: String?) {
                             addBadgesToAdapter(error, result, badgeListAdapter)
                         }
-                    })
+                    }
+                )
             }
         }
     }
-        private fun addBadgesToAdapter(
-            error: String?,
-            result: LLPaginatedResult<Badge>?,
-            badgeListAdapter: BadgeListAdapter
-        ) {
-            runOnUiThread {
-                error?.let {
-                    Toast.makeText(
-                        applicationContext,
-                        error,
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                }
-                result?.let {
-                    val elements: List<Badge> =
-                        result.results ?: mutableListOf()
-                    badgeListAdapter.badges.addAll(elements)
-                    badgeListAdapter.notifyDataSetChanged()
-                }
+    private fun addBadgesToAdapter(
+        error: String?,
+        result: LLPaginatedResult<Badge>?,
+        badgeListAdapter: BadgeListAdapter
+    ) {
+        runOnUiThread {
+            error?.let {
+                Toast.makeText(
+                    applicationContext,
+                    error,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            result?.let {
+                val elements: List<Badge> =
+                    result.results ?: mutableListOf()
+                badgeListAdapter.badges.addAll(elements)
+                badgeListAdapter.notifyDataSetChanged()
             }
         }
+    }
 
-
-        class BadgeListAdapter : RecyclerView.Adapter<BadgeListAdapter.BadgeVH>() {
+    class BadgeListAdapter : RecyclerView.Adapter<BadgeListAdapter.BadgeVH>() {
 
         internal val badges = mutableListOf<Badge>()
 
@@ -166,15 +167,9 @@ import kotlinx.android.synthetic.main.activity_badges_collection.profile_id_tv
             return badges.size
         }
 
-
         class BadgeVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val badgeIcon: ImageView = itemView.findViewById(R.id.badge_ic)
             val badgeName: TextView = itemView.findViewById(R.id.badge_name_tv)
-
-
         }
-
     }
-
-
 }
