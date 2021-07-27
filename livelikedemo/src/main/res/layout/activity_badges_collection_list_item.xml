@@ -23,4 +23,13 @@
         app:layout_constraintLeft_toRightOf="@id/badge_ic"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/tick_ic"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        app:layout_constraintLeft_toRightOf="@id/badge_name_tv"
+        app:layout_constraintTop_toTopOf="@id/badge_name_tv"
+        android:src="@drawable/ic_baseline_check_box_24"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

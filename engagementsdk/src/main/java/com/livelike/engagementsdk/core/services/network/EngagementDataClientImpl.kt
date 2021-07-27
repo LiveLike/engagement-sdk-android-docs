@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -155,7 +156,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("url"),
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
                         responseData.extractStringOrEmpty("custom_data"),
-                        responseData.extractStringOrEmpty("badges_url")
+                        responseData.extractStringOrEmpty("badges_url"),
+                        responseData.extractStringOrEmpty("badge_progress_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -195,7 +197,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("url"),
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
                         responseData.extractStringOrEmpty("custom_data"),
-                        responseData.extractStringOrEmpty("badges_url")
+                        responseData.extractStringOrEmpty("badges_url"),
+                        responseData.extractStringOrEmpty("badge_progress_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -223,6 +226,51 @@ internal open class EngagementDataClientImpl :
 
     internal suspend inline fun <reified T : Any> remoteCall(
         url: String,
+        requestType: RequestType,
+        requestBody: RequestBody? = null,
+        accessToken: String?
+    ): Result<T> {
+        return safeRemoteApiCall({
+            withContext(Dispatchers.IO) {
+                logDebug { "url : $url ,has AccessToken:${accessToken != null}" }
+                val request = Request.Builder()
+                    .url(url)
+                    .method(requestType.name, requestBody)
+                    .addUserAgent()
+                    .addAuthorizationBearer(accessToken)
+                    .build()
+                val call = client.newCall(request)
+                val execute = call.execute()
+//               TODO add more network handling cases and remove !!, generic exception
+                if (execute.isSuccessful) {
+                    val responseString = execute.body?.string()
+                    val data: T = gson.fromJson<T>(
+                        responseString,
+                        object : TypeToken<T>() {}.type
+                    )
+                    Result.Success(
+                        data
+                    )
+                } else {
+                    val error = execute.body?.string()
+                    val errorJson = JsonParser.parseString(error).asJsonObject
+                    val msg = execute.message
+                    val errorMsg = when (msg.isNotEmpty()) {
+                        true -> msg
+                        else -> errorJson.get("detail").asString
+                    }
+                    Result.Error(
+                        IOException(
+                            "response code : ${execute.code} - $errorMsg"
+                        )
+                    )
+                }
+            }
+        })
+    }
+
+    internal suspend inline fun <reified T : Any> remoteCall(
+        url: HttpUrl,
         requestType: RequestType,
         requestBody: RequestBody? = null,
         accessToken: String?
