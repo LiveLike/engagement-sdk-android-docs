@@ -35,7 +35,8 @@ class BadgesCollectionActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_badges_collection)
 // 0c141991-daea-47ad-93fc-4b4a48738929
-        profile_id_tv.setText("909c060d-1a92-47d6-b91a-f3e4911529f8")
+// profile id with more than 20 badges in qa env.
+//        profile_id_tv.setText("909c060d-1a92-47d6-b91a-f3e4911529f8")
 
         val badgeListAdapter = BadgeListAdapter()
         badges_list_rv.layoutManager = LinearLayoutManager(this)
@@ -47,16 +48,18 @@ class BadgesCollectionActivity : AppCompatActivity() {
 
             progress_bar.visibility = View.VISIBLE
             badgesClient.getProfileBadgeProgress(
-                "0c141991-daea-47ad-93fc-4b4a48738929",
+                profile_id_tv.text.toString(),
                 mutableListOf(badge.id),
                 object : LiveLikeCallback<List<BadgeProgress>>() {
                     override fun onResponse(result: List<BadgeProgress>?, error: String?) {
-                        result?.let {
-                            it.get(0)?.let {
-                                showBadgeProgressDialog(this@BadgesCollectionActivity, it)
-                            }
-                        }
                         runOnUiThread {
+                            result?.let {
+                                if (result.isNotEmpty()) {
+                                    it.get(0)?.let {
+                                        showBadgeProgressDialog(this@BadgesCollectionActivity, it)
+                                    }
+                                }
+                            }
                             progress_bar.visibility = View.GONE
                             error?.let {
                                 Toast.makeText(
@@ -190,7 +193,8 @@ class BadgesCollectionActivity : AppCompatActivity() {
         AlertDialog.Builder(context).apply {
             setTitle("Progress towards ${badgeProgress.badge.name}")
             val progression = badgeProgress.progressionList.get(0)
-            val progress: String = progression.currentRewardAmount.toString() + "out of " + progression.rewardItemThreshold + " " + progression.rewardItemName
+            val progress: String =
+                progression.currentRewardAmount.toString() + " out of " + progression.rewardItemThreshold + " " + progression.rewardItemName
             setMessage(progress)
         }.show()
     }

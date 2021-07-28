@@ -128,7 +128,7 @@ class Badges internal constructor(
     /**
      * fetch all the profile badges progressions for the passed badge Ids
      * @param profileId : id of the profile for which progressions to be looked
-     * @param badgeIds : list of all badgeids, it has a hard limit checkout rest api documentation for latest limit
+     * @param badgeIds : list of all badge-ids, it has a hard limit checkout rest api documentation for latest limit
      **/
     fun getProfileBadgeProgress(
         profileId: String,
@@ -157,7 +157,6 @@ class Badges internal constructor(
                                     addQueryParameter("badge_id", id)
                                 }
                             }
-
                             dataClient.remoteCall<List<BadgeProgress>>(
                                 httpUrl?.build()!!,
                                 RequestType.GET,

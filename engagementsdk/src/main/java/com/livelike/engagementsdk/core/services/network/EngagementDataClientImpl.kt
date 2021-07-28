@@ -28,6 +28,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -230,43 +231,7 @@ internal open class EngagementDataClientImpl :
         requestBody: RequestBody? = null,
         accessToken: String?
     ): Result<T> {
-        return safeRemoteApiCall({
-            withContext(Dispatchers.IO) {
-                logDebug { "url : $url ,has AccessToken:${accessToken != null}" }
-                val request = Request.Builder()
-                    .url(url)
-                    .method(requestType.name, requestBody)
-                    .addUserAgent()
-                    .addAuthorizationBearer(accessToken)
-                    .build()
-                val call = client.newCall(request)
-                val execute = call.execute()
-//               TODO add more network handling cases and remove !!, generic exception
-                if (execute.isSuccessful) {
-                    val responseString = execute.body?.string()
-                    val data: T = gson.fromJson<T>(
-                        responseString,
-                        object : TypeToken<T>() {}.type
-                    )
-                    Result.Success(
-                        data
-                    )
-                } else {
-                    val error = execute.body?.string()
-                    val errorJson = JsonParser.parseString(error).asJsonObject
-                    val msg = execute.message
-                    val errorMsg = when (msg.isNotEmpty()) {
-                        true -> msg
-                        else -> errorJson.get("detail").asString
-                    }
-                    Result.Error(
-                        IOException(
-                            "response code : ${execute.code} - $errorMsg"
-                        )
-                    )
-                }
-            }
-        })
+        return remoteCall(url.toHttpUrl(), requestType, requestBody, accessToken)
     }
 
     internal suspend inline fun <reified T : Any> remoteCall(
