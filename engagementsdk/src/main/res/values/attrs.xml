@@ -179,6 +179,7 @@
         </attr>
         <attr name="chatReactionPanelCountCustomFontPath" format="string" />
         <attr name="chatReactionPanelCountVisibleIfZero" format="boolean" />
+        <attr name="chatMessageLinkTextColor" format="color" />
     </declare-styleable>
 
     <declare-styleable name="PointView">

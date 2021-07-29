@@ -592,9 +592,10 @@ internal class ChatRecyclerAdapter(
                         chatMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatMessageTextSize)
                         if (showLinks) {
                             chatMessage.linksClickable = showLinks
+                            chatMessage.setLinkTextColor(chatMessageLinkTextColor)
                             chatMessage.movementMethod = LinkMovementMethod.getInstance()
                             if (linksRegex == null) {
-                                chatMessage.autoLinkMask = Linkify.ALL
+                                chatMessage.autoLinkMask = Linkify.WEB_URLS
                             }
                         }
                         setCustomFontWithTextStyle(
