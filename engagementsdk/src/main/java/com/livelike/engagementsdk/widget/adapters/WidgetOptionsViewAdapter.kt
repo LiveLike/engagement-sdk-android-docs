@@ -1,8 +1,8 @@
 package com.livelike.engagementsdk.widget.adapters
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
 import com.livelike.engagementsdk.widget.WidgetType
@@ -22,7 +22,6 @@ internal class WidgetOptionsViewAdapter(
     var selectedPosition = RecyclerView.NO_POSITION
     var onClick: ((Option) -> Unit)? = null
 
-
     var selectionLocked = false
     var showPercentage = false
         set(value) {
@@ -31,7 +30,6 @@ internal class WidgetOptionsViewAdapter(
             }
             field = value
         }
-
 
     inner class TextOptionViewHolder(
         val textItemView: WidgetItemView,

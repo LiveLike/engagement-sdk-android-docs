@@ -40,7 +40,8 @@ internal fun getRecentStickers(programId: String): List<Sticker> {
             .getStringSet(RECENT_STICKERS + programId, setOf()) ?: setOf()
     return stickerSet.map {
         Sticker(
-            it.split(RECENT_STICKERS_DELIMITER)[0], it.split(
+            it.split(RECENT_STICKERS_DELIMITER)[0],
+            it.split(
                 RECENT_STICKERS_DELIMITER
             )[1]
         )

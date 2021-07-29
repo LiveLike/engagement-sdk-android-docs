@@ -1,9 +1,9 @@
 package com.livelike.livelikedemo
 
 import android.os.Bundle
-import com.google.android.material.tabs.TabLayout
-import androidx.viewpager.widget.ViewPager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.ui.main.SectionsPagerAdapter
 

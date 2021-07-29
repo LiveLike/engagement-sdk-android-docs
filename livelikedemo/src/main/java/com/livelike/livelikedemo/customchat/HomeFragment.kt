@@ -22,19 +22,18 @@ import kotlinx.android.synthetic.main.home_chat_item.view.txt_msg_count
 import kotlinx.android.synthetic.main.home_chat_item.view.txt_name
 import java.util.Calendar
 
-
 class HomeFragment : Fragment() {
-
 
     private val adapter = HomeAdapter(object : ItemClickListener {
         override fun itemClick(homeChat: HomeChat) {
             homeChat.msgCount = 0
-           (activity as? CustomChatActivity)?.showChatScreen(homeChat)
+            (activity as? CustomChatActivity)?.showChatScreen(homeChat)
         }
     })
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -55,22 +54,23 @@ class HomeFragment : Fragment() {
                 val sdk = application.sdk
                 val channels = channelManager.getChannels()
                 val sessions =
-                    ArrayList(channels.map { channel ->
-                        HomeChat(
-                            channel,
-                            sdk.createContentSession(channel.llProgram.toString())
-                        )
-                    })
+                    ArrayList(
+                        channels.map { channel ->
+                            HomeChat(
+                                channel,
+                                sdk.createContentSession(channel.llProgram.toString())
+                            )
+                        }
+                    )
                 adapter.sessionsList.addAll(sessions)
             }
             adapter.notifyDataSetChanged()
-            //fetching old messages
+            // fetching old messages
             lay_swipe.setOnRefreshListener {
                 loadUnreadCount()
             }
             lay_swipe?.postDelayed({ loadUnreadCount() }, 5000L)
         }
-
     }
 
     override fun onDestroy() {
@@ -86,10 +86,11 @@ class HomeFragment : Fragment() {
             adapter.sessionsList.forEachIndexed { index, homeChat ->
                 val time = sharedPref.getLong("msg_time_${homeChat.channel.llProgram}", 0L)
                 println("HomeFragment.loadUnreadCount TIME->${homeChat.channel.name} ->$time")
-                homeChat.session.chatSession.getMessageCount(when (time) {
-                    0L -> Calendar.getInstance().timeInMillis
-                    else -> time
-                },
+                homeChat.session.chatSession.getMessageCount(
+                    when (time) {
+                        0L -> Calendar.getInstance().timeInMillis
+                        else -> time
+                    },
                     object : LiveLikeCallback<Byte>() {
                         override fun onResponse(result: Byte?, error: String?) {
                             println("HomeFragment.onResponse-- MSGCOUNT>${homeChat.channel.name} ->${result?.toInt()}")
@@ -100,7 +101,8 @@ class HomeFragment : Fragment() {
                                 adapter.notifyItemChanged(index)
                             }
                         }
-                    })
+                    }
+                )
             }
         }
     }

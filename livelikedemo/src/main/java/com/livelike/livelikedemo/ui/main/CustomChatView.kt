@@ -4,7 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import com.livelike.engagementsdk.chat.ChatView
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class CustomChatView(context: Context, attributes: AttributeSet?) : ChatView(context, attributes) {
 

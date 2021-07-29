@@ -97,7 +97,6 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
         widgetContainerViewModel?.widgetViewViewFactory = widgetViewFactory
         session.livelikeThemeStream.onNext(engagementSDKTheme)
-
     }
 
     /**
@@ -154,9 +153,9 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     }
 
     /** displays the widget in the container
-    throws error if json invalid
-    clears the previous displayed widget (if any)
-    only clears if json is valid
+     throws error if json invalid
+     clears the previous displayed widget (if any)
+     only clears if json is valid
      */
     fun displayWidget(sdk: EngagementSDK, widgetResourceJson: JsonObject) {
         try {
@@ -187,8 +186,10 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                             SubscriptionManager(),
                             widgetViewThemeAttributes,
                             engagementSDKTheme,
-                            WidgetInteractionRepository(context, programId, sdk.userRepository,
-                                sdk.configurationStream.latest()?.programDetailUrlTemplate)
+                            WidgetInteractionRepository(
+                                context, programId, sdk.userRepository,
+                                sdk.configurationStream.latest()?.programDetailUrlTemplate
+                            )
                         )
                 )
             )
@@ -198,8 +199,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         }
     }
 
-
-    fun displayWidget(widgetType : String, widgetView: SpecifiedWidgetView ){
+    fun displayWidget(widgetType: String, widgetView: SpecifiedWidgetView) {
         widgetContainerViewModel?.currentWidgetViewStream?.onNext(
             Pair(widgetType, widgetView)
         )

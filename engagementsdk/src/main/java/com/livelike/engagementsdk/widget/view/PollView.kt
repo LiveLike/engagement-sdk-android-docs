@@ -113,7 +113,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun unLockInteraction() {
         viewModel?.adapter?.selectionLocked = false
-        //marked widget as interactive
+        // marked widget as interactive
         viewModel?.markAsInteractive()
     }
 
@@ -182,7 +182,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             // TODO: update header background with margin or padding
             titleTextView.gravity = Gravity.START
 
-            viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList,type)
+            viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, type)
 
             // set on click
             viewModel?.adapter?.onClick = {
@@ -195,7 +195,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 viewModel?.saveInteraction(it)
             }
 
-
             widgetsTheme?.let {
                 applyTheme(it)
             }
@@ -203,7 +202,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.onWidgetInteractionCompleted = { onWidgetInteractionCompleted() }
 
             textRecyclerView.apply {
-                isFirstInteraction = viewModel?.getUserInteraction() !=null
+                isFirstInteraction = viewModel?.getUserInteraction() != null
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.optionId)
                 this.adapter = viewModel?.adapter
             }
@@ -220,11 +219,15 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private fun PollWidget.showTimer() {
-        showTimer(resource.timeout, textEggTimer, {
-            viewModel?.animationEggTimerProgress = it
-        }, {
-            viewModel?.dismissWidget(it)
-        })
+        showTimer(
+            resource.timeout, textEggTimer,
+            {
+                viewModel?.animationEggTimerProgress = it
+            },
+            {
+                viewModel?.dismissWidget(it)
+            }
+        )
     }
 
     private fun resultsObserver(resource: Resource?) {

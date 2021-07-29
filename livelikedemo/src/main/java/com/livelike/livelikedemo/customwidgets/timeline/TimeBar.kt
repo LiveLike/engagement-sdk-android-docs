@@ -26,6 +26,4 @@ class TimeBar : View {
             start()
         }
     }
-
-
 }

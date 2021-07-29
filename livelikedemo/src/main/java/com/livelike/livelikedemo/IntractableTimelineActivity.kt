@@ -28,13 +28,12 @@ class IntractableTimelineActivity : AppCompatActivity() {
          **/
         timeout_layout.visibility = View.GONE
         newTimelineViewModel = ViewModelProvider(
-                this,
-                IntractableTimelineViewModelFactory(this.application)
-            ).get(NewIntractableTimelineViewModel::class.java)
+            this,
+            IntractableTimelineViewModelFactory(this.application)
+        ).get(NewIntractableTimelineViewModel::class.java)
 
         radio1.visibility = View.GONE
         radio2.visibility = View.GONE
-
 
       /*  radio_group.setOnCheckedChangeListener { group, checkedId ->
             newTimelineViewModel?.showAlertOnly = (checkedId == R.id.radio2)
@@ -42,7 +41,6 @@ class IntractableTimelineActivity : AppCompatActivity() {
         }*/
         createTimeLineView()
     }
-
 
     /**
      * create timeline view
@@ -57,7 +55,7 @@ class IntractableTimelineActivity : AppCompatActivity() {
         )
 
         // adding custom separator between widgets in timeline
-         timeLineView.setSeparator(ContextCompat.getDrawable(this, R.drawable.white_separator))
+        timeLineView.setSeparator(ContextCompat.getDrawable(this, R.drawable.white_separator))
 
         if (LiveLikeApplication.showCustomWidgetsUI) {
             timeLineView.widgetViewFactory =
@@ -72,5 +70,4 @@ class IntractableTimelineActivity : AppCompatActivity() {
         }
         timeline_container.addView(timeLineView)
     }
-
 }

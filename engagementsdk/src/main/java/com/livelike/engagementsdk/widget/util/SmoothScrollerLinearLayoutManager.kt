@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 
 class SmoothScrollerLinearLayoutManager : LinearLayoutManager {
-    constructor(context: Context) : this(context, VERTICAL,false)
+    constructor(context: Context) : this(context, VERTICAL, false)
     constructor(context: Context, orientation: Int, reverseValue: Boolean) : super(context, orientation, reverseValue)
 
     override fun smoothScrollToPosition(recyclerView: RecyclerView?, state: RecyclerView.State?, position: Int) {
@@ -16,7 +16,7 @@ class SmoothScrollerLinearLayoutManager : LinearLayoutManager {
         startSmoothScroll(smoothScroller)
     }
 
-    private class TopSnappedSmoothScroller(context: Context?) : LinearSmoothScroller(context){
+    private class TopSnappedSmoothScroller(context: Context?) : LinearSmoothScroller(context) {
         var mContext = context
         override fun computeScrollVectorForPosition(targetPosition: Int): PointF? {
             return SmoothScrollerLinearLayoutManager(mContext as Context)
@@ -26,7 +26,5 @@ class SmoothScrollerLinearLayoutManager : LinearLayoutManager {
         override fun getVerticalSnapPreference(): Int {
             return SNAP_TO_START
         }
-
-
     }
 }

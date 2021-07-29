@@ -117,7 +117,8 @@ internal class AndroidResource {
                     }
                     it.fontWeight?.let {
                         setTypeface(
-                            typeface, when (it) {
+                            typeface,
+                            when (it) {
                                 FontWeight.Bold -> Typeface.BOLD
                                 FontWeight.Light -> Typeface.NORMAL
                                 FontWeight.Normal -> Typeface.NORMAL
@@ -131,9 +132,9 @@ internal class AndroidResource {
         fun setPaddingForView(view: View?, padding: List<Double>?) {
             logDebug {
                 "padding to view values:[${padding?.get(0)},${padding?.get(1)},${
-                    padding?.get(
-                        2
-                    )
+                padding?.get(
+                    2
+                )
                 },${padding?.get(3)}]"
             }
             view?.setPadding(
@@ -176,9 +177,9 @@ internal class AndroidResource {
                     ?.let { selectGradientDirection(it) }
 
             if (component?.borderRadius.isNullOrEmpty()
-                    .not() && component?.borderRadius?.size == 4
+                .not() && component?.borderRadius?.size == 4
             ) {
-                //array order be[top-left,top-right,bottom-left,bottom-right]
+                // array order be[top-left,top-right,bottom-left,bottom-right]
                 shape.cornerRadii = floatArrayOf(
                     dpToPx(component.borderRadius[0].toInt()).toFloat(),
                     dpToPx(component.borderRadius[0].toInt()).toFloat(),
@@ -190,11 +191,11 @@ internal class AndroidResource {
                     dpToPx(component.borderRadius[3].toInt()).toFloat()
                 )
             } else {
-                //adding default radius to have parity with IOS and web
+                // adding default radius to have parity with IOS and web
                 shape.cornerRadius = dpToPx(4).toFloat()
             }
             if (component?.borderColor.isNullOrEmpty()
-                    .not() && component?.borderWidth != null
+                .not() && component?.borderWidth != null
             ) {
                 shape.setStroke(
                     dpToPx(component.borderWidth.toInt()),

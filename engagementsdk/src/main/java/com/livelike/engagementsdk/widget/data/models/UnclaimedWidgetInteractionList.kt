@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
  * Unclaimed prediction user interaction Api response model class
  **/
 
-data class UnclaimedWidgetInteractionList (
+data class UnclaimedWidgetInteractionList(
     @field:SerializedName("next")
     val next: String? = null,
 

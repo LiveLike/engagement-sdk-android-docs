@@ -9,14 +9,11 @@ class VoteApiResponse {
 
     @SerializedName("claim_token")
     val claimToken: String? = null
-
 }
-
-
 
 data class EarnedReward(
     @SerializedName("reward_item_id")
-    val rewardId : String,
+    val rewardId: String,
     @SerializedName("reward_item_amount")
-    val rewardItemAmount : Int
+    val rewardItemAmount: Int
 )

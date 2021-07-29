@@ -17,17 +17,20 @@ import androidx.core.content.ContextCompat
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.widget_social_embed.view.progress_bar
 import kotlinx.android.synthetic.main.widget_social_embed.view.titleView
 import kotlinx.android.synthetic.main.widget_social_embed.view.web_view
+import kotlinx.android.synthetic.main.widget_social_embed.view.widgetContainer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 
 internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(context) {
-
 
     var viewModel: SocialEmbedViewModel? = null
 
@@ -80,7 +83,6 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
         }
     }
 
-
     private fun inflate(context: Context, liveLikeWidget: LiveLikeWidget) {
         if (titleView == null) {
             LayoutInflater.from(context)
@@ -92,10 +94,14 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                 web_view.settings.javaScriptEnabled = true
                 web_view.settings.domStorageEnabled = true
 
-                showTimer(liveLikeWidget.timeout ?: "", textEggTimer, {
-                }, {
-                    viewModel?.dismissWidget(it)
-                })
+                showTimer(
+                    liveLikeWidget.timeout ?: "", textEggTimer,
+                    {
+                    },
+                    {
+                        viewModel?.dismissWidget(it)
+                    }
+                )
                 web_view.loadDataWithBaseURL(
                     oembed.oEmbed.providerUrl,
                     oembed.oEmbed.html, "text/html", "utf-8", ""
@@ -139,10 +145,35 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                         }
                         return true
                     }
+                }
+            }
 
+            widgetsTheme?.let {
+                applyTheme(it)
+            }
+        }
+    }
 
+    override fun applyTheme(theme: WidgetsTheme) {
+        super.applyTheme(theme)
+        viewModel?.data?.latest()?.let { _ ->
+            theme.getThemeLayoutComponent(WidgetType.SOCIAL_EMBED)?.let { themeComponent ->
+                AndroidResource.updateThemeForView(
+                    titleView,
+                    themeComponent.title,
+                    fontFamilyProvider
+                )
+
+                if (themeComponent.header?.background != null) {
+                    titleView?.background = AndroidResource.createDrawable(themeComponent.header)
                 }
 
+                themeComponent.header?.padding?.let {
+                    AndroidResource.setPaddingForView(titleView, themeComponent.header.padding)
+                }
+
+                widgetContainer?.background =
+                    AndroidResource.createDrawable(themeComponent.body)
             }
         }
     }
@@ -154,10 +185,4 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
             ContextCompat.startActivity(context, universalLinkIntent, Bundle.EMPTY)
         }
     }
-
-
 }
-
-
-
-

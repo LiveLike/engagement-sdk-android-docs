@@ -20,7 +20,6 @@ import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_item.view.widget_view
 
-
 internal class TimeLineViewAdapter(
     private val context: Context,
     private val sdk: EngagementSDK,
@@ -67,16 +66,14 @@ internal class TimeLineViewAdapter(
         }
     }
 
-
     override fun getItemViewType(position: Int): Int {
         return if (position == list.size - 1 && isLoadingInProgress && !isEndReached) VIEW_TYPE_PROGRESS else VIEW_TYPE_DATA
     }
 
-
     override fun onBindViewHolder(itemViewHolder: RecyclerView.ViewHolder, p1: Int) {
         if (itemViewHolder is TimeLineItemViewHolder) {
             val timelineWidgetResource = list[p1]
-           // val liveLikeWidget = timelineWidgetResource.liveLikeWidget
+            // val liveLikeWidget = timelineWidgetResource.liveLikeWidget
             liveLikeEngagementTheme?.let {
                 itemViewHolder.itemView.widget_view.applyTheme(it)
             }
@@ -110,7 +107,7 @@ internal class TimeLineViewAdapter(
         }
         val widgetId = widgetResourceJson["id"].asString
         itemViewHolder.itemView.widget_view?.run {
-            //TODO segregate widget view and viewmodel creation
+            // TODO segregate widget view and viewmodel creation
             val widgetView = WidgetProvider()
                 .get(
                     null,
@@ -141,17 +138,14 @@ internal class TimeLineViewAdapter(
 
     override fun getItemCount(): Int = list.size
 
-
     override fun getItemId(position: Int): Long {
         return list[position].liveLikeWidget.id.hashCode().toLong()
     }
-
 
     companion object {
         private const val VIEW_TYPE_DATA = 0
         private const val VIEW_TYPE_PROGRESS = 1 // for load more // progress view type
     }
-
 }
 
 class TimeLineItemViewHolder(view: View) : RecyclerView.ViewHolder(view)
@@ -161,6 +155,5 @@ class ProgressViewHolder(view: View) : RecyclerView.ViewHolder(view)
 data class TimelineWidgetResource(
     var widgetState: WidgetStates,
     val liveLikeWidget: LiveLikeWidget,
-    var apiSource: WidgetApiSource //this has been added to show/hide animation . if real time widget animation will be shown else not
+    var apiSource: WidgetApiSource // this has been added to show/hide animation . if real time widget animation will be shown else not
 )
-

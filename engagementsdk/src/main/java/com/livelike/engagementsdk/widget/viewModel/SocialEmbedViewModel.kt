@@ -18,7 +18,7 @@ internal class SocialEmbedViewModel(
     val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     private val onDismiss: () -> Unit
-) : BaseViewModel(analyticsService)  {
+) : BaseViewModel(analyticsService) {
 
     private var timeoutStarted = false
 
@@ -34,7 +34,6 @@ internal class SocialEmbedViewModel(
         interactionData.widgetDisplayed()
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
     }
-
 
     internal fun dismissWidget(action: DismissAction) {
         data.latest()?.let { data ->
@@ -54,7 +53,6 @@ internal class SocialEmbedViewModel(
         cleanup()
         viewModelJob.cancel()
     }
-
 
     fun startDismissTimout(timeout: String, onDismiss: () -> Unit) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
@@ -78,5 +76,4 @@ internal class SocialEmbedViewModel(
     override fun onClear() {
         cleanup()
     }
-
 }

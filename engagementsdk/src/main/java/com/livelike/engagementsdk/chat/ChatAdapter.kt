@@ -72,7 +72,6 @@ import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
         override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -88,6 +87,7 @@ internal class ChatRecyclerAdapter(
     internal var analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
+    var isKeyboardOpen: Boolean = false
     internal var chatRoomId: String? = null
     private var lastFloatingUiAnchorView: View? = null
     var chatRepository: ChatRepository? = null
@@ -132,22 +132,24 @@ internal class ChatRecyclerAdapter(
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         mRecyclerView = null
-
     }
 
     /** Commenting this code for now so QA finalize whether old issues are coming or not
-    Flowing code helps in accessbility related issues
+     Flowing code helps in accessbility related issues
      **/
 //    override fun onViewDetachedFromWindow(holder: ViewHolder) {
 //        holder.hideFloatingUI()
 //        super.onViewDetachedFromWindow(holder)
 //    }
 
-    inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener,
+    inner class ViewHolder(val v: View) :
+        RecyclerView.ViewHolder(v),
+        View.OnLongClickListener,
         View.OnClickListener {
         private var message: ChatMessage? = null
         private val bounceAnimation: Animation =
             AnimationUtils.loadAnimation(v.context, R.anim.bounce_animation)
+
         @SuppressLint("StringFormatInvalid")
         private val dialogOptions = listOf(
             v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
@@ -177,7 +179,8 @@ internal class ChatRecyclerAdapter(
                     }
                     create()
                 }.show()
-            })
+            }
+        )
 
         init {
             chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
@@ -230,7 +233,10 @@ internal class ChatRecyclerAdapter(
             if (chatPopUpView?.isShowing == true) {
                 hideFloatingUI()
             } else {
-                wouldShowFloatingUi(view)
+                if (!isKeyboardOpen)
+                    wouldShowFloatingUi(view)
+                else
+                    isKeyboardOpen = false
             }
         }
 
@@ -241,9 +247,12 @@ internal class ChatRecyclerAdapter(
             setMessage(item)
             updateBackground()
             if (item?.timetoken != 0L) {
-                v.postDelayed({
-                    v.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-                }, 100)
+                v.postDelayed(
+                    {
+                        v.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+                    },
+                    100
+                )
             }
             if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
                 if (chatPopUpView?.isShowing == true) {
@@ -269,12 +278,12 @@ internal class ChatRecyclerAdapter(
                 chatPopUpView?.dismiss()
 
             var y = chatViewThemeAttribute.chatReactionY
-            if (chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP
-                || chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.RIGHT
-                || chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.LEFT
-                || chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.CENTER
-                || chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.START
-                || chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.END
+            if (chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP ||
+                chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.RIGHT ||
+                chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.LEFT ||
+                chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.CENTER ||
+                chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.START ||
+                chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.END
             ) {
                 y -= v.height
                 if (checkItemIsAtTop) {
@@ -366,7 +375,7 @@ internal class ChatRecyclerAdapter(
                                         )
                                     }
                                 }
-                                //removing unecessary call
+                                // removing unecessary call
                                 // notifyItemChanged(currentChatReactionPopUpViewPos)
                             }
                         }
@@ -378,7 +387,7 @@ internal class ChatRecyclerAdapter(
                     checkItemIsAtTop -> R.style.ChatReactionAnimationReverse
                     else -> R.style.ChatReactionAnimation
                 }
-                //I had to specify the width and height in order to be shown on that version (which is still compatible with the rest of the versions as well).
+                // I had to specify the width and height in order to be shown on that version (which is still compatible with the rest of the versions as well).
                 width = ViewGroup.LayoutParams.WRAP_CONTENT
                 height = ViewGroup.LayoutParams.WRAP_CONTENT
 
@@ -448,7 +457,7 @@ internal class ChatRecyclerAdapter(
             lastFloatingUiAnchorView = null
             logDebug { "Computing:${mRecyclerView?.isComputingLayout} ,ScrollState: ${mRecyclerView?.scrollState} ,pos:$currentChatReactionPopUpViewPos ,adapt Pos:$adapterPosition" }
             if (mRecyclerView?.isComputingLayout == false) {
-                //Add check for checking computing and check with current adapter position
+                // Add check for checking computing and check with current adapter position
                 if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
                     try {
                         notifyItemChanged(currentChatReactionPopUpViewPos)
@@ -466,9 +475,11 @@ internal class ChatRecyclerAdapter(
         private fun Long.toTimeString(): String =
             when (this) {
                 0L -> ""
-                else -> SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date().apply {
-                    time = this@toTimeString
-                })
+                else -> SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(
+                    Date().apply {
+                        time = this@toTimeString
+                    }
+                )
             }
 
         private fun setCustomFontWithTextStyle(
@@ -507,7 +518,7 @@ internal class ChatRecyclerAdapter(
             val density = v.context.resources.displayMetrics.density
             val paint = TextPaint()
             paint.textSize = chatViewThemeAttribute.chatMessageTextSize * density
-            //Using static width for now ,can be replace with dynamic for later
+            // Using static width for now ,can be replace with dynamic for later
             val width = (AndroidResource.dpToPx(300) * density).toInt()
             val alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL
             val layout =
@@ -663,16 +674,15 @@ internal class ChatRecyclerAdapter(
                         }
 
                         // load local image with glide, so that (chatAvatarCircle and chatAvatarRadius) properties can be applied.
-                        //more details on https://livelike.atlassian.net/browse/ES-1790
+                        // more details on https://livelike.atlassian.net/browse/ES-1790
                         // replace context with applicationContext related to ES-2185
                         if (message.senderDisplayPic.isNullOrEmpty()) {
-                            //load local image
+                            // load local image
                             Glide.with(context.applicationContext)
                                 .load(R.drawable.default_avatar)
                                 .apply(options)
                                 .placeholder(chatUserPicDrawable)
                                 .into(img_chat_avatar)
-
                         } else {
                             Glide.with(context.applicationContext).load(message.senderDisplayPic)
                                 .apply(options)
@@ -743,9 +753,9 @@ internal class ChatRecyclerAdapter(
                                 }
                                 chatMessage.minHeight =
                                     (chatMessageTextSize.toInt() * columnCount) + when {
-                                        lines != columnCount -> (lines * chatMessageTextSize.toInt())
-                                        else -> 0
-                                    }
+                                    lines != columnCount -> (lines * chatMessageTextSize.toInt())
+                                    else -> 0
+                                }
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,

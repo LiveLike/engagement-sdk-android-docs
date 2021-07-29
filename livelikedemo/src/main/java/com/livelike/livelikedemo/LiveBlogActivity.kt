@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.activity_live_blog.widget_timeout
 open class LiveBlogActivity : AppCompatActivity() {
 
     open var liveBlogViewModel: LiveBlogViewModel? = null
-    var timeout:String?=null
+    var timeout: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,17 +32,15 @@ open class LiveBlogActivity : AppCompatActivity() {
          **/
         initViewModel()
 
-
         radio_group.setOnCheckedChangeListener { group, checkedId ->
             liveBlogViewModel?.showAlertOnly = (checkedId == R.id.radio2)
             createTimeLineView()
         }
         createTimeLineView()
         timeout_set.setOnClickListener {
-            Log.d("timeline","timeout set")
+            Log.d("timeline", "timeout set")
             setWidgetTimeout()
         }
-
     }
 
     /**
@@ -61,19 +59,17 @@ open class LiveBlogActivity : AppCompatActivity() {
         // adding custom separator between widgets in timeline
         timeLineView.setSeparator(ContextCompat.getDrawable(this, R.drawable.custom_separator_timeline))
 
-        if(!this.timeout.isNullOrEmpty()){
+        if (!this.timeout.isNullOrEmpty()) {
             // integrator timeout configured
-            timeLineView.widgetTimerController = object : WidgetTimerController(){
+            timeLineView.widgetTimerController = object : WidgetTimerController() {
                 override fun timeValue(widget: LiveLikeWidget): String {
                     return "P0DT00H00M${this@LiveBlogActivity.timeout}S"
                 }
             }
-
-        }else{
-            //CMS timeout configured
+        } else {
+            // CMS timeout configured
             timeLineView.widgetTimerController = CMSSpecifiedDurationTimer()
         }
-
 
         if (LiveLikeApplication.showCustomWidgetsUI) {
             timeLineView.widgetViewFactory =
@@ -87,21 +83,15 @@ open class LiveBlogActivity : AppCompatActivity() {
             }
         }
         timeline_container.addView(timeLineView)
-
     }
 
+    private fun setWidgetTimeout() {
 
-    private fun setWidgetTimeout(){
-
-        if(!widget_timeout.text.toString().isNullOrEmpty()){
+        if (!widget_timeout.text.toString().isNullOrEmpty()) {
             this.timeout = widget_timeout.text.toString()
             createTimeLineView()
         }
     }
-
-
-
-
 
     private fun initViewModel() {
         liveBlogViewModel = ViewModelProvider(
@@ -109,8 +99,4 @@ open class LiveBlogActivity : AppCompatActivity() {
             LiveBlogModelFactory(this.application)
         ).get(LiveBlogViewModel::class.java)
     }
-
-
-
-
 }

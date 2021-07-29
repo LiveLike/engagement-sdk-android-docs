@@ -9,7 +9,6 @@ import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.WidgetType
-import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
 import com.livelike.engagementsdk.widget.data.models.UserWidgetInteractionApi
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
@@ -23,17 +22,16 @@ internal class WidgetInteractionRepository(
     val context: Context,
     val programID: String,
     val userRepository: UserRepository,
-    val programUrlTemplate:String?
+    val programUrlTemplate: String?
 ) {
-
 
     private val widgetInteractionRemoteSource: WidgetInteractionRemoteSource = WidgetInteractionRemoteSource()
     private val llDataClient = EngagementDataClientImpl()
-    private val programRepository = ProgramRepository(programID,userRepository)
+    private val programRepository = ProgramRepository(programID, userRepository)
 
     private val widgetInteractionMap = mutableMapOf<String, WidgetUserInteractionBase>()
 
-    fun <T : WidgetUserInteractionBase> saveWidgetInteraction(widgetInteraction :T){
+    fun <T : WidgetUserInteractionBase> saveWidgetInteraction(widgetInteraction: T) {
         widgetInteractionMap[widgetInteraction.widgetId] = widgetInteraction
     }
 
@@ -43,7 +41,6 @@ internal class WidgetInteractionRepository(
     ): T? {
         return widgetInteractionMap[widgetId] as T?
     }
-
 
     /**
      * Responsible for fetching interactions and storing those locally
@@ -72,9 +69,8 @@ internal class WidgetInteractionRepository(
                 widgetInteractionMap[it.widgetId] = it
             }
         }
-        return  widgetInteractionsResult
+        return widgetInteractionsResult
     }
-
 
     /**
      * Responsible for fetching program if program is null in program repository, since interaction url is
@@ -86,23 +82,25 @@ internal class WidgetInteractionRepository(
         if (programRepository.program == null) {
             programUrlTemplate?.let {
 
-               val programResults = programRepository.getProgramData(programUrlTemplate.replace(
-                   TEMPLATE_PROGRAM_ID,
-                   programID
-               ))
+                val programResults = programRepository.getProgramData(
+                    programUrlTemplate.replace(
+                        TEMPLATE_PROGRAM_ID,
+                        programID
+                    )
+                )
 
-                if (programResults is Result.Success){
+                if (programResults is Result.Success) {
                     results = userRepository.userAccessToken?.let {
                         fetchAndStoreWidgetInteractions(
                             getInteractionUrl(widgetInfo),
                             it
                         )
                     }
-                }else if (programResults is Result.Error) {
-                    logError {"Unable to fetch program details ${programResults.exception.message}"}
+                } else if (programResults is Result.Error) {
+                    logError { "Unable to fetch program details ${programResults.exception.message}" }
                 }
             }
-        }else {
+        } else {
             results = userRepository.userAccessToken?.let {
                 fetchAndStoreWidgetInteractions(
                     getInteractionUrl(widgetInfo),
@@ -113,11 +111,10 @@ internal class WidgetInteractionRepository(
         return results
     }
 
-
     /**
      * get interaction url with appended widget kind and widget id
      **/
-    private fun getInteractionUrl(widgetInfo: WidgetInfos):String{
+    private fun getInteractionUrl(widgetInfo: WidgetInfos): String {
         var url =
             userRepository.currentUserStream.latest()?.id?.let {
                 programRepository.program?.widgetInteractionUrl?.replace(
@@ -132,9 +129,7 @@ internal class WidgetInteractionRepository(
         return url
     }
 
-
-
-    private fun getWidgetKindBasedOnType(widgetKind:String):String{
+    private fun getWidgetKindBasedOnType(widgetKind: String): String {
         return when (WidgetType.fromString(widgetKind)) {
             WidgetType.TEXT_POLL -> "text_poll"
             WidgetType.IMAGE_POLL -> "image_poll"
@@ -146,13 +141,11 @@ internal class WidgetInteractionRepository(
             WidgetType.IMAGE_SLIDER -> "emoji_slider"
             WidgetType.TEXT_PREDICTION_FOLLOW_UP -> "text_prediction"
             WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> "image_prediction"
-            else ->""
+            else -> ""
         }
-
     }
 
-    fun clearInteractionMap(){
+    fun clearInteractionMap() {
         widgetInteractionMap.clear()
     }
-
 }

@@ -20,8 +20,8 @@ import kotlinx.coroutines.launch
 abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
     ViewModel() {
 
-    private  var subscribedWidgetChannelName: String?=null
-    internal var isMarkedInteractive:Boolean = false
+    private var subscribedWidgetChannelName: String? = null
+    internal var isMarkedInteractive: Boolean = false
     internal val widgetState: Stream<WidgetStates> =
         SubscriptionManager<WidgetStates>(emitOnSubscribe = true)
     internal var enableDefaultWidgetTransition = true
@@ -29,7 +29,6 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
     internal var showDismissButton: Boolean = true
     internal val dataClient: WidgetDataClient = WidgetDataClientImpl()
     internal val llDataClient = EngagementDataClientImpl()
-
 
     internal var timerStartTime: Long? = null
 
@@ -48,7 +47,7 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
         }
     }
 
-   internal inline fun <reified T> subscribeWidgetResults(
+    internal inline fun <reified T> subscribeWidgetResults(
         channelName: String,
         sdkConfiguration: EngagementSDK.SdkConfiguration,
         currentUserStream: Stream<LiveLikeUser>,
@@ -82,7 +81,7 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
         }
     }
 
-    fun trackWidgetEngagedAnalytics(currentWidgetType: WidgetType?, currentWidgetId: String, programId: String): Unit {
+    fun trackWidgetEngagedAnalytics(currentWidgetType: WidgetType?, currentWidgetId: String, programId: String) {
         currentWidgetType?.let {
             analyticsService.trackWidgetEngaged(
                 currentWidgetType.toAnalyticsString(),
@@ -97,7 +96,7 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
         programId: String,
         alertLink: String? = null
     ) {
-        if(!isMarkedInteractive) {
+        if (!isMarkedInteractive) {
             isMarkedInteractive = true
             widgetType?.let { type ->
                 analyticsService.trackWidgetBecameInteractive(
@@ -112,13 +111,12 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
     /**
      * all models should override this to cleanup their resources
      **/
-   abstract fun onClear()
+    abstract fun onClear()
 }
 
-enum class WidgetStates : Comparable<WidgetStates>{
-    READY,//the data has received and ready to use to inject into view
-    INTERACTING,//the data is injected into view and shown
-    RESULTS,// interaction completed and result to be shown
-    FINISHED,//dismiss the widget
-
+enum class WidgetStates : Comparable<WidgetStates> {
+    READY, // the data has received and ready to use to inject into view
+    INTERACTING, // the data is injected into view and shown
+    RESULTS, // interaction completed and result to be shown
+    FINISHED, // dismiss the widget
 }

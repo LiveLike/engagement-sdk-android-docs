@@ -3,9 +3,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import android.view.View
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.widget.timeline.TimelineWidgetResource
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
@@ -27,7 +27,7 @@ class MMLAlertWidget(
     context: Context,
     private var alertModel: AlertWidgetModel,
     var timelineWidgetResource: TimelineWidgetResource? = null,
-    private val isActive : Boolean = false
+    private val isActive: Boolean = false
 ) : ConstraintLayout(context) {
 
     private val job = SupervisorJob()
@@ -37,7 +37,6 @@ class MMLAlertWidget(
         inflate(context, R.layout.mml_alert_widget, this)
         initView()
     }
-
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()

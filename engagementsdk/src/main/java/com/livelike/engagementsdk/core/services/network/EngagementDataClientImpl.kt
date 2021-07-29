@@ -6,6 +6,7 @@ import android.webkit.URLUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.core.data.models.Program
@@ -26,6 +27,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -38,7 +41,8 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @Suppress("USELESS_ELVIS")
-internal open class EngagementDataClientImpl : DataClient,
+internal open class EngagementDataClientImpl :
+    DataClient,
     EngagementSdkDataClient {
 
     // TODO better error handling for network calls plus better code organisation for that  we can use retrofit if size is ok to go with or write own annotation processor
@@ -95,7 +99,7 @@ internal open class EngagementDataClientImpl : DataClient,
                                 // Program Url is the only required field
                                 error("Program Url not present in response.")
                             }
-                            respondWith(parsedObject.toProgram(),null)
+                            respondWith(parsedObject.toProgram(), null)
                         }
                     }
                 }
@@ -151,7 +155,10 @@ internal open class EngagementDataClientImpl : DataClient,
                         responseData.extractBoolean("chat_enabled"),
                         null,
                         responseData.extractStringOrEmpty("url"),
-                        responseData.extractStringOrEmpty("chat_room_memberships_url")
+                        responseData.extractStringOrEmpty("chat_room_memberships_url"),
+                        responseData.extractStringOrEmpty("custom_data"),
+                        responseData.extractStringOrEmpty("badges_url"),
+                        responseData.extractStringOrEmpty("badge_progress_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -190,7 +197,9 @@ internal open class EngagementDataClientImpl : DataClient,
                         null,
                         responseData.extractStringOrEmpty("url"),
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
-                        responseData.extractStringOrEmpty("custom_data")
+                        responseData.extractStringOrEmpty("custom_data"),
+                        responseData.extractStringOrEmpty("badges_url"),
+                        responseData.extractStringOrEmpty("badge_progress_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -222,6 +231,15 @@ internal open class EngagementDataClientImpl : DataClient,
         requestBody: RequestBody? = null,
         accessToken: String?
     ): Result<T> {
+        return remoteCall(url.toHttpUrl(), requestType, requestBody, accessToken)
+    }
+
+    internal suspend inline fun <reified T : Any> remoteCall(
+        url: HttpUrl,
+        requestType: RequestType,
+        requestBody: RequestBody? = null,
+        accessToken: String?
+    ): Result<T> {
         return safeRemoteApiCall({
             withContext(Dispatchers.IO) {
                 logDebug { "url : $url ,has AccessToken:${accessToken != null}" }
@@ -238,7 +256,7 @@ internal open class EngagementDataClientImpl : DataClient,
                     val responseString = execute.body?.string()
                     val data: T = gson.fromJson<T>(
                         responseString,
-                        T::class.java
+                        object : TypeToken<T>() {}.type
                     )
                     Result.Success(
                         data

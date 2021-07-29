@@ -8,10 +8,10 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
-import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.clipParents

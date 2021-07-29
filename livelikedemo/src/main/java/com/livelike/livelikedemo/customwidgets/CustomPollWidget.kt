@@ -52,15 +52,15 @@ class CustomPollWidget : ConstraintLayout {
         super.onAttachedToWindow()
 
         // this is added just to test exposed api loadWidgetInteraction
-        pollWidgetModel?.loadInteractionHistory( object : LiveLikeCallback<List<PollWidgetUserInteraction>>(){
+        pollWidgetModel?.loadInteractionHistory(object : LiveLikeCallback<List<PollWidgetUserInteraction>>() {
             override fun onResponse(result: List<PollWidgetUserInteraction>?, error: String?) {
-               if(result!=null){
-                   if(result.isNotEmpty()){
-                       for (element in result) {
-                           Log.d("interaction-poll", element.optionId)
-                       }
-                   }
-               }
+                if (result != null) {
+                    if (result.isNotEmpty()) {
+                        for (element in result) {
+                            Log.d("interaction-poll", element.optionId)
+                        }
+                    }
+                }
             }
         })
 
@@ -94,9 +94,7 @@ class CustomPollWidget : ConstraintLayout {
             imageView2.setOnClickListener {
                 pollWidgetModel?.finish()
             }
-
         }
-
     }
 
     override fun onDetachedFromWindow() {
@@ -135,7 +133,8 @@ class PollListAdapter(
                 when (isImage) {
                     true -> R.layout.quiz_image_list_item
                     else -> R.layout.quiz_list_item
-                }, p0, false
+                },
+                p0, false
             )
         )
     }
@@ -168,14 +167,13 @@ class PollListAdapter(
             }
 
             holder.itemView.button4.setOnClickListener {
-                if(!isFollowUp) {
+                if (!isFollowUp) {
                     selectedIndex = holder.adapterPosition
                     pollListener?.onSelectOption(item.id!!)
                     notifyDataSetChanged()
                 }
             }
         }
-
     }
 
     override fun getItemCount(): Int = list.size

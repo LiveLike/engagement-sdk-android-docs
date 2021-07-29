@@ -28,7 +28,6 @@ class CustomChatActivity : AppCompatActivity() {
             .commit()
     }
 
-
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) {
             selectedHomeChat?.let {
@@ -41,7 +40,7 @@ class CustomChatActivity : AppCompatActivity() {
             }
             supportFragmentManager.popBackStack()
         } else {
-            super.onBackPressed();
+            super.onBackPressed()
         }
     }
 }

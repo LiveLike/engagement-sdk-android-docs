@@ -13,12 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.gson.JsonParser
-import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.livelikedemo.BuildConfig
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication
@@ -72,7 +70,7 @@ class ChatFragment : Fragment() {
     )
 
     private val authorization = "Authorization"
-    private var  accessToken: String =
+    private var accessToken: String =
         "Bearer dyE3arFtBKdtN4b_PhlJXXgivpfLIvbFkQon96Dk4PN2_5mTwkLJZw"
     private val client = OkHttpClient().newBuilder()
         .build()
@@ -84,7 +82,8 @@ class ChatFragment : Fragment() {
 
     private val adapter = CustomChatAdapter()
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -95,8 +94,7 @@ class ChatFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         rcyl_chat.adapter = adapter
 
-
-        //presently program id and chat room has been harcoded for just
+        // presently program id and chat room has been harcoded for just
         // testing purpose wheather we the data is received and rendered correctly
         // will remove this latter
 
@@ -116,15 +114,11 @@ class ChatFragment : Fragment() {
             }
         }*/
 
-
-
         ed_msg.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -135,7 +129,6 @@ class ChatFragment : Fragment() {
                 }
             }
         })
-
 
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             adapter.chatList.clear()
@@ -180,7 +173,6 @@ class ChatFragment : Fragment() {
                     }
                 }
 
-
                 override fun onDeleteMessage(messageId: String) {
                     Log.d(TAG, "onDeleteMessage: $messageId")
                     val index = adapter.chatList.indexOfFirst { it.id == messageId }
@@ -211,15 +203,14 @@ class ChatFragment : Fragment() {
                 sendMessage(null, gifs.random())
             }
 
-
             // send custom message
             com.livelike.engagementsdk.BuildConfig.CONFIG_URL
             custom.setOnClickListener {
                 scope.launch(Dispatchers.IO) {
                     sendCustomMessage(
                         "{\n" +
-                                "  \"custom_data\": \"heyaa, this is for testing\"\n" +
-                                "}"
+                            "  \"custom_data\": \"heyaa, this is for testing\"\n" +
+                            "}"
                     )
                 }
             }
@@ -242,21 +233,22 @@ class ChatFragment : Fragment() {
                             }
                         }
                     }
-                })
+                }
+            )
         }
     }
 
-    //custom message api call
+    // custom message api call
     private fun sendCustomMessage(post: String? = null) {
 
         (activity as CustomChatActivity).selectedHomeChat?.let {
 
             var chatRoomId = it.session.chatSession.getCurrentChatRoom()
-            Log.d("custom-message1",chatRoomId)
+            Log.d("custom-message1", chatRoomId)
             val urls =
-            "${com.livelike.engagementsdk.BuildConfig.CONFIG_URL}chat-rooms/${chatRoomId}/custom-messages/"
+                "${com.livelike.engagementsdk.BuildConfig.CONFIG_URL}chat-rooms/$chatRoomId/custom-messages/"
 
-            Log.d("custom-message",urls)
+            Log.d("custom-message", urls)
 
             val body = post?.toRequestBody()
             val request: Request = Request.Builder()
@@ -274,8 +266,6 @@ class ChatFragment : Fragment() {
         }
     }
 
-
-
     override fun onPause() {
         super.onPause()
         (activity as? CustomChatActivity)?.selectedHomeChat?.let {
@@ -291,7 +281,6 @@ class ChatFragment : Fragment() {
         }
     }
 
-
     companion object {
         @JvmStatic
         fun newInstance() = ChatFragment()
@@ -300,7 +289,6 @@ class ChatFragment : Fragment() {
 
 class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
     val chatList = arrayListOf<LiveLikeChatMessage>()
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomChatViewHolder {
         return CustomChatViewHolder(
@@ -337,10 +325,9 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
         } else {
             holder.itemView.img_message.visibility = View.GONE
 
-            if(!chatMessage.message.isNullOrEmpty()) {
+            if (!chatMessage.message.isNullOrEmpty()) {
                 holder.itemView.txt_message.text = chatMessage.message
-
-            } else if(!chatMessage.custom_data.isNullOrEmpty()){
+            } else if (!chatMessage.custom_data.isNullOrEmpty()) {
                 var customData = chatMessage.custom_data
 
                 holder.itemView.normal_message.visibility = View.GONE
@@ -349,15 +336,14 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
                     val jsonObject =
                         JsonParser.parseString(customData.toString()).asJsonObject
 
-                    if(jsonObject.has("kind")){
+                    if (jsonObject.has("kind")) {
                         holder.itemView.widget_view.visibility = View.VISIBLE
                         holder.itemView.widget_view.displayWidget((holder.itemView.context.applicationContext as LiveLikeApplication).sdk, jsonObject)
-                    }else{
+                    } else {
                         holder.itemView.custom_tv.visibility = View.VISIBLE
                         holder.itemView.widget_view.visibility = View.GONE
                         holder.itemView.custom_tv.text = jsonObject.toString()
                     }
-
                 } catch (ex: Exception) {
                     holder.itemView.custom_tv.text = customData
                     holder.itemView.custom_tv.visibility = View.VISIBLE
@@ -365,7 +351,6 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
                 }
             }
         }
-
 
         holder.itemView.txt_msg_time.text = SimpleDateFormat(
             "MMM d, h:mm a",

@@ -6,7 +6,7 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.core.data.models.Program
 
 internal interface DataClient {
-    fun getProgramData(url: String, responseCallback: (program: Program?,error:String?) -> Unit)
+    fun getProgramData(url: String, responseCallback: (program: Program?, error: String?) -> Unit)
     fun getUserData(
         profileUrl: String,
         accessToken: String,

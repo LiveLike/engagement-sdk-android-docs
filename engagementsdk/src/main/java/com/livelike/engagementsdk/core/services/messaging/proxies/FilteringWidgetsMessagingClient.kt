@@ -8,7 +8,6 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Resource
-import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 
 /**
  *Filtering out the widgets which have been interacted or not supported on android.
@@ -30,7 +29,6 @@ internal class FilteringWidgetsMessagingClient(
     }
 
     override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
-
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {

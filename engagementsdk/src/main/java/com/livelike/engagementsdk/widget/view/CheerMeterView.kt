@@ -82,7 +82,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         viewModel?.voteEnd?.unsubscribe(javaClass.simpleName)
     }
 
-
     private fun stateObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
@@ -94,19 +93,24 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
                 // show timer while widget interaction mode
                 viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
-                    showTimer(timeout, textEggTimer, {
-                        viewModel?.animationEggTimerProgress = it
-                    }, {
-                        viewModel?.dismissWidget(it)
-                    })
+                    showTimer(
+                        timeout, textEggTimer,
+                        {
+                            viewModel?.animationEggTimerProgress = it
+                        },
+                        {
+                            viewModel?.dismissWidget(it)
+                        }
+                    )
                 }
-
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
-                if ((viewModel?.totalVoteCount
-                        ?: 0) > 0 || viewModel?.enableDefaultWidgetTransition == false
+                if ((
+                    viewModel?.totalVoteCount
+                        ?: 0
+                    ) > 0 || viewModel?.enableDefaultWidgetTransition == false
                 ) {
                     viewModel?.voteEnd?.onNext(true)
                     viewModel?.voteEnd()
@@ -264,25 +268,22 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 setupTeamCheerRipple(view_ripple2, img_logo_team_2, 1)
             }
 
-            if ((viewModel?.totalVoteCount ?: 0) > 0){
+            if ((viewModel?.totalVoteCount ?: 0) > 0) {
                 clearStartingAnimations()
                 txt_my_score.visibility = View.VISIBLE
                 txt_my_score.text = "${viewModel?.totalVoteCount}"
-
-             }else{
+            } else {
                 lottie_vs_animation.apply {
                     setAnimation("vs_animation.json")
                     progress = viewModel?.animationProgress ?: 0f
                     repeatCount = 0
                     playAnimation()
                 }
-             }
-
+            }
 
             logDebug { "Showing CheerMeter Widget" }
             if (widgetViewModel?.widgetState?.latest() == null)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
-
         }
 
         if (widget == null) {
@@ -317,11 +318,14 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                         .start()
                                 }
                                 handler.removeCallbacksAndMessages(null)
-                                handler.postDelayed({
-                                   // txt_my_score.visibility = View.INVISIBLE
-                                    txt_my_score.visibility = View.VISIBLE
-                                    txt_my_score.text = "${viewModel?.totalVoteCount}"
-                                }, 500)
+                                handler.postDelayed(
+                                    {
+                                        // txt_my_score.visibility = View.INVISIBLE
+                                        txt_my_score.visibility = View.VISIBLE
+                                        txt_my_score.text = "${viewModel?.totalVoteCount}"
+                                    },
+                                    500
+                                )
                             }
                         }
                         return false
@@ -418,45 +422,48 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             team2.vote_count =
                 resource.options?.find { option -> option.id == team2.id }?.vote_count
 
-            //viewModel?.voteEnd()
+            // viewModel?.voteEnd()
             fl_result_team.visibility = View.VISIBLE
             logDebug { "CheerMeter voting stop,result: Team1:${team1.vote_count},Team2:${team2.vote_count}" }
-            fl_result_team.postDelayed({
-                if (team1.vote_count == team2.vote_count) {
-                    playDrawAnimation()
-                    return@postDelayed
-                }
-
-                var winnerTeam = if (team1.vote_count ?: 0 > team2.vote_count ?: 0) {
-                    team1
-                } else {
-                    team2
-                }
-                img_logo_team_2.visibility = View.GONE
-                img_logo_team_1.visibility = View.GONE
-                val animation =
-                    AnimationUtils.loadAnimation(
-                        context,
-                        R.anim.cheer_meter_winner_scale_animation
-                    )
-                img_winner_team.visibility = View.VISIBLE
-                Glide.with(context.applicationContext)
-                    .load(winnerTeam.image_url)
-                    .into(img_winner_team)
-                animation.setAnimationListener(object :
-                    Animation.AnimationListener {
-                    override fun onAnimationRepeat(animation: Animation?) {
+            fl_result_team.postDelayed(
+                {
+                    if (team1.vote_count == team2.vote_count) {
+                        playDrawAnimation()
+                        return@postDelayed
                     }
 
-                    override fun onAnimationStart(animation: Animation?) {
+                    var winnerTeam = if (team1.vote_count ?: 0 > team2.vote_count ?: 0) {
+                        team1
+                    } else {
+                        team2
                     }
+                    img_logo_team_2.visibility = View.GONE
+                    img_logo_team_1.visibility = View.GONE
+                    val animation =
+                        AnimationUtils.loadAnimation(
+                            context,
+                            R.anim.cheer_meter_winner_scale_animation
+                        )
+                    img_winner_team.visibility = View.VISIBLE
+                    Glide.with(context.applicationContext)
+                        .load(winnerTeam.image_url)
+                        .into(img_winner_team)
+                    animation.setAnimationListener(object :
+                            Animation.AnimationListener {
+                            override fun onAnimationRepeat(animation: Animation?) {
+                            }
 
-                    override fun onAnimationEnd(animation: Animation?) {
-                        playWinnerAnimation()
-                    }
-                })
-                img_winner_team.startAnimation(animation)
-            }, 500)
+                            override fun onAnimationStart(animation: Animation?) {
+                            }
+
+                            override fun onAnimationEnd(animation: Animation?) {
+                                playWinnerAnimation()
+                            }
+                        })
+                    img_winner_team.startAnimation(animation)
+                },
+                500
+            )
         }
         return false
     }

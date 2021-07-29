@@ -12,7 +12,6 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.utils.addAuthorizationBearer
 import com.livelike.engagementsdk.core.utils.addUserAgent
 import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
-import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
@@ -44,7 +43,7 @@ internal interface WidgetDataClient {
         useVoteUrl: Boolean = true,
         userRepository: UserRepository?,
         widgetId: String? = null,
-        patchVoteUrl:String? = null
+        patchVoteUrl: String? = null
     ): String?
 
     fun registerImpression(impressionUrl: String, accessToken: String?)
@@ -56,8 +55,7 @@ internal interface WidgetDataClient {
 
     suspend fun getWidgetDataFromIdAndKind(id: String, kind: String): JsonObject?
     suspend fun getAllPublishedWidgets(url: String): JsonObject?
-    suspend fun getUnclaimedInteractions(url: String,accessToken: String?): JsonObject?
-
+    suspend fun getUnclaimedInteractions(url: String, accessToken: String?): JsonObject?
 }
 
 internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClient {
@@ -76,9 +74,9 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
         patchVoteUrl: String?
     ): String? {
         return singleRunner.afterPrevious {
-            val jsonObject : JsonObject
+            val jsonObject: JsonObject
 
-            if(!patchVoteUrl.isNullOrEmpty()){
+            if (!patchVoteUrl.isNullOrEmpty()) {
                 voteUrl = patchVoteUrl
             }
 
@@ -91,29 +89,32 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                         type ?: RequestType.POST
                     )
             } else {
-                 jsonObject = postAsync(
-                    voteUrl, accessToken, (body ?: voteId?.let {
-                         FormBody.Builder()
-                             .add("option_id", it)
-                             .add("choice_id", it)
-                             .build()
-                     }), type ?: RequestType.PATCH
+                jsonObject = postAsync(
+                    voteUrl, accessToken,
+                    (
+                        body ?: voteId?.let {
+                            FormBody.Builder()
+                                .add("option_id", it)
+                                .add("choice_id", it)
+                                .build()
+                        }
+                        ),
+                    type ?: RequestType.PATCH
                 )
             }
             voteUrl = jsonObject.extractStringOrEmpty("url")
             val voteApiResponse = gson.fromJson<VoteApiResponse>(jsonObject, VoteApiResponse::class.java)
             voteApiResponse?.claimToken?.let {
-                widgetId?.let { widgetId->
-                    EngagementSDK.predictionWidgetVoteRepository.add(PredictionWidgetVote(widgetId,it)){}
+                widgetId?.let { widgetId ->
+                    EngagementSDK.predictionWidgetVoteRepository.add(PredictionWidgetVote(widgetId, it)) {}
                 }
             }
             voteApiResponse.rewards?.let {
-                for ( reward in it){
+                for (reward in it) {
                     userRepository?.run {
                         rewardItemMapCache[reward.rewardId]?.let {
-                            currentUserStream.latest()?.let { user->
+                            currentUserStream.latest()?.let { user ->
                                 userProfileDelegate?.userProfile(user, Reward(it, reward.rewardItemAmount), RewardSource.WIDGETS)
-
                             }
                         }
                     }
@@ -179,7 +180,7 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
             apiCallback(client, request, it)
         }
 
-    override suspend fun getUnclaimedInteractions(url: String,accessToken: String?): JsonObject? =
+    override suspend fun getUnclaimedInteractions(url: String, accessToken: String?): JsonObject? =
         suspendCoroutine<JsonObject> {
             val client = OkHttpClient()
             val request = Request.Builder()
@@ -190,8 +191,6 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                 .build()
             apiCallback(client, request, it)
         }
-
-
 
     override fun registerImpression(impressionUrl: String, accessToken: String?) {
         if (impressionUrl.isNullOrEmpty()) {

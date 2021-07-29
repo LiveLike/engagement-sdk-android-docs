@@ -24,7 +24,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.argumentCaptor
 
-
 @RunWith(MockitoJUnitRunner::class)
 class SynchronizedMessagingClientTest {
 
@@ -41,7 +40,6 @@ class SynchronizedMessagingClientTest {
 
     val dispatcher = TestCoroutineDispatcher()
 
-
     companion object {
         @JvmStatic
         @BeforeClass
@@ -49,7 +47,6 @@ class SynchronizedMessagingClientTest {
             minimumLogLevel = LogLevel.None
         }
     }
-
 
     @Before
     fun setup() {
@@ -105,7 +102,7 @@ class SynchronizedMessagingClientTest {
             EpochTime(timeSource.invoke().timeSinceEpochInMs + 50000)
         )
         val pastClientMessage = ClientMessage(
-            JsonObject().apply { addProperty("id",1) }, "",
+            JsonObject().apply { addProperty("id", 1) }, "",
             EpochTime(timeSource.invoke().timeSinceEpochInMs - 5000)
         )
         subject.listener = listener
@@ -114,7 +111,6 @@ class SynchronizedMessagingClientTest {
         subject.processQueueForScheduledEvent()
         verify(listener).onClientMessageEvent(subject, pastClientMessage)
     }
-
 
     @Test
     fun `history load will publish past messages immediately and push future in queue `() {
@@ -143,11 +139,5 @@ class SynchronizedMessagingClientTest {
         assert(listCaptor.firstValue.size == 1)
         // matching id of message
         assert((listCaptor.firstValue[0] as ClientMessage).message.get("id").asInt == 10)
-
     }
-
-
-
-
-
 }

@@ -2,8 +2,8 @@ package com.livelike.livelikedemo
 
 import android.content.Context
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
@@ -43,7 +43,8 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                     PREF_MY_WIDGETS,
                     null
-                ), object : TypeToken<List<LiveLikeWidget>>() {}.type
+                ),
+                object : TypeToken<List<LiveLikeWidget>>() {}.type
             ) ?: arrayListOf()
         show_my_widget.setOnClickListener {
             val channelManager = (application as LiveLikeApplication).channelManager
@@ -63,7 +64,8 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                             Toast.makeText(applicationContext, "$it", Toast.LENGTH_SHORT).show()
                         }
                         result?.map { it!! }?.let { list ->
-                            DialogUtils.showMyWidgetsDialog(this@WidgetFrameworkTestActivity,
+                            DialogUtils.showMyWidgetsDialog(
+                                this@WidgetFrameworkTestActivity,
                                 (application as LiveLikeApplication).sdk,
                                 ArrayList(list),
                                 object : LiveLikeCallback<LiveLikeWidget>() {
@@ -78,10 +80,12 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                                             )
                                         }
                                     }
-                                })
+                                }
+                            )
                         }
                     }
-                })
+                }
+            )
         }
         show_widget.setOnClickListener {
             try {
@@ -128,13 +132,12 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                     }
                 }
             }
-            var count=0
+            var count = 0
             override fun onUserInteract(widgetData: LiveLikeWidgetEntity) {
                 count++
                 txt_widget_interact_listener.append("$count, ${widgetData.kind}\n")
             }
         }
-
 
         radio_ready.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {

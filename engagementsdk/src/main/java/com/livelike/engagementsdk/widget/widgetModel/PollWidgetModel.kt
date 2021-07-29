@@ -12,15 +12,13 @@ interface PollWidgetModel : LiveLikeWidgetMediator {
 
     fun submitVote(optionID: String)
 
-
     /**
      * it returns the latest user interaction for the widget
      */
-    fun getUserInteraction() : PollWidgetUserInteraction?
+    fun getUserInteraction(): PollWidgetUserInteraction?
 
     /**
      * returns widget interactions from remote source
      */
     fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<PollWidgetUserInteraction>>)
-
 }

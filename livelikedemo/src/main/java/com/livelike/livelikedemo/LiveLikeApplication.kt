@@ -52,11 +52,15 @@ class LiveLikeApplication : Application() {
             object : ErrorDelegate() {
                 override fun onError(error: String) {
                     println("LiveLikeApplication.onError--->$error")
-                    android.os.Handler(Looper.getMainLooper()).postDelayed({
-                        initSDK()
-                    }, 1000)
+                    android.os.Handler(Looper.getMainLooper()).postDelayed(
+                        {
+                            initSDK()
+                        },
+                        1000
+                    )
                 }
-            }, accessTokenDelegate = object : AccessTokenDelegate {
+            },
+            accessTokenDelegate = object : AccessTokenDelegate {
                 override fun getAccessToken(): String? {
                     return getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                         PREF_USER_ACCESS_TOKEN,
@@ -71,7 +75,8 @@ class LiveLikeApplication : Application() {
                         PREF_USER_ACCESS_TOKEN, accessToken
                     ).apply()
                 }
-            })
+            }
+        )
 
 //        sdk.updateChatNickname("Hello Man:${java.util.Random().nextInt(20)}")
     }

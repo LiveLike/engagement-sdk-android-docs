@@ -1,9 +1,9 @@
 package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
-import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.livelikedemo.R
@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-
 
 class CustomAlertWidget : ConstraintLayout {
     private val job = SupervisorJob()
@@ -59,6 +58,4 @@ class CustomAlertWidget : ConstraintLayout {
             }
         }
     }
-
-
 }

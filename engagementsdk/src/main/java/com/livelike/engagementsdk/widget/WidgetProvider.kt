@@ -34,6 +34,7 @@ import com.livelike.engagementsdk.widget.WidgetType.TEXT_POLL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_QUIZ
+import com.livelike.engagementsdk.widget.WidgetType.VIDEO_ALERT
 import com.livelike.engagementsdk.widget.data.models.Badge
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.view.AlertWidgetView
@@ -46,6 +47,7 @@ import com.livelike.engagementsdk.widget.view.QuizView
 import com.livelike.engagementsdk.widget.view.SocialEmbedWidgetView
 import com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
+import com.livelike.engagementsdk.widget.view.components.VideoAlertWidgetView
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
@@ -56,6 +58,7 @@ import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
+import com.livelike.engagementsdk.widget.viewModel.VideoWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -84,6 +87,13 @@ internal class WidgetProvider {
                 this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = AlertWidgetViewModel(widgetInfos, analyticsService, onDismiss)
             }
+
+            VIDEO_ALERT -> VideoAlertWidgetView(context).apply {
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
+                widgetViewModel = VideoWidgetViewModel(widgetInfos, analyticsService, onDismiss)
+            }
+
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
                 this.widgetsTheme = liveLikeEngagementTheme?.widgets
@@ -149,7 +159,8 @@ internal class WidgetProvider {
                     gson.fromJson(
                         widgetInfos.payload,
                         Badge::class.java
-                    ), onDismiss, analyticsService, animationEventsStream
+                    ),
+                    onDismiss, analyticsService, animationEventsStream
                 )
             }
             CHEER_METER -> CheerMeterView(context).apply {
@@ -201,7 +212,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     internal var fontFamilyProvider: FontFamilyProvider? = null
 
     // initially it will be false, when widget moves to interaction state it will be turned on to show it to user in result state
-    protected var showResultAnimation:Boolean = false
+    protected var showResultAnimation: Boolean = false
 
     var widgetId: String = ""
     lateinit var widgetInfos: WidgetInfos
@@ -218,10 +229,13 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         super.onAttachedToWindow()
         widgetData =
             gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java)
-        postDelayed({
-            widgetData.height = height
-            widgetLifeCycleEventsListener?.onWidgetPresented(widgetData)
-        }, 500)
+        postDelayed(
+            {
+                widgetData.height = height
+                widgetLifeCycleEventsListener?.onWidgetPresented(widgetData)
+            },
+            500
+        )
         subscribeWidgetStateAndPublishToLifecycleListener()
     }
 
@@ -257,8 +271,8 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         var animationLength = AndroidResource.parseDuration(time).toFloat()
         var remainingAnimationLength = animationLength
         if (widgetViewModel?.timerStartTime != null) {
-            remainingAnimationLength = animationLength - (Calendar.getInstance().timeInMillis - (widgetViewModel?.timerStartTime?:0)).toFloat()
-        }else{
+            remainingAnimationLength = animationLength - (Calendar.getInstance().timeInMillis - (widgetViewModel?.timerStartTime ?: 0)).toFloat()
+        } else {
             widgetViewModel?.timerStartTime = Calendar.getInstance().timeInMillis
         }
         val animationEggTimerProgress = (animationLength - remainingAnimationLength) / animationLength
@@ -270,7 +284,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
                     remainingAnimationLength,
                     onUpdate,
                     dismissAction,
-                    widgetViewModel?.showDismissButton?:true
+                    widgetViewModel?.showDismissButton ?: true
                 )
             }
         }
@@ -304,20 +318,24 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     open fun setState(widgetStates: WidgetStates) {
         val nextStateOrdinal = widgetStates.ordinal
         widgetViewModel?.widgetState?.onNext(
-            WidgetStates.values()[min(
-                nextStateOrdinal,
-                WidgetStates.FINISHED.ordinal
-            )]
+            WidgetStates.values()[
+                min(
+                    nextStateOrdinal,
+                    WidgetStates.FINISHED.ordinal
+                )
+            ]
         )
     }
 
     open fun moveToNextState() {
         val nextStateOrdinal = (widgetViewModel?.widgetState?.latest()?.ordinal ?: 0) + 1
         widgetViewModel?.widgetState?.onNext(
-            WidgetStates.values()[min(
-                nextStateOrdinal,
-                WidgetStates.FINISHED.ordinal
-            )]
+            WidgetStates.values()[
+                min(
+                    nextStateOrdinal,
+                    WidgetStates.FINISHED.ordinal
+                )
+            ]
         )
     }
 }

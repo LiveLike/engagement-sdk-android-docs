@@ -84,7 +84,6 @@ internal class ChatSession(
     private val messages = ArrayList<LiveLikeChatMessage>()
     private val deletedMsgList = arrayListOf<String>()
 
-
     private val configurationUserPairFlow = flow {
         while (sdkConfiguration.latest() == null || userRepository.currentUserStream.latest() == null) {
             delay(1000)
@@ -239,7 +238,8 @@ internal class ChatSession(
                             } else if (chatRoomResult is Result.Error) {
                                 errorDelegate?.onError("error in fetching room id $chatRoomId")
                                 liveLikeCallback.onResponse(
-                                    null, chatRoomResult.exception.message
+                                    null,
+                                    chatRoomResult.exception.message
                                         ?: "error in fetching room id resource"
                                 )
                                 logError {
@@ -261,30 +261,32 @@ internal class ChatSession(
     ) {
         chatRoomId?.let {
             logDebug { "messageCount $chatRoomId ,$startTimestamp" }
-            fetchChatRoom(it, object : LiveLikeCallback<ChatRoom>() {
-                override fun onResponse(result: ChatRoom?, error: String?) {
-                    result?.let { chatRoom ->
-                        chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
-                            if (pubnubClientForMessageCount == null) {
-                                pubnubClientForMessageCount =
-                                    chatRepository?.establishChatMessagingConnection() as PubnubChatMessagingClient
-                            }
-                            pubnubClientForMessageCount?.getMessageCountV1(channel, startTimestamp)
-                                ?.run {
-                                    callback.processResult(this)
+            fetchChatRoom(
+                it,
+                object : LiveLikeCallback<ChatRoom>() {
+                    override fun onResponse(result: ChatRoom?, error: String?) {
+                        result?.let { chatRoom ->
+                            chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
+                                if (pubnubClientForMessageCount == null) {
+                                    pubnubClientForMessageCount =
+                                        chatRepository?.establishChatMessagingConnection() as PubnubChatMessagingClient
                                 }
+                                pubnubClientForMessageCount?.getMessageCountV1(channel, startTimestamp)
+                                    ?.run {
+                                        callback.processResult(this)
+                                    }
+                            }
+                        }
+                        error?.let {
+                            callback.onResponse(null, error)
                         }
                     }
-                    error?.let {
-                        callback.onResponse(null, error)
-                    }
                 }
-            })
+            )
         }
-
     }
 
-    //TODO: will move to constructor later after discussion
+    // TODO: will move to constructor later after discussion
     override fun connectToChatRoom(chatRoomId: String, callback: LiveLikeCallback<Unit>?) {
         if (chatRoomId.isEmpty()) {
             callback?.onResponse(null, "ChatRoom Id cannot be Empty")
@@ -301,38 +303,41 @@ internal class ChatSession(
         messages.clear()
         deletedMsgList.clear()
         this.chatRoomId = chatRoomId
-        fetchChatRoom(chatRoomId, object : LiveLikeCallback<ChatRoom>() {
-            override fun onResponse(result: ChatRoom?, error: String?) {
-                result?.let { chatRoom ->
-                    val channel = chatRoom.channels.chat[CHAT_PROVIDER]
-                    channel?.let { ch ->
-                        contentSessionScope.launch {
-                            delay(500)
-                            pubnubMessagingClient.addChannelSubscription(ch, 0L)
-                            delay(500)
-                            chatViewModel.apply {
-                                flushMessages()
-                                updatingURls(
-                                    chatRoom.clientId,
-                                    chatRoom.stickerPacksUrl,
-                                    chatRoom.reactionPacksUrl,
-                                    chatRoom.reportMessageUrl
-                                )
-                                delay(1000)
-                                currentChatRoom = chatRoom
-                                chatLoaded = false
+        fetchChatRoom(
+            chatRoomId,
+            object : LiveLikeCallback<ChatRoom>() {
+                override fun onResponse(result: ChatRoom?, error: String?) {
+                    result?.let { chatRoom ->
+                        val channel = chatRoom.channels.chat[CHAT_PROVIDER]
+                        channel?.let { ch ->
+                            contentSessionScope.launch {
+                                delay(500)
+                                pubnubMessagingClient.addChannelSubscription(ch, 0L)
+                                delay(500)
+                                chatViewModel.apply {
+                                    flushMessages()
+                                    updatingURls(
+                                        chatRoom.clientId,
+                                        chatRoom.stickerPacksUrl,
+                                        chatRoom.reactionPacksUrl,
+                                        chatRoom.reportMessageUrl
+                                    )
+                                    delay(1000)
+                                    currentChatRoom = chatRoom
+                                    chatLoaded = false
+                                }
+                                this@ChatSession.currentChatRoom = chatRoom
+                                pubnubMessagingClient.activeChatRoom = channel
+                                callback?.onResponse(Unit, null)
                             }
-                            this@ChatSession.currentChatRoom = chatRoom
-                            pubnubMessagingClient.activeChatRoom = channel
-                            callback?.onResponse(Unit, null)
                         }
                     }
-                }
-                error?.let {
-                    callback?.onResponse(null, error)
+                    error?.let {
+                        callback?.onResponse(null, error)
+                    }
                 }
             }
-        })
+        )
     }
 
     override fun setMessageListener(
@@ -376,7 +381,7 @@ internal class ChatSession(
             timeStamp = timeData.timeSinceEpochInMs.toString()
         ).let { chatMessage ->
 
-            //TODO: need to update for error handling here if pubnub respond failure of message
+            // TODO: need to update for error handling here if pubnub respond failure of message
             liveLikeCallback.onResponse(chatMessage.toLiveLikeChatMessage(), null)
 
             val hasExternalImage = imageUrl != null
@@ -444,5 +449,4 @@ internal class ChatSession(
     override fun getDeletedMessages(): ArrayList<String> {
         return deletedMsgList
     }
-
 }

@@ -4,6 +4,9 @@ import android.os.Handler
 import android.os.Looper
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.exceptionhelpers.safeCodeBlockCall
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.util.concurrent.ConcurrentHashMap
 
 internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = true) :
@@ -19,7 +22,7 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
     override fun onNext(data1: T?) {
         // TODO add debug log with class name appended
         logDebug { "subscription Manger: ${observerMap.size},data:$data1" }
-        //Important change if not working properly revert back
+        // Important change if not working properly revert back
         currentData = data1
         safeCodeBlockCall({
             observerMap.forEach {
@@ -97,9 +100,18 @@ internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 300L): Subscri
             }
 
             source.subscribe(source::class.java.simpleName) {
-                    handler.removeCallbacksAndMessages(null)
-                    handler.postDelayed(runnable(), duration)
+                handler.removeCallbacksAndMessages(null)
+                handler.postDelayed(runnable(), duration)
             }
 
             return mgr
         }
+
+internal fun <T> Stream<T>.toFlow(): Flow<T?> {
+    return flow {
+        while (this@toFlow.latest() == null) {
+            delay(1000)
+        }
+        emit(this@toFlow.latest())
+    }
+}

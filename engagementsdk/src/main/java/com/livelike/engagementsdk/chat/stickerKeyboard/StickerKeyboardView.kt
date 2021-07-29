@@ -4,17 +4,17 @@ import android.animation.LayoutTransition
 import android.app.Activity
 import android.content.Context
 import android.graphics.Color
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.material.tabs.TabLayout
-import androidx.viewpager.widget.ViewPager
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
+import com.google.android.material.tabs.TabLayout
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.filterRecentStickers
@@ -148,7 +148,8 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                         override fun onPageSelected(index: Int) {
                             pageListener.onPageSelected(index)
                         }
-                    })
+                    }
+                )
 
                 val listener = object : TabLayout.BaseOnTabSelectedListener<TabLayout.Tab> {
                     override fun onTabReselected(p0: TabLayout.Tab?) {
@@ -158,6 +159,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                     }
 
                     override fun onTabSelected(p0: TabLayout.Tab?) {
+                        logDebug { "Sticker Tab Selected :${p0?.position}" }
                         p0?.let {
                             pager.smoothScrollToPosition(p0.position)
                         }

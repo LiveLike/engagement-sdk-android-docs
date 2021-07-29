@@ -6,7 +6,6 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -47,11 +46,12 @@ internal class EmojiSliderWidgetViewModel(
     widgetMessagingClient,
     onDismiss,
     analyticsService
-), ImageSliderWidgetModel {
+),
+    ImageSliderWidgetModel {
 
     init {
         widgetObserver(widgetInfos)
-        //restoring the emoji slider position from interaction history
+        // restoring the emoji slider position from interaction history
         currentVote.onNext(getUserInteraction()?.magnitude?.toString())
     }
 
@@ -66,7 +66,8 @@ internal class EmojiSliderWidgetViewModel(
         uiScope.launch {
             data.latest()?.voteUrl?.let {
                 val fetchedUrl = dataClient.voteAsync(
-                    it, "", userRepository?.userAccessToken, FormBody.Builder()
+                    it, "", userRepository?.userAccessToken,
+                    FormBody.Builder()
                         .add("magnitude", value).build(),
                     userRepository = userRepository
                 )
@@ -78,7 +79,7 @@ internal class EmojiSliderWidgetViewModel(
         val resource =
             gson.fromJson(widgetInfos.payload.toString(), ImageSliderEntity::class.java) ?: null
         resource?.apply {
-            subscribeWidgetResults(resource.subscribe_channel,sdkConfiguration,userRepository.currentUserStream,widgetInfos.widgetId,results)
+            subscribeWidgetResults(resource.subscribe_channel, sdkConfiguration, userRepository.currentUserStream, widgetInfos.widgetId, results)
             data.onNext(resource)
             widgetState.onNext(WidgetStates.READY)
         }
@@ -91,26 +92,24 @@ internal class EmojiSliderWidgetViewModel(
     override fun dismissWidget(action: DismissAction) {
         super.dismissWidget(action)
         currentWidgetType?.let {
-                analyticsService.trackWidgetDismiss(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    programId,
-                    interactionData,
-                    false,
-                    action
-                )
+            analyticsService.trackWidgetDismiss(
+                it.toAnalyticsString(),
+                currentWidgetId,
+                programId,
+                interactionData,
+                false,
+                action
+            )
 
             logDebug { "dismiss EmojiSlider Widget, reason:${action.name}" }
         }
     }
-
 
     override val widgetData: LiveLikeWidget
         get() = gson.fromJson(widgetInfos?.payload, LiveLikeWidget::class.java)
 
     override val voteResults: Stream<LiveLikeWidgetResult>
         get() = results.map { it.toLiveLikeWidgetResult() }
-
 
     override fun finish() {
         onDismiss()
@@ -123,7 +122,8 @@ internal class EmojiSliderWidgetViewModel(
 
     override fun lockInVote(magnitude: Double) {
         data.latest()?.program_id?.let {
-            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
+            trackWidgetEngagedAnalytics(
+                currentWidgetType, currentWidgetId,
                 it
             )
         }
@@ -163,7 +163,7 @@ internal class EmojiSliderWidgetViewModel(
         }
     }
 
-    internal fun saveInteraction(magnitude: Float,url : String?) {
+    internal fun saveInteraction(magnitude: Float, url: String?) {
         widgetInteractionRepository?.saveWidgetInteraction(
             EmojiSliderUserInteraction(
                 magnitude,
@@ -180,5 +180,4 @@ internal class EmojiSliderWidgetViewModel(
         super.onClear()
         unsubscribeWidgetResults()
     }
-
 }

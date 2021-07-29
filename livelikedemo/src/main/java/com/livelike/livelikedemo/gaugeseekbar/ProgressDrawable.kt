@@ -1,23 +1,33 @@
 package com.livelike.livelikedemo.gaugeseekbar
 
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.ColorFilter
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.PixelFormat
+import android.graphics.PointF
+import android.graphics.RectF
+import android.graphics.SweepGradient
 
-class ProgressDrawable(position: PointF,
-                       private var progress: Float,
-                       private val radiusPx: Float,
-                       private val margin: Float,
-                       private val gradientArray: IntArray,
-                       private val startAngle: Float,
-                       private val trackWidthPx: Float,
-                       gradientPositionsArray: FloatArray? = null) : DrawableEntity(position) {
+class ProgressDrawable(
+    position: PointF,
+    private var progress: Float,
+    private val radiusPx: Float,
+    private val margin: Float,
+    private val gradientArray: IntArray,
+    private val startAngle: Float,
+    private val trackWidthPx: Float,
+    gradientPositionsArray: FloatArray? = null
+) : DrawableEntity(position) {
 
     private val gradientPositionsArray: FloatArray =
-            if (gradientPositionsArray != null) {
-                getGradientPositions(gradientPositionsArray)
-            } else getGradientPositions(
-                    FloatArray(gradientArray.size) {
-                        it.toFloat() / (gradientArray.size - 1)
-                    })
+        if (gradientPositionsArray != null) {
+            getGradientPositions(gradientPositionsArray)
+        } else getGradientPositions(
+            FloatArray(gradientArray.size) {
+                it.toFloat() / (gradientArray.size - 1)
+            }
+        )
 
     init {
         if (gradientArray.size != this.gradientPositionsArray.size)
@@ -41,7 +51,7 @@ class ProgressDrawable(position: PointF,
     private fun createSweepGradient(): SweepGradient {
         val shader = SweepGradient(centerPosition.x, centerPosition.y, gradientArray, gradientPositionsArray)
         val gradientRotationMatrix = Matrix()
-        //code need to account for path width
+        // code need to account for path width
         val angularMargin = Math.toDegrees(2 * Math.asin((trackWidthPx / radiusPx).toDouble())).toFloat()
         gradientRotationMatrix.preRotate(90f + startAngle - angularMargin, centerPosition.x, centerPosition.y)
         shader.setLocalMatrix(gradientRotationMatrix)
@@ -65,15 +75,19 @@ class ProgressDrawable(position: PointF,
     override fun draw(canvas: Canvas) {
         val angle = ((360 - (startAngle * 2)) * progress)
         if (angle > 0) {
-            val rect = RectF(centerPosition.x - radiusPx + margin,
-                    centerPosition.y - radiusPx + margin,
-                    centerPosition.x + radiusPx - margin,
-                    centerPosition.y + radiusPx - margin)
-            canvas.drawArc(rect,
-                    90f + startAngle,
-                    angle,
-                    false,
-                    progressPaint)
+            val rect = RectF(
+                centerPosition.x - radiusPx + margin,
+                centerPosition.y - radiusPx + margin,
+                centerPosition.x + radiusPx - margin,
+                centerPosition.y + radiusPx - margin
+            )
+            canvas.drawArc(
+                rect,
+                90f + startAngle,
+                angle,
+                false,
+                progressPaint
+            )
         }
     }
 

@@ -1,8 +1,6 @@
 package com.livelike.livelikedemo.utils
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AlertDialog
 import com.github.angads25.filepicker.controller.DialogSelectionListener
 import com.github.angads25.filepicker.model.DialogConfigs
@@ -11,7 +9,6 @@ import com.github.angads25.filepicker.view.FilePickerDialog
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-
 
 object DialogUtils {
 
@@ -32,16 +29,16 @@ object DialogUtils {
     ) {
         AlertDialog.Builder(context).apply {
             setTitle("Choose a widget to show!")
-            setItems(myWidgetsList.map { "${it.id}(${it.kind})\nPublished:${it.publishedAt}\nCreated:${it.createdAt}" }
-                .toTypedArray()) { _, which ->
+            setItems(
+                myWidgetsList.map { "${it.id}(${it.kind})\nPublished:${it.publishedAt}\nCreated:${it.createdAt}" }
+                    .toTypedArray()
+            ) { _, which ->
                 val widget = myWidgetsList[which]
                 sdk.fetchWidgetDetails(
                     widget.id!!,
                     widget.kind!!, liveLikeCallback
                 )
             }
-
-
         }.create()
             .apply {
 //                listView.divider = ColorDrawable(Color.BLACK) // set color

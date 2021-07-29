@@ -74,12 +74,6 @@ internal class WidgetManager(
 
     init {
         widgetInterceptorSubscribe()
-        currentWidgetViewStream.subscribe(this) {
-            widgetOnScreen = (it != null)
-            if (messageQueue.isNotEmpty()) {
-                publishNextInQueue()
-            }
-        }
     }
 
     private fun widgetInterceptorSubscribe() {
@@ -116,12 +110,12 @@ internal class WidgetManager(
         super.onClientMessageEvent(client, event)
         logDebug { "Message received at WidgetManager" }
         val payload = event.message["payload"].asJsonObject
-            widgetStream.onNext(
-                gson.fromJson(
-                    payload.toString(),
-                    LiveLikeWidget::class.java
-                )
+        widgetStream.onNext(
+            gson.fromJson(
+                payload.toString(),
+                LiveLikeWidget::class.java
             )
+        )
         messageQueue.add(MessageHolder(client, event))
         if (!widgetOnScreen) {
             publishNextInQueue()
@@ -220,9 +214,12 @@ internal class WidgetManager(
                 val message = ClientMessage(
                     JsonObject().apply {
                         addProperty("event", "points-tutorial")
-                        add("payload", JsonObject().apply {
-                            addProperty("id", "gameification")
-                        })
+                        add(
+                            "payload",
+                            JsonObject().apply {
+                                addProperty("id", "gameification")
+                            }
+                        )
                         addProperty("priority", 3)
                     }
                 )
@@ -246,7 +243,8 @@ enum class WidgetType(val event: String) {
     COLLECT_BADGE("collect-badge"),
     ALERT("alert-created"),
     IMAGE_SLIDER("emoji-slider-created"),
-    SOCIAL_EMBED("social-embed-created");
+    SOCIAL_EMBED("social-embed-created"),
+    VIDEO_ALERT("video-alert-created");
 
     companion object {
         private val map = values().associateBy(WidgetType::event)

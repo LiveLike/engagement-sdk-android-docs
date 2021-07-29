@@ -15,12 +15,10 @@ import kotlinx.android.synthetic.main.activity_sponsor_test.progress_bar
 import kotlinx.android.synthetic.main.activity_unclaimed_interaction.claim_rv
 import kotlinx.android.synthetic.main.activity_unclaimed_interaction.unclaimed_btn
 
-
 class UnclaimedInteractionActivity : AppCompatActivity() {
 
     private var session: LiveLikeContentSession? = null
     var adapter: UnclaimedInteractionAdapter? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,9 +27,7 @@ class UnclaimedInteractionActivity : AppCompatActivity() {
             (application as LiveLikeApplication).createPublicSession((application as LiveLikeApplication)?.channelManager.selectedChannel.llProgram.toString())
 
         unclaimed_btn.setOnClickListener { fetchUnclaimedInteractions() }
-
     }
-
 
     private fun fetchUnclaimedInteractions() {
         var unclaimedWidgetList: MutableList<LiveLikeWidget>? = ArrayList<LiveLikeWidget>()
@@ -50,7 +46,7 @@ class UnclaimedInteractionActivity : AppCompatActivity() {
                         unclaimedWidgetList?.let {
                             adapter = UnclaimedInteractionAdapter(
                                 this@UnclaimedInteractionActivity,
-                                (application as LiveLikeApplication).sdk,session, result
+                                (application as LiveLikeApplication).sdk, session, result
                             )
                             claim_rv.layoutManager =
                                 LinearLayoutManager(this@UnclaimedInteractionActivity)
@@ -58,6 +54,7 @@ class UnclaimedInteractionActivity : AppCompatActivity() {
                         }
                     }
                 }
-            })
+            }
+        )
     }
 }
