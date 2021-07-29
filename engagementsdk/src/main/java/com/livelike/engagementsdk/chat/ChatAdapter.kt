@@ -1,15 +1,21 @@
 package com.livelike.engagementsdk.chat
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Build
 import android.text.Layout
+import android.text.Spannable
 import android.text.SpannableString
 import android.text.StaticLayout
 import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.util.Linkify
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -72,6 +78,7 @@ import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
         override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -85,7 +92,7 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
 
 internal class ChatRecyclerAdapter(
     internal var analyticsService: AnalyticsService,
-    private val reporter: (ChatMessage) -> Unit
+    private val reporter: (ChatMessage) -> Unit,
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
     var isKeyboardOpen: Boolean = false
     internal var chatRoomId: String? = null
@@ -93,7 +100,8 @@ internal class ChatRecyclerAdapter(
     var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
     var chatReactionRepository: ChatReactionRepository? = null
-
+    var showLinks = false
+    var linksRegex: Regex? = null
     var checkListIsAtTop: (((position: Int) -> Boolean)?) = null
 
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
@@ -135,7 +143,7 @@ internal class ChatRecyclerAdapter(
     }
 
     /** Commenting this code for now so QA finalize whether old issues are coming or not
-     Flowing code helps in accessbility related issues
+    Flowing code helps in accessbility related issues
      **/
 //    override fun onViewDetachedFromWindow(holder: ViewHolder) {
 //        holder.hideFloatingUI()
@@ -510,6 +518,23 @@ internal class ChatRecyclerAdapter(
             }
         }
 
+        private fun getTextWithCustomLinks(spannableString: SpannableString): SpannableString {
+            linksRegex?.let {
+                val result = it.toPattern().matcher(spannableString)
+                while (result.find()) {
+                    val start = result.start()
+                    val end = result.end()
+                    spannableString.setSpan(
+                        InternalURLSpan(spannableString.subSequence(start, end).toString()),
+                        start,
+                        end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
+            return spannableString
+        }
+
         /**
          * Creating this function to get line count of string assuming the width as some value
          * it is estimated not exact value
@@ -565,6 +590,13 @@ internal class ChatRecyclerAdapter(
                         )
                         setLetterSpacingForTextView(chat_nickname, chatUserNameTextLetterSpacing)
                         chatMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatMessageTextSize)
+                        if (showLinks) {
+                            chatMessage.linksClickable = showLinks
+                            chatMessage.movementMethod = LinkMovementMethod.getInstance()
+                            if (linksRegex == null) {
+                                chatMessage.autoLinkMask = Linkify.ALL
+                            }
+                        }
                         setCustomFontWithTextStyle(
                             chatMessage,
                             chatMessageCustomFontPath,
@@ -741,8 +773,12 @@ internal class ChatRecyclerAdapter(
                                     MEDIUM_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    if (chatMessage.tag == message.id)
-                                        chatMessage.text = s
+                                    if (chatMessage.tag == message.id) {
+                                        chatMessage.text = when (showLinks) {
+                                            true -> getTextWithCustomLinks(s)
+                                            else -> s
+                                        }
+                                    }
                                 }
                             }
                             !isDeleted && atLeastOneSticker -> {
@@ -753,9 +789,9 @@ internal class ChatRecyclerAdapter(
                                 }
                                 chatMessage.minHeight =
                                     (chatMessageTextSize.toInt() * columnCount) + when {
-                                    lines != columnCount -> (lines * chatMessageTextSize.toInt())
-                                    else -> 0
-                                }
+                                        lines != columnCount -> (lines * chatMessageTextSize.toInt())
+                                        else -> 0
+                                    }
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
@@ -766,14 +802,21 @@ internal class ChatRecyclerAdapter(
                                     SMALL_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    if (chatMessage.tag == message.id)
-                                        chatMessage.text = s
+                                    if (chatMessage.tag == message.id) {
+                                        chatMessage.text = when (showLinks) {
+                                            true -> getTextWithCustomLinks(s)
+                                            else -> s
+                                        }
+                                    }
                                 }
                             }
                             else -> {
                                 clearTarget(message.id, context)
                                 chatMessage.minHeight = chatMessageTextSize.toInt()
-                                chatMessage.text = message.message
+                                chatMessage.text = when (showLinks) {
+                                    true -> getTextWithCustomLinks(SpannableString(message.message))
+                                    else -> message.message
+                                }
                             }
                         }
 
@@ -876,6 +919,15 @@ internal class ChatRecyclerAdapter(
         }
     }
 }
+
+class InternalURLSpan(private val clickedSpan: String) : ClickableSpan() {
+    override fun onClick(textView: View) {
+        val i = Intent(Intent.ACTION_VIEW)
+        i.data = Uri.parse(clickedSpan)
+        textView.context.startActivity(i)
+    }
+}
+
 
 // const val should be in uppercase always
 private const val LARGER_STICKER_SIZE = 100

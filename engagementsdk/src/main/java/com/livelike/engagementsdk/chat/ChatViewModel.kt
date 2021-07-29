@@ -50,7 +50,7 @@ internal class ChatViewModel(
             chatAdapter.analyticsService = value
         }
     var chatAdapter: ChatRecyclerAdapter =
-        ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
+        ChatRecyclerAdapter(analyticsService, ::reportChatMessage,)
     var messageList = mutableListOf<ChatMessage>()
     var cacheList = mutableListOf<ChatMessage>()
     var deletedMessages = hashSetOf<String>()
