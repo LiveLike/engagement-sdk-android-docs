@@ -56,7 +56,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     override fun getPDT(): Long {
         Handler(Looper.getMainLooper()).post {
             // things to do on the main thread
-            pdt  = getExoplayerPdtTime(object : PlayerProvider {
+            pdt = getExoplayerPdtTime(object : PlayerProvider {
                 override fun get(): SimpleExoPlayer? {
                     return player
                 }

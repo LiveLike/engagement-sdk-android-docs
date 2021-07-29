@@ -1,5 +1,7 @@
 package com.livelike.engagementsdk.core.data.models
 
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+
 class LLPaginatedResult<out T> {
 
     internal val previous: String? = null
@@ -13,5 +15,13 @@ class LLPaginatedResult<out T> {
 
     fun hasPrev(): Boolean {
         return previous != null
+    }
+
+    internal fun getPaginationUrl(liveLikePagination: LiveLikePagination): String? {
+        return when (liveLikePagination) {
+            LiveLikePagination.NEXT -> this.next
+            LiveLikePagination.PREVIOUS -> this.previous
+            else -> this.next
+        }
     }
 }
