@@ -27,6 +27,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -155,7 +157,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("url"),
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
                         responseData.extractStringOrEmpty("custom_data"),
-                        responseData.extractStringOrEmpty("badges_url")
+                        responseData.extractStringOrEmpty("badges_url"),
+                        responseData.extractStringOrEmpty("badge_progress_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -195,7 +198,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("url"),
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
                         responseData.extractStringOrEmpty("custom_data"),
-                        responseData.extractStringOrEmpty("badges_url")
+                        responseData.extractStringOrEmpty("badges_url"),
+                        responseData.extractStringOrEmpty("badge_progress_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -223,6 +227,15 @@ internal open class EngagementDataClientImpl :
 
     internal suspend inline fun <reified T : Any> remoteCall(
         url: String,
+        requestType: RequestType,
+        requestBody: RequestBody? = null,
+        accessToken: String?
+    ): Result<T> {
+        return remoteCall(url.toHttpUrl(), requestType, requestBody, accessToken)
+    }
+
+    internal suspend inline fun <reified T : Any> remoteCall(
+        url: HttpUrl,
         requestType: RequestType,
         requestBody: RequestBody? = null,
         accessToken: String?

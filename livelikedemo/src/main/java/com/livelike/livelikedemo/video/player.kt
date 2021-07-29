@@ -56,12 +56,11 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         var pdt = 0L
         Handler(Looper.getMainLooper()).post {
             // things to do on the main thread
-            pdt  = getExoplayerPdtTime(object : PlayerProvider {
+            pdt = getExoplayerPdtTime(object : PlayerProvider {
                 override fun get(): SimpleExoPlayer? {
                     return player
                 }
             })
-
         }
         /*return getExoplayerPdtTime(object : PlayerProvider {
             override fun get(): SimpleExoPlayer? {

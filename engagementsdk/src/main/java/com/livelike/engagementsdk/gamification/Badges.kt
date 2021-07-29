@@ -11,11 +11,14 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.toFlow
 import com.livelike.engagementsdk.core.utils.validateUuid
+import com.livelike.engagementsdk.gamification.models.Badge
+import com.livelike.engagementsdk.gamification.models.BadgeProgress
 import com.livelike.engagementsdk.gamification.models.ProfileBadge
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 class Badges internal constructor(
     private val applicationResourceStream: Stream<EngagementSDK.SdkConfiguration>,
@@ -61,11 +64,7 @@ class Badges internal constructor(
                     }
                 }
             } else {
-                fetchUrl = when (liveLikePagination) {
-                    LiveLikePagination.NEXT -> result.next
-                    LiveLikePagination.PREVIOUS -> result.previous
-                    else -> null
-                }
+                fetchUrl = result.getPaginationUrl(liveLikePagination)
             }
 
             if (fetchUrl == null) {
@@ -81,6 +80,93 @@ class Badges internal constructor(
                         profileBadgesResultMap[profileId] = this.data
                     }
                     liveLikeCallback.processResult(this)
+                }
+            }
+        }
+    }
+
+    private var lastApplicationBadgePage: LLPaginatedResult<Badge>? = null
+
+    /**
+     * fetch all the badges associated to the client id passed at initialization of sdk
+     * to fetch next page function need to be called again with LiveLikePagination.NEXT and for first call as LiveLikePagination.FIRST
+     **/
+    fun getApplicationBadges(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<Badge>>
+    ) {
+        var fetchUrl: String? = null
+        sdkScope.launch {
+            if (lastApplicationBadgePage == null || liveLikePagination == LiveLikePagination.FIRST) {
+                applicationResourceStream.toFlow().collect { applicatoionResource ->
+                    applicatoionResource?.let {
+                        fetchUrl = it.badgesUrl
+                    }
+                }
+            } else {
+                fetchUrl = lastApplicationBadgePage?.getPaginationUrl(liveLikePagination)
+            }
+
+            if (fetchUrl == null) {
+                liveLikeCallback.onResponse(null, "No more data")
+            } else {
+                dataClient.remoteCall<LLPaginatedResult<Badge>>(
+                    fetchUrl ?: "",
+                    RequestType.GET,
+                    null,
+                    null
+                ).run {
+                    if (this is Result.Success) {
+                        lastApplicationBadgePage = this.data
+                    }
+                    liveLikeCallback.processResult(this)
+                }
+            }
+        }
+    }
+
+    /**
+     * fetch all the profile badges progressions for the passed badge Ids
+     * @param profileId : id of the profile for which progressions to be looked
+     * @param badgeIds : list of all badge-ids, it has a hard limit checkout rest api documentation for latest limit
+     **/
+    fun getProfileBadgeProgress(
+        profileId: String,
+        badgeIds: List<String>,
+        liveLikeCallback: LiveLikeCallback<List<BadgeProgress>>
+    ) {
+
+        if (!validateUuid(profileId)) {
+            liveLikeCallback.onResponse(null, "Invalid Profile ID")
+            return
+        }
+
+        sdkScope.launch {
+            applicationResourceStream.toFlow().collect { applicatoionResource ->
+                applicatoionResource?.let {
+                    dataClient.remoteCall<LiveLikeUser>(
+                        it.profileDetailUrlTemplate.replace(
+                            TEMPLATE_PROFILE_ID, profileId
+                        ),
+                        RequestType.GET, null, null
+                    ).run {
+                        if (this is Result.Success) {
+                            val badgeProgressURL = this.data.badgeProgressUrl
+                            val httpUrl = badgeProgressURL?.toHttpUrlOrNull()?.newBuilder()?.apply {
+                                for (id in badgeIds) {
+                                    addQueryParameter("badge_id", id)
+                                }
+                            }
+                            dataClient.remoteCall<List<BadgeProgress>>(
+                                httpUrl?.build()!!,
+                                RequestType.GET,
+                                null,
+                                null
+                            ).run {
+                                liveLikeCallback.processResult(this)
+                            }
+                        }
+                    }
                 }
             }
         }

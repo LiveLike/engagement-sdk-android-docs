@@ -1050,7 +1050,8 @@ class EngagementSDK(
         val pubnubHeartbeatInterval: Int,
         @SerializedName("pubnub_presence_timeout")
         val pubnubPresenceTimeout: Int,
-
+        @SerializedName("badges_url")
+        val badgesUrl: String
     )
 
     companion object {
