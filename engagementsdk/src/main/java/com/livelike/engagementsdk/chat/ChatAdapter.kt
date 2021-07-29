@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
@@ -15,7 +16,7 @@ import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.text.util.Linkify
+import android.util.Patterns
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -101,7 +102,7 @@ internal class ChatRecyclerAdapter(
     lateinit var stickerPackRepository: StickerPackRepository
     var chatReactionRepository: ChatReactionRepository? = null
     var showLinks = false
-    var linksRegex: Regex? = null
+    var linksRegex = Patterns.WEB_URL.toRegex()
     var checkListIsAtTop: (((position: Int) -> Boolean)?) = null
 
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
@@ -594,9 +595,6 @@ internal class ChatRecyclerAdapter(
                             chatMessage.linksClickable = showLinks
                             chatMessage.setLinkTextColor(chatMessageLinkTextColor)
                             chatMessage.movementMethod = LinkMovementMethod.getInstance()
-                            if (linksRegex == null) {
-                                chatMessage.autoLinkMask = Linkify.WEB_URLS
-                            }
                         }
                         setCustomFontWithTextStyle(
                             chatMessage,
@@ -921,11 +919,17 @@ internal class ChatRecyclerAdapter(
     }
 }
 
-class InternalURLSpan(private val clickedSpan: String) : ClickableSpan() {
+class InternalURLSpan(private var clickedSpan: String) : ClickableSpan() {
     override fun onClick(textView: View) {
         val i = Intent(Intent.ACTION_VIEW)
+        if (!clickedSpan.startsWith("http://") && !clickedSpan.startsWith("https://"))
+            clickedSpan = "http://$clickedSpan"
         i.data = Uri.parse(clickedSpan)
-        textView.context.startActivity(i)
+        try {
+            textView.context.startActivity(i)
+        } catch (e: ActivityNotFoundException) {
+            logError { e.message }
+        }
     }
 }
 
