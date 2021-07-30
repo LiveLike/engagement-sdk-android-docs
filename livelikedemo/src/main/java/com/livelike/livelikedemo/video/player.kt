@@ -52,8 +52,8 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         }
     }
 
+    var pdt = 0L
     override fun getPDT(): Long {
-        var pdt = 0L
         Handler(Looper.getMainLooper()).post {
             // things to do on the main thread
             pdt = getExoplayerPdtTime(object : PlayerProvider {
@@ -109,6 +109,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
 
     /** responsible for stopping the player and releasing it */
     override fun release() {
+        pdt = 0
         player?.stop()
         player?.release()
         player?.setVideoSurfaceHolder(null)
