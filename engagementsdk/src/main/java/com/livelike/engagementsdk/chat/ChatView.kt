@@ -14,6 +14,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnLayoutChangeListener
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.InputMethodManager
@@ -142,11 +143,25 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         get() = (session as ChatSession?)?.chatViewModel
 
     val callback = MultiCallback(true)
+    private val layoutChangeListener =
+        OnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
+            if (bottom < oldBottom) {
+                viewModel?.chatAdapter?.itemCount?.let {
+                    if (it > 0) {
+                        if (viewModel?.isLastItemVisible == true) {
+                            chatdisplay.post {
+                                chatdisplay.smoothScrollToPosition(it - 1)
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
     init {
         context.scanForActivity()?.window?.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-                or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                    or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
         context.obtainStyledAttributes(
             attrs,
@@ -227,24 +242,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
         callback.addView(edittext_chat_message)
 
-        chatdisplay.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
-            if (bottom < oldBottom) {
-                viewModel?.chatAdapter?.itemCount?.let {
-                    if (it > 0) {
-                        chatdisplay.post {
-                            chatdisplay.smoothScrollToPosition(it - 1)
-                        }
-                    }
-                }
-            }
-        }
-
         swipeToRefresh.setOnRefreshListener {
             if (viewModel?.chatLoaded == true) {
                 viewModel?.loadPreviousMessages()
                 hidePopUpReactionPanel()
-            }
-            else
+            } else
                 swipeToRefresh.isRefreshing = false
         }
     }
@@ -306,7 +308,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         autoScroll = true
                         checkEmptyChat()
                         if (viewModel?.isLastItemVisible == true && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
-                            .not()
+                                .not()
                         ) {
                             snapToLive()
                         } else if (chatAdapter.isReactionPopUpShowing() || viewModel?.isLastItemVisible == false) {
@@ -322,6 +324,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             if (!swipeToRefresh.isRefreshing)
                                 snapToLive()
                             swipeToRefresh.isRefreshing = false
+                            eventStream.onNext(null)
                         }
                     }
                     ChatViewModel.EVENT_LOADING_STARTED -> {
@@ -473,6 +476,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     showKeyboard()
                 }
             }
+            chatdisplay.addOnLayoutChangeListener(layoutChangeListener)
         }
     }
 
@@ -941,6 +945,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         // added to dismiss popup reaction panel on fragment replace
+        chatdisplay.removeOnLayoutChangeListener(layoutChangeListener)
         viewModel?.chatAdapter?.chatPopUpView?.dismiss()
     }
 
