@@ -62,6 +62,7 @@ internal class ChatViewModel(
             field = value
             chatAdapter.chatRoomId = value?.id
             chatAdapter.isPublicChat = isPublicRoom
+            chatAdapter.chatRoomName = value?.title
         }
 
     var avatarUrl: String? = null

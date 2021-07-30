@@ -97,6 +97,7 @@ internal class ChatRecyclerAdapter(
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
     var isKeyboardOpen: Boolean = false
     internal var chatRoomId: String? = null
+    internal var chatRoomName: String? = null
     private var lastFloatingUiAnchorView: View? = null
     var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
@@ -526,7 +527,13 @@ internal class ChatRecyclerAdapter(
                     val start = result.start()
                     val end = result.end()
                     spannableString.setSpan(
-                        InternalURLSpan(spannableString.subSequence(start, end).toString()),
+                        InternalURLSpan(
+                            spannableString.subSequence(start, end).toString(),
+                            spannableString.toString(),
+                            chatRoomId,
+                            chatRoomName,
+                            analyticsService
+                        ),
                         start,
                         end,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -919,7 +926,13 @@ internal class ChatRecyclerAdapter(
     }
 }
 
-class InternalURLSpan(private var clickedSpan: String) : ClickableSpan() {
+class InternalURLSpan(
+    private var clickedSpan: String,
+    private val message: String,
+    private val chatRoomId: String?,
+    private val chatRoomName: String?,
+    private val analyticsService: AnalyticsService
+) : ClickableSpan() {
     override fun onClick(textView: View) {
         val i = Intent(Intent.ACTION_VIEW)
         if (!clickedSpan.startsWith("http://") && !clickedSpan.startsWith("https://"))
@@ -929,6 +942,9 @@ class InternalURLSpan(private var clickedSpan: String) : ClickableSpan() {
             textView.context.startActivity(i)
         } catch (e: ActivityNotFoundException) {
             logError { e.message }
+        }
+        chatRoomId?.let {
+            analyticsService.trackMessageLinkClicked(chatRoomId, chatRoomName, clickedSpan, message)
         }
     }
 }
