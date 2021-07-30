@@ -529,7 +529,7 @@ internal class ChatRecyclerAdapter(
                     spannableString.setSpan(
                         InternalURLSpan(
                             spannableString.subSequence(start, end).toString(),
-                            spannableString.toString(),
+                            message?.id,
                             chatRoomId,
                             chatRoomName,
                             analyticsService
@@ -928,7 +928,7 @@ internal class ChatRecyclerAdapter(
 
 class InternalURLSpan(
     private var clickedSpan: String,
-    private val message: String,
+    private val messageId: String?,
     private val chatRoomId: String?,
     private val chatRoomName: String?,
     private val analyticsService: AnalyticsService
@@ -944,7 +944,12 @@ class InternalURLSpan(
             logError { e.message }
         }
         chatRoomId?.let {
-            analyticsService.trackMessageLinkClicked(chatRoomId, chatRoomName, clickedSpan, message)
+            analyticsService.trackMessageLinkClicked(
+                chatRoomId,
+                chatRoomName,
+                messageId,
+                clickedSpan
+            )
         }
     }
 }

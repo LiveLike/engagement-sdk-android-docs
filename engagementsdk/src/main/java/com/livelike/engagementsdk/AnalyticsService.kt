@@ -126,7 +126,7 @@ interface AnalyticsService {
     fun trackMessageLinkClicked(
         chatRoomId: String,
         chatRoomName: String?,
-        message: String,
+        messageId: String?,
         link: String
     )
 
@@ -174,12 +174,12 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
     override fun trackMessageLinkClicked(
         chatRoomId: String,
         chatRoomName: String?,
-        message: String,
+        messageId: String?,
         link: String
     ) {
         Log.d(
             "[Analytics]",
-            "[${object {}.javaClass.enclosingMethod?.name}] $chatRoomId $chatRoomName $message $link"
+            "[${object {}.javaClass.enclosingMethod?.name}] $chatRoomId $chatRoomName $messageId $link"
         )
     }
 
@@ -726,19 +726,19 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
     override fun trackMessageLinkClicked(
         chatRoomId: String,
         chatRoomName: String?,
-        message: String,
+        messageId: String?,
         link: String
     ) {
         val properties = JSONObject()
         properties.put(CHAT_ROOM_ID, chatRoomId)
         properties.put("Chat Room Title", chatRoomName)
-        properties.put("Chat Message", message)
+        properties.put(CHAT_MESSAGE_ID, messageId)
         properties.put("Chat Message Link", link)
         mixpanel.track(KEY_EVENT_CHAT_MESSAGE_LINK_CLICKED, properties)
         eventObservers[clientId]?.invoke(KEY_EVENT_CHAT_MESSAGE_LINK_CLICKED, properties)
         Log.d(
             "[Analytics]",
-            "[${object {}.javaClass.enclosingMethod?.name}]$chatRoomId $chatRoomName $message $link"
+            "[${object {}.javaClass.enclosingMethod?.name}]$chatRoomId $chatRoomName $messageId $link"
         )
     }
 
