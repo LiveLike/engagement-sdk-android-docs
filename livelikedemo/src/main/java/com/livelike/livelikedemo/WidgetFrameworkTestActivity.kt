@@ -12,10 +12,15 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
+import kotlinx.android.synthetic.main.activity_widget_framework.btn_fetch
 import kotlinx.android.synthetic.main.activity_widget_framework.current_state_text_view
+import kotlinx.android.synthetic.main.activity_widget_framework.ed_widget_id
+import kotlinx.android.synthetic.main.activity_widget_framework.ed_widget_kind
 import kotlinx.android.synthetic.main.activity_widget_framework.input_widget_json
 import kotlinx.android.synthetic.main.activity_widget_framework.move_to_next_state
 import kotlinx.android.synthetic.main.activity_widget_framework.radio_finished
@@ -26,6 +31,7 @@ import kotlinx.android.synthetic.main.activity_widget_framework.show_my_widget
 import kotlinx.android.synthetic.main.activity_widget_framework.show_widget
 import kotlinx.android.synthetic.main.activity_widget_framework.txt_widget_interact_listener
 import kotlinx.android.synthetic.main.activity_widget_framework.widget_view
+import kotlinx.android.synthetic.main.activity_widget_framework.widget_view_fetch
 
 class WidgetFrameworkTestActivity : AppCompatActivity() {
 
@@ -132,6 +138,7 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                     }
                 }
             }
+
             var count = 0
             override fun onUserInteract(widgetData: LiveLikeWidgetEntity) {
                 count++
@@ -161,6 +168,36 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
         }
         if (ThemeRandomizer.themesList.size > 0) {
             widget_view.applyTheme(ThemeRandomizer.themesList.last())
+        }
+        ed_widget_id.setText("8259445a-e62e-4f15-b67c-43f6d891621e")
+        ed_widget_kind.setText("text-prediction")
+        btn_fetch.setOnClickListener {
+            val id = ed_widget_id.text.toString()
+            val kind = ed_widget_kind.text.toString()
+            (application as LiveLikeApplication).sdk.let { sdk ->
+                sdk.fetchWidgetDetails(id, kind,
+                    object : LiveLikeCallback<LiveLikeWidget>() {
+                        override fun onResponse(result: LiveLikeWidget?, error: String?) {
+                            result?.let { widget ->
+                                if (widget.widgetUserInteraction != null)
+                                    when (widget.getWidgetType()) {
+                                        WidgetType.TEXT_PREDICTION, WidgetType.TEXT_PREDICTION_FOLLOW_UP -> (widget.widgetUserInteraction as PredictionWidgetUserInteraction).let {
+                                            println("WidgetFrameworkTestActivity.onResponse>> ${it.isCorrect} => ${it.optionId}")
+                                        }
+                                    }
+                                println("WidgetFrameworkTestActivity.onResponse?????>>>${widget.widgetUserInteraction?.widgetKind}")
+                                widget_view_fetch.displayWidget(
+                                    sdk,
+                                    widget,
+                                    showWithInteractionData = true
+                                )
+                            }
+                            error?.let {
+                                Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    })
+            }
         }
     }
 }

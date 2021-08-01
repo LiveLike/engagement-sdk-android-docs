@@ -108,10 +108,55 @@
             android:textColor="@android:color/white" />
     </RadioGroup>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/ed_widget_id"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:hint="Widget Id"
+                android:singleLine="true"
+                android:textColor="@color/livelike_white" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/ed_widget_kind"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:hint="Widget Kind"
+                android:singleLine="true"
+                android:textColor="@color/livelike_white" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btn_fetch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fetch" />
+    </LinearLayout>
+
+    <com.livelike.engagementsdk.widget.view.WidgetView
+        android:id="@+id/widget_view_fetch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp" />
+
+
     <TextView
         android:id="@+id/txt_widget_interact_listener"
         android:layout_width="match_parent"
-        android:textColor="@android:color/white"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white" />
 
 </LinearLayout>
