@@ -45,6 +45,7 @@ import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.sponsorship.Sponsor
+import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
@@ -939,14 +940,31 @@ class EngagementSDK(
                     userRepository,
                     configurationStream.latest()?.programDetailUrlTemplate
                 )
-                widgetInteractionRepository.fetchRemoteInteractions(
-                    WidgetInfos(widgetType, jsonObject, widgetId)
+
+                val interactionResult = widgetInteractionRepository.fetchRemoteInteractions(
+                    WidgetInfos(widgetType, jsonObject, widgetId),
+                    widgetInteractionUrl = widget.widgetInteractionUrl
                 )
-                widget.widgetUserInteraction =
-                    widgetInteractionRepository.getWidgetInteraction(
-                        widgetId,
-                        WidgetKind.fromString(widgetType)
-                    )
+                if (interactionResult is com.livelike.engagementsdk.core.services.network.Result.Success) {
+                    interactionResult.data.interactions.let {
+                        widget.widgetUserInteraction =  when (WidgetType.fromString(widgetType)) {
+                            WidgetType.TEXT_PREDICTION_FOLLOW_UP, WidgetType.TEXT_PREDICTION -> it.textPrediction?.firstOrNull()
+                            WidgetType.IMAGE_PREDICTION_FOLLOW_UP,WidgetType.IMAGE_PREDICTION -> it.imagePrediction?.firstOrNull()
+                            WidgetType.IMAGE_POLL -> it.imagePoll?.firstOrNull()
+                            WidgetType.TEXT_POLL -> it.textPoll?.firstOrNull()
+                            WidgetType.IMAGE_QUIZ -> it.imageQuiz?.firstOrNull()
+                            WidgetType.TEXT_QUIZ -> it.textQuiz?.firstOrNull()
+                            WidgetType.CHEER_METER -> it.cheerMeter?.firstOrNull()
+                            WidgetType.IMAGE_SLIDER -> it.emojiSlider?.firstOrNull()
+                            else -> null
+                        }
+                    }
+                }
+//                widget.widgetUserInteraction =
+//                    widgetInteractionRepository.getWidgetInteraction(
+//                        widgetId,
+//                        WidgetKind.fromString(widgetType)
+//                    )
                 liveLikeCallback.onResponse(
                     widget,
                     null

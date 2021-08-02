@@ -13,7 +13,12 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidget
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
+import com.livelike.engagementsdk.widget.data.models.EmojiSliderUserInteraction
+import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
+import com.livelike.engagementsdk.widget.data.models.QuizWidgetUserInteraction
+import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
@@ -29,6 +34,7 @@ import kotlinx.android.synthetic.main.activity_widget_framework.radio_ready
 import kotlinx.android.synthetic.main.activity_widget_framework.radio_result
 import kotlinx.android.synthetic.main.activity_widget_framework.show_my_widget
 import kotlinx.android.synthetic.main.activity_widget_framework.show_widget
+import kotlinx.android.synthetic.main.activity_widget_framework.txt_result
 import kotlinx.android.synthetic.main.activity_widget_framework.txt_widget_interact_listener
 import kotlinx.android.synthetic.main.activity_widget_framework.widget_view
 import kotlinx.android.synthetic.main.activity_widget_framework.widget_view_fetch
@@ -169,8 +175,8 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
         if (ThemeRandomizer.themesList.size > 0) {
             widget_view.applyTheme(ThemeRandomizer.themesList.last())
         }
-        ed_widget_id.setText("8259445a-e62e-4f15-b67c-43f6d891621e")
-        ed_widget_kind.setText("text-prediction")
+        ed_widget_id.setText("80b728be-4839-4a99-8cc1-b0d66b3c3818")
+        ed_widget_kind.setText("text-prediction-follow-up")
         btn_fetch.setOnClickListener {
             val id = ed_widget_id.text.toString()
             val kind = ed_widget_kind.text.toString()
@@ -179,18 +185,38 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                     object : LiveLikeCallback<LiveLikeWidget>() {
                         override fun onResponse(result: LiveLikeWidget?, error: String?) {
                             result?.let { widget ->
-                                if (widget.widgetUserInteraction != null)
-                                    when (widget.getWidgetType()) {
-                                        WidgetType.TEXT_PREDICTION, WidgetType.TEXT_PREDICTION_FOLLOW_UP -> (widget.widgetUserInteraction as PredictionWidgetUserInteraction).let {
-                                            println("WidgetFrameworkTestActivity.onResponse>> ${it.isCorrect} => ${it.optionId}")
+                                when (widget.getWidgetType()) {
+                                    WidgetType.TEXT_PREDICTION, WidgetType.TEXT_PREDICTION_FOLLOW_UP -> {
+                                        (widget.widgetUserInteraction as? PredictionWidgetUserInteraction)?.let {
+                                            println("WidgetFrameworkTestActivity.onResponse??>> ${it.isCorrect} => ${it.optionId}")
                                         }
                                     }
+                                }
+                                widget.kind?.let { kind ->
+                                    when (WidgetKind.fromString(kind)) {
+                                        WidgetKind.PREDICTION -> (widget.widgetUserInteraction as? PredictionWidgetUserInteraction)?.let {
+                                            println("WidgetFrameworkTestActivity.onResponse>> ${it.isCorrect} => ${it.optionId}")
+                                        }
+                                        else -> {
+                                        }
+                                    }
+                                }
                                 println("WidgetFrameworkTestActivity.onResponse?????>>>${widget.widgetUserInteraction?.widgetKind}")
                                 widget_view_fetch.displayWidget(
                                     sdk,
                                     widget,
                                     showWithInteractionData = true
                                 )
+                                txt_result.text = widget.widgetUserInteraction?.let {
+                                    when(it){
+                                        is PredictionWidgetUserInteraction -> "User Correct: ${it.isCorrect}"
+                                        is PollWidgetUserInteraction -> "User Selected OptionId :${it.optionId}"
+                                        is QuizWidgetUserInteraction -> "User Selected: ${it.choiceId}"
+                                        is EmojiSliderUserInteraction -> "User data: ${it.magnitude}"
+                                        is CheerMeterUserInteraction -> "Total Score: ${it.totalScore}"
+                                        else -> "No Response"
+                                    }
+                                }
                             }
                             error?.let {
                                 Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
