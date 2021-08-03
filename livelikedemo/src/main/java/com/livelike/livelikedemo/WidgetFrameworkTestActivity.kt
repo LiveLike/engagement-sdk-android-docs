@@ -202,6 +202,9 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                                     }
                                 }
                                 println("WidgetFrameworkTestActivity.onResponse?????>>>${widget.widgetUserInteraction?.widgetKind}")
+                                widget_view_fetch.enableDefaultWidgetTransition = false
+                                widget_view_fetch.setState(WidgetStates.RESULTS)
+
                                 widget_view_fetch.displayWidget(
                                     sdk,
                                     widget,
