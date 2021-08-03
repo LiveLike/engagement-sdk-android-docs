@@ -48,6 +48,7 @@ import kotlinx.android.synthetic.main.activity_main.chk_custom_widgets_ui
 import kotlinx.android.synthetic.main.activity_main.chk_enable_debug
 import kotlinx.android.synthetic.main.activity_main.chk_show_avatar
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
+import kotlinx.android.synthetic.main.activity_main.chk_show_links
 import kotlinx.android.synthetic.main.activity_main.custom_chat
 import kotlinx.android.synthetic.main.activity_main.ed_avatar
 import kotlinx.android.synthetic.main.activity_main.events_button
@@ -95,7 +96,8 @@ class MainActivity : AppCompatActivity() {
         var jsonTheme: String? = null,
         var avatarUrl: String? = null,
         var showAvatar: Boolean = true,
-        var customCheerMeter: Boolean = false
+        var customCheerMeter: Boolean = false,
+        var showLink: Boolean = false
     )
 
     private lateinit var userStream: Stream<LiveLikeUserApi>
@@ -169,7 +171,6 @@ class MainActivity : AppCompatActivity() {
         ExoPlayerActivity::class,
         R.style.Default,
         true
-
     )
 
     val onlyWidget = PlayerInfo(
@@ -218,6 +219,9 @@ class MainActivity : AppCompatActivity() {
         chk_enable_debug.isChecked = EngagementSDK.enableDebug
         chk_enable_debug.setOnCheckedChangeListener { buttonView, isChecked ->
             EngagementSDK.enableDebug = isChecked
+        }
+        chk_show_links.setOnCheckedChangeListener { buttonView, isChecked ->
+            player.showLink = isChecked
         }
 
         sample_app.setOnClickListener {
@@ -436,24 +440,24 @@ class MainActivity : AppCompatActivity() {
         }
         btn_user_details.setOnClickListener {
             (application as LiveLikeApplication).sdk.getCurrentUserDetails(object :
-                    LiveLikeCallback<LiveLikeUserApi>() {
-                    override fun onResponse(result: LiveLikeUserApi?, error: String?) {
-                        result?.let {
-                            Toast.makeText(
-                                applicationContext,
-                                "API CustomData: ${it.custom_data}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        error?.let {
-                            Toast.makeText(
-                                applicationContext,
-                                "$it",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                LiveLikeCallback<LiveLikeUserApi>() {
+                override fun onResponse(result: LiveLikeUserApi?, error: String?) {
+                    result?.let {
+                        Toast.makeText(
+                            applicationContext,
+                            "API CustomData: ${it.custom_data}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                })
+                    error?.let {
+                        Toast.makeText(
+                            applicationContext,
+                            "$it",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            })
         }
 
         btn_nick_name.setOnClickListener {
@@ -599,6 +603,7 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     intent.putExtra("avatarUrl", player.avatarUrl)
     intent.putExtra("showAvatar", player.showAvatar)
     intent.putExtra("customCheerMeter", player.customCheerMeter)
+    intent.putExtra("showLink", player.showLink)
     intent.putExtra(
         "keyboardClose",
         when (player.theme) {

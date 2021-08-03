@@ -50,7 +50,7 @@ internal class ChatViewModel(
             chatAdapter.analyticsService = value
         }
     var chatAdapter: ChatRecyclerAdapter =
-        ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
+        ChatRecyclerAdapter(analyticsService, ::reportChatMessage,)
     var messageList = mutableListOf<ChatMessage>()
     var cacheList = mutableListOf<ChatMessage>()
     var deletedMessages = hashSetOf<String>()
@@ -62,6 +62,7 @@ internal class ChatViewModel(
             field = value
             chatAdapter.chatRoomId = value?.id
             chatAdapter.isPublicChat = isPublicRoom
+            chatAdapter.chatRoomName = value?.title
         }
 
     var avatarUrl: String? = null
@@ -88,7 +89,7 @@ internal class ChatViewModel(
             chatAdapter.chatRepository = value
         }
     var reportUrl: String? = null
-    var isLastItemVisible = true
+    var isLastItemVisible = false
 
     internal var chatLoaded = false
         set(value) {
