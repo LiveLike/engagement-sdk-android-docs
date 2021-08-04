@@ -320,7 +320,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (isHideChatInput) {
             chat_view.isChatInputVisible = false
         }
-        chat_view.enableURL = showLink
+        chat_view.enableChatMessageURLs = showLink
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate =
             object : UserProfileDelegate {

@@ -179,14 +179,13 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         initView(context)
     }
 
-
-    var enableURL: Boolean = false
+    var enableChatMessageURLs: Boolean = false
         set(value) {
             field = value
             viewModel?.chatAdapter?.showLinks = value
         }
 
-    var urlPatterns: String? = null
+    var chatMessageUrlPatterns: String? = null
         set(value) {
             field = value
             value?.let {
@@ -305,8 +304,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         viewModel?.apply {
-            chatAdapter.showLinks = enableURL
-            urlPatterns?.let {
+            chatAdapter.showLinks = enableChatMessageURLs
+            chatMessageUrlPatterns?.let {
                 chatAdapter.linksRegex = it.toRegex()
             }
             chatAdapter.currentChatReactionPopUpViewPos = -1

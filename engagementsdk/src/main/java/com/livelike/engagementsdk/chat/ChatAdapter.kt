@@ -102,8 +102,8 @@ internal class ChatRecyclerAdapter(
     var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
     var chatReactionRepository: ChatReactionRepository? = null
-    var showLinks = false
-    var linksRegex = Patterns.WEB_URL.toRegex()
+    internal var showLinks = false
+    internal var linksRegex = Patterns.WEB_URL.toRegex()
     var checkListIsAtTop: (((position: Int) -> Boolean)?) = null
 
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
