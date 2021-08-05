@@ -231,7 +231,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/chk_enable_debug" />
 
                 <EditText
-                    android:id="@id/ed_link_custom"
+                    android:id="@+id/ed_link_custom"
                     android:layout_width="match_parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
