@@ -29,6 +29,10 @@ import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout(context, attr) {
 
@@ -61,6 +65,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             field = value
             widgetContainerViewModel?.showDismissButton = value
         }
+
     init {
         context.obtainStyledAttributes(
             attr,
@@ -73,7 +78,8 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 recycle()
             }
         }
-        widgetContainerViewModel?.isLayoutTransitionEnabled = context.resources.getBoolean(R.bool.livelike_widget_component_layout_transition_enabled)
+        widgetContainerViewModel?.isLayoutTransitionEnabled =
+            context.resources.getBoolean(R.bool.livelike_widget_component_layout_transition_enabled)
         widgetContainerViewModel?.setWidgetContainer(this, widgetViewThemeAttributes)
     }
 
@@ -84,6 +90,10 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             widgetContainerViewModel?.widgetViewViewFactory = value
             field = value
         }
+
+    private val job = SupervisorJob()
+    private val uiScope = CoroutineScope(Dispatchers.Main + job)
+
 
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
@@ -142,10 +152,14 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         this.widgetListener = widgetListener
     }
 
-    fun displayWidget(sdk: EngagementSDK, liveLikeWidget: LiveLikeWidget) {
+    fun displayWidget(
+        sdk: EngagementSDK,
+        liveLikeWidget: LiveLikeWidget,
+        showWithInteractionData: Boolean = false
+    ) {
         try {
             val jsonObject = GsonBuilder().create().toJson(liveLikeWidget)
-            displayWidget(sdk, JsonParser.parseString(jsonObject).asJsonObject)
+            displayWidget(sdk, JsonParser.parseString(jsonObject).asJsonObject,showWithInteractionData)
         } catch (ex: JsonParseException) {
             logDebug { "Invalid json passed for displayWidget" }
             ex.printStackTrace()
@@ -153,11 +167,15 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     }
 
     /** displays the widget in the container
-     throws error if json invalid
-     clears the previous displayed widget (if any)
-     only clears if json is valid
+    throws error if json invalid
+    clears the previous displayed widget (if any)
+    only clears if json is valid
      */
-    fun displayWidget(sdk: EngagementSDK, widgetResourceJson: JsonObject) {
+    fun displayWidget(
+        sdk: EngagementSDK,
+        widgetResourceJson: JsonObject,
+        showWithInteractionData: Boolean = false
+    ) {
         try {
             var widgetType = widgetResourceJson.get("kind").asString
             widgetType = if (widgetType.contains("follow-up")) {
@@ -168,31 +186,37 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             val widgetId = widgetResourceJson["id"].asString
             val programId = widgetResourceJson.get("program_id").asString
             widgetContainerViewModel?.analyticsService = sdk.analyticService.latest()
-            widgetContainerViewModel?.currentWidgetViewStream?.onNext(
-                Pair(
-                    widgetType,
-                    WidgetProvider()
-                        .get(
-                            null,
-                            WidgetInfos(widgetType, widgetResourceJson, widgetId),
-                            context,
-                            sdk.analyticService.latest() ?: MockAnalyticsService(),
-                            sdk.configurationStream.latest()!!,
-                            {
-                                widgetContainerViewModel?.currentWidgetViewStream?.onNext(null)
-                            },
-                            sdk.userRepository,
-                            null,
-                            SubscriptionManager(),
-                            widgetViewThemeAttributes,
-                            engagementSDKTheme,
-                            WidgetInteractionRepository(
-                                context, programId, sdk.userRepository,
-                                sdk.configurationStream.latest()?.programDetailUrlTemplate
-                            )
-                        )
-                )
+            val widgetInteractionRepository = WidgetInteractionRepository(
+                context, programId, sdk.userRepository,
+                sdk.configurationStream.latest()?.programDetailUrlTemplate
             )
+            uiScope.launch {
+                if (showWithInteractionData) {
+                    widgetInteractionRepository.fetchRemoteInteractions(WidgetInfos(widgetType, widgetResourceJson, widgetId))
+                }
+                widgetContainerViewModel?.currentWidgetViewStream?.onNext(
+                    Pair(
+                        widgetType,
+                        WidgetProvider()
+                            .get(
+                                null,
+                                WidgetInfos(widgetType, widgetResourceJson, widgetId),
+                                context,
+                                sdk.analyticService.latest() ?: MockAnalyticsService(),
+                                sdk.configurationStream.latest()!!,
+                                {
+                                    widgetContainerViewModel?.currentWidgetViewStream?.onNext(null)
+                                },
+                                sdk.userRepository,
+                                null,
+                                SubscriptionManager(),
+                                widgetViewThemeAttributes,
+                                engagementSDKTheme,
+                                widgetInteractionRepository
+                            )
+                    )
+                )
+            }
         } catch (ex: Exception) {
             logDebug { "Invalid json passed for displayWidget" }
             ex.printStackTrace()
