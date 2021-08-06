@@ -12,13 +12,12 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
 import com.livelike.engagementsdk.widget.data.models.EmojiSliderUserInteraction
 import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.QuizWidgetUserInteraction
-import com.livelike.engagementsdk.widget.data.models.WidgetKind
+import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
@@ -58,13 +57,13 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 ),
                 object : TypeToken<List<LiveLikeWidget>>() {}.type
             ) ?: arrayListOf()
+        val channelManager = (application as LiveLikeApplication).channelManager
+        val channel = channelManager.selectedChannel
+        val session = (application as LiveLikeApplication).createPublicSession(
+            channel.llProgram.toString(),
+            null
+        )
         show_my_widget.setOnClickListener {
-            val channelManager = (application as LiveLikeApplication).channelManager
-            val channel = channelManager.selectedChannel
-            val session = (application as LiveLikeApplication).createPublicSession(
-                channel.llProgram.toString(),
-                null
-            )
             session.getPublishedWidgets(
                 LiveLikePagination.FIRST,
                 object : LiveLikeCallback<List<LiveLikeWidget>>() {
@@ -185,23 +184,32 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                     object : LiveLikeCallback<LiveLikeWidget>() {
                         override fun onResponse(result: LiveLikeWidget?, error: String?) {
                             result?.let { widget ->
-                                when (widget.getWidgetType()) {
-                                    WidgetType.TEXT_PREDICTION, WidgetType.TEXT_PREDICTION_FOLLOW_UP -> {
-                                        (widget.widgetUserInteraction as? PredictionWidgetUserInteraction)?.let {
-                                            println("WidgetFrameworkTestActivity.onResponse??>> ${it.isCorrect} => ${it.optionId}")
+                                session.getWidgetInteraction(
+                                    widgetId = widget.id!!,
+                                    widgetKind = widget.kind!!,
+                                    widgetInteractionUrl = widget.widgetInteractionUrl!!,
+                                    liveLikeCallback = object :
+                                        LiveLikeCallback<WidgetUserInteractionBase>() {
+                                        override fun onResponse(
+                                            result: WidgetUserInteractionBase?,
+                                            error: String?
+                                        ) {
+                                            result?.let {
+                                                txt_result.text = it.let {
+                                                    when (it) {
+                                                        is PredictionWidgetUserInteraction -> "User Correct: ${it.isCorrect}"
+                                                        is PollWidgetUserInteraction -> "User Selected OptionId :${it.optionId}"
+                                                        is QuizWidgetUserInteraction -> "User Selected: ${it.choiceId}"
+                                                        is EmojiSliderUserInteraction -> "User data: ${it.magnitude}"
+                                                        is CheerMeterUserInteraction -> "Total Score: ${it.totalScore}"
+                                                        else -> "No Response"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
-                                }
-                                widget.kind?.let { kind ->
-                                    when (WidgetKind.fromString(kind)) {
-                                        WidgetKind.PREDICTION -> (widget.widgetUserInteraction as? PredictionWidgetUserInteraction)?.let {
-                                            println("WidgetFrameworkTestActivity.onResponse>> ${it.isCorrect} => ${it.optionId}")
-                                        }
-                                        else -> {
-                                        }
-                                    }
-                                }
-                                println("WidgetFrameworkTestActivity.onResponse?????>>>${widget.widgetUserInteraction?.widgetKind}")
+                                )
+
                                 widget_view_fetch.enableDefaultWidgetTransition = false
                                 widget_view_fetch.setState(WidgetStates.RESULTS)
 
@@ -210,16 +218,7 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                                     widget,
                                     showWithInteractionData = true
                                 )
-                                txt_result.text = widget.widgetUserInteraction?.let {
-                                    when(it){
-                                        is PredictionWidgetUserInteraction -> "User Correct: ${it.isCorrect}"
-                                        is PollWidgetUserInteraction -> "User Selected OptionId :${it.optionId}"
-                                        is QuizWidgetUserInteraction -> "User Selected: ${it.choiceId}"
-                                        is EmojiSliderUserInteraction -> "User data: ${it.magnitude}"
-                                        is CheerMeterUserInteraction -> "Total Score: ${it.totalScore}"
-                                        else -> "No Response"
-                                    }
-                                }
+
                             }
                             error?.let {
                                 Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()

@@ -159,7 +159,11 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     ) {
         try {
             val jsonObject = GsonBuilder().create().toJson(liveLikeWidget)
-            displayWidget(sdk, JsonParser.parseString(jsonObject).asJsonObject,showWithInteractionData)
+            displayWidget(
+                sdk,
+                JsonParser.parseString(jsonObject).asJsonObject,
+                showWithInteractionData
+            )
         } catch (ex: JsonParseException) {
             logDebug { "Invalid json passed for displayWidget" }
             ex.printStackTrace()
@@ -192,7 +196,10 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             )
             uiScope.launch {
                 if (showWithInteractionData) {
-                    widgetInteractionRepository.fetchRemoteInteractions(WidgetInfos(widgetType, widgetResourceJson, widgetId))
+                    widgetInteractionRepository.fetchRemoteInteractions(
+                        widgetId = widgetId,
+                        widgetKind = widgetType
+                    )
                 }
                 widgetContainerViewModel?.currentWidgetViewStream?.onNext(
                     Pair(
