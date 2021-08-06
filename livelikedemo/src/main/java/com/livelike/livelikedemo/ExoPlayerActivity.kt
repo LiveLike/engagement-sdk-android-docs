@@ -69,6 +69,7 @@ import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
 
+    private var customLink: String? = null
     private var showLink: Boolean = false
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
     private var jsonTheme: String? = null
@@ -130,6 +131,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             showNotification = intent.getBooleanExtra("showNotification", true)
             showLink = intent.getBooleanExtra("showLink", false)
+            customLink = intent.getStringExtra("customLink")
 
             adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
             val position = savedInstanceState?.getLong(POSITION) ?: 0
@@ -321,6 +323,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             chat_view.isChatInputVisible = false
         }
         chat_view.enableChatMessageURLs = showLink
+        if (showLink) {
+            chat_view.chatMessageUrlPatterns = customLink
+        }
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate =
             object : UserProfileDelegate {
