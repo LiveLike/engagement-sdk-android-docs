@@ -145,7 +145,10 @@ class ChatViewThemeAttributes {
             }
 
             val sendKeyboardStickerDrawable = TypedValue()
-            getValue(R.styleable.ChatView_chatStickerKeyboardSendDrawable, sendKeyboardStickerDrawable)
+            getValue(
+                R.styleable.ChatView_chatStickerKeyboardSendDrawable,
+                sendKeyboardStickerDrawable
+            )
 
             chatStickerKeyboardSendDrawable = when (sendKeyboardStickerDrawable.type) {
                 TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
@@ -572,7 +575,8 @@ class ChatViewThemeAttributes {
                 getFloat(R.styleable.ChatView_reaction_icons_gap_factor, 1.2f)
             chatReactionModerationFlagVisible =
                 getBoolean(R.styleable.ChatView_chatReactionModerationFlagVisible, true)
-            chatUserNameTextStyle = getInt(R.styleable.ChatView_chatUserNameTextStyle, Typeface.BOLD)
+            chatUserNameTextStyle =
+                getInt(R.styleable.ChatView_chatUserNameTextStyle, Typeface.BOLD)
             chatUserNameCustomFontPath = getString(R.styleable.ChatView_chatUserNameCustomFontPath)
             chatUserNameTextAllCaps =
                 getBoolean(R.styleable.ChatView_chatUserNameTextAllCaps, false)
@@ -623,6 +627,10 @@ class ChatViewThemeAttributes {
                 getFloat(R.styleable.ChatView_chatMessageTextLetterSpacing, 0.0f)
             chatUserNameTextLetterSpacing =
                 getFloat(R.styleable.ChatView_chatUserNameTextLetterSpacing, 0.0f)
+            chatMessageLinkTextColor = getColor(
+                R.styleable.ChatView_chatMessageLinkTextColor,
+                ContextCompat.getColor(context, R.color.livelike_chatMessage_link_text_color)
+            )
         }
     }
 
@@ -668,7 +676,8 @@ class ChatViewThemeAttributes {
     var chatOtherNickNameColor: Int = Color.TRANSPARENT
     var chatNickNameColor: Int = Color.TRANSPARENT
     var chatReactionBackgroundRes: Drawable? = null
-    var chatReactionMessageBubbleHighlightedBackground: Int? = R.drawable.ic_chat_message_highlighted_bubble_rounded_rectangle
+    var chatReactionMessageBubbleHighlightedBackground: Int? =
+        R.drawable.ic_chat_message_highlighted_bubble_rounded_rectangle
     var chatReactionMessageBackHighlightedBackground: Int? = null
     var chatReactionPanelColor: Int = Color.WHITE
     var chatReactionPanelCountColor: Int = Color.BLACK
@@ -734,4 +743,5 @@ class ChatViewThemeAttributes {
     var chatReactionDisplaySize: Int = AndroidResource.dpToPx(12)
     var chatReactionPanelGravity: Int = Gravity.CENTER or Gravity.TOP
     var chatReactionPanelCountVisibleIfZero: Boolean = true
+    var chatMessageLinkTextColor: Int = Color.BLUE
 }

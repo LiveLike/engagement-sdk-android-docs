@@ -60,7 +60,13 @@ interface AnalyticsService {
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
     fun trackWidgetDisplayed(kind: String, id: String, programId: String, linkUrl: String? = null)
-    fun trackWidgetBecameInteractive(kind: String, id: String, programId: String, linkUrl: String? = null)
+    fun trackWidgetBecameInteractive(
+        kind: String,
+        id: String,
+        programId: String,
+        linkUrl: String? = null
+    )
+
     fun trackWidgetDismiss(
         kind: String,
         id: String,
@@ -116,6 +122,14 @@ interface AnalyticsService {
         programId: String,
         videoUrl: String
     )
+
+    fun trackMessageLinkClicked(
+        chatRoomId: String,
+        chatRoomName: String?,
+        messageId: String?,
+        link: String
+    )
+
     fun destroy()
 }
 
@@ -154,6 +168,18 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d(
             "[Analytics]",
             "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId $videoUrl"
+        )
+    }
+
+    override fun trackMessageLinkClicked(
+        chatRoomId: String,
+        chatRoomName: String?,
+        messageId: String?,
+        link: String
+    ) {
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}] $chatRoomId $chatRoomName $messageId $link"
         )
     }
 
@@ -697,6 +723,25 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         )
     }
 
+    override fun trackMessageLinkClicked(
+        chatRoomId: String,
+        chatRoomName: String?,
+        messageId: String?,
+        link: String
+    ) {
+        val properties = JSONObject()
+        properties.put(CHAT_ROOM_ID, chatRoomId)
+        properties.put("Chat Room Title", chatRoomName)
+        properties.put(CHAT_MESSAGE_ID, messageId)
+        properties.put("Chat Message Link", link)
+        mixpanel.track(KEY_EVENT_CHAT_MESSAGE_LINK_CLICKED, properties)
+        eventObservers[clientId]?.invoke(KEY_EVENT_CHAT_MESSAGE_LINK_CLICKED, properties)
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}]$chatRoomId $chatRoomName $messageId $link"
+        )
+    }
+
     override fun destroy() {
         mixpanel.flush()
         Log.d(
@@ -950,6 +995,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         const val KEY_EVENT_CHAT_REACTION_REMOVED = "Chat Reaction Removed"
         const val KEY_EVENT_ALERT_LINK_OPENED = "Alert Link Opened"
         const val KEY_EVENT_VIDEO_ALERT_PLAY_STARTED = "Video Alert Play Started"
+        const val KEY_EVENT_CHAT_MESSAGE_LINK_CLICKED = "Chat Message Link Clicked"
     }
 }
 
