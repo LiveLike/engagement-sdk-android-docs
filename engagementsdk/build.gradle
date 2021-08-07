@@ -29,6 +29,10 @@ android {
         buildConfigField "String", "SDK_VERSION", '"2.20"'
     }
 
+    buildFeatures {
+        viewBinding  true
+    }
+
     afterEvaluate {
         publishing {
             publications {
@@ -63,6 +67,10 @@ android {
         qatesting {
             dimension 'default'
             buildConfigField "String", "CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/"'
+        }
+        qaiconictesting {
+            dimension 'default'
+            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-iconic.livelikecdn.com/api/v1/"'
         }
     }
 

@@ -61,6 +61,7 @@ internal class WidgetInteractionRepository(
                 interactions.imagePoll?.let { interactionList.addAll(it) }
                 interactions.imagePrediction?.let { interactionList.addAll(it) }
                 interactions.imageQuiz?.let { interactionList.addAll(it) }
+                interactions.textAsk?.let {interactionList.addAll(it)}
             }
             interactionList.forEach {
                 if (it is CheerMeterUserInteraction && widgetInteractionMap[it.widgetId] != null) {
@@ -141,6 +142,7 @@ internal class WidgetInteractionRepository(
             WidgetType.IMAGE_SLIDER -> "emoji_slider"
             WidgetType.TEXT_PREDICTION_FOLLOW_UP -> "text_prediction"
             WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> "image_prediction"
+            WidgetType.TEXT_ASK -> "text_ask"
             else -> ""
         }
     }

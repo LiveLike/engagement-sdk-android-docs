@@ -48,6 +48,33 @@ data class CheerMeterTheme(
     }
 }
 
+data class TextAskTheme(val submitButtonEnabled: ViewStyleProps? = null,
+                        val submitTextEnabled: ViewStyleProps?=null,
+                        val submitButtonDisabled: ViewStyleProps? = null,
+                        val submitTextDisabled: ViewStyleProps?=null,
+                        val confirmation: ViewStyleProps? = null,
+                        val prompt: ViewStyleProps?= null,
+                        val replyEnabled: ViewStyleProps?= null,
+                        val replyDisabled: ViewStyleProps?= null,
+                        val replyPlaceholder: ViewStyleProps?= null,
+                        ): WidgetBaseThemeComponent(){
+    override fun validate(): String? {
+        return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
+        ?: header?.validate()
+        ?: submitButtonEnabled?.validate()
+        ?: submitTextEnabled?.validate()
+        ?: submitButtonDisabled?.validate()
+        ?: submitTextDisabled?.validate()
+        ?: timer?.validate()
+        ?: title?.validate()
+        ?: confirmation?.validate()
+        ?: prompt?.validate()
+        ?: replyEnabled?.validate()
+        ?: replyDisabled?.validate()
+        ?: replyPlaceholder?.validate()
+    }
+                        }
+
 class AlertWidgetThemeComponent : WidgetBaseThemeComponent()
 
 class SocialEmbedThemeComponent : WidgetBaseThemeComponent()
@@ -61,6 +88,7 @@ data class WidgetsTheme(
     val quiz: OptionsWidgetThemeComponent? = null,
     val socialEmbed: SocialEmbedThemeComponent? = null,
     val videoAlert: AlertWidgetThemeComponent? = null,
+    val textAsk: TextAskTheme? = null
 ) : BaseTheme() {
     override fun validate(): String? {
         return alert?.validate() ?: cheerMeter?.validate() ?: imageSlider?.validate()
@@ -82,6 +110,7 @@ data class WidgetsTheme(
             WidgetType.CHEER_METER -> cheerMeter
             WidgetType.SOCIAL_EMBED -> socialEmbed
             WidgetType.VIDEO_ALERT -> videoAlert
+            WidgetType.TEXT_ASK -> textAsk
             else -> null
         }
     }
@@ -93,6 +122,7 @@ data class ViewStyleProps(
     val borderRadius: List<Double>? = null,
     val borderWidth: Double? = null,
     val fontColor: String? = null,
+    val placeHolder:String? =null,
     val fontFamily: List<String>? = null,
     val fontSize: Double? = null,
     val fontWeight: FontWeight? = null,

@@ -139,4 +139,11 @@
     <color name="livelike_vote_btn_color_pressed">#AA800080</color>
     <color name="livelike_video_alert_link_background_color">#222426</color>
     <color name="livelike_video_loader_color">#ffffff</color>
+    <color name="livelike_send_btn_color">#545454</color>
+    <color name="livelike_ama_input_box_color">#282828</color>
+    <color name="livelike_ama_input_box_hint_color">#ababab</color>
+    <color name="livelike_ama_send_button_inactive_text_color">#ababab</color>
+    <color name="livelike_ama_send_button_active_text_color">#000000</color>
+    <color name="livelike_ama_confirmation_msg_text_color">#00f078</color>
+
 </resources>

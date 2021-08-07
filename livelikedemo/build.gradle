@@ -46,6 +46,13 @@ android {
             buildConfigField "String", "APP_CLIENT_ID", '"pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
             buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/programs/?client_id=pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
         }
+
+        qaiconictesting {
+            dimension 'default'
+            applicationIdSuffix ".iconicqa"
+            buildConfigField "String", "APP_CLIENT_ID", '"LT9lUmrzSqXvAL66rSWSGK0weclpFNbHANUTxW9O"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-iconic.livelikecdn.com/api/v1/programs/?client_id=LT9lUmrzSqXvAL66rSWSGK0weclpFNbHANUTxW9O"'
+        }
     }
 }
 

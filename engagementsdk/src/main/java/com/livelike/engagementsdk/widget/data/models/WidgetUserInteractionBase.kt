@@ -93,12 +93,24 @@ class CheerMeterUserInteraction(
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
+class AskMeAnythingUserInteraction(
+    id: String,
+    createdAt: String,
+    url: String?,
+    @field:SerializedName("text")
+    val text: String?,
+    widgetId: String,
+    widgetKind: String
+): WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
+
 enum class WidgetKind(val event: String) {
     CHEER_METER("cheer-meter"),
     PREDICTION("prediction"),
     QUIZ("quiz"),
     POLL("poll"),
-    IMAGE_SLIDER("emoji-slider");
+    IMAGE_SLIDER("emoji-slider"),
+    TEXT_ASK ("text-ask");
+
 
     companion object {
         private val map = values().associateBy(WidgetKind::event)

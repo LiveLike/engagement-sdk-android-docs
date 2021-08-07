@@ -5,6 +5,7 @@ import com.google.gson.JsonParser
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.core.data.models.SubmitApiResponse
 import com.livelike.engagementsdk.core.data.models.VoteApiResponse
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
@@ -52,6 +53,12 @@ internal interface WidgetDataClient {
         analyticsService: AnalyticsService,
         accessToken: String?
     ): ProgramGamificationProfile?
+
+    suspend fun submitReplyAsync(
+        replyUrl: String,
+        body: RequestBody,
+        accessToken: String?
+    ): SubmitApiResponse?
 
     suspend fun getWidgetDataFromIdAndKind(id: String, kind: String): JsonObject?
     suspend fun getAllPublishedWidgets(url: String): JsonObject?
@@ -139,6 +146,18 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
             )
         }
     }
+
+    override suspend fun submitReplyAsync(
+        replyUrl: String,
+        body: RequestBody,
+        accessToken: String?
+    ): SubmitApiResponse? {
+        return gson.fromJson(
+            postAsync(replyUrl,accessToken,body),
+            SubmitApiResponse::class.java
+        )
+    }
+
 
     override suspend fun getWidgetDataFromIdAndKind(id: String, kind: String) =
         suspendCoroutine<JsonObject> {
