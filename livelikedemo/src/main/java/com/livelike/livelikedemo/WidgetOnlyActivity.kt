@@ -33,6 +33,8 @@ import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.TextAskWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
@@ -51,6 +53,8 @@ import com.livelike.livelikedemo.models.PredictionRequest
 import com.livelike.livelikedemo.models.PredictionResponse
 import com.livelike.livelikedemo.models.QuizRequest
 import com.livelike.livelikedemo.models.QuizResponse
+import com.livelike.livelikedemo.models.TextAskRequest
+import com.livelike.livelikedemo.models.TextAskResponse
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.btn_change_background
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.fm_lay
@@ -90,6 +94,8 @@ class WidgetOnlyActivity : AppCompatActivity() {
     private val emojiSlider = "emoji-sliders"
     private val alerts = "alerts"
     private val cheerMeter = "cheer-meters"
+    private val textAsk = "text-asks"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,7 +146,10 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 PostType("Text,Image and Universal URL(random)", false, alerts, 4),
 
                 PostType("Cheer Meter", true),
-                PostType(twoOptions, false, cheerMeter, 2)
+                PostType(twoOptions, false, cheerMeter, 2),
+
+                PostType("Text Ask", true),
+                PostType(twoOptions, false, textAsk, 2)
             )
         )
         rcyl_view.adapter = adapter
@@ -249,6 +258,14 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     return CustomImageSlider(this@WidgetOnlyActivity).apply {
                         this.imageSliderWidgetModel = imageSliderWidgetModel
                     }
+                }
+
+                override fun createVideoAlertWidgetView(videoAlertWidgetModel: VideoAlertWidgetModel): View? {
+                    return null
+                }
+
+                override fun createTextAskWidgetView(imageSliderWidgetModel: TextAskWidgetModel): View? {
+                    return null
                 }
             }
 
@@ -408,6 +425,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                             "production" -> "Bearer zslM9_lbiy3SWkMbKsoGfAkK2Kg46dfVkN1Zsdt8K_P3BJU-AJOeSQ"
                             "staging" -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
                             "qatesting" -> "Bearer 95BmUG5FWgtikjrj-hqlYblfdF4X5nldidDepAmhFefBUy2lRPXEEw"
+                            "qaiconictesting" -> "Bearer NmQ6vAUxPtB2yBl2uLcebbJKQa3DWH_RnxcZpjVnBspVPZH_KB1BtQ"
                             else -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
                         }
                     scope.launch(Dispatchers.IO) {
@@ -516,6 +534,13 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 question,
                                 "PT30S"
                             )
+                            textAsk -> TextAskRequest(
+                                "This is a prompt",
+                                null,
+                                programId,
+                                "PT30S",
+                                "this is the title",
+                            )
                             else -> null
                         }
                         scope.launch {
@@ -546,6 +571,9 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 cheerMeter -> gson.fromJson(
                                     responseString, CheerMeterRequestResponse::class.java
                                 )
+                                textAsk -> gson.fromJson(
+                                    responseString, TextAskResponse::class.java
+                                )
                                 else -> null
                             }
                         } catch (e: java.lang.Exception) {
@@ -555,13 +583,20 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         response?.let {
                             when (it) {
                                 is AlertResponse -> {
-                                    putAPI(it.schedule_url)
+                                    it.schedule_url?.let{it1 -> putAPI(it1)}
                                 }
                                 is PollRequestResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
                                 is QuizResponse -> {
-                                    putAPI(it.schedule_url)
+                                    it.schedule_url?.let{it1 -> putAPI(it1)
+                                    }
+
+                                }
+                                is TextAskResponse -> {
+                                    it.schedule_url?.let{it1 -> putAPI(it1)
+                                    }
+
                                 }
                                 is PredictionResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
@@ -653,7 +688,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
 
             private val authorization = "Authorization"
             private var accessToken: String =
-                "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
+                "Bearer NmQ6vAUxPtB2yBl2uLcebbJKQa3DWH_RnxcZpjVnBspVPZH_KB1BtQ"
 
             private suspend fun postAPI(
                 url: String,
