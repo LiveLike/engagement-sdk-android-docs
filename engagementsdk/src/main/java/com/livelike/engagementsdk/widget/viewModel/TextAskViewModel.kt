@@ -67,7 +67,7 @@ internal class TextAskViewModel(
     }
 
     /** responsible for submitting the user response */
-    override fun submitReply(response: String) {
+    override fun submitReply(response: String){
         uiScope.launch {
             data.currentData?.resource?.reply_url?.let {
                 dataClient.submitReplyAsync(it,  FormBody.Builder()

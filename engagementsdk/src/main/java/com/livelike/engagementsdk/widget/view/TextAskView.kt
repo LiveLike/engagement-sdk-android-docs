@@ -7,6 +7,7 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -63,7 +64,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
             binding.titleView.text = resource.title
             binding.bodyText.text = resource.prompt
             binding.confirmationMessageTv.text = resource.confirmation_message
-            binding.confirmationMessageTv.visibility = GONE
+            binding.confirmationMessageTv.visibility = INVISIBLE
 
             binding.userInputEdt.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(arg0: Editable) {
@@ -290,11 +291,9 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
     private fun lockInteractionAndSubmitResponse() {
         disableUserInput()
         disableSendBtn()
-        viewModel?.submitReply(binding.userInputEdt.text.toString())?.let {
-            logDebug { "ASK-submitted" }
+       viewModel?.submitReply(binding.userInputEdt.text.toString())?.let {
+            confirmationMessageTv.visibility = VISIBLE
         }
-        confirmationMessageTv.visibility = VISIBLE
-
     }
 
     /**
