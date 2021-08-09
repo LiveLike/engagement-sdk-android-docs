@@ -12,10 +12,19 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
+import com.livelike.engagementsdk.widget.data.models.EmojiSliderUserInteraction
+import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
+import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
+import com.livelike.engagementsdk.widget.data.models.QuizWidgetUserInteraction
+import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
+import kotlinx.android.synthetic.main.activity_widget_framework.btn_fetch
 import kotlinx.android.synthetic.main.activity_widget_framework.current_state_text_view
+import kotlinx.android.synthetic.main.activity_widget_framework.ed_widget_id
+import kotlinx.android.synthetic.main.activity_widget_framework.ed_widget_kind
 import kotlinx.android.synthetic.main.activity_widget_framework.input_widget_json
 import kotlinx.android.synthetic.main.activity_widget_framework.move_to_next_state
 import kotlinx.android.synthetic.main.activity_widget_framework.radio_finished
@@ -24,8 +33,10 @@ import kotlinx.android.synthetic.main.activity_widget_framework.radio_ready
 import kotlinx.android.synthetic.main.activity_widget_framework.radio_result
 import kotlinx.android.synthetic.main.activity_widget_framework.show_my_widget
 import kotlinx.android.synthetic.main.activity_widget_framework.show_widget
+import kotlinx.android.synthetic.main.activity_widget_framework.txt_result
 import kotlinx.android.synthetic.main.activity_widget_framework.txt_widget_interact_listener
 import kotlinx.android.synthetic.main.activity_widget_framework.widget_view
+import kotlinx.android.synthetic.main.activity_widget_framework.widget_view_fetch
 
 class WidgetFrameworkTestActivity : AppCompatActivity() {
 
@@ -46,13 +57,13 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 ),
                 object : TypeToken<List<LiveLikeWidget>>() {}.type
             ) ?: arrayListOf()
+        val channelManager = (application as LiveLikeApplication).channelManager
+        val channel = channelManager.selectedChannel
+        val session = (application as LiveLikeApplication).createPublicSession(
+            channel.llProgram.toString(),
+            null
+        )
         show_my_widget.setOnClickListener {
-            val channelManager = (application as LiveLikeApplication).channelManager
-            val channel = channelManager.selectedChannel
-            val session = (application as LiveLikeApplication).createPublicSession(
-                channel.llProgram.toString(),
-                null
-            )
             session.getPublishedWidgets(
                 LiveLikePagination.FIRST,
                 object : LiveLikeCallback<List<LiveLikeWidget>>() {
@@ -132,6 +143,7 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                     }
                 }
             }
+
             var count = 0
             override fun onUserInteract(widgetData: LiveLikeWidgetEntity) {
                 count++
@@ -161,6 +173,59 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
         }
         if (ThemeRandomizer.themesList.size > 0) {
             widget_view.applyTheme(ThemeRandomizer.themesList.last())
+        }
+        ed_widget_id.setText("80b728be-4839-4a99-8cc1-b0d66b3c3818")
+        ed_widget_kind.setText("text-prediction-follow-up")
+        btn_fetch.setOnClickListener {
+            val id = ed_widget_id.text.toString()
+            val kind = ed_widget_kind.text.toString()
+            (application as LiveLikeApplication).sdk.let { sdk ->
+                sdk.fetchWidgetDetails(id, kind,
+                    object : LiveLikeCallback<LiveLikeWidget>() {
+                        override fun onResponse(result: LiveLikeWidget?, error: String?) {
+                            result?.let { widget ->
+                                session.getWidgetInteraction(
+                                    widgetId = widget.id!!,
+                                    widgetKind = widget.kind!!,
+                                    widgetInteractionUrl = widget.widgetInteractionUrl!!,
+                                    liveLikeCallback = object :
+                                        LiveLikeCallback<WidgetUserInteractionBase>() {
+                                        override fun onResponse(
+                                            result: WidgetUserInteractionBase?,
+                                            error: String?
+                                        ) {
+                                            result?.let {
+                                                txt_result.text = it.let {
+                                                    when (it) {
+                                                        is PredictionWidgetUserInteraction -> "User Correct: ${it.isCorrect}"
+                                                        is PollWidgetUserInteraction -> "User Selected OptionId :${it.optionId}"
+                                                        is QuizWidgetUserInteraction -> "User Selected: ${it.choiceId}"
+                                                        is EmojiSliderUserInteraction -> "User data: ${it.magnitude}"
+                                                        is CheerMeterUserInteraction -> "Total Score: ${it.totalScore}"
+                                                        else -> "No Response"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                )
+
+                                widget_view_fetch.enableDefaultWidgetTransition = false
+                                widget_view_fetch.setState(WidgetStates.RESULTS)
+
+                                widget_view_fetch.displayWidget(
+                                    sdk,
+                                    widget,
+                                    showWithInteractionData = true
+                                )
+
+                            }
+                            error?.let {
+                                Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    })
+            }
         }
     }
 }

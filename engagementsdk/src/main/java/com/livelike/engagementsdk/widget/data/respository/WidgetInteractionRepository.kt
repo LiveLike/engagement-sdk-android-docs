@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.widget.data.respository
 
 import android.content.Context
 import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
-import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
@@ -25,7 +24,8 @@ internal class WidgetInteractionRepository(
     val programUrlTemplate: String?
 ) {
 
-    private val widgetInteractionRemoteSource: WidgetInteractionRemoteSource = WidgetInteractionRemoteSource()
+    private val widgetInteractionRemoteSource: WidgetInteractionRemoteSource =
+        WidgetInteractionRemoteSource()
     private val llDataClient = EngagementDataClientImpl()
     private val programRepository = ProgramRepository(programID, userRepository)
 
@@ -45,7 +45,10 @@ internal class WidgetInteractionRepository(
     /**
      * Responsible for fetching interactions and storing those locally
      **/
-    internal suspend fun fetchAndStoreWidgetInteractions(url: String, accessToken: String): Result<UserWidgetInteractionApi> {
+    internal suspend fun fetchAndStoreWidgetInteractions(
+        url: String,
+        accessToken: String
+    ): Result<UserWidgetInteractionApi> {
 
         val widgetInteractionsResult =
             widgetInteractionRemoteSource.getWidgetInteractions(url, accessToken)
@@ -77,7 +80,11 @@ internal class WidgetInteractionRepository(
      * present in program resource. And fetch interaction based on that interaction url
      *
      **/
-    internal suspend fun fetchRemoteInteractions(widgetInfo: WidgetInfos): Result<UserWidgetInteractionApi>? {
+    internal suspend fun fetchRemoteInteractions(
+        widgetInteractionUrl: String? = null,
+        widgetId: String,
+        widgetKind: String
+    ): Result<UserWidgetInteractionApi>? {
         var results: Result<UserWidgetInteractionApi>? = null
         if (programRepository.program == null) {
             programUrlTemplate?.let {
@@ -92,7 +99,7 @@ internal class WidgetInteractionRepository(
                 if (programResults is Result.Success) {
                     results = userRepository.userAccessToken?.let {
                         fetchAndStoreWidgetInteractions(
-                            getInteractionUrl(widgetInfo),
+                            getInteractionUrl(widgetInteractionUrl, widgetId, widgetKind),
                             it
                         )
                     }
@@ -103,7 +110,7 @@ internal class WidgetInteractionRepository(
         } else {
             results = userRepository.userAccessToken?.let {
                 fetchAndStoreWidgetInteractions(
-                    getInteractionUrl(widgetInfo),
+                    getInteractionUrl(widgetInteractionUrl, widgetId, widgetKind),
                     it
                 )
             }
@@ -114,17 +121,21 @@ internal class WidgetInteractionRepository(
     /**
      * get interaction url with appended widget kind and widget id
      **/
-    private fun getInteractionUrl(widgetInfo: WidgetInfos): String {
+    private fun getInteractionUrl(
+        widgetInteractionUrl: String? = null,
+        widgetId: String,
+        widgetKind: String
+    ): String {
         var url =
             userRepository.currentUserStream.latest()?.id?.let {
-                programRepository.program?.widgetInteractionUrl?.replace(
+                (widgetInteractionUrl ?: programRepository.program?.widgetInteractionUrl)?.replace(
                     "{profile_id}",
                     it
                 )
             } ?: ""
 
-        if (url.isNotEmpty()) {
-            url += "?${getWidgetKindBasedOnType(widgetInfo.type)}_id=${widgetInfo.widgetId}"
+        if (url.isNotEmpty() && widgetInteractionUrl == null) {
+            url += "?${getWidgetKindBasedOnType(widgetKind)}_id=${widgetId}"
         }
         return url
     }

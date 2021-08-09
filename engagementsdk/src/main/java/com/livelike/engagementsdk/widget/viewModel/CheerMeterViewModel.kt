@@ -64,7 +64,7 @@ internal class CheerMeterViewModel(
     val results: Stream<Resource> =
         SubscriptionManager()
     val
-    voteEnd: SubscriptionManager<Boolean> =
+            voteEnd: SubscriptionManager<Boolean> =
         SubscriptionManager()
     val data: SubscriptionManager<CheerMeterWidget> =
         SubscriptionManager()
@@ -162,7 +162,13 @@ internal class CheerMeterViewModel(
                         )
                     )
                 }
-                subscribeWidgetResults(resource.subscribe_channel, sdkConfiguration, userRepository.currentUserStream, widgetInfos.widgetId, results)
+                subscribeWidgetResults(
+                    resource.subscribe_channel,
+                    sdkConfiguration,
+                    userRepository.currentUserStream,
+                    widgetInfos.widgetId,
+                    results
+                )
                 data.onNext(
                     WidgetType.fromString(widgetInfos.type)?.let {
                         CheerMeterWidget(
@@ -178,15 +184,15 @@ internal class CheerMeterViewModel(
             interactionData.widgetDisplayed()
 
             // this is not needed here, ideally this event should get called when interaction expires
-           /* currentWidgetType?.let {
-                    analyticsService.trackWidgetInteraction(
-                        it.toAnalyticsString(),
-                        currentWidgetId,
-                        programId,
-                        interactionData
-                    )
+            /* currentWidgetType?.let {
+                     analyticsService.trackWidgetInteraction(
+                         it.toAnalyticsString(),
+                         currentWidgetId,
+                         programId,
+                         interactionData
+                     )
 
-            }*/
+             }*/
         }
     }
 
@@ -277,7 +283,10 @@ internal class CheerMeterViewModel(
         uiScope.launch {
             try {
                 val results =
-                    widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
+                    widgetInteractionRepository?.fetchRemoteInteractions(
+                        widgetId = widgetInfos.widgetId,
+                        widgetKind = widgetInfos.type
+                    )
 
                 if (results is Result.Success) {
                     liveLikeCallback.onResponse(

@@ -69,6 +69,8 @@ import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
 
+    private var customLink: String? = null
+    private var showLink: Boolean = false
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
     private var jsonTheme: String? = null
     private var showNotification: Boolean = true
@@ -128,6 +130,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
 
             showNotification = intent.getBooleanExtra("showNotification", true)
+            showLink = intent.getBooleanExtra("showLink", false)
+            customLink = intent.getStringExtra("customLink")
 
             adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
             val position = savedInstanceState?.getLong(POSITION) ?: 0
@@ -319,6 +323,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             chat_view.isChatInputVisible = false
         }
 
+
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate =
             object : UserProfileDelegate {
                 override fun userProfile(
@@ -400,13 +405,13 @@ class ExoPlayerActivity : AppCompatActivity() {
     private fun initializeLiveLikeSDK(channel: Channel) {
         registerLogsHandler(object :
                 (String) -> Unit {
-                override fun invoke(text: String) {
-                    Handler(mainLooper).post {
-                        logsPreview.text = "$text \n\n ${logsPreview.text}"
-                        fullLogs.text = "$text \n\n ${fullLogs.text}"
-                    }
+            override fun invoke(text: String) {
+                Handler(mainLooper).post {
+                    logsPreview.text = "$text \n\n ${logsPreview.text}"
+                    fullLogs.text = "$text \n\n ${fullLogs.text}"
                 }
-            })
+            }
+        })
 
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createPublicSession(
@@ -425,6 +430,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
                 }
             })
+
             widget_view?.setSession(session)
 
             widget_view?.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
@@ -478,6 +484,10 @@ class ExoPlayerActivity : AppCompatActivity() {
             txt_chat_room_id?.visibility = View.INVISIBLE
             txt_chat_room_title?.visibility = View.INVISIBLE
             session?.chatSession?.shouldDisplayAvatar = showChatAvatar
+            chat_view.enableChatMessageURLs = showLink
+            if (showLink) {
+                chat_view.chatMessageUrlPatterns = customLink
+            }
             chat_view?.setSession(session!!.chatSession)
         }
         player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())

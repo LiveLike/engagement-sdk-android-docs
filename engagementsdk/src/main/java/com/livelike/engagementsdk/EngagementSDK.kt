@@ -45,8 +45,10 @@ import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.sponsorship.Sponsor
+import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
+import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
@@ -516,10 +518,10 @@ class EngagementSDK(
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
                     val url = "${
-                    it.leaderboardDetailUrlTemplate?.replace(
-                        TEMPLATE_LEADER_BOARD_ID,
-                        leaderBoardId
-                    )
+                        it.leaderboardDetailUrlTemplate?.replace(
+                            TEMPLATE_LEADER_BOARD_ID,
+                            leaderBoardId
+                        )
                     }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
                         url,
@@ -557,10 +559,10 @@ class EngagementSDK(
                             job.add(
                                 launch {
                                     val url = "${
-                                    it.leaderboardDetailUrlTemplate?.replace(
-                                        TEMPLATE_LEADER_BOARD_ID,
-                                        leaderBoardId.get(i)
-                                    )
+                                        it.leaderboardDetailUrlTemplate?.replace(
+                                            TEMPLATE_LEADER_BOARD_ID,
+                                            leaderBoardId.get(i)
+                                        )
                                     }"
                                     val result = dataClient.remoteCall<LeaderBoardResource>(
                                         url,
@@ -748,10 +750,10 @@ class EngagementSDK(
                     val entriesUrl = when (pair.first) {
                         LiveLikePagination.FIRST -> {
                             val url = "${
-                            it.leaderboardDetailUrlTemplate?.replace(
-                                TEMPLATE_LEADER_BOARD_ID,
-                                leaderBoardId
-                            )
+                                it.leaderboardDetailUrlTemplate?.replace(
+                                    TEMPLATE_LEADER_BOARD_ID,
+                                    leaderBoardId
+                                )
                             }"
                             val result = dataClient.remoteCall<LeaderBoardResource>(
                                 url,
@@ -821,10 +823,10 @@ class EngagementSDK(
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
                     val url = "${
-                    it.leaderboardDetailUrlTemplate?.replace(
-                        TEMPLATE_LEADER_BOARD_ID,
-                        leaderBoardId
-                    )
+                        it.leaderboardDetailUrlTemplate?.replace(
+                            TEMPLATE_LEADER_BOARD_ID,
+                            leaderBoardId
+                        )
                     }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
                         url,
@@ -875,10 +877,10 @@ class EngagementSDK(
         profileId: String
     ): Result<LeaderBoardEntry> {
         val url = "${
-        sdkConfig.leaderboardDetailUrlTemplate?.replace(
-            TEMPLATE_LEADER_BOARD_ID,
-            leaderBoardId
-        )
+            sdkConfig.leaderboardDetailUrlTemplate?.replace(
+                TEMPLATE_LEADER_BOARD_ID,
+                leaderBoardId
+            )
         }"
         val result = dataClient.remoteCall<LeaderBoardResource>(
             url,
@@ -922,8 +924,9 @@ class EngagementSDK(
         uiScope.launch {
             try {
                 val jsonObject = widgetDataClient.getWidgetDataFromIdAndKind(widgetId, widgetKind)
+                val widget = gson.fromJson(jsonObject, LiveLikeWidget::class.java)
                 liveLikeCallback.onResponse(
-                    gson.fromJson(jsonObject, LiveLikeWidget::class.java),
+                    widget,
                     null
                 )
             } catch (e: JsonParseException) {

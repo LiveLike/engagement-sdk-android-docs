@@ -3,6 +3,7 @@ package com.livelike.engagementsdk
 import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.SocialEmbedItem
+import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 
 data class LiveLikeWidget(
 
@@ -123,7 +124,9 @@ data class LiveLikeWidget(
     @field:SerializedName("items")
     val socialEmbedItems: List<SocialEmbedItem>?,
     @field:SerializedName("comment")
-    val comment: String?
+    val comment: String?,
+    @field:SerializedName("widget_interactions_url_template")
+    val widgetInteractionUrl:String?
 ) {
     /**
      * Added this method to get WidgetType for integrator understanding and they can use it for they implementation
