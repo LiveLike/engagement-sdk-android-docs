@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.widget.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.StateListDrawable
 import android.text.Editable
@@ -7,7 +8,6 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -54,6 +54,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
     }
 
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun resourceObserver(widget: TextAskWidget?) {
         widget?.apply {
             if (!inflated) {
@@ -82,9 +83,15 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
             })
 
+            binding.userInputEdt.setOnTouchListener { v, _ -> // Disallow the touch request for parent scroll on touch of child view
+                v.parent.requestDisallowInterceptTouchEvent(true)
+                false
+            }
+
             binding.sendBtn.setOnClickListener {
                 lockInteractionAndSubmitResponse()
                 binding.textEggTimer.visibility = GONE
+                hideKeyboard()
             }
 
             if (viewModel?.getUserInteraction() != null) {
@@ -264,14 +271,12 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
 
     /** disables the user input box */
     private fun disableUserInput() {
-        binding.userInputEdt.isEnabled = false
+        //binding.userInputEdt.isEnabled = false
+        binding.userInputEdt.isFocusableInTouchMode = false
+        binding.userInputEdt.isCursorVisible = false
+        binding.userInputEdt.clearFocus()
     }
 
-
-    /** enables the user input box */
-    private fun enableUserInput() {
-        binding.userInputEdt.isEnabled = true
-    }
 
     /** changes the return key as done in keyboard */
     private fun setImeOptionDoneInKeyboard(){
