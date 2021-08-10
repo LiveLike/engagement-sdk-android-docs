@@ -72,6 +72,14 @@ android {
             dimension 'default'
             buildConfigField "String", "CONFIG_URL", '"https://cf-blast-iconic.livelikecdn.com/api/v1/"'
         }
+        qagamechangerstesting {
+            dimension 'default'
+            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-game-changers.livelikecdn.com/api/v1/"'
+        }
+        qadigtesting {
+            dimension 'default'
+            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-dig.livelikecdn.com/api/v1/"'
+        }
     }
 
     sonarqube {

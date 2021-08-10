@@ -37,6 +37,12 @@ android {
         qaiconictesting{
             dimension 'default'
         }
+        qagamechangerstesting{
+            dimension 'default'
+        }
+        qadigtesting{
+            dimension 'default'
+        }
     }
 }
 

@@ -25,7 +25,8 @@ internal class WidgetInteractionRepository(
     val programUrlTemplate: String?
 ) {
 
-    private val widgetInteractionRemoteSource: WidgetInteractionRemoteSource = WidgetInteractionRemoteSource()
+    private val widgetInteractionRemoteSource: WidgetInteractionRemoteSource =
+        WidgetInteractionRemoteSource()
     private val llDataClient = EngagementDataClientImpl()
     private val programRepository = ProgramRepository(programID, userRepository)
 
@@ -45,7 +46,10 @@ internal class WidgetInteractionRepository(
     /**
      * Responsible for fetching interactions and storing those locally
      **/
-    internal suspend fun fetchAndStoreWidgetInteractions(url: String, accessToken: String): Result<UserWidgetInteractionApi> {
+    internal suspend fun fetchAndStoreWidgetInteractions(
+        url: String,
+        accessToken: String
+    ): Result<UserWidgetInteractionApi> {
 
         val widgetInteractionsResult =
             widgetInteractionRemoteSource.getWidgetInteractions(url, accessToken)
@@ -78,7 +82,10 @@ internal class WidgetInteractionRepository(
      * present in program resource. And fetch interaction based on that interaction url
      *
      **/
-    internal suspend fun fetchRemoteInteractions(widgetInfo: WidgetInfos): Result<UserWidgetInteractionApi>? {
+    internal suspend fun fetchRemoteInteractions(
+        widgetInfo: WidgetInfos,
+        widgetInteractionUrl: String? = null
+    ): Result<UserWidgetInteractionApi>? {
         var results: Result<UserWidgetInteractionApi>? = null
         if (programRepository.program == null) {
             programUrlTemplate?.let {
@@ -93,7 +100,7 @@ internal class WidgetInteractionRepository(
                 if (programResults is Result.Success) {
                     results = userRepository.userAccessToken?.let {
                         fetchAndStoreWidgetInteractions(
-                            getInteractionUrl(widgetInfo),
+                            getInteractionUrl(widgetInfo, widgetInteractionUrl),
                             it
                         )
                     }
@@ -104,7 +111,7 @@ internal class WidgetInteractionRepository(
         } else {
             results = userRepository.userAccessToken?.let {
                 fetchAndStoreWidgetInteractions(
-                    getInteractionUrl(widgetInfo),
+                    getInteractionUrl(widgetInfo, widgetInteractionUrl),
                     it
                 )
             }
@@ -115,16 +122,19 @@ internal class WidgetInteractionRepository(
     /**
      * get interaction url with appended widget kind and widget id
      **/
-    private fun getInteractionUrl(widgetInfo: WidgetInfos): String {
+    private fun getInteractionUrl(
+        widgetInfo: WidgetInfos,
+        widgetInteractionUrl: String? = null
+    ): String {
         var url =
             userRepository.currentUserStream.latest()?.id?.let {
-                programRepository.program?.widgetInteractionUrl?.replace(
+                (widgetInteractionUrl ?: programRepository.program?.widgetInteractionUrl)?.replace(
                     "{profile_id}",
                     it
                 )
             } ?: ""
 
-        if (url.isNotEmpty()) {
+        if (url.isNotEmpty() && widgetInteractionUrl == null) {
             url += "?${getWidgetKindBasedOnType(widgetInfo.type)}_id=${widgetInfo.widgetId}"
         }
         return url

@@ -132,6 +132,7 @@
         <item name="chatMessageTimeTextLetterSpacing">0.1</item>
         <item name="chatMessageTextLetterSpacing">0.0</item>
         <item name="chatUserNameTextLetterSpacing">0.0</item>
+        <item name="chatMessageLinkTextColor">#13D654</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">
