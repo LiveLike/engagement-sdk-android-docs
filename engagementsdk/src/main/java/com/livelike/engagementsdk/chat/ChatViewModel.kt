@@ -62,6 +62,7 @@ internal class ChatViewModel(
             field = value
             chatAdapter.chatRoomId = value?.id
             chatAdapter.isPublicChat = isPublicRoom
+            chatAdapter.chatRoomName = value?.title
         }
 
     var avatarUrl: String? = null
@@ -88,7 +89,7 @@ internal class ChatViewModel(
             chatAdapter.chatRepository = value
         }
     var reportUrl: String? = null
-    var isLastItemVisible = true
+    var isLastItemVisible = false
 
     internal var chatLoaded = false
         set(value) {
@@ -125,12 +126,12 @@ internal class ChatViewModel(
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {
             "Chat display message: ${message.message} check1:${
-            message.channel != currentChatRoom?.channels?.chat?.get(
-                CHAT_PROVIDER
-            )
+                message.channel != currentChatRoom?.channels?.chat?.get(
+                    CHAT_PROVIDER
+                )
             } check blocked:${
-            getBlockedUsers()
-                .contains(message.senderId)
+                getBlockedUsers()
+                    .contains(message.senderId)
             } check deleted:${deletedMessages.contains(message.id)}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
@@ -139,7 +140,7 @@ internal class ChatViewModel(
         if (message.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) return
 
         if (getBlockedUsers()
-            .contains(message.senderId)
+                .contains(message.senderId)
         ) {
             logDebug { "user is blocked" }
             return
@@ -323,21 +324,26 @@ internal class ChatViewModel(
                 url,
                 "r"
             )?.use {
-                val fileBytes = it.createInputStream().readBytes()
-                val imageUrl = dataClient.uploadImage(
-                    currentChatRoom!!.uploadUrl,
-                    null,
-                    fileBytes
-                )
-                chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
-                chatMessage.imageUrl = imageUrl
-                val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
-                chatMessage.image_width = bitmap.width
-                chatMessage.image_height = bitmap.height
-                val m = chatMessage.copy()
-                m.message = ""
-                chatListener?.onChatMessageSend(m, timedata)
-                bitmap.recycle()
+                try {
+                    val fileBytes = it.createInputStream().readBytes()
+                    val imageUrl = dataClient.uploadImage(
+                        currentChatRoom!!.uploadUrl,
+                        null,
+                        fileBytes
+                    )
+                    chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                    chatMessage.imageUrl = imageUrl
+                    val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                    chatMessage.image_width = bitmap.width
+                    chatMessage.image_height = bitmap.height
+                    val m = chatMessage.copy()
+                    m.message = ""
+                    chatListener?.onChatMessageSend(m, timedata)
+                    bitmap.recycle()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    logError { e.message }
+                }
             }
         }
         Glide.with(context.applicationContext)
