@@ -40,6 +40,7 @@ import com.livelike.livelikedemo.customwidgets.CustomImageSlider
 import com.livelike.livelikedemo.customwidgets.CustomPollWidget
 import com.livelike.livelikedemo.customwidgets.CustomPredictionWidget
 import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
+import com.livelike.livelikedemo.customwidgets.SponsoredWidgetView
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
 import com.livelike.livelikedemo.models.CheerMeterRequestResponse
@@ -199,9 +200,13 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 }
 
                 override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
-                    return return CustomAlertWidget(this@WidgetOnlyActivity).apply {
-                        alertModel = alertWidgetModel
-                    }
+                    return SponsoredWidgetView(
+                        this@WidgetOnlyActivity,
+                        CustomAlertWidget(this@WidgetOnlyActivity).apply {
+                            alertModel = alertWidgetModel
+                        },
+                        alertWidgetModel.widgetData
+                    )
                 }
 
                 override fun createQuizWidgetView(
