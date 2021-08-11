@@ -35,9 +35,11 @@ import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_QUIZ
 import com.livelike.engagementsdk.widget.WidgetType.VIDEO_ALERT
+import com.livelike.engagementsdk.widget.WidgetType.TEXT_ASK
 import com.livelike.engagementsdk.widget.data.models.Badge
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.view.AlertWidgetView
+import com.livelike.engagementsdk.widget.view.TextAskView
 import com.livelike.engagementsdk.widget.view.CheerMeterView
 import com.livelike.engagementsdk.widget.view.CollectBadgeWidgetView
 import com.livelike.engagementsdk.widget.view.EmojiSliderWidgetView
@@ -49,6 +51,7 @@ import com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
 import com.livelike.engagementsdk.widget.view.components.VideoAlertWidgetView
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.TextAskViewModel
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CollectBadgeWidgetViewModel
@@ -110,6 +113,7 @@ internal class WidgetProvider {
                     widgetInteractionRepository
                 )
             }
+
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
@@ -192,6 +196,22 @@ internal class WidgetProvider {
                 this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = SocialEmbedViewModel(
                     widgetInfos, analyticsService, onDismiss
+                )
+            }
+
+               TEXT_ASK -> TextAskView(context).apply {
+                widgetViewThemeAttributes = widgetThemeAttributes
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
+                widgetViewModel = TextAskViewModel(
+                    widgetInfos,
+                    analyticsService,
+                    sdkConfiguration,
+                    onDismiss,
+                    userRepository,
+                    programRepository,
+                    widgetMessagingClient,
+                    widgetInteractionRepository
                 )
             }
             else -> null

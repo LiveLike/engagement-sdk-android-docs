@@ -112,6 +112,8 @@ data class LiveLikeWidget(
     val correctOptionId: String? = null,
     @field:SerializedName("title")
     val title: String? = null,
+    @field:SerializedName("prompt")
+    val prompt: String? = null,
     @field:SerializedName("initial_magnitude")
     val initialMagnitude: Float?,
     @field:SerializedName("average_magnitude")
@@ -120,6 +122,10 @@ data class LiveLikeWidget(
     val voteUrl: String,
     @field:SerializedName("claim_url")
     val claimUrl: String? = null,
+    @field:SerializedName("reply_url")
+    val replyUrl: String? = null,
+    @field:SerializedName("confirmation_message")
+    val confirmationMessage: String? = null,
 
     // fields related to social embed widget
     @field:SerializedName("items")

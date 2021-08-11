@@ -8,6 +8,8 @@ import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.TextAskWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
 
 /**
  * WidgetView Factory is responsible for providing the instance of custom widget ui.
@@ -46,4 +48,13 @@ interface LiveLikeWidgetViewFactory {
     fun createImageSliderWidgetView(
         imageSliderWidgetModel: ImageSliderWidgetModel
     ): View?
+
+    fun createVideoAlertWidgetView(
+        videoAlertWidgetModel: VideoAlertWidgetModel
+    ): View?
+
+    fun createTextAskWidgetView(
+        imageSliderWidgetModel: TextAskWidgetModel
+    ): View?
+
 }

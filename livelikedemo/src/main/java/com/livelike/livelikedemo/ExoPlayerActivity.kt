@@ -42,6 +42,8 @@ import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.TextAskWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
@@ -105,6 +107,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         themeCurrent = intent.getIntExtra("theme", R.style.AppTheme)
         this.setTheme(themeCurrent!!)
         setContentView(R.layout.activity_exo_player)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         jsonTheme = intent.getStringExtra("jsonTheme")
         if (isNetworkConnected()) {
             chatRoomLastTimeStampMap = GsonBuilder().create().fromJson(
@@ -201,6 +204,14 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
 
                     override fun createImageSliderWidgetView(imageSliderWidgetModel: ImageSliderWidgetModel): View? {
+                        return null
+                    }
+
+                    override fun createVideoAlertWidgetView(videoAlertWidgetModel: VideoAlertWidgetModel): View? {
+                        return null
+                    }
+
+                    override fun createTextAskWidgetView(imageSliderWidgetModel: TextAskWidgetModel): View? {
                         return null
                     }
                 }

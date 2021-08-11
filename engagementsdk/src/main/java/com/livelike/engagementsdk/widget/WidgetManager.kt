@@ -244,7 +244,9 @@ enum class WidgetType(val event: String) {
     ALERT("alert-created"),
     IMAGE_SLIDER("emoji-slider-created"),
     SOCIAL_EMBED("social-embed-created"),
-    VIDEO_ALERT("video-alert-created");
+    VIDEO_ALERT("video-alert-created"),
+    TEXT_ASK("text-ask-created");
+
 
     companion object {
         private val map = values().associateBy(WidgetType::event)
