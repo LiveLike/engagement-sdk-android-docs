@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
@@ -84,7 +85,9 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
             })
 
             binding.userInputEdt.setOnTouchListener { v, _ -> // Disallow the touch request for parent scroll on touch of child view
-                v.parent.requestDisallowInterceptTouchEvent(true)
+                if(binding.userInputEdt.text.toString().isNotEmpty()) {
+                    v.parent.requestDisallowInterceptTouchEvent(true)
+                }
                 false
             }
 

@@ -67,9 +67,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/livelike_option_text_color"
             android:textSize="14sp"
-            android:maxLines="3"
-            android:ellipsize="end"
-            android:text="blah blah blah blah blah bnmn mnbmmn mnmnmn mnmnmn mnbmmnmn mnmnmnmnmnmnmnmnmnmn mnmnmnmn mnmnmnmn mnmnmnmnmnmn nmnmnmnmnmnmn"
+            tools:text="blah blah blah blah blah bnmn mnbmmn mnmnmn mnmnmn mnbmmnmn mnmnmnmnmnmnmnmnmnmn mnmnmnmn mnmnmnmn mnmnmnmnmnmn nmnmnmnmnmnmn"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             android:paddingLeft="@dimen/title_padding_start"
@@ -131,6 +129,7 @@
             tools:text="Thanks for submitting your answer"
             android:textColor="@color/livelike_ama_confirmation_msg_text_color"
             android:visibility="invisible"
+            android:textSize="12sp"
             android:paddingLeft="@dimen/title_padding_start"
             android:paddingRight="@dimen/title_padding_start"/>
 
