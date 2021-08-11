@@ -107,6 +107,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         themeCurrent = intent.getIntExtra("theme", R.style.AppTheme)
         this.setTheme(themeCurrent!!)
         setContentView(R.layout.activity_exo_player)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         jsonTheme = intent.getStringExtra("jsonTheme")
         if (isNetworkConnected()) {
             chatRoomLastTimeStampMap = GsonBuilder().create().fromJson(
