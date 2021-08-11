@@ -56,8 +56,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/ama_rounded_corners"
         android:orientation="vertical"
-        android:paddingBottom="16dp"
-        android:layout_marginBottom="16dp"
+        android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleView">
@@ -69,12 +68,13 @@
             android:textColor="@color/livelike_option_text_color"
             android:textSize="14sp"
             android:maxLines="3"
+            android:ellipsize="end"
             android:text="blah blah blah blah blah bnmn mnbmmn mnmnmn mnmnmn mnbmmnmn mnmnmnmnmnmnmnmnmnmn mnmnmnmn mnmnmnmn mnmnmnmnmnmn nmnmnmnmnmnmn"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             android:paddingLeft="@dimen/title_padding_start"
             android:paddingRight="@dimen/title_padding_right"
-            android:paddingTop="@dimen/title_padding_start"/>
+            android:paddingTop="@dimen/title_padding_top"/>
 
         <Button
             android:id="@+id/sendBtn"
@@ -98,7 +98,7 @@
             android:layout_width="0dp"
             android:layout_height="72dp"
             android:layout_marginLeft="@dimen/livelike_ama_inputbox_margin_left"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:layout_marginRight="@dimen/livelike_ama_inputbox_margin_right"
             android:background="@drawable/ama_edit_box"
             android:hint="@string/livelike_ama_input_prompt"

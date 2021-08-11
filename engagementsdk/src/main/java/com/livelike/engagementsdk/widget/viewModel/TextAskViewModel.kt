@@ -19,7 +19,7 @@ import com.livelike.engagementsdk.formatIsoZoned8601
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
-import com.livelike.engagementsdk.widget.data.models.AskMeAnythingUserInteraction
+import com.livelike.engagementsdk.widget.data.models.TextAskUserInteraction
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.model.Resource
@@ -77,14 +77,14 @@ internal class TextAskViewModel(
         }
     }
 
-    override fun getUserInteraction(): AskMeAnythingUserInteraction? {
+    override fun getUserInteraction(): TextAskUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
             widgetInfos.widgetId,
             WidgetKind.fromString(widgetInfos.type)
         )
     }
 
-    override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<AskMeAnythingUserInteraction>>) {
+    override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<TextAskUserInteraction>>) {
         uiScope.launch {
             try {
                 val results =
@@ -156,7 +156,7 @@ internal class TextAskViewModel(
 
     internal fun saveInteraction(response: String) {
         widgetInteractionRepository?.saveWidgetInteraction(
-            AskMeAnythingUserInteraction(
+            TextAskUserInteraction(
                 "",
                 ZonedDateTime.now().formatIsoZoned8601(),
                 getUserInteraction()?.url,

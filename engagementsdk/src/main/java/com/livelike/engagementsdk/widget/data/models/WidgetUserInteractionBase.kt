@@ -93,7 +93,7 @@ class CheerMeterUserInteraction(
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
-class AskMeAnythingUserInteraction(
+class TextAskUserInteraction(
     id: String,
     createdAt: String,
     url: String?,

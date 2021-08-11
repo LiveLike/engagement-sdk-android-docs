@@ -28,6 +28,6 @@ internal data class Interactions(
     @field:SerializedName("image-prediction")
     val imagePrediction: List<PredictionWidgetUserInteraction>?,
     @field:SerializedName("text-ask")
-    val textAsk: List<AskMeAnythingUserInteraction>?,
+    val textAsk: List<TextAskUserInteraction>?,
 
-)
+    )
