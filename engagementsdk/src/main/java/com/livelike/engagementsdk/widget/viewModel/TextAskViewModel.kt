@@ -75,6 +75,7 @@ internal class TextAskViewModel(
                 saveInteraction(response)
             }
         }
+        widgetState.onNext(WidgetStates.RESULTS)
     }
 
     override fun getUserInteraction(): TextAskUserInteraction? {
@@ -171,6 +172,14 @@ internal class TextAskViewModel(
      * presently not available on first iteration */
     internal fun confirmationState(){
         // to be added auto claim rewards logic here
+        currentWidgetType?.let {
+            analyticsService.trackWidgetInteraction(
+                it.toAnalyticsString(),
+                currentWidgetId,
+                programId,
+                interactionData
+            )
+        }
      uiScope.launch {
          delay(2000)
          dismissWidget(DismissAction.TIMEOUT)

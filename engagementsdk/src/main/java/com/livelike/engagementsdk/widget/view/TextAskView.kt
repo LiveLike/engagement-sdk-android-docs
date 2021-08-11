@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.widget.view
 
-import android.R
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.StateListDrawable
@@ -10,13 +10,11 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.core.utils.scanForActivity
 import com.livelike.engagementsdk.databinding.WidgetAskMeAnythingBinding
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetsTheme
@@ -42,12 +40,12 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
             viewModel = value as TextAskViewModel
         }
 
-    init {
+    /*init {
         context.scanForActivity()?.window?.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
                     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
         )
-    }
+    }*/
 
 
     override fun onAttachedToWindow() {
@@ -250,7 +248,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
                     themeComponent.submitButtonDisabled
                 )
                 val state = StateListDrawable()
-                state.addState(intArrayOf(R.attr.state_enabled),submitButtonEnabledDrawable )
+                state.addState(intArrayOf(android.R.attr.state_enabled),submitButtonEnabledDrawable )
                 state.addState(intArrayOf(), submitButtonDisabledDrawable)
                 binding.sendBtn.background = state
 
@@ -265,7 +263,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
                         themeComponent.replyDisabled
                     )
                     val inputState = StateListDrawable()
-                    inputState.addState(intArrayOf(R.attr.state_enabled),userInputEnabledDrawable )
+                    inputState.addState(intArrayOf(android.R.attr.state_enabled),userInputEnabledDrawable )
                     inputState.addState(intArrayOf(), userInputDisabledDrawable)
                     binding.userInputEdt.background = inputState
                 }
@@ -311,7 +309,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
     private fun lockInteractionAndSubmitResponse() {
         disableUserInput()
         disableSendBtn()
-       viewModel?.submitReply(binding.userInputEdt.text.toString())?.let {
+       viewModel?.submitReply(binding.userInputEdt.text.toString().trim())?.let {
             confirmationMessageTv.visibility = VISIBLE
         }
     }
