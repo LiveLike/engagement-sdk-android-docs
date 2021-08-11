@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
@@ -39,6 +38,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
             field = value
             viewModel = value as TextAskViewModel
         }
+
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -92,9 +92,11 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
             }
 
             binding.sendBtn.setOnClickListener {
-                lockInteractionAndSubmitResponse()
-                binding.textEggTimer.visibility = GONE
-                hideKeyboard()
+                if(binding.userInputEdt.text.toString().trim().isNotEmpty()) {
+                    lockInteractionAndSubmitResponse()
+                    binding.textEggTimer.visibility = GONE
+                    hideKeyboard()
+                }
             }
 
             if (viewModel?.getUserInteraction() != null) {
