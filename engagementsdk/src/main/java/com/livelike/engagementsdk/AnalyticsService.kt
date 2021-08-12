@@ -852,6 +852,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         linkUrl?.let { properties.put(LINK_URL, it) }
         mixpanel.track(KEY_WIDGET_BECAME_INTERACTIVE, properties)
         eventObservers[clientId]?.invoke(KEY_WIDGET_BECAME_INTERACTIVE, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId")
     }
 
     override fun trackWidgetReceived(kind: String, id: String) {
