@@ -309,7 +309,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
     private fun lockInteractionAndSubmitResponse() {
         disableUserInput()
         disableSendBtn()
-       viewModel?.submitReply(binding.userInputEdt.text.toString().trim())?.let {
+       viewModel?.lockAndSubmitReply(binding.userInputEdt.text.toString().trim())?.let {
             confirmationMessageTv.visibility = VISIBLE
         }
     }

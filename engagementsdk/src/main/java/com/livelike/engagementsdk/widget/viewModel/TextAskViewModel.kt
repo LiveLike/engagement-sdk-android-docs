@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.core.data.models.SubmitApiResponse
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.Result
@@ -68,6 +69,10 @@ internal class TextAskViewModel(
 
     /** responsible for submitting the user response */
     override fun submitReply(response: String){
+        trackWidgetEngagedAnalytics(
+            currentWidgetType, currentWidgetId,
+            programId
+        )
         uiScope.launch {
             data.currentData?.resource?.reply_url?.let {
                 dataClient.submitReplyAsync(it,  FormBody.Builder()
@@ -75,7 +80,20 @@ internal class TextAskViewModel(
                 saveInteraction(response)
             }
         }
+    }
+
+
+    fun lockAndSubmitReply(response: String): SubmitApiResponse?{
+        var submitResponse:SubmitApiResponse? = null
+        uiScope.launch {
+            data.currentData?.resource?.reply_url?.let {
+                submitResponse = dataClient.submitReplyAsync(it,  FormBody.Builder()
+                    .add("text", response).build(), accessToken = userRepository.userAccessToken)
+                saveInteraction(response)
+            }
+        }
         widgetState.onNext(WidgetStates.RESULTS)
+        return submitResponse
     }
 
     override fun getUserInteraction(): TextAskUserInteraction? {

@@ -152,10 +152,15 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
         body: RequestBody,
         accessToken: String?
     ): SubmitApiResponse? {
-        return gson.fromJson(
-            postAsync(replyUrl,accessToken,body),
-            SubmitApiResponse::class.java
-        )
+        val submitApiResponse:SubmitApiResponse
+        val jsonObject: JsonObject = postAsync(replyUrl,accessToken,body)
+        val text = jsonObject.get("text")
+        submitApiResponse = if(text.isJsonArray){
+            SubmitApiResponse(null,"Error-${text.asJsonArray.get(0).asString?:""}")
+        }else{
+            gson.fromJson(jsonObject, SubmitApiResponse::class.java)
+        }
+        return submitApiResponse
     }
 
 
