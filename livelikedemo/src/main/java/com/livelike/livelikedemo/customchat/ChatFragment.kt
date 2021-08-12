@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.LiveLikeChatRoom
 import com.livelike.livelikedemo.BuildConfig
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication

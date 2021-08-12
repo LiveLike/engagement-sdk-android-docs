@@ -10,12 +10,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.livelike.engagementsdk.ChatRoomListener
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeChatRoom
 import com.livelike.livelikedemo.ChatOnlyActivity
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.R
@@ -28,6 +30,7 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_delete
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_mute_status
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_refresh
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_show_chat
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_visibility
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_id
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_title
@@ -36,6 +39,7 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_delete
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_mute
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_refresh
+import kotlinx.android.synthetic.main.fragment_chat_only_home.txt_update_chat_room
 
 class ChatOnlyHomeFragment : Fragment() {
 
@@ -68,8 +72,8 @@ class ChatOnlyHomeFragment : Fragment() {
                         val response = when {
                             result != null ->
                                 "${
-                                result.title
-                                    ?: "No Title"
+                                    result.title
+                                        ?: "No Title"
                                 }(${result.id}),  Room Id copy to clipboard"
                             else -> error
                         }
@@ -85,6 +89,16 @@ class ChatOnlyHomeFragment : Fragment() {
                 }
             )
         }
+
+        val chatRoomListener = object : ChatRoomListener {
+            override fun onChatRoomUpdate(chatRoom: LiveLikeChatRoom) {
+                txt_update_chat_room.post {
+                    txt_update_chat_room.text =
+                        "Id: ${chatRoom.id}\nTitle: ${chatRoom.title}\nVisibility: ${chatRoom.visibility?.name}\nContent Filter: ${chatRoom.contentFilter}\nCustom Data: ${chatRoom.customData}"
+                }
+            }
+        }
+
         btn_join.setOnClickListener {
             val id = ed_chat_room_id.text.toString()
             if (id.isEmpty()) {
@@ -178,11 +192,17 @@ class ChatOnlyHomeFragment : Fragment() {
                                     checkBoxView.chk_avatar.isChecked,
                                     url
                                 )
+                                (activity as? ChatOnlyActivity)?.privateGroupChatsession?.setChatRoomListener(
+                                    chatRoomListener
+                                )
                             }
                             .show()
                     } else {
                         (activity as? ChatOnlyActivity)?.changeChatRoom(
                             chatRoomList.elementAt(which).id
+                        )
+                        (activity as? ChatOnlyActivity)?.privateGroupChatsession?.setChatRoomListener(
+                            chatRoomListener
                         )
                     }
                 }
@@ -215,11 +235,15 @@ class ChatOnlyHomeFragment : Fragment() {
 
         btn_visibility.setOnClickListener {
             (activity as? ChatOnlyActivity)?.selectVisibility(object :
-                    ChatOnlyFragment.VisibilityInterface {
-                    override fun onSelectItem(visibility: Visibility) {
-                        btn_visibility.text = visibility.name
-                    }
-                })
+                ChatOnlyFragment.VisibilityInterface {
+                override fun onSelectItem(visibility: Visibility) {
+                    btn_visibility.text = visibility.name
+                }
+            })
+        }
+
+        btn_show_chat.setOnClickListener {
+            (activity as? ChatOnlyActivity)?.showChatRoom()
         }
         btn_refresh.callOnClick()
     }

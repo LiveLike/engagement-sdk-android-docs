@@ -9,6 +9,7 @@ import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.LiveLikeChatRoom
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
@@ -62,7 +63,10 @@ interface LiveLikeContentSession {
     /**
      * if the result is empty that means there is no data further and user reached end of list
      * **/
-    fun getPublishedWidgets(liveLikePagination: LiveLikePagination, liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>)
+    fun getPublishedWidgets(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
+    )
 
     /** Returns list of reward item associated to entered program */
     fun getRewardItems(): List<RewardItem>
@@ -89,6 +93,13 @@ interface MessageListener {
     fun onNewMessage(message: LiveLikeChatMessage)
     fun onHistoryMessage(messages: List<LiveLikeChatMessage>)
     fun onDeleteMessage(messageId: String)
+}
+
+/**
+ * Listener to listen to the updates on ChatRoom
+ */
+interface ChatRoomListener {
+    fun onChatRoomUpdate(chatRoom: LiveLikeChatRoom)
 }
 
 /**

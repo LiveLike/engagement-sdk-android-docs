@@ -1,6 +1,8 @@
 package com.livelike.engagementsdk.publicapis
 
 import com.livelike.engagementsdk.chat.ChatMessage
+import com.livelike.engagementsdk.chat.Visibility
+import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 
 /**
@@ -80,13 +82,14 @@ enum class ChatMessageType(val key: String) {
     CUSTOM_MESSAGE_CREATED("custom-message-created")
 }
 
-internal fun PubnubChatEventType.toChatMessageType(): ChatMessageType {
+internal fun PubnubChatEventType.toChatMessageType(): ChatMessageType? {
     return when (this) {
         PubnubChatEventType.MESSAGE_DELETED -> ChatMessageType.MESSAGE_DELETED
         PubnubChatEventType.MESSAGE_CREATED -> ChatMessageType.MESSAGE_CREATED
         PubnubChatEventType.IMAGE_DELETED -> ChatMessageType.IMAGE_DELETED
         PubnubChatEventType.IMAGE_CREATED -> ChatMessageType.IMAGE_CREATED
         PubnubChatEventType.CUSTOM_MESSAGE_CREATED -> ChatMessageType.CUSTOM_MESSAGE_CREATED
+        else -> null
     }
 }
 
@@ -120,4 +123,23 @@ internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
         this.senderId = this@toLiveLikeChatMessage.senderId
         this.timestamp = epochTimeStamp.toString()
     }
+}
+
+
+data class LiveLikeChatRoom(
+    val id: String,
+    val title: String,
+    val contentFilter: String,
+    val visibility: Visibility? = null,
+    val customData: String? = null
+)
+
+internal fun ChatRoom.toLiveLikeChatRoom(): LiveLikeChatRoom {
+    return LiveLikeChatRoom(
+        this.id,
+        this.title,
+        this.contentFilter,
+        this.visibility,
+        this.customData
+    )
 }
