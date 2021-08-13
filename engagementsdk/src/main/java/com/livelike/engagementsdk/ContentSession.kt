@@ -129,7 +129,7 @@ internal class ContentSession(
                                     PublishedWidgetListResponse::class.java
                                 )
 
-                            //widgetInteractionRepository.clearInteractionMap()
+                            // widgetInteractionRepository.clearInteractionMap()
 
                             // fetching widget interactions for widgets loaded
                             userRepository.currentUserStream.latest()?.let { user ->

@@ -247,7 +247,6 @@ enum class WidgetType(val event: String) {
     VIDEO_ALERT("video-alert-created"),
     TEXT_ASK("text-ask-created");
 
-
     companion object {
         private val map = values().associateBy(WidgetType::event)
         fun fromString(type: String) = map[type]

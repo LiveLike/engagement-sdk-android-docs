@@ -48,32 +48,33 @@ data class CheerMeterTheme(
     }
 }
 
-data class TextAskTheme(val submitButtonEnabled: ViewStyleProps? = null,
-                        val submitTextEnabled: ViewStyleProps?=null,
-                        val submitButtonDisabled: ViewStyleProps? = null,
-                        val submitTextDisabled: ViewStyleProps?=null,
-                        val confirmation: ViewStyleProps? = null,
-                        val prompt: ViewStyleProps?= null,
-                        val replyEnabled: ViewStyleProps?= null,
-                        val replyDisabled: ViewStyleProps?= null,
-                        val replyPlaceholder: ViewStyleProps?= null,
-                        ): WidgetBaseThemeComponent(){
+data class TextAskTheme(
+    val submitButtonEnabled: ViewStyleProps? = null,
+    val submitTextEnabled: ViewStyleProps? = null,
+    val submitButtonDisabled: ViewStyleProps? = null,
+    val submitTextDisabled: ViewStyleProps? = null,
+    val confirmation: ViewStyleProps? = null,
+    val prompt: ViewStyleProps? = null,
+    val replyEnabled: ViewStyleProps? = null,
+    val replyDisabled: ViewStyleProps? = null,
+    val replyPlaceholder: ViewStyleProps? = null,
+) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
-        ?: header?.validate()
-        ?: submitButtonEnabled?.validate()
-        ?: submitTextEnabled?.validate()
-        ?: submitButtonDisabled?.validate()
-        ?: submitTextDisabled?.validate()
-        ?: timer?.validate()
-        ?: title?.validate()
-        ?: confirmation?.validate()
-        ?: prompt?.validate()
-        ?: replyEnabled?.validate()
-        ?: replyDisabled?.validate()
-        ?: replyPlaceholder?.validate()
+            ?: header?.validate()
+            ?: submitButtonEnabled?.validate()
+            ?: submitTextEnabled?.validate()
+            ?: submitButtonDisabled?.validate()
+            ?: submitTextDisabled?.validate()
+            ?: timer?.validate()
+            ?: title?.validate()
+            ?: confirmation?.validate()
+            ?: prompt?.validate()
+            ?: replyEnabled?.validate()
+            ?: replyDisabled?.validate()
+            ?: replyPlaceholder?.validate()
     }
-                        }
+}
 
 class AlertWidgetThemeComponent : WidgetBaseThemeComponent()
 
@@ -122,7 +123,7 @@ data class ViewStyleProps(
     val borderRadius: List<Double>? = null,
     val borderWidth: Double? = null,
     val fontColor: String? = null,
-    val placeHolder:String? =null,
+    val placeHolder: String? = null,
     val fontFamily: List<String>? = null,
     val fontSize: Double? = null,
     val fontWeight: FontWeight? = null,

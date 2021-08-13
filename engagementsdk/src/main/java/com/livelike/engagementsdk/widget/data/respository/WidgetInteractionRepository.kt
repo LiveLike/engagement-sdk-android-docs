@@ -65,7 +65,7 @@ internal class WidgetInteractionRepository(
                 interactions.imagePoll?.let { interactionList.addAll(it) }
                 interactions.imagePrediction?.let { interactionList.addAll(it) }
                 interactions.imageQuiz?.let { interactionList.addAll(it) }
-                interactions.textAsk?.let {interactionList.addAll(it)}
+                interactions.textAsk?.let { interactionList.addAll(it) }
             }
             interactionList.forEach {
                 if (it is CheerMeterUserInteraction && widgetInteractionMap[it.widgetId] != null) {
