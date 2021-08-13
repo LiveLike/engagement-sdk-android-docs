@@ -83,17 +83,16 @@ internal class TextAskViewModel(
     }
 
 
-    fun lockAndSubmitReply(response: String): SubmitApiResponse?{
-        var submitResponse:SubmitApiResponse? = null
+    fun lockAndSubmitReply(response: String){
         uiScope.launch {
             data.currentData?.resource?.reply_url?.let {
-                submitResponse = dataClient.submitReplyAsync(it,  FormBody.Builder()
+                dataClient.submitReplyAsync(it,  FormBody.Builder()
                     .add("text", response).build(), accessToken = userRepository.userAccessToken)
                 saveInteraction(response)
             }
         }
         widgetState.onNext(WidgetStates.RESULTS)
-        return submitResponse
+
     }
 
     override fun getUserInteraction(): TextAskUserInteraction? {
