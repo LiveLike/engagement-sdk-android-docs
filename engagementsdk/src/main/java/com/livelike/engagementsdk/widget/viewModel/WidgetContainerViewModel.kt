@@ -171,7 +171,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                         )
                 }
 
-                is TextAskWidgetModel-> {
+                is TextAskWidgetModel -> {
                     customView =
                         widgetViewViewFactory?.createTextAskWidgetView(
                             widgetView.widgetViewModel as TextAskWidgetModel

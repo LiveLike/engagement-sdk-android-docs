@@ -152,17 +152,16 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
         body: RequestBody,
         accessToken: String?
     ): SubmitApiResponse? {
-        val submitApiResponse:SubmitApiResponse
-        val jsonObject: JsonObject = postAsync(replyUrl,accessToken,body)
+        val submitApiResponse: SubmitApiResponse
+        val jsonObject: JsonObject = postAsync(replyUrl, accessToken, body)
         val text = jsonObject.get("text")
-        submitApiResponse = if(text.isJsonArray){
-            SubmitApiResponse(null,"Error-${text.asJsonArray.get(0).asString?:""}")
-        }else{
+        submitApiResponse = if (text.isJsonArray) {
+            SubmitApiResponse(null, "Error-${text.asJsonArray.get(0).asString ?: ""}")
+        } else {
             gson.fromJson(jsonObject, SubmitApiResponse::class.java)
         }
         return submitApiResponse
     }
-
 
     override suspend fun getWidgetDataFromIdAndKind(id: String, kind: String) =
         suspendCoroutine<JsonObject> {

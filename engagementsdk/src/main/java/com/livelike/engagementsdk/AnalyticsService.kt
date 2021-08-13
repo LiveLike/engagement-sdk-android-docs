@@ -594,7 +594,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
         properties.put(PROGRAM_ID, programId)
-        //this properties are not being used, and has been decided to remove (https://livelike.atlassian.net/browse/ES-2471)
+        // this properties are not being used, and has been decided to remove (https://livelike.atlassian.net/browse/ES-2471)
        /* properties.put(
             "First Tap Time",
             parser.format(Date(interactionInfo.timeOfFirstInteraction))

@@ -94,7 +94,6 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
-
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
         (session as ContentSession?)?.isSetSessionCalled = true
@@ -159,7 +158,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     ) {
         try {
             val jsonObject = GsonBuilder().create().toJson(liveLikeWidget)
-            displayWidget(sdk, JsonParser.parseString(jsonObject).asJsonObject,showWithInteractionData)
+            displayWidget(sdk, JsonParser.parseString(jsonObject).asJsonObject, showWithInteractionData)
         } catch (ex: JsonParseException) {
             logDebug { "Invalid json passed for displayWidget" }
             ex.printStackTrace()
@@ -167,9 +166,9 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     }
 
     /** displays the widget in the container
-    throws error if json invalid
-    clears the previous displayed widget (if any)
-    only clears if json is valid
+     throws error if json invalid
+     clears the previous displayed widget (if any)
+     only clears if json is valid
      */
     fun displayWidget(
         sdk: EngagementSDK,

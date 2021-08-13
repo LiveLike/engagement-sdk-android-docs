@@ -56,5 +56,4 @@ interface LiveLikeWidgetViewFactory {
     fun createTextAskWidgetView(
         imageSliderWidgetModel: TextAskWidgetModel
     ): View?
-
 }

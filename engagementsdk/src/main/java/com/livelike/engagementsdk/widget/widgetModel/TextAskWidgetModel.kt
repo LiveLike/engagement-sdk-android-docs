@@ -4,7 +4,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.data.models.TextAskUserInteraction
 import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
 
-interface TextAskWidgetModel: LiveLikeWidgetMediator {
+interface TextAskWidgetModel : LiveLikeWidgetMediator {
 
     /**
      * submit response entered

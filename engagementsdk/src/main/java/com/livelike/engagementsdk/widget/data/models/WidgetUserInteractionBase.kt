@@ -101,7 +101,7 @@ class TextAskUserInteraction(
     val text: String?,
     widgetId: String,
     widgetKind: String
-): WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
+) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
 enum class WidgetKind(val event: String) {
     CHEER_METER("cheer-meter"),
@@ -109,8 +109,7 @@ enum class WidgetKind(val event: String) {
     QUIZ("quiz"),
     POLL("poll"),
     IMAGE_SLIDER("emoji-slider"),
-    TEXT_ASK ("text-ask");
-
+    TEXT_ASK("text-ask");
 
     companion object {
         private val map = values().associateBy(WidgetKind::event)

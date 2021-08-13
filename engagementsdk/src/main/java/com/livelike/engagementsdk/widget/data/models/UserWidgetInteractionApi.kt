@@ -30,4 +30,4 @@ internal data class Interactions(
     @field:SerializedName("text-ask")
     val textAsk: List<TextAskUserInteraction>?,
 
-    )
+)

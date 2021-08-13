@@ -8,7 +8,6 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.core.data.models.SubmitApiResponse
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.Result
@@ -46,7 +45,7 @@ internal class TextAskViewModel(
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null,
     val widgetInteractionRepository: WidgetInteractionRepository?
-):BaseViewModel(analyticsService), TextAskWidgetModel {
+) : BaseViewModel(analyticsService), TextAskWidgetModel {
 
     val data: SubscriptionManager<TextAskWidget> =
         SubscriptionManager()
@@ -61,38 +60,42 @@ internal class TextAskViewModel(
     private val interactionData = AnalyticsWidgetInteractionInfo()
     var animationEggTimerProgress = 0f
 
-
-
     init {
         widgetObserver(widgetInfos)
     }
 
     /** responsible for submitting the user response */
-    override fun submitReply(response: String){
+    override fun submitReply(response: String) {
         trackWidgetEngagedAnalytics(
             currentWidgetType, currentWidgetId,
             programId
         )
         uiScope.launch {
             data.currentData?.resource?.reply_url?.let {
-                dataClient.submitReplyAsync(it,  FormBody.Builder()
-                    .add("text", response).build(), accessToken = userRepository.userAccessToken)
+                dataClient.submitReplyAsync(
+                    it,
+                    FormBody.Builder()
+                        .add("text", response).build(),
+                    accessToken = userRepository.userAccessToken
+                )
                 saveInteraction(response)
             }
         }
     }
 
-
-    fun lockAndSubmitReply(response: String){
+    fun lockAndSubmitReply(response: String) {
         uiScope.launch {
             data.currentData?.resource?.reply_url?.let {
-                dataClient.submitReplyAsync(it,  FormBody.Builder()
-                    .add("text", response).build(), accessToken = userRepository.userAccessToken)
+                dataClient.submitReplyAsync(
+                    it,
+                    FormBody.Builder()
+                        .add("text", response).build(),
+                    accessToken = userRepository.userAccessToken
+                )
                 saveInteraction(response)
             }
         }
         widgetState.onNext(WidgetStates.RESULTS)
-
     }
 
     override fun getUserInteraction(): TextAskUserInteraction? {
@@ -109,9 +112,9 @@ internal class TextAskViewModel(
                     widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
 
                 if (results is Result.Success) {
-                        liveLikeCallback.onResponse(
-                            results.data.interactions.textAsk, null
-                        )
+                    liveLikeCallback.onResponse(
+                        results.data.interactions.textAsk, null
+                    )
                 } else if (results is Result.Error) {
                     liveLikeCallback.onResponse(
                         null, results.exception.message
@@ -129,7 +132,6 @@ internal class TextAskViewModel(
 
     override val widgetData: LiveLikeWidget
         get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
-
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
         if (widgetInfos != null) {
@@ -152,7 +154,6 @@ internal class TextAskViewModel(
             interactionData.widgetDisplayed()
         }
     }
-
 
     override fun finish() {
         onDismiss()
@@ -187,7 +188,7 @@ internal class TextAskViewModel(
 
     /** logic to be added here, when claiming rewards/ points for submitting response
      * presently not available on first iteration */
-    internal fun confirmationState(){
+    internal fun confirmationState() {
         // to be added auto claim rewards logic here
         currentWidgetType?.let {
             analyticsService.trackWidgetInteraction(
@@ -197,12 +198,11 @@ internal class TextAskViewModel(
                 interactionData
             )
         }
-     uiScope.launch {
-         delay(2000)
-         dismissWidget(DismissAction.TIMEOUT)
-      }
+        uiScope.launch {
+            delay(2000)
+            dismissWidget(DismissAction.TIMEOUT)
+        }
     }
-
 
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {

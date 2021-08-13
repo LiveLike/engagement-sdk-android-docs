@@ -30,16 +30,15 @@ import com.livelike.engagementsdk.widget.WidgetType.IMAGE_QUIZ
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_SLIDER
 import com.livelike.engagementsdk.widget.WidgetType.POINTS_TUTORIAL
 import com.livelike.engagementsdk.widget.WidgetType.SOCIAL_EMBED
+import com.livelike.engagementsdk.widget.WidgetType.TEXT_ASK
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_POLL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_QUIZ
 import com.livelike.engagementsdk.widget.WidgetType.VIDEO_ALERT
-import com.livelike.engagementsdk.widget.WidgetType.TEXT_ASK
 import com.livelike.engagementsdk.widget.data.models.Badge
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.view.AlertWidgetView
-import com.livelike.engagementsdk.widget.view.TextAskView
 import com.livelike.engagementsdk.widget.view.CheerMeterView
 import com.livelike.engagementsdk.widget.view.CollectBadgeWidgetView
 import com.livelike.engagementsdk.widget.view.EmojiSliderWidgetView
@@ -47,11 +46,11 @@ import com.livelike.engagementsdk.widget.view.PollView
 import com.livelike.engagementsdk.widget.view.PredictionView
 import com.livelike.engagementsdk.widget.view.QuizView
 import com.livelike.engagementsdk.widget.view.SocialEmbedWidgetView
+import com.livelike.engagementsdk.widget.view.TextAskView
 import com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
 import com.livelike.engagementsdk.widget.view.components.VideoAlertWidgetView
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
-import com.livelike.engagementsdk.widget.viewModel.TextAskViewModel
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CollectBadgeWidgetViewModel
@@ -61,6 +60,7 @@ import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
+import com.livelike.engagementsdk.widget.viewModel.TextAskViewModel
 import com.livelike.engagementsdk.widget.viewModel.VideoWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
@@ -199,7 +199,7 @@ internal class WidgetProvider {
                 )
             }
 
-               TEXT_ASK -> TextAskView(context).apply {
+            TEXT_ASK -> TextAskView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
                 this.widgetsTheme = liveLikeEngagementTheme?.widgets
                 this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
