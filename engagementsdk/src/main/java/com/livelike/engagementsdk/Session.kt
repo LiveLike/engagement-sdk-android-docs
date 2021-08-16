@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
@@ -9,7 +10,6 @@ import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.publicapis.LiveLikeChatRoom
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
@@ -99,7 +99,7 @@ interface MessageListener {
  * Listener to listen to the updates on ChatRoom
  */
 interface ChatRoomListener {
-    fun onChatRoomUpdate(chatRoom: LiveLikeChatRoom)
+    fun onChatRoomUpdate(chatRoom: ChatRoomInfo)
 }
 
 /**

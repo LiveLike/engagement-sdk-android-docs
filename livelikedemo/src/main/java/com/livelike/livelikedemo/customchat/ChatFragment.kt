@@ -17,8 +17,6 @@ import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.publicapis.LiveLikeChatRoom
-import com.livelike.livelikedemo.BuildConfig
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
@@ -99,21 +97,21 @@ class ChatFragment : Fragment() {
         // testing purpose wheather we the data is received and rendered correctly
         // will remove this latter
 
-       /* (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
-            var programId = homeChat.channel.llProgram
+        /* (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
+             var programId = homeChat.channel.llProgram
 
-            if(programId.equals("5b4b2538-02c3-4ad2-820a-2c5e6da66314",ignoreCase = true)){
-                custom.visibility = View.VISIBLE
-                (activity as CustomChatActivity).selectedHomeChat?.session?.chatSession?.
-                connectToChatRoom("4121f7af-9f18-43e5-a658-0ac364e2f176", object : LiveLikeCallback<Unit>() {
-                    override fun onResponse(result: Unit?, error: String?) {
-                        println("ChatOnlyActivity.onResponse -> $result -> $error")
-                    }
-                })
-            }else{
-                custom.visibility = View.GONE
-            }
-        }*/
+             if(programId.equals("5b4b2538-02c3-4ad2-820a-2c5e6da66314",ignoreCase = true)){
+                 custom.visibility = View.VISIBLE
+                 (activity as CustomChatActivity).selectedHomeChat?.session?.chatSession?.
+                 connectToChatRoom("4121f7af-9f18-43e5-a658-0ac364e2f176", object : LiveLikeCallback<Unit>() {
+                     override fun onResponse(result: Unit?, error: String?) {
+                         println("ChatOnlyActivity.onResponse -> $result -> $error")
+                     }
+                 })
+             }else{
+                 custom.visibility = View.GONE
+             }
+         }*/
 
         ed_msg.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -210,8 +208,8 @@ class ChatFragment : Fragment() {
                 scope.launch(Dispatchers.IO) {
                     sendCustomMessage(
                         "{\n" +
-                            "  \"custom_data\": \"heyaa, this is for testing\"\n" +
-                            "}"
+                                "  \"custom_data\": \"heyaa, this is for testing\"\n" +
+                                "}"
                     )
                 }
             }
@@ -339,7 +337,10 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
 
                     if (jsonObject.has("kind")) {
                         holder.itemView.widget_view.visibility = View.VISIBLE
-                        holder.itemView.widget_view.displayWidget((holder.itemView.context.applicationContext as LiveLikeApplication).sdk, jsonObject)
+                        holder.itemView.widget_view.displayWidget(
+                            (holder.itemView.context.applicationContext as LiveLikeApplication).sdk,
+                            jsonObject
+                        )
                     } else {
                         holder.itemView.custom_tv.visibility = View.VISIBLE
                         holder.itemView.widget_view.visibility = View.GONE

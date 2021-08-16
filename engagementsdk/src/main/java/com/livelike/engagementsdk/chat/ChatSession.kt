@@ -29,7 +29,6 @@ import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.publicapis.LiveLikeChatRoom
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -194,7 +193,7 @@ internal class ChatSession(
     private var chatRoomListener: ChatRoomListener? = null
 
     private val proxyChatRoomListener = object : ChatRoomListener {
-        override fun onChatRoomUpdate(chatRoom: LiveLikeChatRoom) {
+        override fun onChatRoomUpdate(chatRoom: ChatRoomInfo) {
             chatRoomListener?.onChatRoomUpdate(chatRoom)
         }
     }

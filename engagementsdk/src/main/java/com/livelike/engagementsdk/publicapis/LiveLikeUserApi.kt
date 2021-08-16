@@ -1,7 +1,7 @@
 package com.livelike.engagementsdk.publicapis
 
 import com.livelike.engagementsdk.chat.ChatMessage
-import com.livelike.engagementsdk.chat.Visibility
+import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 
@@ -126,20 +126,12 @@ internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
 }
 
 
-data class LiveLikeChatRoom(
-    val id: String,
-    val title: String,
-    val contentFilter: String,
-    val visibility: Visibility? = null,
-    val customData: String? = null
-)
-
-internal fun ChatRoom.toLiveLikeChatRoom(): LiveLikeChatRoom {
-    return LiveLikeChatRoom(
+internal fun ChatRoom.toLiveLikeChatRoom(): ChatRoomInfo {
+    return ChatRoomInfo(
         this.id,
         this.title,
-        this.contentFilter,
         this.visibility,
+        this.contentFilter,
         this.customData
     )
 }
