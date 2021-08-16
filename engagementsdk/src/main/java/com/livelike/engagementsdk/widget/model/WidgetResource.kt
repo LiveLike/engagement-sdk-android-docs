@@ -7,6 +7,8 @@ internal open class Resource(
     val url: String = "",
     val kind: String = "",
     val question: String = "",
+    val prompt: String = "",
+    val title: String = "",
     val timeout: String = "",
     val subscribe_channel: String = "",
     val program_id: String = "",
@@ -26,8 +28,9 @@ internal open class Resource(
     val impression_count: String = "",
     val unique_impression_count: String = "",
     val engagement_count: String = "",
-    val engagement_precent: String = "",
-    val claim_url: String? = null
+    val engagement_percent: String = "",
+    val claim_url: String? = null,
+    val reply_url: String? = ""
 ) {
 
     init {

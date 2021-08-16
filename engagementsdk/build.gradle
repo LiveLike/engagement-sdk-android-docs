@@ -29,6 +29,10 @@ android {
         buildConfigField "String", "SDK_VERSION", '"2.20"'
     }
 
+    buildFeatures {
+        viewBinding  true
+    }
+
     afterEvaluate {
         publishing {
             publications {
