@@ -332,10 +332,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (isHideChatInput) {
             chat_view.isChatInputVisible = false
         }
-        chat_view.enableChatMessageURLs = showLink
-        if (showLink) {
-            chat_view.chatMessageUrlPatterns = customLink
-        }
+
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate =
             object : UserProfileDelegate {
@@ -443,6 +440,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
                 }
             })
+
             widget_view?.setSession(session)
 
             widget_view?.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
@@ -496,6 +494,10 @@ class ExoPlayerActivity : AppCompatActivity() {
             txt_chat_room_id?.visibility = View.INVISIBLE
             txt_chat_room_title?.visibility = View.INVISIBLE
             session?.chatSession?.shouldDisplayAvatar = showChatAvatar
+            chat_view.enableChatMessageURLs = showLink
+            if (showLink) {
+                chat_view.chatMessageUrlPatterns = customLink
+            }
             chat_view?.setSession(session!!.chatSession)
         }
         player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())

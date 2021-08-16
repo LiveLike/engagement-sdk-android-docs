@@ -132,7 +132,6 @@ data class LiveLikeWidget(
     val socialEmbedItems: List<SocialEmbedItem>?,
     @field:SerializedName("comment")
     val comment: String?,
-    var widgetUserInteraction: WidgetUserInteractionBase? = null,
     @field:SerializedName("widget_interactions_url_template")
     val widgetInteractionUrl: String?,
     @field:SerializedName("sponsors")
