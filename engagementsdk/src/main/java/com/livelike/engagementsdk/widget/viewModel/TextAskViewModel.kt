@@ -95,7 +95,6 @@ internal class TextAskViewModel(
                 saveInteraction(response)
             }
         }
-        widgetState.onNext(WidgetStates.RESULTS)
     }
 
     override fun getUserInteraction(): TextAskUserInteraction? {
