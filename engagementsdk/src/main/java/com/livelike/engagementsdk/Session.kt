@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
@@ -62,7 +63,10 @@ interface LiveLikeContentSession {
     /**
      * if the result is empty that means there is no data further and user reached end of list
      * **/
-    fun getPublishedWidgets(liveLikePagination: LiveLikePagination, liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>)
+    fun getPublishedWidgets(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
+    )
 
     /** Returns list of reward item associated to entered program */
     fun getRewardItems(): List<RewardItem>
@@ -89,6 +93,13 @@ interface MessageListener {
     fun onNewMessage(message: LiveLikeChatMessage)
     fun onHistoryMessage(messages: List<LiveLikeChatMessage>)
     fun onDeleteMessage(messageId: String)
+}
+
+/**
+ * Listener to listen to the updates on ChatRoom
+ */
+interface ChatRoomListener {
+    fun onChatRoomUpdate(chatRoom: ChatRoomInfo)
 }
 
 /**

@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat
 
+import com.livelike.engagementsdk.ChatRoomListener
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
@@ -35,6 +36,9 @@ interface LiveLikeChatSession {
 
     /** Register a message count listner for the specified Chat Room */
     fun setMessageListener(messageListener: MessageListener)
+
+    /** Register a chatRoom listener for the specified Chat Room */
+    fun setChatRoomListener(chatRoomListener: ChatRoomListener)
 
     /** Set the value of visibility of chat avatar **/
     var shouldDisplayAvatar: Boolean
