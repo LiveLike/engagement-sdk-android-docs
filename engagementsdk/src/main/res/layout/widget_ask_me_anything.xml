@@ -106,38 +106,42 @@
                     android:textSize="14sp"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/sendBtn"
                     app:layout_constraintTop_toBottomOf="@+id/bodyText" />
 
-                <Button
-                    android:id="@+id/sendBtn"
-                    android:layout_width="100dp"
-                    android:layout_height="44dp"
-                    android:layout_marginLeft="@dimen/livelike_ama_send_margin_left"
-                    android:layout_marginTop="@dimen/livelike_ama_send_margin_top"
-                    android:layout_marginRight="@dimen/livelike_ama_send_margin_right"
-                    android:background="@drawable/ama_send_button_layout"
-                    android:text="@string/livelike_ama_send_label"
-                    android:textColor="@color/ama_send_button_text_color_selector"
-                    android:textDirection="locale"
-                    android:textSize="12sp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/userInputEdt" />
-
-
-                <TextView
-                    android:id="@+id/confirmationMessageTv"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="@dimen/livelike_ama_confirmation_message_padding_start"
-                    android:layout_marginRight="20dp"
-                    android:textColor="@color/livelike_ama_confirmation_msg_text_color"
-                    android:textSize="12sp"
-                    android:visibility="invisible"
-                    app:layout_constraintTop_toTopOf="@id/sendBtn"
-                    app:layout_constraintBottom_toBottomOf="@id/sendBtn"
-                    app:layout_constraintStart_toEndOf="@id/sendBtn"
-                    tools:text="Stay tuned to see if your question was selected hjdhjdhj dfjdjfnjsdfd" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/livelike_ama_send_margin_top"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/userInputEdt">
+
+                    <Button
+                        android:id="@+id/sendBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/livelike_ama_send_margin_left"
+                        android:background="@drawable/ama_send_button_layout"
+                        android:text="@string/livelike_ama_send_label"
+                        android:textColor="@color/ama_send_button_text_color_selector"
+                        android:textDirection="locale"
+                        android:textSize="12sp" />
+
+
+                    <TextView
+                        android:id="@+id/confirmationMessageTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:paddingLeft="@dimen/livelike_ama_confirmation_message_padding_start"
+                        android:layout_marginRight="20dp"
+                        android:layout_toRightOf="@+id/sendBtn"
+                        android:textColor="@color/livelike_ama_confirmation_msg_text_color"
+                        android:textSize="12sp"
+                        android:visibility="invisible"
+                        tools:text="Stay tuned to see if your question was selected" />
+                </RelativeLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

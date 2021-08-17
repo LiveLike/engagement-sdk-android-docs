@@ -203,7 +203,7 @@
     <dimen name="livelike_body_text_margin_bottom">23dp</dimen>
     <dimen name="livelike_link_background_margin_top">5dp</dimen>
     <dimen name="livelike_link_arrow_margin_right">16dp</dimen>
-    <dimen name="livelike_vote_btn_radius">6dp</dimen>
+    <dimen name="livelike_vote_btn_radius">5dp</dimen>
     <item name="livelike_snap_live_horizontal_bias" format="float" type="dimen">1.0</item>
     <dimen name="livelike_video_title_padding_left">16dp</dimen>
     <dimen name="livelike_video_title_padding_right">16dp</dimen>
@@ -216,10 +216,10 @@
     <dimen name="livelike_ama_inputbox_margin_left">16dp</dimen>
     <dimen name="livelike_ama_inputbox_margin_right">16dp</dimen>
     <dimen name="livelike_ama_inputbox_padding">16dp</dimen>
-    <dimen name="livelike_ama_send_margin_top">16dp</dimen>
+    <dimen name="livelike_ama_send_margin_top">12dp</dimen>
     <dimen name="livelike_ama_send_margin_left">16dp</dimen>
     <dimen name="livelike_ama_send_margin_right">16dp</dimen>
-    <dimen name="livelike_ama_send_btn_radius">6dp</dimen>
+    <dimen name="livelike_ama_send_btn_radius">5dp</dimen>
     <dimen name="livelike_ama_confirmation_message_padding_start">12dp</dimen>
     <dimen name="livelike_ama_confirmation_message_padding_end">16dp</dimen>
 
