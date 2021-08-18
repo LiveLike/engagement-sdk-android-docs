@@ -37,4 +37,6 @@
     <string name="livelike_mute_label">أَسْكَتَ كَتَمَ</string>
     <string name="livelike_unmute_label">إعادة الصوت</string>
     <string name="livelike_playback_error">لا يمكن تشغيل هذا الفيديو</string>
+    <string name="livelike_ama_input_prompt">اطبع شيئا</string>
+    <string name="livelike_ama_send_label">يرسل</string>
 </resources>

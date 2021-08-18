@@ -25,6 +25,8 @@ import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.TextAskWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
 
 // TODO remove view references from this view model, also clean content session for same.
 
@@ -159,6 +161,20 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     customView =
                         widgetViewViewFactory?.createImageSliderWidgetView(
                             widgetView.widgetViewModel as ImageSliderWidgetModel
+                        )
+                }
+
+                is VideoAlertWidgetModel -> {
+                    customView =
+                        widgetViewViewFactory?.createVideoAlertWidgetView(
+                            widgetView.widgetViewModel as VideoAlertWidgetModel
+                        )
+                }
+
+                is TextAskWidgetModel -> {
+                    customView =
+                        widgetViewViewFactory?.createTextAskWidgetView(
+                            widgetView.widgetViewModel as TextAskWidgetModel
                         )
                 }
             }

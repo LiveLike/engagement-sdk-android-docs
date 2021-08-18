@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk
 
 import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.sponsorship.SponsorModel
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.SocialEmbedItem
 import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
@@ -111,6 +112,8 @@ data class LiveLikeWidget(
     val correctOptionId: String? = null,
     @field:SerializedName("title")
     val title: String? = null,
+    @field:SerializedName("prompt")
+    val prompt: String? = null,
     @field:SerializedName("initial_magnitude")
     val initialMagnitude: Float?,
     @field:SerializedName("average_magnitude")
@@ -119,6 +122,10 @@ data class LiveLikeWidget(
     val voteUrl: String,
     @field:SerializedName("claim_url")
     val claimUrl: String? = null,
+    @field:SerializedName("reply_url")
+    val replyUrl: String? = null,
+    @field:SerializedName("confirmation_message")
+    val confirmationMessage: String? = null,
 
     // fields related to social embed widget
     @field:SerializedName("items")
@@ -126,7 +133,9 @@ data class LiveLikeWidget(
     @field:SerializedName("comment")
     val comment: String?,
     @field:SerializedName("widget_interactions_url_template")
-    val widgetInteractionUrl:String?
+    val widgetInteractionUrl: String?,
+    @field:SerializedName("sponsors")
+    val sponsors: List<SponsorModel>?
 ) {
     /**
      * Added this method to get WidgetType for integrator understanding and they can use it for they implementation

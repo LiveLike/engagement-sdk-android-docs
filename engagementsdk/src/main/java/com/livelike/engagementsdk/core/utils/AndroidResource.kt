@@ -106,6 +106,10 @@ internal class AndroidResource {
                         setTextColor(getColorFromString(it) ?: Color.WHITE)
                     }
 
+                    it.placeHolder?.let {
+                        setTextColor(getColorFromString(it) ?: Color.WHITE)
+                    }
+
                     if (fontFamilyProvider != null) {
                         it.fontFamily?.forEach {
                             val typeFace = fontFamilyProvider.getTypeFace(it)

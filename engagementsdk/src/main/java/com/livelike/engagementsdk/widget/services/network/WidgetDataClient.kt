@@ -5,6 +5,7 @@ import com.google.gson.JsonParser
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.core.data.models.SubmitApiResponse
 import com.livelike.engagementsdk.core.data.models.VoteApiResponse
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
@@ -52,6 +53,12 @@ internal interface WidgetDataClient {
         analyticsService: AnalyticsService,
         accessToken: String?
     ): ProgramGamificationProfile?
+
+    suspend fun submitReplyAsync(
+        replyUrl: String,
+        body: RequestBody,
+        accessToken: String?
+    ): SubmitApiResponse?
 
     suspend fun getWidgetDataFromIdAndKind(id: String, kind: String): JsonObject?
     suspend fun getAllPublishedWidgets(url: String): JsonObject?
@@ -138,6 +145,22 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                 "Lifetime Points" to it.points.toString()
             )
         }
+    }
+
+    override suspend fun submitReplyAsync(
+        replyUrl: String,
+        body: RequestBody,
+        accessToken: String?
+    ): SubmitApiResponse? {
+        val submitApiResponse: SubmitApiResponse
+        val jsonObject: JsonObject = postAsync(replyUrl, accessToken, body)
+        val text = jsonObject.get("text")
+        submitApiResponse = if (text.isJsonArray) {
+            SubmitApiResponse(null, "Error-${text.asJsonArray.get(0).asString ?: ""}")
+        } else {
+            gson.fromJson(jsonObject, SubmitApiResponse::class.java)
+        }
+        return submitApiResponse
     }
 
     override suspend fun getWidgetDataFromIdAndKind(id: String, kind: String) =

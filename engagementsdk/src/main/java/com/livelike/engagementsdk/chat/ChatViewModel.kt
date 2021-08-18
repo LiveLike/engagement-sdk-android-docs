@@ -126,12 +126,12 @@ internal class ChatViewModel(
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {
             "Chat display message: ${message.message} check1:${
-                message.channel != currentChatRoom?.channels?.chat?.get(
-                    CHAT_PROVIDER
-                )
+            message.channel != currentChatRoom?.channels?.chat?.get(
+                CHAT_PROVIDER
+            )
             } check blocked:${
-                getBlockedUsers()
-                    .contains(message.senderId)
+            getBlockedUsers()
+                .contains(message.senderId)
             } check deleted:${deletedMessages.contains(message.id)}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
@@ -140,7 +140,7 @@ internal class ChatViewModel(
         if (message.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) return
 
         if (getBlockedUsers()
-                .contains(message.senderId)
+            .contains(message.senderId)
         ) {
             logDebug { "user is blocked" }
             return

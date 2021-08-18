@@ -19,5 +19,6 @@ fun WidgetType.toAnalyticsString(): String {
         WidgetType.IMAGE_SLIDER -> "Image Slider"
         WidgetType.SOCIAL_EMBED -> "Social Embed"
         WidgetType.VIDEO_ALERT -> "Video Alert"
+        WidgetType.TEXT_ASK -> "Text Ask"
     }
 }

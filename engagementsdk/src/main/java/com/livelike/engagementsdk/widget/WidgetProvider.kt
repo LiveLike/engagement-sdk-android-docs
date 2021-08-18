@@ -30,6 +30,7 @@ import com.livelike.engagementsdk.widget.WidgetType.IMAGE_QUIZ
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_SLIDER
 import com.livelike.engagementsdk.widget.WidgetType.POINTS_TUTORIAL
 import com.livelike.engagementsdk.widget.WidgetType.SOCIAL_EMBED
+import com.livelike.engagementsdk.widget.WidgetType.TEXT_ASK
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_POLL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
@@ -45,6 +46,7 @@ import com.livelike.engagementsdk.widget.view.PollView
 import com.livelike.engagementsdk.widget.view.PredictionView
 import com.livelike.engagementsdk.widget.view.QuizView
 import com.livelike.engagementsdk.widget.view.SocialEmbedWidgetView
+import com.livelike.engagementsdk.widget.view.TextAskView
 import com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
 import com.livelike.engagementsdk.widget.view.components.VideoAlertWidgetView
@@ -58,6 +60,7 @@ import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
+import com.livelike.engagementsdk.widget.viewModel.TextAskViewModel
 import com.livelike.engagementsdk.widget.viewModel.VideoWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
@@ -110,6 +113,7 @@ internal class WidgetProvider {
                     widgetInteractionRepository
                 )
             }
+
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
@@ -192,6 +196,22 @@ internal class WidgetProvider {
                 this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = SocialEmbedViewModel(
                     widgetInfos, analyticsService, onDismiss
+                )
+            }
+
+            TEXT_ASK -> TextAskView(context).apply {
+                widgetViewThemeAttributes = widgetThemeAttributes
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
+                widgetViewModel = TextAskViewModel(
+                    widgetInfos,
+                    analyticsService,
+                    sdkConfiguration,
+                    onDismiss,
+                    userRepository,
+                    programRepository,
+                    widgetMessagingClient,
+                    widgetInteractionRepository
                 )
             }
             else -> null
