@@ -191,7 +191,10 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             )
             uiScope.launch {
                 if (showWithInteractionData) {
-                    widgetInteractionRepository.fetchRemoteInteractions(WidgetInfos(widgetType, widgetResourceJson, widgetId))
+                    widgetInteractionRepository.fetchRemoteInteractions(
+                        widgetId = widgetId,
+                        widgetKind = widgetType
+                    )
                 }
                 widgetContainerViewModel?.currentWidgetViewStream?.onNext(
                     Pair(

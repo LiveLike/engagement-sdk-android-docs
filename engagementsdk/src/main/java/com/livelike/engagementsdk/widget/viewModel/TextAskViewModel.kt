@@ -95,7 +95,6 @@ internal class TextAskViewModel(
                 saveInteraction(response)
             }
         }
-        widgetState.onNext(WidgetStates.RESULTS)
     }
 
     override fun getUserInteraction(): TextAskUserInteraction? {
@@ -109,7 +108,7 @@ internal class TextAskViewModel(
         uiScope.launch {
             try {
                 val results =
-                    widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
+                    widgetInteractionRepository?.fetchRemoteInteractions(widgetId = widgetInfos.widgetId, widgetKind = widgetInfos.type)
 
                 if (results is Result.Success) {
                     liveLikeCallback.onResponse(

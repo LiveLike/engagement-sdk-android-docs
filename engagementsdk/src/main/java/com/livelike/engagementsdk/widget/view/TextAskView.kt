@@ -38,12 +38,6 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
             viewModel = value as TextAskViewModel
         }
 
-    /*init {
-        context.scanForActivity()?.window?.setSoftInputMode(
-            WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-                    or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
-        )
-    }*/
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -96,7 +90,6 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
             binding.sendBtn.setOnClickListener {
                 if (binding.userInputEdt.text.toString().trim().isNotEmpty()) {
                     lockInteractionAndSubmitResponse()
-                    binding.textEggTimer.visibility = GONE
                     hideKeyboard()
                 }
             }

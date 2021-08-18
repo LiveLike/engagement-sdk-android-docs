@@ -189,7 +189,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         set(value) {
             field = value
             value?.let {
-                viewModel?.chatAdapter?.linksRegex = it.toRegex()
+                if (value.isNotEmpty())
+                    viewModel?.chatAdapter?.linksRegex = it.toRegex()
             }
         }
 
@@ -306,7 +307,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         viewModel?.apply {
             chatAdapter.showLinks = enableChatMessageURLs
             chatMessageUrlPatterns?.let {
-                chatAdapter.linksRegex = it.toRegex()
+                if (it.isNotEmpty())
+                    chatAdapter.linksRegex = it.toRegex()
             }
             chatAdapter.currentChatReactionPopUpViewPos = -1
             chatAdapter.chatViewThemeAttribute = chatAttribute
