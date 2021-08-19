@@ -85,7 +85,7 @@
                 <EditText
                     android:id="@+id/userInputEdt"
                     android:layout_width="match_parent"
-                    android:layout_height="72dp"
+                    android:layout_height="73dp"
                     android:layout_marginLeft="@dimen/livelike_ama_inputbox_margin_left"
                     android:layout_marginTop="12dp"
                     android:layout_marginRight="@dimen/livelike_ama_inputbox_margin_right"
@@ -95,7 +95,10 @@
                     android:imeOptions="actionDone"
                     android:inputType="textMultiLine|textAutoCorrect"
                     android:maxLength="240"
-                    android:padding="@dimen/livelike_ama_inputbox_padding"
+                    android:paddingTop="@dimen/livelike_ama_inputbox_padding"
+                    android:paddingLeft="@dimen/livelike_ama_inputbox_padding"
+                    android:paddingRight="@dimen/livelike_ama_inputbox_padding_right"
+                    android:paddingBottom="@dimen/livelike_ama_inputbox_padding_bottom"
                     android:scrollbarStyle="outsideInset"
                     android:scrollbars="vertical"
                     android:scrollHorizontally="false"
@@ -107,6 +110,21 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/bodyText" />
+
+                <TextView
+                    android:id="@+id/textCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/userInputEdt"
+                    android:layout_marginRight="@dimen/livelike_ama_count_text_margin_end"
+                    android:layout_marginBottom="@dimen/livelike_ama_count_text_margin_bottom"
+                    android:layout_marginTop="@dimen/livelike_ama_count_text_margin_top"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    android:textColor="@color/livelike_ama_input_box_hint_color"
+                    tools:text="240"/>
+
 
                 <RelativeLayout
                     android:layout_width="match_parent"

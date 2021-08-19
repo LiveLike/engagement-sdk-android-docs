@@ -216,12 +216,17 @@
     <dimen name="livelike_ama_inputbox_margin_left">16dp</dimen>
     <dimen name="livelike_ama_inputbox_margin_right">16dp</dimen>
     <dimen name="livelike_ama_inputbox_padding">16dp</dimen>
+    <dimen name="livelike_ama_inputbox_padding_right">18dp</dimen>
+    <dimen name="livelike_ama_inputbox_padding_bottom">18dp</dimen>
     <dimen name="livelike_ama_send_margin_top">12dp</dimen>
     <dimen name="livelike_ama_send_margin_left">16dp</dimen>
     <dimen name="livelike_ama_send_margin_right">16dp</dimen>
     <dimen name="livelike_ama_send_btn_radius">5dp</dimen>
     <dimen name="livelike_ama_confirmation_message_padding_start">12dp</dimen>
     <dimen name="livelike_ama_confirmation_message_padding_end">16dp</dimen>
+    <dimen name="livelike_ama_count_text_margin_end">22dp</dimen>
+    <dimen name="livelike_ama_count_text_margin_bottom">3dp</dimen>
+    <dimen name="livelike_ama_count_text_margin_top">2dp</dimen>
 
 
 </resources>

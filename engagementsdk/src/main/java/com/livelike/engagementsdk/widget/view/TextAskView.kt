@@ -8,6 +8,7 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -21,8 +22,7 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.TextAskViewModel
 import com.livelike.engagementsdk.widget.viewModel.TextAskWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.widget_ask_me_anything.view.confirmationMessageTv
-import kotlinx.android.synthetic.main.widget_ask_me_anything.view.userInputEdt
+
 
 class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
 
@@ -77,7 +77,10 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
                 ) {
                 }
 
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    binding.textCount.text = (240-s.length).toString()
+                    binding.textCount.visibility = View.VISIBLE
+                }
             })
 
             binding.userInputEdt.setOnTouchListener { v, _ -> // Disallow the touch request for parent scroll on touch of child view
@@ -97,9 +100,10 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
             if (viewModel?.getUserInteraction() != null) {
                 disableSendBtn()
                 disableUserInput()
-                confirmationMessageTv.visibility = VISIBLE
+                binding.confirmationMessageTv.visibility = VISIBLE
+                binding.textCount.visibility = GONE
                 viewModel?.getUserInteraction()?.text?.let {
-                    userInputEdt.setText(viewModel?.getUserInteraction()?.text)
+                    binding.userInputEdt.setText(viewModel?.getUserInteraction()?.text)
                 }
             }
 
@@ -285,8 +289,9 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
     private fun lockInteractionAndSubmitResponse() {
         disableUserInput()
         disableSendBtn()
+        binding.textCount.visibility = View.GONE
         viewModel?.lockAndSubmitReply(binding.userInputEdt.text.toString().trim())?.let {
-            confirmationMessageTv.visibility = VISIBLE
+            binding.confirmationMessageTv.visibility = VISIBLE
         }
     }
 
