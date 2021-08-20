@@ -271,17 +271,19 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         )
         subscribeWidgetStateAndPublishToLifecycleListener()
     }
-
+/**
+ * would inflate and add sponsor ui as a widget view footer if sponsor exists
+ */
     protected fun wouldInflateSponsorUi() {
-//        widgetData.sponsors?.let {
-//            if(it.isNotEmpty()){
-//                val sponsor = it[0]
+        widgetData.sponsors?.let {
+            if(it.isNotEmpty()){
+                val sponsor = it[0]
                 val sponsorView = inflate(context, R.layout.default_sponsor_ui, null)
                 addView(sponsorView)
                 val sponsorImageView = sponsorView.findViewById<ImageView>(R.id.sponsor_iv)
-                Glide.with(context).load("https://cf-blast-storage-qa.livelikecdn.com/assets/40f2145b-5a01-4686-82f8-fbbb69acd70a.png").into(sponsorImageView)
-//            }
-//        }
+                Glide.with(context).load(sponsor.logoUrl).into(sponsorImageView)
+            }
+        }
     }
 
     private fun subscribeWidgetStateAndPublishToLifecycleListener() {
