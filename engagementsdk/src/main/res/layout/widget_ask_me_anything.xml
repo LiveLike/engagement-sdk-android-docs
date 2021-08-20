@@ -120,10 +120,10 @@
                     android:layout_marginRight="@dimen/livelike_ama_count_text_margin_end"
                     android:layout_marginBottom="@dimen/livelike_ama_count_text_margin_bottom"
                     android:layout_marginTop="@dimen/livelike_ama_count_text_margin_top"
-                    android:textSize="14sp"
-                    android:visibility="gone"
+                    android:textSize="12sp"
+                    android:visibility="visible"
                     android:textColor="@color/livelike_ama_input_box_hint_color"
-                    tools:text="240"/>
+                    android:text="240"/>
 
 
                 <RelativeLayout
