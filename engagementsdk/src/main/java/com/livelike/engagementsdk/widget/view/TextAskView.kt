@@ -78,7 +78,12 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
                 }
 
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    binding.textCount.text = (240-s.length).toString()
+                    val text: String = binding.userInputEdt.text.toString()
+                    if (text.startsWith(" ")) {
+                        binding.userInputEdt.setText(text.trim { it <= ' ' })
+                    }else {
+                        binding.textCount.text = (240 - s.length).toString()
+                    }
                     binding.textCount.visibility = View.VISIBLE
                 }
             })
