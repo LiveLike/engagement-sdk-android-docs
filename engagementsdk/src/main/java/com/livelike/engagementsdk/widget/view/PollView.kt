@@ -1,8 +1,11 @@
 package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
+import android.graphics.Typeface
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
@@ -26,6 +29,7 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggT
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.tagView
 
 class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
 
@@ -155,6 +159,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             theme.getThemeLayoutComponent(widget.type)?.let { themeComponent ->
                 if (themeComponent is OptionsWidgetThemeComponent) {
                     applyThemeOnTitleView(themeComponent)
+                    applyThemeOnTagView(themeComponent)
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.fontFamilyProvider = fontFamilyProvider
                     viewModel?.adapter?.notifyDataSetChanged()
@@ -178,6 +183,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
             lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_poll)
 
+            // added tag as label for identification of widget (by default tag will be empty)
+            setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_poll_tag))
             titleView.title = resource.question
             // TODO: update header background with margin or padding
             titleTextView.gravity = Gravity.START

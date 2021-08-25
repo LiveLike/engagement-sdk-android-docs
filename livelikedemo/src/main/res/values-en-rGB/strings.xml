@@ -1,0 +1,8 @@
+<resources>
+    <string name="livelike_poll_tag"> </string>
+    <string name="livelike_quiz_tag"> </string>
+    <string name="livelike_prediction_tag"> </string>
+    <string name="livelike_follow_up_tag"> </string>
+
+
+</resources>

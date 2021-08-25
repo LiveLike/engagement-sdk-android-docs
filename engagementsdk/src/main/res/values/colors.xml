@@ -32,6 +32,7 @@
     <color name="livelike_percent_label_text_color">@color/livelike_default_text_color</color>
     <color name="livelike_alert_body_text_color">@color/livelike_default_text_color</color>
     <color name="livelike_alert_link_text_color">@color/livelike_default_text_color</color>
+    <color name="livelike_widget_tag_text_color">#ABABAB</color>
 
     <color name="livelike_alert_background_gradient_left">#282828</color>
     <color name="livelike_alert_background_gradient_right">#121212</color>

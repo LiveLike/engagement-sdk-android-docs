@@ -39,4 +39,8 @@
     <string name="livelike_playback_error">इस वीडियो को नहीं चला सकते</string>
     <string name="livelike_ama_input_prompt">कुछ लिखें</string>
     <string name="livelike_ama_send_label">भेजना</string>
+    <string name="livelike_poll_tag"> </string>
+    <string name="livelike_quiz_tag"> </string>
+    <string name="livelike_prediction_tag"> </string>
+    <string name="livelike_follow_up_tag"> </string>
 </resources>

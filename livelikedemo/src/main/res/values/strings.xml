@@ -64,4 +64,10 @@
 
     <string name="livelike_vote_label">Vote</string>
     <string name="livelike_voted_label">Voted！</string>
+    <string name="livelike_poll_tag"> </string>
+    <string name="livelike_quiz_tag"> </string>
+    <string name="livelike_prediction_tag"> </string>
+    <string name="livelike_follow_up_tag"> </string>
+
+
 </resources>
