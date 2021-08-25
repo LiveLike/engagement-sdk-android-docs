@@ -34,7 +34,6 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggT
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.tagView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

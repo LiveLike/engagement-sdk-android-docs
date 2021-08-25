@@ -1,11 +1,8 @@
 package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
-import android.graphics.Typeface
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
@@ -29,7 +26,6 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggT
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.tagView
 
 class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
 
