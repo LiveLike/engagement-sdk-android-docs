@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.widget
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.AnalyticsService
@@ -330,6 +329,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         AndroidResource.updateThemeForView(tagTextView, it.tag, fontFamilyProvider)
     }
 
+
     /**
      * this method in used to set tag view with style changes (default appearance)
      **/
@@ -337,10 +337,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         if(tag.isNotEmpty()){
             tagView.tag = tag
             tagView.visibility = View.VISIBLE
-            titleView.setPadding(45,0,45,25)
-            titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            titleTextView.isAllCaps = false
-            titleTextView.includeFontPadding = false
+            AndroidResource.updateDefaultThemeForTagView(titleTextView,titleView)
         }else{
             tagView.visibility = View.GONE
             titleTextView.isAllCaps = true
