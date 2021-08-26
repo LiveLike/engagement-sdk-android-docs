@@ -172,7 +172,7 @@
     <dimen name="livelike_snap_live_margin_start">0dp</dimen>
     <dimen name="livelike_snap_live_radius">15dp</dimen>
     <dimen name="livelike_snap_live_elevation">4dp</dimen>
-    <dimen name="title_padding_start">16dp</dimen>
+    <dimen name="title_padding_start">15dp</dimen>
     <dimen name="title_padding_top">12dp</dimen>
     <dimen name="title_padding_end">16dp</dimen>
     <dimen name="title_padding_right">16dp</dimen>
