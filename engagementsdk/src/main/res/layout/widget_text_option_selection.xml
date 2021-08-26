@@ -20,11 +20,11 @@
         android:id="@+id/tagView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/title_padding_start"
-        android:paddingEnd="@dimen/title_padding_end"
+        android:paddingLeft="@dimen/tag_padding_start"
+        android:paddingEnd="@dimen/tag_padding_end"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="visible"
+        android:visibility="gone"
         android:paddingTop="12dp"/>
 
 
