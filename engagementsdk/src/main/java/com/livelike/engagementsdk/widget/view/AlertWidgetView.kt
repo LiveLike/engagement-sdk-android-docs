@@ -8,7 +8,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat.startActivity
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.DismissAction
@@ -146,8 +145,8 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     private fun inflate(context: Context, resourceAlert: Alert) {
         if (!inflated) {
             inflated = true
-            LayoutInflater.from(context)
-                .inflate(R.layout.widget_alert, this, true) as ConstraintLayout
+           addView(LayoutInflater.from(context)
+                .inflate(R.layout.widget_alert, this, false))
         }
 
         bodyText.text = resourceAlert.text
