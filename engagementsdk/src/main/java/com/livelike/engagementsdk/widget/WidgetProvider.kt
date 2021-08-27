@@ -3,12 +3,16 @@ package com.livelike.engagementsdk.widget
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
+import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
@@ -227,7 +231,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+) : LinearLayout(context, attrs, defStyleAttr) {
 
     internal var fontFamilyProvider: FontFamilyProvider? = null
 
@@ -245,6 +249,15 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
 
     lateinit var widgetData: LiveLikeWidgetEntity
 
+
+    init {
+        layoutParams = LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        orientation = VERTICAL
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         widgetData =
@@ -257,6 +270,20 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
             500
         )
         subscribeWidgetStateAndPublishToLifecycleListener()
+    }
+/**
+ * would inflate and add sponsor ui as a widget view footer if sponsor exists
+ */
+    protected fun wouldInflateSponsorUi() {
+        widgetData.sponsors?.let {
+            if(it.isNotEmpty()){
+                val sponsor = it[0]
+                val sponsorView = inflate(context, R.layout.default_sponsor_ui, null)
+                addView(sponsorView)
+                val sponsorImageView = sponsorView.findViewById<ImageView>(R.id.sponsor_iv)
+                Glide.with(context).load(sponsor.logoUrl).into(sponsorImageView)
+            }
+        }
     }
 
     private fun subscribeWidgetStateAndPublishToLifecycleListener() {

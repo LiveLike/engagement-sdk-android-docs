@@ -91,6 +91,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             resource.getMergedOptions() ?: return
             if (!isViewInflated) {
                 inflate(context, R.layout.widget_emoji_slider, this)
+                wouldInflateSponsorUi()
                 updateTheme(widgetsTheme?.imageSlider)
                 titleTextView.gravity = Gravity.START
                 titleView.title = resource.question
