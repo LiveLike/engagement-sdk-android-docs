@@ -63,7 +63,9 @@ import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
 import com.livelike.engagementsdk.widget.viewModel.TextAskViewModel
 import com.livelike.engagementsdk.widget.viewModel.VideoWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import kotlinx.android.synthetic.main.atom_widget_tag_view.view.tagTextView
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.tagView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 import java.util.Calendar
@@ -317,6 +319,29 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
             txtTitleBackground?.background = AndroidResource.createDrawable(it.header)
         }
         AndroidResource.setPaddingForView(txtTitleBackground, it.header?.padding)
+    }
+
+    /**
+     * this method in used to apply theme on tag view
+     **/
+    protected fun applyThemeOnTagView(it: WidgetBaseThemeComponent){
+        tagView?.componentTheme = it.tag
+        AndroidResource.updateThemeForView(tagTextView, it.tag, fontFamilyProvider)
+    }
+
+
+    /**
+     * this method in used to set tag view with style changes (default appearance)
+     **/
+    protected fun setTagViewWithStyleChanges(tag: String) {
+        if(tag.isNotEmpty()){
+            tagView.tag = tag
+            tagView.visibility = View.VISIBLE
+            AndroidResource.updateDefaultThemeForTagView(titleTextView,titleView)
+        }else{
+            tagView.visibility = View.GONE
+            titleTextView.isAllCaps = true
+        }
     }
 
     /**

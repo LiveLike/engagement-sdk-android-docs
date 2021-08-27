@@ -155,6 +155,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             theme.getThemeLayoutComponent(widget.type)?.let { themeComponent ->
                 if (themeComponent is OptionsWidgetThemeComponent) {
                     applyThemeOnTitleView(themeComponent)
+                    applyThemeOnTagView(themeComponent)
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.fontFamilyProvider = fontFamilyProvider
                     viewModel?.adapter?.notifyDataSetChanged()
@@ -178,6 +179,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
             lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_poll)
 
+            // added tag as label for identification of widget (by default tag will be empty)
+            setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_poll_tag))
             titleView.title = resource.question
             // TODO: update header background with margin or padding
             titleTextView.gravity = Gravity.START
