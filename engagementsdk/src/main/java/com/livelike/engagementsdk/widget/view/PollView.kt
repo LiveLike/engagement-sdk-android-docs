@@ -174,6 +174,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             if (!inflated) {
                 inflated = true
                 inflate(context, R.layout.widget_text_option_selection, this@PollView)
+                wouldInflateSponsorUi()
             }
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
             lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_poll)

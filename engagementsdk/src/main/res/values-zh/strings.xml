@@ -39,5 +39,6 @@
     <string name="livelike_playback_error">无法播放此视频</string>
     <string name="livelike_ama_input_prompt">输入一些东西</string>
     <string name="livelike_ama_send_label">发送</string>
+    <string name="livelike_sponsored_by_label">赞助商</string>
 
 </resources>
