@@ -40,5 +40,9 @@
     <string name="livelike_ama_input_prompt">输入一些东西</string>
     <string name="livelike_ama_send_label">发送</string>
     <string name="livelike_sponsored_by_label">赞助商</string>
+    <string name="livelike_poll_tag"> </string>
+    <string name="livelike_quiz_tag"> </string>
+    <string name="livelike_prediction_tag"> </string>
+    <string name="livelike_follow_up_tag"> </string>
 
 </resources>

@@ -7,6 +7,7 @@
     <dimen name="livelike_percent_label_text_size">18sp</dimen>
     <dimen name="livelike_header_text_size">12sp</dimen>
     <dimen name="livelike_option_text_size">14sp</dimen>
+    <dimen name="livelike_widget_tag_text_size">12sp</dimen>
 
     <dimen name="livelike_default_chat_cell_text_size">16sp</dimen>
     <dimen name="livelike_default_chat_cell_name_size">12sp</dimen>
@@ -171,13 +172,15 @@
     <dimen name="livelike_snap_live_margin_start">0dp</dimen>
     <dimen name="livelike_snap_live_radius">15dp</dimen>
     <dimen name="livelike_snap_live_elevation">4dp</dimen>
+    <dimen name="tag_padding_start">13dp</dimen>
+    <dimen name="tag_padding_end">16dp</dimen>
     <dimen name="title_padding_start">16dp</dimen>
     <dimen name="title_padding_top">12dp</dimen>
     <dimen name="title_padding_end">16dp</dimen>
     <dimen name="title_padding_right">16dp</dimen>
     <dimen name="title_padding_bottom">10dp</dimen>
-    <dimen name="alert_title_padding_left">8dp</dimen>
-    <dimen name="alert_title_padding_right">8dp</dimen>
+    <dimen name="alert_title_padding_left">16dp</dimen>
+    <dimen name="alert_title_padding_right">16dp</dimen>
     <dimen name="cheer_meter_title_padding">5dp</dimen>
     <dimen name="livelike_image_slider_padding_left">6dp</dimen>
     <dimen name="livelike_image_slider_padding_top">3dp</dimen>
@@ -203,7 +206,7 @@
     <dimen name="livelike_body_text_margin_bottom">23dp</dimen>
     <dimen name="livelike_link_background_margin_top">5dp</dimen>
     <dimen name="livelike_link_arrow_margin_right">16dp</dimen>
-    <dimen name="livelike_vote_btn_radius">6dp</dimen>
+    <dimen name="livelike_vote_btn_radius">5dp</dimen>
     <item name="livelike_snap_live_horizontal_bias" format="float" type="dimen">1.0</item>
     <dimen name="livelike_video_title_padding_left">16dp</dimen>
     <dimen name="livelike_video_title_padding_right">16dp</dimen>
@@ -228,6 +231,8 @@
     <dimen name="livelike_ama_count_text_margin_bottom">3dp</dimen>
     <dimen name="livelike_ama_count_text_margin_top">2dp</dimen>
     <dimen name="livelike_sponsor_label_text_size">12sp</dimen>
+    <dimen name="livelike_ama_title_padding_top">12dp</dimen>
+
 
 
 </resources>
