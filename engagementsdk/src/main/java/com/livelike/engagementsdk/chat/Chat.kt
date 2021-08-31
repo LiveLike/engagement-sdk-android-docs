@@ -10,6 +10,7 @@ internal interface ChatEventListener {
 
 internal interface ChatRenderer {
     fun displayChatMessage(message: ChatMessage)
+
     /**
      * called whenever messages are loaded from history call or at fist time load call
      **/
@@ -99,7 +100,9 @@ internal data class ChatMessageReaction(
 data class ChatRoomInfo(
     val id: String,
     val title: String? = null,
-    val visibility: Visibility? = null
+    val visibility: Visibility? = null,
+    val contentFilter: String? = null,
+    val customData: String? = null
 )
 
 enum class Visibility { everyone, members }
