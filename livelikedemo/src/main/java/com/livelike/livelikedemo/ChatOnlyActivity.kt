@@ -39,17 +39,17 @@ class ChatOnlyActivity : AppCompatActivity() {
         val session = sessionMap[chatRoomId]
         privateGroupChatsession =
             session ?: (application as LiveLikeApplication).createPrivateSessionForMultiple(
-            errorDelegate = object : ErrorDelegate() {
-                override fun onError(error: String) {
-                    checkForNetworkToRecreateActivity()
+                errorDelegate = object : ErrorDelegate() {
+                    override fun onError(error: String) {
+                        checkForNetworkToRecreateActivity()
+                    }
+                },
+                timecodeGetter = object : EngagementSDK.TimecodeGetter {
+                    override fun getTimecode(): EpochTime {
+                        return EpochTime(0)
+                    }
                 }
-            },
-            timecodeGetter = object : EngagementSDK.TimecodeGetter {
-                override fun getTimecode(): EpochTime {
-                    return EpochTime(0)
-                }
-            }
-        )
+            )
         showAvatar?.let {
             privateGroupChatsession?.shouldDisplayAvatar = it
         }
@@ -64,19 +64,20 @@ class ChatOnlyActivity : AppCompatActivity() {
             object : LiveLikeCallback<Unit>() {
                 override fun onResponse(result: Unit?, error: String?) {
                     println("ChatOnlyActivity.onResponse -> $result -> $error")
-                }
-            }
-        )
-        (application as LiveLikeApplication).sdk.getChatRoom(
-            chatRoomId,
-            object : LiveLikeCallback<ChatRoomInfo>() {
-                override fun onResponse(result: ChatRoomInfo?, error: String?) {
-                    chatRoomInfo = result
                     prg_chat.visibility = View.INVISIBLE
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.container, ChatOnlyFragment.newInstance())
-                        .addToBackStack("chat")
-                        .commit()
+                    (application as LiveLikeApplication).sdk.getChatRoom(
+                        chatRoomId,
+                        object : LiveLikeCallback<ChatRoomInfo>() {
+                            override fun onResponse(result: ChatRoomInfo?, error: String?) {
+                                chatRoomInfo = result
+                                prg_chat.visibility = View.INVISIBLE
+                                supportFragmentManager.beginTransaction()
+                                    .replace(R.id.container, ChatOnlyFragment.newInstance())
+                                    .addToBackStack("chat")
+                                    .commit()
+                            }
+                        }
+                    )
                 }
             }
         )
