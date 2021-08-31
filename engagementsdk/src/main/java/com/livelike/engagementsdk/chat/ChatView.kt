@@ -663,6 +663,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                                 false
                             }
                     if (endHasBeenReached) {
+                        viewModel?.isLastItemVisible = true
                         autoScroll = false
                     }
                 }
