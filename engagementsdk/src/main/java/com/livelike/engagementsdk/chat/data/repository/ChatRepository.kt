@@ -147,4 +147,13 @@ internal class ChatRepository(
             limit
         )
     }
+
+    suspend fun postApi(url: String, customData: String): Result<Void> {
+        return dataClient.remoteCall<Void>(
+            url,
+            accessToken = authKey,
+            requestType = RequestType.POST,
+            requestBody = customData.toRequestBody()
+        )
+    }
 }

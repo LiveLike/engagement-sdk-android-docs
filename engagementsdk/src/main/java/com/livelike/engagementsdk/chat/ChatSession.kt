@@ -465,4 +465,21 @@ internal class ChatSession(
     override fun getDeletedMessages(): ArrayList<String> {
         return deletedMsgList
     }
+
+    override fun sendCustomChatMessage(
+        customData: String,
+        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+    ) {
+        currentChatRoom?.customMessagesUrl?.let { url ->
+            contentSessionScope.launch {
+                if (chatRepository != null) {
+                    val response = chatRepository!!.postApi(url, customData)
+//                    liveLikeCallback.processResult(response)
+                } else {
+                    logError { "Chat repo is null" }
+                    errorDelegate?.onError("Chat Repository is Null")
+                }
+            }
+        }
+    }
 }

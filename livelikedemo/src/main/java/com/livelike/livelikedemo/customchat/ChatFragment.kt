@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -239,29 +240,40 @@ class ChatFragment : Fragment() {
 
     // custom message api call
     private fun sendCustomMessage(post: String? = null) {
+        (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
+            post?.let {
+                homeChat.session.chatSession.sendCustomChatMessage(post, object : LiveLikeCallback<LiveLikeChatMessage>() {
+                    override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                        result?.let {
+                            Log.d("responseCode", result.id!!)
+                        }
+                        error?.let {
+                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                })
+            }
 
-        (activity as CustomChatActivity).selectedHomeChat?.let {
-
-            var chatRoomId = it.session.chatSession.getCurrentChatRoom()
-            Log.d("custom-message1", chatRoomId)
-            val urls =
-                "${com.livelike.engagementsdk.BuildConfig.CONFIG_URL}chat-rooms/$chatRoomId/custom-messages/"
-
-            Log.d("custom-message", urls)
-
-            val body = post?.toRequestBody()
-            val request: Request = Request.Builder()
-                .url(urls)
-                .method("POST", body)
-                .addHeader(
-                    authorization,
-                    accessToken
-                )
-                .addHeader(contentType, applicationJSON)
-                .build()
-            val response: Response = client.newCall(request).execute()
-            val code = response.code
-            Log.d("responseCode", code.toString())
+//            var chatRoomId = homeChat.session.chatSession.getCurrentChatRoom()
+//            Log.d("custom-message1", chatRoomId)
+//            val urls =
+//                "${com.livelike.engagementsdk.BuildConfig.CONFIG_URL}chat-rooms/$chatRoomId/custom-messages/"
+//
+//            Log.d("custom-message", urls)
+//
+//            val body = post?.toRequestBody()
+//            val request: Request = Request.Builder()
+//                .url(urls)
+//                .method("POST", body)
+//                .addHeader(
+//                    authorization,
+//                    accessToken
+//                )
+//                .addHeader(contentType, applicationJSON)
+//                .build()
+//            val response: Response = client.newCall(request).execute()
+//            val code = response.code
+//            Log.d("responseCode", code.toString())
         }
     }
 
