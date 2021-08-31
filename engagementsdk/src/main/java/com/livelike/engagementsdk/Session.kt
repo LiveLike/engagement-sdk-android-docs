@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
@@ -100,6 +101,13 @@ interface MessageListener {
     fun onNewMessage(message: LiveLikeChatMessage)
     fun onHistoryMessage(messages: List<LiveLikeChatMessage>)
     fun onDeleteMessage(messageId: String)
+}
+
+/**
+ * Listener to listen to the updates on ChatRoom
+ */
+interface ChatRoomListener {
+    fun onChatRoomUpdate(chatRoom: ChatRoomInfo)
 }
 
 /**

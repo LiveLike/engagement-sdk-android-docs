@@ -227,7 +227,9 @@ class EngagementSDK(
                                 ChatRoomInfo(
                                     chatRoomResult.data.id,
                                     chatRoomResult.data.title,
-                                    chatRoomResult.data.visibility
+                                    chatRoomResult.data.visibility,
+                                    chatRoomResult.data.contentFilter,
+                                    chatRoomResult.data.customData
                                 ),
                                 null
                             )
@@ -273,7 +275,9 @@ class EngagementSDK(
                                 ChatRoomInfo(
                                     chatRoomResult.data.id,
                                     chatRoomResult.data.title,
-                                    chatRoomResult.data.visibility
+                                    chatRoomResult.data.visibility,
+                                    chatRoomResult.data.contentFilter,
+                                    chatRoomResult.data.customData
                                 ),
                                 null
                             )
@@ -366,7 +370,10 @@ class EngagementSDK(
                                 val list = userChatRoomListResponse!!.results?.map {
                                     ChatRoomInfo(
                                         it?.chatRoom?.id!!,
-                                        it.chatRoom.title
+                                        it.chatRoom.title,
+                                        it.chatRoom.visibility,
+                                        it.chatRoom.contentFilter,
+                                        it.chatRoom.customData
                                     )
                                 }
                                 liveLikeCallback.onResponse(list, null)
