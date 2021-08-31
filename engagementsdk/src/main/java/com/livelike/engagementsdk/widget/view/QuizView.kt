@@ -51,6 +51,10 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private var isFirstInteraction = false
 
+    init {
+        isFirstInteraction = viewModel?.getUserInteraction() != null
+    }
+
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -71,7 +75,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateWidgetObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
-                isFirstInteraction = false
                 lockInteraction()
             }
             WidgetStates.INTERACTING -> {

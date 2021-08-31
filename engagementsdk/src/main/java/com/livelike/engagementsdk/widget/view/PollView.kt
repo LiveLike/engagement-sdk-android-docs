@@ -78,7 +78,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
-                isFirstInteraction = false
                 lockInteraction()
             }
             WidgetStates.INTERACTING -> {
@@ -168,6 +167,10 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private var isFirstInteraction = false
+
+    init {
+        isFirstInteraction = viewModel?.getUserInteraction() != null
+    }
 
     private fun resourceObserver(widget: PollWidget?) {
         widget?.apply {
