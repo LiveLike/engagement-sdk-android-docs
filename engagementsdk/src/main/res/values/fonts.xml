@@ -15,4 +15,6 @@
 
     <item name="livelike_chatMessage_timestamp_text_font" type="font">@font/roboto_regular</item>
 
+    <item name="livelike_sponsor_label_font" type="font">@font/titillium_semibold</item>
+
 </resources>

@@ -4,12 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.40185185185185185" />
-        <entry key="livelikedemo/src/main/res/layout/chat_only_check_box.xml" value="0.23229166666666667" />
-        <entry key="livelikedemo/src/main/res/layout/fragment_chat_only_home.xml" value="0.1693840579710145" />
+        <entry key="engagementsdk/src/main/res/drawable/alert_rounded_corner_with_background.xml" value="0.3902564102564103" />
+        <entry key="engagementsdk/src/main/res/layout/default_sponsor_ui.xml" value="0.33" />
+        <entry key="engagementsdk/src/main/res/layout/widget_alert.xml" value="0.3802083333333333" />
+        <entry key="engagementsdk/src/main/res/layout/widget_text_option_selection.xml" value="0.3802083333333333" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

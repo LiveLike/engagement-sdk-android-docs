@@ -34,6 +34,13 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="livelike_tag_with_title_text_style" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textColor">@color/livelike_white</item>
+    </style>
+
 
     <style name="SelectableItemTheme">
         <item name="colorControlHighlight">#525252</item>

@@ -11,9 +11,13 @@ import android.view.View
 import android.widget.TextView
 import com.google.gson.Gson
 import com.livelike.engagementsdk.FontFamilyProvider
+import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.widget.FontWeight
 import com.livelike.engagementsdk.widget.Format
 import com.livelike.engagementsdk.widget.ViewStyleProps
+import com.livelike.engagementsdk.widget.view.components.TitleView
+import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import org.threeten.bp.Duration
 import org.threeten.bp.format.DateTimeParseException
 import java.io.BufferedReader
@@ -103,6 +107,10 @@ internal class AndroidResource {
                         setTextSize(TypedValue.COMPLEX_UNIT_SP, it.toFloat())
                     }
                     it.fontColor?.let {
+                        setTextColor(getColorFromString(it) ?: Color.WHITE)
+                    }
+
+                    it.placeHolder?.let {
                         setTextColor(getColorFromString(it) ?: Color.WHITE)
                     }
 
@@ -240,6 +248,18 @@ internal class AndroidResource {
                 logError { "Duration $durationString can't be parsed." }
             }
             return timeout
+        }
+
+        fun updateDefaultThemeForTagView(
+            textView: TextView?, titleView:TitleView){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                titleView.setPadding(45,0,45,25)
+                textView?.apply {
+                    isAllCaps = false
+                    textView.setTextAppearance(R.style.livelike_tag_with_title_text_style)
+                }
+
+            }
         }
     }
 }

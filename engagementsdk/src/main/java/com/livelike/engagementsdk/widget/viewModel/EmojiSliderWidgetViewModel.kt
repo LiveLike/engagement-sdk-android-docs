@@ -79,7 +79,13 @@ internal class EmojiSliderWidgetViewModel(
         val resource =
             gson.fromJson(widgetInfos.payload.toString(), ImageSliderEntity::class.java) ?: null
         resource?.apply {
-            subscribeWidgetResults(resource.subscribe_channel, sdkConfiguration, userRepository.currentUserStream, widgetInfos.widgetId, results)
+            subscribeWidgetResults(
+                resource.subscribe_channel,
+                sdkConfiguration,
+                userRepository.currentUserStream,
+                widgetInfos.widgetId,
+                results
+            )
             data.onNext(resource)
             widgetState.onNext(WidgetStates.READY)
         }
@@ -142,7 +148,10 @@ internal class EmojiSliderWidgetViewModel(
         uiScope.launch {
             try {
                 val results =
-                    widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
+                    widgetInteractionRepository?.fetchRemoteInteractions(
+                        widgetId = widgetInfos.widgetId,
+                        widgetKind = widgetInfos.type
+                    )
 
                 if (results is Result.Success) {
                     liveLikeCallback.onResponse(

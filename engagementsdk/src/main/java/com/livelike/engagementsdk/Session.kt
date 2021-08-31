@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
+import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 
 /**
@@ -82,6 +83,13 @@ interface LiveLikeContentSession {
     fun getWidgetInteractionsWithUnclaimedRewards(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<PredictionWidgetUserInteraction>>
+    )
+
+    fun getWidgetInteraction(
+        widgetId: String,
+        widgetKind: String,
+        widgetInteractionUrl: String,
+        liveLikeCallback: LiveLikeCallback<WidgetUserInteractionBase>
     )
 }
 
