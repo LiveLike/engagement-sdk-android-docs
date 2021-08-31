@@ -42,6 +42,7 @@ import com.livelike.livelikedemo.customwidgets.CustomImageSlider
 import com.livelike.livelikedemo.customwidgets.CustomPollWidget
 import com.livelike.livelikedemo.customwidgets.CustomPredictionWidget
 import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
+import com.livelike.livelikedemo.customwidgets.CustomTextAskWidget
 import com.livelike.livelikedemo.customwidgets.SponsoredWidgetView
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
@@ -270,7 +271,9 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 }
 
                 override fun createTextAskWidgetView(imageSliderWidgetModel: TextAskWidgetModel): View? {
-                    return null
+                    return CustomTextAskWidget(this@WidgetOnlyActivity).apply {
+                        this.askWidgetModel = imageSliderWidgetModel
+                    }
                 }
             }
 

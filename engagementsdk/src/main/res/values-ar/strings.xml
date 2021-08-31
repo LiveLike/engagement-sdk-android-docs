@@ -39,4 +39,9 @@
     <string name="livelike_playback_error">لا يمكن تشغيل هذا الفيديو</string>
     <string name="livelike_ama_input_prompt">اطبع شيئا</string>
     <string name="livelike_ama_send_label">يرسل</string>
+    <string name="livelike_sponsored_by_label">"برعاية "</string>
+    <string name="livelike_poll_tag"> </string>
+    <string name="livelike_quiz_tag"> </string>
+    <string name="livelike_prediction_tag"> </string>
+    <string name="livelike_follow_up_tag"> </string>
 </resources>

@@ -51,6 +51,10 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             viewModel = value as PredictionViewModel
         }
 
+    init {
+        isFirstInteraction = viewModel?.getUserInteraction() != null
+    }
+
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -68,7 +72,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
     private fun widgetStateObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
-                isFirstInteraction = false
                 lockInteraction()
             }
             WidgetStates.INTERACTING -> {
@@ -176,6 +179,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             val isFollowUp = it.resource.kind.contains("follow-up")
             if (isFollowUp) {
                 textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
+
             }
         }
     }
@@ -241,6 +245,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             theme.getThemeLayoutComponent(widget.type)?.let { themeComponent ->
                 if (themeComponent is OptionsWidgetThemeComponent) {
                     applyThemeOnTitleView(themeComponent)
+                    applyThemeOnTagView(themeComponent)
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
@@ -257,6 +262,15 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             if (!inflated) {
                 inflated = true
                 inflate(context, R.layout.widget_text_option_selection, this@PredictionView)
+            }
+
+            val isFollowUp = resource.kind.contains("follow-up")
+
+            // added tag for identification of widget (by default will be empty)
+            if(isFollowUp){
+                setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_follow_up_tag))
+            }else{
+                setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_prediction_tag))
             }
 
             titleView.title = resource.question
@@ -282,8 +296,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             widgetsTheme?.let {
                 applyTheme(it)
             }
-
-            val isFollowUp = resource.kind.contains("follow-up")
 
             if (!isFollowUp)
                 viewModel?.apply {

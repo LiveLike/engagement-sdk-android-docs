@@ -117,8 +117,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     private fun inflate(context: Context, resourceAlert: Alert) {
         if (!inflated) {
             inflated = true
-            LayoutInflater.from(context)
-                .inflate(R.layout.video_widget, this, true) as ConstraintLayout
+            inflate(context, R.layout.video_widget, this@VideoAlertWidgetView)
         }
         bodyText.text = resourceAlert.text
         labelText.text = resourceAlert.title
@@ -149,12 +148,12 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 setPlayerViewCornersRound(isOnlyBottomCornersToBeRounded = false)
             }
-            val params = widgetContainer.layoutParams as LayoutParams
+            val params = widgetContainer.layoutParams as ConstraintLayout.LayoutParams
             params.topMargin = AndroidResource.dpToPx(0)
             widgetContainer.requestLayout()
         } else {
             widgetContainer.setBackgroundResource(R.drawable.video_alert_rounded_corner_black_background)
-            val params = widgetContainer.layoutParams as LayoutParams
+            val params = widgetContainer.layoutParams as ConstraintLayout.LayoutParams
             widgetContainer.layoutParams = params
             widgetContainer.requestLayout()
         }

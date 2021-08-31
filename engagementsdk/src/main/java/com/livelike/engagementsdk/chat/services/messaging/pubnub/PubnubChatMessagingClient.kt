@@ -10,7 +10,10 @@ import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.MessageError
+import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_UPDATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CUSTOM_MESSAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
@@ -300,6 +303,7 @@ internal class PubnubChatMessagingClient(
                         } ?: ArrayList()
                     val event = message.message.asJsonObject.extractStringOrEmpty("event")
                         .toPubnubChatEventType()
+
                     when (event) {
                         MESSAGE_CREATED, IMAGE_CREATED, CUSTOM_MESSAGE_CREATED -> {
                             if (!list.contains(msgId)) {
@@ -469,6 +473,18 @@ internal class PubnubChatMessagingClient(
                         },
                         channel,
                         EpochTime(0)
+                    )
+                }
+                CHATROOM_UPDATED -> {
+                    val pubnubChatRoomEvent: PubnubChatEvent<ChatRoom> = gson.fromJson(
+                        jsonObject,
+                        object : TypeToken<PubnubChatEvent<ChatRoom>>() {}.type
+                    )
+                    clientMessage = ClientMessage(
+                        gson.toJsonTree(pubnubChatRoomEvent.payload).asJsonObject.apply {
+                            addProperty("event", CHATROOM_UPDATED.key)
+                        },
+                        channel
                     )
                 }
             }
@@ -663,9 +679,9 @@ internal class PubnubChatMessagingClient(
                 .sync()
             logDebug {
                 "Count Read channel : $channel lasttimestamp:${
-                convertToTimeToken(
-                    startTimestamp
-                )
+                    convertToTimeToken(
+                        startTimestamp
+                    )
                 } count:${countResult?.channels?.get(channel) ?: 0}"
             }
             Result.Success(countResult?.channels?.get(channel) ?: 0)

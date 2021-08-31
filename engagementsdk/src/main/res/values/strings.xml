@@ -39,4 +39,10 @@
 
     <string name="livelike_ama_input_prompt">Type something…</string>
     <string name="livelike_ama_send_label">SEND</string>
+    <string name="livelike_sponsored_by_label">Sponsored By</string>
+
+    <string name="livelike_poll_tag"> </string>
+    <string name="livelike_quiz_tag"> </string>
+    <string name="livelike_prediction_tag"> </string>
+    <string name="livelike_follow_up_tag"> </string>
 </resources>

@@ -1,19 +1,24 @@
 package com.livelike.engagementsdk.chat
 
+import com.livelike.engagementsdk.ChatRoomListener
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.core.services.messaging.ClientMessage
 import com.livelike.engagementsdk.core.services.messaging.Error
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatRoom
 
 internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),
     ChatEventListener {
 
     var msgListener: MessageListener? = null
+    var chatRoomListener: ChatRoomListener? = null
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         upstream.publishMessage(message, channel, timeSinceEpoch)
     }
@@ -109,6 +114,10 @@ internal class ChatQueue(upstream: MessagingClient) :
                         get("emojiId").asString
                     )
                 }
+            }
+            PubnubChatEventType.CHATROOM_UPDATED.key -> {
+                val chatRoom = gson.fromJson(event.message, ChatRoom::class.java)
+                chatRoomListener?.onChatRoomUpdate(chatRoom.toLiveLikeChatRoom())
             }
         }
     }

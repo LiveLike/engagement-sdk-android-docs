@@ -32,6 +32,7 @@
     <color name="livelike_percent_label_text_color">@color/livelike_default_text_color</color>
     <color name="livelike_alert_body_text_color">@color/livelike_default_text_color</color>
     <color name="livelike_alert_link_text_color">@color/livelike_default_text_color</color>
+    <color name="livelike_widget_tag_text_color">#ABABAB</color>
 
     <color name="livelike_alert_background_gradient_left">#282828</color>
     <color name="livelike_alert_background_gradient_right">#121212</color>
@@ -146,5 +147,7 @@
     <color name="livelike_ama_send_button_inactive_text_color">#ababab</color>
     <color name="livelike_ama_send_button_active_text_color">#000000</color>
     <color name="livelike_ama_confirmation_msg_text_color">#00f078</color>
+    <color name="livelike_sponsor_container_background">#000000</color>
+    <color name="livelike_sponsor_label_text_color">#ffffff</color>
 
 </resources>

@@ -14,10 +14,11 @@ abstract class WidgetBaseThemeComponent() : BaseTheme() {
     val header: ViewStyleProps? = null
     val timer: ViewStyleProps? = null
     val title: ViewStyleProps? = null
+    val tag: ViewStyleProps? = null
 
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
-            ?: header?.validate() ?: timer?.validate() ?: timer?.validate()
+            ?: header?.validate() ?: timer?.validate() ?: title?.validate() ?: tag?.validate()
     }
 }
 
@@ -27,7 +28,7 @@ data class ImageSliderTheme(
 ) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
-            ?: header?.validate() ?: marker?.validate() ?: timer?.validate() ?: timer?.validate()
+            ?: header?.validate() ?: marker?.validate() ?: timer?.validate() ?: title?.validate()
             ?: track?.validate()
     }
 }

@@ -146,8 +146,8 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     private fun inflate(context: Context, resourceAlert: Alert) {
         if (!inflated) {
             inflated = true
-            LayoutInflater.from(context)
-                .inflate(R.layout.widget_alert, this, true) as ConstraintLayout
+           LayoutInflater.from(context)
+                .inflate(R.layout.widget_alert, this, true)
         }
 
         bodyText.text = resourceAlert.text
@@ -166,7 +166,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
 
         if (resourceAlert.image_url.isNullOrEmpty()) {
             bodyImage.visibility = View.GONE
-            val params = bodyText.layoutParams as LayoutParams
+            val params = bodyText.layoutParams as ConstraintLayout.LayoutParams
             params.rightMargin = AndroidResource.dpToPx(16)
             bodyText.requestLayout()
         } else {
@@ -179,11 +179,10 @@ internal class AlertWidgetView : SpecifiedWidgetView {
 
         if (resourceAlert.title.isNullOrEmpty()) {
             labelText.visibility = View.GONE
-            val params = widgetContainer.layoutParams as LayoutParams
+            val params = widgetContainer.layoutParams as ConstraintLayout.LayoutParams
             params.topMargin = AndroidResource.dpToPx(0)
             widgetContainer.requestLayout()
         } else {
-            val params = widgetContainer.layoutParams as LayoutParams
             widgetContainer.requestLayout()
         }
 
@@ -191,7 +190,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             bodyText.visibility = View.GONE
             if (!resourceAlert.image_url.isNullOrEmpty()) {
                 // Image Only
-                val params = widgetContainer.layoutParams as LayoutParams
+                val params = widgetContainer.layoutParams
                 params.height = AndroidResource.dpToPx(200)
                 widgetContainer.requestLayout()
             }

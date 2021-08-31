@@ -65,4 +65,9 @@
 
     <string name="livelike_vote_label">تصويت</string>
     <string name="livelike_voted_label">تم التصويت!</string>
+
+    <string name="livelike_poll_tag">تصويت</string>
+    <string name="livelike_quiz_tag">اختبار</string>
+    <string name="livelike_prediction_tag">يتنبأ</string>
+    <string name="livelike_follow_up_tag">متابعة</string>
 </resources>
