@@ -3,7 +3,6 @@ package com.livelike.engagementsdk
 import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
 import org.junit.Test
 
-
 open class LinksUnitTest {
 
     @Test

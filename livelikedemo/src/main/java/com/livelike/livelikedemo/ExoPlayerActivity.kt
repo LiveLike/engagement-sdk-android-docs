@@ -42,6 +42,8 @@ import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.TextAskWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
@@ -69,6 +71,7 @@ import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
 
+    private var customLink: String? = null
     private var showLink: Boolean = false
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
     private var jsonTheme: String? = null
@@ -130,6 +133,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             showNotification = intent.getBooleanExtra("showNotification", true)
             showLink = intent.getBooleanExtra("showLink", false)
+            customLink = intent.getStringExtra("customLink")
 
             adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
             val position = savedInstanceState?.getLong(POSITION) ?: 0
@@ -199,6 +203,14 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
 
                     override fun createImageSliderWidgetView(imageSliderWidgetModel: ImageSliderWidgetModel): View? {
+                        return null
+                    }
+
+                    override fun createVideoAlertWidgetView(videoAlertWidgetModel: VideoAlertWidgetModel): View? {
+                        return null
+                    }
+
+                    override fun createTextAskWidgetView(imageSliderWidgetModel: TextAskWidgetModel): View? {
                         return null
                     }
                 }
@@ -320,7 +332,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (isHideChatInput) {
             chat_view.isChatInputVisible = false
         }
-        chat_view.enableURL = showLink
+
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate =
             object : UserProfileDelegate {
@@ -428,6 +440,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
                 }
             })
+
             widget_view?.setSession(session)
 
             widget_view?.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
@@ -481,6 +494,10 @@ class ExoPlayerActivity : AppCompatActivity() {
             txt_chat_room_id?.visibility = View.INVISIBLE
             txt_chat_room_title?.visibility = View.INVISIBLE
             session?.chatSession?.shouldDisplayAvatar = showChatAvatar
+            chat_view.enableChatMessageURLs = showLink
+            if (showLink) {
+                chat_view.chatMessageUrlPatterns = customLink
+            }
             chat_view?.setSession(session!!.chatSession)
         }
         player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())

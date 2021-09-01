@@ -79,7 +79,6 @@ import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
         override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -102,8 +101,8 @@ internal class ChatRecyclerAdapter(
     var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
     var chatReactionRepository: ChatReactionRepository? = null
-    var showLinks = false
-    var linksRegex = Patterns.WEB_URL.toRegex()
+    internal var showLinks = false
+    internal var linksRegex = Patterns.WEB_URL.toRegex()
     var checkListIsAtTop: (((position: Int) -> Boolean)?) = null
 
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
@@ -145,7 +144,7 @@ internal class ChatRecyclerAdapter(
     }
 
     /** Commenting this code for now so QA finalize whether old issues are coming or not
-    Flowing code helps in accessbility related issues
+     Flowing code helps in accessbility related issues
      **/
 //    override fun onViewDetachedFromWindow(holder: ViewHolder) {
 //        holder.hideFloatingUI()
@@ -795,9 +794,9 @@ internal class ChatRecyclerAdapter(
                                 }
                                 chatMessage.minHeight =
                                     (chatMessageTextSize.toInt() * columnCount) + when {
-                                        lines != columnCount -> (lines * chatMessageTextSize.toInt())
-                                        else -> 0
-                                    }
+                                    lines != columnCount -> (lines * chatMessageTextSize.toInt())
+                                    else -> 0
+                                }
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
@@ -953,7 +952,6 @@ class InternalURLSpan(
         }
     }
 }
-
 
 // const val should be in uppercase always
 private const val LARGER_STICKER_SIZE = 100

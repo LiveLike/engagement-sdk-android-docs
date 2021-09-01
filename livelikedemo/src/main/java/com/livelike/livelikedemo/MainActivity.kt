@@ -51,6 +51,7 @@ import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.chk_show_links
 import kotlinx.android.synthetic.main.activity_main.custom_chat
 import kotlinx.android.synthetic.main.activity_main.ed_avatar
+import kotlinx.android.synthetic.main.activity_main.ed_link_custom
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
@@ -97,7 +98,8 @@ class MainActivity : AppCompatActivity() {
         var avatarUrl: String? = null,
         var showAvatar: Boolean = true,
         var customCheerMeter: Boolean = false,
-        var showLink: Boolean = false
+        var showLink: Boolean = false,
+        var customLink: String? = null
     )
 
     private lateinit var userStream: Stream<LiveLikeUserApi>
@@ -193,6 +195,7 @@ class MainActivity : AppCompatActivity() {
             PlayerInfo("Exo Player", TwoSessionActivity::class, R.style.Default, false)
 
         layout_side_panel.setOnClickListener {
+            player.customLink = ed_link_custom.text.toString()
             startActivity(playerDetailIntent(player))
         }
 
@@ -438,6 +441,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
         btn_user_details.setOnClickListener {
             (application as LiveLikeApplication).sdk.getCurrentUserDetails(object :
                 LiveLikeCallback<LiveLikeUserApi>() {
@@ -604,6 +608,7 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     intent.putExtra("showAvatar", player.showAvatar)
     intent.putExtra("customCheerMeter", player.customCheerMeter)
     intent.putExtra("showLink", player.showLink)
+    intent.putExtra("customLink", player.customLink)
     intent.putExtra(
         "keyboardClose",
         when (player.theme) {

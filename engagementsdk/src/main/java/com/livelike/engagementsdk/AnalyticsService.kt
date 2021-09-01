@@ -594,12 +594,13 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
         properties.put(PROGRAM_ID, programId)
-        properties.put(
+        // this properties are not being used, and has been decided to remove (https://livelike.atlassian.net/browse/ES-2471)
+       /* properties.put(
             "First Tap Time",
             parser.format(Date(interactionInfo.timeOfFirstInteraction))
         )
         properties.put("Last Tap Time", timeOfLastInteraction)
-        properties.put("No of Taps", interactionInfo.interactionCount)
+        properties.put("No of Taps", interactionInfo.interactionCount)*/
         properties.put("Points Earned", interactionInfo.pointEarned)
 
         interactionInfo.badgeEarned?.let {
@@ -852,6 +853,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         linkUrl?.let { properties.put(LINK_URL, it) }
         mixpanel.track(KEY_WIDGET_BECAME_INTERACTIVE, properties)
         eventObservers[clientId]?.invoke(KEY_WIDGET_BECAME_INTERACTIVE, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId")
     }
 
     override fun trackWidgetReceived(kind: String, id: String) {
