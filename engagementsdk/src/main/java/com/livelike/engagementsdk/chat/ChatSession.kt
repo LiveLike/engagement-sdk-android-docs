@@ -38,6 +38,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.net.URL
 import java.util.UUID
 
@@ -473,8 +474,11 @@ internal class ChatSession(
         currentChatRoom?.customMessagesUrl?.let { url ->
             contentSessionScope.launch {
                 if (chatRepository != null) {
-                    val response = chatRepository!!.postApi(url, customData)
-//                    liveLikeCallback.processResult(response)
+                    val jsonObject = JSONObject(
+                        mapOf("custom_data" to customData)
+                    )
+                    val response = chatRepository!!.postApi(url, jsonObject.toString())
+                    liveLikeCallback.processResult(response)
                 } else {
                     logError { "Chat repo is null" }
                     errorDelegate?.onError("Chat Repository is Null")

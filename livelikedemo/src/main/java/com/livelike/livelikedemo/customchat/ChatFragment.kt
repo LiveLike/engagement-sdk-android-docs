@@ -209,7 +209,7 @@ class ChatFragment : Fragment() {
                 scope.launch(Dispatchers.IO) {
                     sendCustomMessage(
                         "{\n" +
-                                "  \"custom_data\": \"heyaa, this is for testing\"\n" +
+                                "  \"check1\": \"heyaa, this is for testing\"\n" +
                                 "}"
                     )
                 }
@@ -244,11 +244,14 @@ class ChatFragment : Fragment() {
             post?.let {
                 homeChat.session.chatSession.sendCustomChatMessage(post, object : LiveLikeCallback<LiveLikeChatMessage>() {
                     override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                        result?.let {
-                            Log.d("responseCode", result.id!!)
-                        }
-                        error?.let {
-                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                        activity?.runOnUiThread {
+                            result?.let {
+                                Log.d("responseCode", result.id!!)
+                            }
+                            error?.let {
+                                println("ChatFragment.onResponse>> $error")
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 })
