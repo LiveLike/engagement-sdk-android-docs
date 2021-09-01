@@ -51,6 +51,10 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             viewModel = value as PredictionViewModel
         }
 
+    init {
+        isFirstInteraction = viewModel?.getUserInteraction() != null
+    }
+
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -68,7 +72,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
     private fun widgetStateObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
-                isFirstInteraction = false
                 lockInteraction()
             }
             WidgetStates.INTERACTING -> {
