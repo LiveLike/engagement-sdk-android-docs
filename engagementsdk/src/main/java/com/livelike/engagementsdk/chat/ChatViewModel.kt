@@ -29,9 +29,11 @@ import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.FileNotFoundException
 import java.io.IOException
 
 internal class ChatViewModel(
@@ -40,7 +42,8 @@ internal class ChatViewModel(
     val isPublicRoom: Boolean,
     val animationEventsStream: SubscriptionManager<ViewAnimationEvents>? = null,
     val programRepository: ProgramRepository? = null,
-    private val dataClient: ChatDataClient
+    private val dataClient: ChatDataClient,
+    private val errorDelegate: ErrorDelegate? = null
 ) : ChatRenderer, ViewModel() {
 
     var chatListener: ChatEventListener? = null
@@ -320,30 +323,37 @@ internal class ChatViewModel(
         val url =
             Uri.parse(chatMessage.message?.substring(1, (chatMessage.message?.length ?: 0) - 1))
         uiScope.launch(Dispatchers.IO) {
-            context.contentResolver.openAssetFileDescriptor(
-                url,
-                "r"
-            )?.use {
-                try {
-                    val fileBytes = it.createInputStream().readBytes()
-                    val imageUrl = dataClient.uploadImage(
-                        currentChatRoom!!.uploadUrl,
-                        null,
-                        fileBytes
-                    )
-                    chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
-                    chatMessage.imageUrl = imageUrl
-                    val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
-                    chatMessage.image_width = bitmap.width
-                    chatMessage.image_height = bitmap.height
-                    val m = chatMessage.copy()
-                    m.message = ""
-                    chatListener?.onChatMessageSend(m, timedata)
-                    bitmap.recycle()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    logError { e.message }
+            try {
+                context.contentResolver.openAssetFileDescriptor(
+                    url,
+                    "r"
+                )?.use {
+                    try {
+                        val fileBytes = it.createInputStream().readBytes()
+                        val imageUrl = dataClient.uploadImage(
+                            currentChatRoom!!.uploadUrl,
+                            null,
+                            fileBytes
+                        )
+                        chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                        chatMessage.imageUrl = imageUrl
+                        val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                        chatMessage.image_width = bitmap.width
+                        chatMessage.image_height = bitmap.height
+                        val m = chatMessage.copy()
+                        m.message = ""
+                        chatListener?.onChatMessageSend(m, timedata)
+                        bitmap.recycle()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        logError { e.message }
+                        e.message?.let { it1 -> errorDelegate?.onError(it1) }
+                    }
                 }
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+                logError { e.message }
+                e.message?.let { it1 -> errorDelegate?.onError(it1) }
             }
         }
         Glide.with(context.applicationContext)
