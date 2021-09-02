@@ -18,7 +18,7 @@ buildscript {
         gradleVersion = '4.2.1'
         gsonVersion = '2.8.6'
         junitVersion = '4.13.2'
-        kotlinVersion = '1.5.0-RC'
+        kotlinVersion = '1.5.30'
         ktlintVersion = '0.30.0'
         lottieVersion = '3.5.0'
         mavenPluginVersion = '2.1'
@@ -40,7 +40,7 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:${gradleVersion}"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion"
         classpath "com.github.dcendents:android-maven-gradle-plugin:$mavenPluginVersion"
     }
