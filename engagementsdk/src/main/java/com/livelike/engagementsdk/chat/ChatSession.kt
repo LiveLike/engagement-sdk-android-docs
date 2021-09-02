@@ -68,7 +68,8 @@ internal class ChatSession(
             userRepository.currentUserStream,
             isPublicRoom,
             null,
-            dataClient = dataClient
+            dataClient = dataClient,
+            errorDelegate = errorDelegate
         )
     }
     override var getCurrentChatRoom: () -> String = { currentChatRoom?.id ?: "" }
