@@ -21,7 +21,10 @@
         android:versionName="1"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
-        <activity android:name=".BadgesCollectionActivity"></activity>
+        <activity
+            android:name=".WidgetJsonActivity"
+            android:exported="true" />
+        <activity android:name=".BadgesCollectionActivity" />
         <activity android:name=".SponsorTestActivity" />
         <activity android:name=".CustomChatActivity" />
         <activity
@@ -42,8 +45,7 @@
             android:theme="@style/Default" />
         <activity android:name=".WidgetOnlyActivity" />
         <activity android:name=".WidgetStandaloneActivity" />
-        <activity
-            android:name=".ExoPlayerActivity"/>
+        <activity android:name=".ExoPlayerActivity" />
         <activity android:name=".TwoSessionActivity" />
         <activity android:name=".UnclaimedInteractionActivity" />
         <activity android:name=".MainActivity">
