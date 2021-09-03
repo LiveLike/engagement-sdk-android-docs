@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.40185185185185185" />
+        <entry key="livelikedemo/src/main/res/drawable/white_separator.xml" value="0.2490740740740741" />
+        <entry key="livelikedemo/src/main/res/layout/activity_live_blog.xml" value="0.19351570415400202" />
         <entry key="livelikedemo/src/main/res/layout/activity_main.xml" value="0.19351570415400202" />
         <entry key="livelikedemo/src/main/res/layout/activity_widget_framework.xml" value="0.1634963768115942" />
         <entry key="livelikedemo/src/main/res/layout/chat_only_check_box.xml" value="0.23229166666666667" />
