@@ -38,8 +38,9 @@ internal data class ChatRoom(
     @SerializedName("muted_status_url_template")
     val mutedStatusUrlTemplate: String? = null,
     @SerializedName("custom_data")
-    val customData: String? = null
-
+    val customData: String? = null,
+    @SerializedName("custom_messages_url")
+    var customMessagesUrl : String? = null
 )
 
 internal data class Channels(
