@@ -227,6 +227,109 @@ internal class WidgetProvider {
         specifiedWidgetView?.widgetInfos = widgetInfos
         return specifiedWidgetView
     }
+
+    fun getWidgetModel(
+        widgetMessagingClient: WidgetManager? = null,
+        widgetInfos: WidgetInfos,
+        context: Context,
+        analyticsService: AnalyticsService,
+        sdkConfiguration: EngagementSDK.SdkConfiguration,
+        onDismiss: () -> Unit,
+        userRepository: UserRepository,
+        programRepository: ProgramRepository? = null,
+        animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
+        widgetInteractionRepository: WidgetInteractionRepository? = null
+    ): BaseViewModel? {
+        val baseViewModel = when (WidgetType.fromString(widgetInfos.type)) {
+            ALERT -> AlertWidgetViewModel(widgetInfos, analyticsService, onDismiss)
+            VIDEO_ALERT -> VideoWidgetViewModel(widgetInfos, analyticsService, onDismiss)
+            TEXT_QUIZ, IMAGE_QUIZ -> QuizViewModel(
+                widgetInfos,
+                analyticsService,
+                sdkConfiguration,
+                context,
+                onDismiss,
+                userRepository,
+                programRepository,
+                widgetMessagingClient,
+                widgetInteractionRepository
+            )
+            IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
+            TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionViewModel(
+                widgetInfos,
+                context,
+                analyticsService,
+                sdkConfiguration,
+                onDismiss,
+                userRepository,
+                programRepository,
+                widgetMessagingClient,
+                widgetInteractionRepository
+            )
+            TEXT_POLL, IMAGE_POLL -> PollViewModel(
+                widgetInfos,
+                analyticsService,
+                sdkConfiguration,
+                onDismiss,
+                userRepository,
+                programRepository,
+                widgetMessagingClient,
+                widgetInteractionRepository
+            )
+
+            POINTS_TUTORIAL -> PointTutorialWidgetViewModel(
+                onDismiss,
+                analyticsService,
+                programRepository?.rewardType ?: RewardsType.NONE,
+                programRepository?.programGamificationProfileStream?.latest()
+            )
+
+            COLLECT_BADGE -> CollectBadgeWidgetViewModel(
+                gson.fromJson(
+                    widgetInfos.payload,
+                    Badge::class.java
+                ),
+                onDismiss, analyticsService, animationEventsStream
+            )
+
+            CHEER_METER -> CheerMeterViewModel(
+                widgetInfos,
+                analyticsService,
+                sdkConfiguration,
+                onDismiss,
+                userRepository,
+                programRepository,
+                widgetMessagingClient,
+                widgetInteractionRepository
+            )
+
+            IMAGE_SLIDER -> EmojiSliderWidgetViewModel(
+                widgetInfos, analyticsService, sdkConfiguration, onDismiss,
+                userRepository, programRepository, widgetMessagingClient,
+                widgetInteractionRepository
+            )
+
+            SOCIAL_EMBED -> SocialEmbedViewModel(
+                widgetInfos, analyticsService, onDismiss
+            )
+
+
+            TEXT_ASK -> TextAskViewModel(
+                widgetInfos,
+                analyticsService,
+                sdkConfiguration,
+                onDismiss,
+                userRepository,
+                programRepository,
+                widgetMessagingClient,
+                widgetInteractionRepository
+            )
+            else -> null
+        }
+        logDebug { "WidgetModel created from provider, type: ${WidgetType.fromString(widgetInfos.type)}" }
+        return baseViewModel
+    }
+
 }
 
 abstract class SpecifiedWidgetView @JvmOverloads constructor(
@@ -273,12 +376,13 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         )
         subscribeWidgetStateAndPublishToLifecycleListener()
     }
-/**
- * would inflate and add sponsor ui as a widget view footer if sponsor exists
- */
+
+    /**
+     * would inflate and add sponsor ui as a widget view footer if sponsor exists
+     */
     protected fun wouldInflateSponsorUi() {
         widgetData.sponsors?.let {
-            if(it.isNotEmpty()){
+            if (it.isNotEmpty()) {
                 val sponsor = it[0]
                 val sponsorView = inflate(context, R.layout.default_sponsor_ui, null)
                 addView(sponsorView)
@@ -320,11 +424,14 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         var animationLength = AndroidResource.parseDuration(time).toFloat()
         var remainingAnimationLength = animationLength
         if (widgetViewModel?.timerStartTime != null) {
-            remainingAnimationLength = animationLength - (Calendar.getInstance().timeInMillis - (widgetViewModel?.timerStartTime ?: 0)).toFloat()
+            remainingAnimationLength =
+                animationLength - (Calendar.getInstance().timeInMillis - (widgetViewModel?.timerStartTime
+                    ?: 0)).toFloat()
         } else {
             widgetViewModel?.timerStartTime = Calendar.getInstance().timeInMillis
         }
-        val animationEggTimerProgress = (animationLength - remainingAnimationLength) / animationLength
+        val animationEggTimerProgress =
+            (animationLength - remainingAnimationLength) / animationLength
 
         if ((animationEggTimerProgress ?: 0f) < 1f) {
             animationEggTimerProgress?.let {
@@ -351,7 +458,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     /**
      * this method in used to apply theme on tag view
      **/
-    protected fun applyThemeOnTagView(it: WidgetBaseThemeComponent){
+    protected fun applyThemeOnTagView(it: WidgetBaseThemeComponent) {
         tagView?.componentTheme = it.tag
         AndroidResource.updateThemeForView(tagTextView, it.tag, fontFamilyProvider)
     }
@@ -361,11 +468,11 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
      * this method in used to set tag view with style changes (default appearance)
      **/
     protected fun setTagViewWithStyleChanges(tag: String) {
-        if(tag.isNotEmpty()){
+        if (tag.isNotEmpty()) {
             tagView.tag = tag
             tagView.visibility = View.VISIBLE
-            AndroidResource.updateDefaultThemeForTagView(titleTextView,titleView)
-        }else{
+            AndroidResource.updateDefaultThemeForTagView(titleTextView, titleView)
+        } else {
             tagView.visibility = View.GONE
             titleTextView.isAllCaps = true
         }
@@ -391,10 +498,10 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         val nextStateOrdinal = widgetStates.ordinal
         widgetViewModel?.widgetState?.onNext(
             WidgetStates.values()[
-                min(
-                    nextStateOrdinal,
-                    WidgetStates.FINISHED.ordinal
-                )
+                    min(
+                        nextStateOrdinal,
+                        WidgetStates.FINISHED.ordinal
+                    )
             ]
         )
     }
@@ -403,10 +510,10 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         val nextStateOrdinal = (widgetViewModel?.widgetState?.latest()?.ordinal ?: 0) + 1
         widgetViewModel?.widgetState?.onNext(
             WidgetStates.values()[
-                min(
-                    nextStateOrdinal,
-                    WidgetStates.FINISHED.ordinal
-                )
+                    min(
+                        nextStateOrdinal,
+                        WidgetStates.FINISHED.ordinal
+                    )
             ]
         )
     }

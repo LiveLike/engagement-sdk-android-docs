@@ -1,11 +1,11 @@
 package com.livelike.livelikedemo.viewmodels
 
-import IntractableWidgetTimelineViewModel
 import androidx.lifecycle.AndroidViewModel
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.timeline.IntractableWidgetTimelineViewModel
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.channel.ChannelManager
 
