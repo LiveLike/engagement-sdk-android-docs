@@ -291,6 +291,8 @@ internal class ContentSession(
                             WidgetType.TEXT_QUIZ -> it.textQuiz?.firstOrNull()
                             WidgetType.CHEER_METER -> it.cheerMeter?.firstOrNull()
                             WidgetType.IMAGE_SLIDER -> it.emojiSlider?.firstOrNull()
+                            WidgetType.TEXT_NUMBER_PREDICTION -> it.textNumberPrediction?.firstOrNull()
+                            WidgetType.IMAGE_NUMBER_PREDICTION -> it.imageNumberPrediction?.firstOrNull()
                             else -> null
                         }, null
                     )

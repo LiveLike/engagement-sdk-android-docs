@@ -30,7 +30,8 @@ internal open class Resource(
     val engagement_count: String = "",
     val engagement_percent: String = "",
     val claim_url: String? = null,
-    val reply_url: String? = ""
+    val reply_url: String? = "",
+    val vote_url: String? = null
 ) {
 
     init {

@@ -103,13 +103,30 @@ class TextAskUserInteraction(
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
+class NumberPredictionWidgetUserInteraction(
+    @field:SerializedName("option_id")
+    val optionId: String,
+    id: String,
+    createdAt: String,
+    url: String?,
+    @field:SerializedName("is_correct")
+    val isCorrect: Boolean,
+    @field:SerializedName("claim_token")
+    val claimToken: String?,
+    @field:SerializedName("value")
+    val value:Int,
+    widgetId: String,
+    widgetKind: String
+) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
+
 enum class WidgetKind(val event: String) {
     CHEER_METER("cheer-meter"),
     PREDICTION("prediction"),
     QUIZ("quiz"),
     POLL("poll"),
     IMAGE_SLIDER("emoji-slider"),
-    TEXT_ASK("text-ask");
+    TEXT_ASK("text-ask"),
+    NUMBER_PREDICTION("number-prediction");
 
     companion object {
         private val map = values().associateBy(WidgetKind::event)

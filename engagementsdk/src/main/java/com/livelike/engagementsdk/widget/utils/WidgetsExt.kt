@@ -20,5 +20,7 @@ fun WidgetType.toAnalyticsString(): String {
         WidgetType.SOCIAL_EMBED -> "Social Embed"
         WidgetType.VIDEO_ALERT -> "Video Alert"
         WidgetType.TEXT_ASK -> "Text Ask"
+        WidgetType.TEXT_NUMBER_PREDICTION -> "Text Number Prediction"
+        WidgetType.IMAGE_NUMBER_PREDICTION -> "Image Number Prediction"
     }
 }

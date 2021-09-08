@@ -30,6 +30,7 @@ import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
@@ -39,6 +40,7 @@ import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
 import com.livelike.livelikedemo.customwidgets.CustomImageSlider
+import com.livelike.livelikedemo.customwidgets.CustomNumberPredictionWidget
 import com.livelike.livelikedemo.customwidgets.CustomPollWidget
 import com.livelike.livelikedemo.customwidgets.CustomPredictionWidget
 import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
@@ -273,6 +275,12 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 override fun createTextAskWidgetView(imageSliderWidgetModel: TextAskWidgetModel): View? {
                     return CustomTextAskWidget(this@WidgetOnlyActivity).apply {
                         this.askWidgetModel = imageSliderWidgetModel
+                    }
+                }
+
+                override fun createNumberPredictionWidgetView(numberPredictionWidgetModel: NumberPredictionWidgetModel): View? {
+                    return CustomNumberPredictionWidget(this@WidgetOnlyActivity).apply {
+                        this.numberPredictionWidgetViewModel = numberPredictionWidgetModel
                     }
                 }
             }
