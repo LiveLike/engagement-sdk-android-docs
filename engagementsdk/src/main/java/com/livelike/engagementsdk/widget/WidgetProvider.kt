@@ -232,6 +232,7 @@ internal class WidgetProvider {
                     widgetInfos,
                     analyticsService,
                     onDismiss,
+                    userRepository,
                     widgetMessagingClient,
                     widgetInteractionRepository
                 )
