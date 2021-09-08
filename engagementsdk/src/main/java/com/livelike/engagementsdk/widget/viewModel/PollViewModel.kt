@@ -302,14 +302,19 @@ internal class PollViewModel(
 
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
-            widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->
-                val url = widget.resource.getMergedOptions()!![position].getMergedVoteUrl()
+            option?.let {
+                val url = option.getMergedVoteUrl()
                 url?.let {
-                    voteApi(it, widget.resource.getMergedOptions()!![position].id, userRepository)
-                    if (option != null) {
-                        saveInteraction(option)
-                    }
+                    voteApi(
+                        it,
+                        option.id,
+                        userRepository,
+                        patchVoteUrl = getUserInteraction()?.url
+                    )
                 }
+            }
+            if (option != null) {
+                saveInteraction(option)
             }
         }
     }
