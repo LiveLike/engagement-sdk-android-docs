@@ -251,7 +251,6 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                             Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
                         }
                     }
-
                 })
         }
         show_widget.setOnClickListener {

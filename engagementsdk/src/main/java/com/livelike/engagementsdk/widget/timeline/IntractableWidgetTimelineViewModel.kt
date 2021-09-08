@@ -1,3 +1,5 @@
+package com.livelike.engagementsdk.widget.timeline
+
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.widget.timeline.WidgetApiSource
