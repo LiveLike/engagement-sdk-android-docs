@@ -2,7 +2,10 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
+import com.google.gson.JsonParser
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
@@ -33,6 +36,7 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetManager
+import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
@@ -45,6 +49,7 @@ import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepos
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +64,7 @@ import java.io.IOException
 
 internal class ContentSession(
     clientId: String,
-    sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
+    private val sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val programId: String,
@@ -507,6 +512,41 @@ internal class ContentSession(
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
         logDebug { "initialized Widget Messaging" }
+    }
+
+    override fun getWidgetModelFromJson(widgetResourceJson: JsonObject): BaseViewModel? {
+        var widgetType = widgetResourceJson.get("kind").asString
+        widgetType = if (widgetType.contains("follow-up")) {
+            "$widgetType-updated"
+        } else {
+            "$widgetType-created"
+        }
+        val widgetId = widgetResourceJson["id"].asString
+        return WidgetProvider().getWidgetModel(
+            null,
+            WidgetInfos(widgetType, widgetResourceJson, widgetId),
+            applicationContext,
+            analyticServiceStream.latest() ?: MockAnalyticsService(),
+            sdkConfiguration.latest()!!,
+            {
+                //currentWidgetViewStream.onNext(null)
+            },
+            userRepository,
+            null,
+            SubscriptionManager(),
+            widgetInteractionRepository
+        )
+    }
+
+    override fun getWidgetModelFromLiveLikeWidget(liveLikeWidget: LiveLikeWidget): BaseViewModel? {
+        try {
+            val jsonObject = GsonBuilder().create().toJson(liveLikeWidget)
+            return getWidgetModelFromJson(JsonParser.parseString(jsonObject).asJsonObject)
+        } catch (ex: JsonParseException) {
+            logDebug { "Invalid json passed for get WidgetModel" }
+            ex.printStackTrace()
+        }
+        return null
     }
 
     // ////// Global Session Controls ////////

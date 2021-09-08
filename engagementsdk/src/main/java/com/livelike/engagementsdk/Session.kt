@@ -14,6 +14,7 @@ import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
@@ -91,6 +92,12 @@ interface LiveLikeContentSession {
         widgetInteractionUrl: String,
         liveLikeCallback: LiveLikeCallback<WidgetUserInteractionBase>
     )
+
+    /**
+     * Returns the BaseViewModel object to utilize the apis with there own custom Widget
+     */
+    fun getWidgetModelFromJson(widgetResourceJson: JsonObject): BaseViewModel?
+    fun getWidgetModelFromLiveLikeWidget(liveLikeWidget: LiveLikeWidget): BaseViewModel?
 }
 
 /**
