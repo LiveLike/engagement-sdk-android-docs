@@ -78,6 +78,7 @@ import kotlinx.android.synthetic.main.activity_main.unclaimed_interaction
 import kotlinx.android.synthetic.main.activity_main.view_pager_sample
 import kotlinx.android.synthetic.main.activity_main.widget_viewModel
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
+import kotlinx.android.synthetic.main.activity_main.widgets_json_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 import java.io.BufferedReader
 import java.io.FileInputStream
@@ -271,6 +272,10 @@ class MainActivity : AppCompatActivity() {
 
         unclaimed_interaction.setOnClickListener {
             startActivity(Intent(this, UnclaimedInteractionActivity::class.java))
+        }
+
+        widgets_json_button.setOnClickListener {
+            startActivity(Intent(this,WidgetJsonActivity::class.java))
         }
 
         private_group_button.setOnClickListener {
