@@ -352,7 +352,12 @@ internal class PredictionViewModel(
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->
                 val url = widget.resource.getMergedOptions()!![position].getMergedVoteUrl()
                 url?.let {
-                    voteApi(it, widget.resource.getMergedOptions()!![position].id, userRepository)
+                    voteApi(
+                        it,
+                        widget.resource.getMergedOptions()!![position].id,
+                        userRepository,
+                        patchVoteUrl = getUserInteraction()?.url
+                    )
                 }
             }
             // Save widget id and voted option for followup widget
