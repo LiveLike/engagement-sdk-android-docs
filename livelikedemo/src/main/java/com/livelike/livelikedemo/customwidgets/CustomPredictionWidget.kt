@@ -6,6 +6,8 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.livelikedemo.R
@@ -48,6 +50,18 @@ class CustomPredictionWidget :
             widgetData = followUpWidgetViewModel?.widgetData
             voteResults = followUpWidgetViewModel?.voteResults
         }
+        predictionWidgetViewModel?.loadInteractionHistory(object :
+            LiveLikeCallback<List<PredictionWidgetUserInteraction>>() {
+            override fun onResponse(
+                result: List<PredictionWidgetUserInteraction>?,
+                error: String?
+            ) {
+                result?.forEach {
+                    println("CustomPredictionWidget.onResponse>>${it.optionId} =>${it.isCorrect}")
+                }
+            }
+
+        })
 
         widgetData?.let { liveLikeWidget ->
             liveLikeWidget.options?.let {
@@ -89,13 +103,13 @@ class CustomPredictionWidget :
                 finish()
             }
 
-            val handler = Handler()
-            handler.postDelayed(
-                {
-                    finish()
-                },
-                (liveLikeWidget.timeout ?: "").parseDuration()
-            )
+//            val handler = Handler()
+//            handler.postDelayed(
+//                {
+//                    finish()
+//                },
+//                (liveLikeWidget.timeout ?: "").parseDuration()
+//            )
         }
     }
 

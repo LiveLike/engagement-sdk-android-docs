@@ -5,8 +5,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
+import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
+import com.livelike.livelikedemo.customwidgets.CustomImageSlider
 import com.livelike.livelikedemo.customwidgets.CustomPollWidget
+import com.livelike.livelikedemo.customwidgets.CustomPredictionWidget
 import kotlinx.android.synthetic.main.activity_widget_json.button3
 import kotlinx.android.synthetic.main.activity_widget_json.editTextTextPersonName
 import kotlinx.android.synthetic.main.activity_widget_json.editTextTextPersonName2
@@ -21,7 +27,8 @@ class WidgetJsonActivity : AppCompatActivity() {
             val session = (application as LiveLikeApplication).createPublicSession(
                 manager.selectedChannel.llProgram.toString()
             )
-            editTextTextPersonName.setText("1bc4353a-d189-4acc-b1cb-e0874348850a")
+            editTextTextPersonName.setText("df50c665-aff9-4a93-85b2-bc9aa9488b26")
+            editTextTextPersonName2.setText("cheer-meter")
 
             button3.setOnClickListener {
                 val widgetId = editTextTextPersonName.text.toString()
@@ -32,8 +39,8 @@ class WidgetJsonActivity : AppCompatActivity() {
                         override fun onResponse(result: LiveLikeWidget?, error: String?) {
                             result?.let {
                                 val widgetModel = session.getWidgetModelFromLiveLikeWidget(it)
-                                val widget = CustomPollWidget(applicationContext)
-                                widget.pollWidgetModel = widgetModel as PollWidgetModel
+                                val widget = CustomCheerMeter(applicationContext)
+                                widget.cheerMeterWidgetModel = widgetModel as CheerMeterWidgetmodel
                                 frame_widget.removeAllViews()
                                 frame_widget.addView(widget)
                             }
