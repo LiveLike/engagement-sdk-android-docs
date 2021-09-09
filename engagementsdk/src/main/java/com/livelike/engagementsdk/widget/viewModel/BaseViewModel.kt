@@ -35,14 +35,16 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
     internal fun voteApi(
         url: String,
         id: String,
-        userRepository: UserRepository
+        userRepository: UserRepository,
+        patchVoteUrl: String? = null
     ) {
         uiScope.launch {
             dataClient.voteAsync(
                 url,
                 id,
                 userRepository.userAccessToken,
-                userRepository = userRepository
+                userRepository = userRepository,
+                patchVoteUrl = patchVoteUrl
             )
         }
     }
@@ -81,7 +83,11 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
         }
     }
 
-    fun trackWidgetEngagedAnalytics(currentWidgetType: WidgetType?, currentWidgetId: String, programId: String) {
+    fun trackWidgetEngagedAnalytics(
+        currentWidgetType: WidgetType?,
+        currentWidgetId: String,
+        programId: String
+    ) {
         currentWidgetType?.let {
             analyticsService.trackWidgetEngaged(
                 currentWidgetType.toAnalyticsString(),
@@ -90,6 +96,7 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
             )
         }
     }
+
     protected fun trackWidgetBecameInteractive(
         widgetType: WidgetType?,
         widgetId: String,

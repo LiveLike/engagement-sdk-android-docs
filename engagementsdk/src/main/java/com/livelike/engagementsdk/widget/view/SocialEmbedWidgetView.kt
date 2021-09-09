@@ -85,9 +85,7 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
 
     private fun inflate(context: Context, liveLikeWidget: LiveLikeWidget) {
         if (titleView == null) {
-            LayoutInflater.from(context)
-                .inflate(R.layout.widget_social_embed, this, true) as ConstraintLayout
-
+            inflate(context, R.layout.widget_social_embed, this@SocialEmbedWidgetView)
             titleView.text = liveLikeWidget.comment ?: ""
 
             liveLikeWidget.socialEmbedItems?.get(0)?.let { oembed ->
