@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.OptionsItem
+import com.livelike.engagementsdk.core.data.models.PredictionVotes
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
@@ -91,9 +92,9 @@ class CustomNumberPredictionWidget :
                 // predict button click
                 binding.btn1.setOnClickListener {
                     val map = adapter.getPredictedScore()
-                    var optionList = mutableListOf<OptionsItem>()
+                    var optionList = mutableListOf<PredictionVotes>()
                     map.forEach { item ->
-                        optionList.add(OptionsItem(id = item.key,number = item.value))
+                        optionList.add(PredictionVotes(optionId = item.key,number = item.value))
                     }
                     numberPredictionWidgetViewModel?.lockInVote(optionList)
                 }

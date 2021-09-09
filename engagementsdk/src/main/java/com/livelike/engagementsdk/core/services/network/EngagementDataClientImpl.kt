@@ -304,6 +304,7 @@ internal open class EngagementDataClientImpl :
                 override fun onResponse(call: Call, response: Response) {
                     try {
                         val s = response.body?.string()
+                        logDebug { "prediction response $s" }
                         it.resume(JsonParser.parseString(s).asJsonObject)
                     } catch (e: Exception) {
                         logError { e }

@@ -1,10 +1,14 @@
 package com.livelike.engagementsdk.widget.viewModel
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.OptionsItem
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.core.data.models.PredictionVotes
+import com.livelike.engagementsdk.core.data.models.VoteApiResponse
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
@@ -89,38 +93,39 @@ internal class NumberPredictionViewModel(
         }
     }
 
+    /**
+     * creates the request for submission of prediction votes (prediction for all options is mandatory)
+     */
+    override fun lockInVote(options: List<PredictionVotes>) {
+        val jsonArray = JsonArray()
+        val votesObj = JsonObject()
 
-    override fun lockInVote(options: List<OptionsItem>) {
-        val jsonArray = JSONArray()
-        val votesObj = JSONObject()
-
-            //create the json array to be posted
-            if (options.isNotEmpty()) {
-                for (i in options.indices) {
-                    data.currentData?.let { widget ->
-                        val option =
-                            widget.resource.getMergedOptions()?.find { it.id == options[i].id }
-                        option?.number = options[i].number
-                        option?.let{
-                            try {
-                                val jsonObject = JSONObject()
-                                jsonObject.put("option_id", option.id)
-                                jsonObject.put("number", option.number)
-                                jsonArray.put(i, jsonObject)
-                            } catch (e: JSONException) {
-                                e.printStackTrace()
+        //create the json array to be posted
+        data.currentData?.let { widget ->
+        if (options.isNotEmpty() && options.size == widget.resource.getMergedOptions()?.size) {
+            for (i in options.indices) {
+                    val option = widget.resource.getMergedOptions()?.find { it.id == options[i].optionId }
+                    option?.number = options[i].number
+                    option?.let {
+                        jsonArray.add(
+                            JsonObject().apply {
+                                addProperty("option_id", option.id)
+                                addProperty("number", option.number)
                             }
-                            votesObj.put("votes", jsonArray)
-                        }
+                        )
+                        votesObj.add("votes", jsonArray)
                     }
                 }
-                submitVoteApi(votesObj)
+               submitVoteApi(votesObj)
             }
         }
+    }
 
 
-
-    private fun submitVoteApi(votesObj: JSONObject) {
+    /**
+     * call the vote api
+     */
+    private fun submitVoteApi(votesObj: JsonObject) {
         uiScope.launch {
             data.latest()?.resource?.vote_url?.let {
                 dataClient.voteAsync(
@@ -136,13 +141,16 @@ internal class NumberPredictionViewModel(
         }
     }
 
-
+    /**
+     * get the last interaction
+     */
     override fun getUserInteraction(): NumberPredictionWidgetUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
             widgetInfos.widgetId,
             WidgetKind.fromString(widgetInfos.type)
         )
     }
+
 
     override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<NumberPredictionWidgetUserInteraction>>) {
         uiScope.launch {

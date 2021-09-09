@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.widget.widgetModel
 
 import com.livelike.engagementsdk.OptionsItem
+import com.livelike.engagementsdk.core.data.models.PredictionVotes
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
@@ -11,7 +12,7 @@ interface NumberPredictionWidgetModel: LiveLikeWidgetMediator {
     /**
      * submits the answer for prediction
      */
-    fun lockInVote(options:List<OptionsItem>)
+    fun lockInVote(options:List<PredictionVotes>)
 
     /**
      * it returns the latest user interaction for the widget

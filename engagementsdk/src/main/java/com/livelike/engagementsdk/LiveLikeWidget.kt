@@ -190,10 +190,7 @@ data class OptionsItem(
     val answerUrl: String? = null,
 
     @field:SerializedName("answer_count")
-    val answerCount: Int? = null,
-
-    @field:SerializedName("number")
-    var number: Int? = null
+    val answerCount: Int? = null
 )
 
 data class ReactionsItem(
