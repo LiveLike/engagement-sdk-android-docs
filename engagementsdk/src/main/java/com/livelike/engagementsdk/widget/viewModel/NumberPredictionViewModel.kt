@@ -19,7 +19,6 @@ import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepos
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import kotlinx.coroutines.launch
-import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
@@ -91,39 +90,37 @@ internal class NumberPredictionViewModel(
     }
 
 
-    override fun submitPrediction(options: List<OptionsItem>) {
-
+    override fun lockInVote(options: List<OptionsItem>) {
         val jsonArray = JSONArray()
         val votesObj = JSONObject()
 
             //create the json array to be posted
             if (options.isNotEmpty()) {
                 for (i in options.indices) {
-
                     data.currentData?.let { widget ->
                         val option =
                             widget.resource.getMergedOptions()?.find { it.id == options[i].id }
                         option?.number = options[i].number
-
-                        try {
-                            val jsonObject = JSONObject()
-                            jsonObject.put("option_id", option?.id)
-                            jsonObject.put("number", option?.number)
-                            jsonArray.put(i, jsonObject)
-                        } catch (e: JSONException) {
-                            e.printStackTrace()
+                        option?.let{
+                            try {
+                                val jsonObject = JSONObject()
+                                jsonObject.put("option_id", option.id)
+                                jsonObject.put("number", option.number)
+                                jsonArray.put(i, jsonObject)
+                            } catch (e: JSONException) {
+                                e.printStackTrace()
+                            }
+                            votesObj.put("votes", jsonArray)
                         }
-
-                        votesObj.put("votes", jsonArray)
-                        lockInPrediction(votesObj)
                     }
                 }
+                submitVoteApi(votesObj)
             }
         }
 
 
 
-    private fun lockInPrediction(votesObj: JSONObject) {
+    private fun submitVoteApi(votesObj: JSONObject) {
         uiScope.launch {
             data.latest()?.resource?.vote_url?.let {
                 dataClient.voteAsync(

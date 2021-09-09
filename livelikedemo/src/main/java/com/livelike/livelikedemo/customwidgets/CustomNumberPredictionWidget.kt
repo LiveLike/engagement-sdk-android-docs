@@ -60,6 +60,7 @@ class CustomNumberPredictionWidget :
         var widgetData = numberPredictionWidgetViewModel?.widgetData
         widgetData?.let { liveLikeWidget ->
 
+        /*    //load interaction history
             numberPredictionWidgetViewModel?.loadInteractionHistory(object : LiveLikeCallback<List<NumberPredictionWidgetUserInteraction>>() {
                 override fun onResponse(
                     result: List<NumberPredictionWidgetUserInteraction>?,
@@ -73,7 +74,7 @@ class CustomNumberPredictionWidget :
                         }
                     }
                 }
-            })
+            })*/
 
             liveLikeWidget.options?.let { option ->
                 if (option.size > 2) {
@@ -94,7 +95,7 @@ class CustomNumberPredictionWidget :
                     map.forEach { item ->
                         optionList.add(OptionsItem(id = item.key,number = item.value))
                     }
-                    numberPredictionWidgetViewModel?.submitPrediction(optionList)
+                    numberPredictionWidgetViewModel?.lockInVote(optionList)
                 }
             }
 
@@ -152,17 +153,18 @@ class CustomNumberPredictionWidget :
             //holder.itemView.img_1.text = item.description
 
             holder.itemView.plus.setOnClickListener {
-                var updatedScore = holder.itemView.option_view_1.text.toString().toInt() + 1
-                item.number = updatedScore
-                holder.itemView.option_view_1.text = updatedScore.toString()
-                predictionMap[item.id!!] = updatedScore
+                    var updatedScore = holder.itemView.option_view_1.text.toString().toInt() + 1
+                    holder.itemView.option_view_1.text = updatedScore.toString()
+                    predictionMap[item.id!!] = updatedScore
+
             }
 
             holder.itemView.minus.setOnClickListener {
-                var updatedScore = holder.itemView.option_view_1.text.toString().toInt() - 1
-                item.number = updatedScore
-                holder.itemView.option_view_1.text = updatedScore.toString()
-                predictionMap[item.id!!] = updatedScore
+                if(holder.itemView.option_view_1.text.toString().toInt() > 0) {
+                    var updatedScore = holder.itemView.option_view_1.text.toString().toInt() - 1
+                    holder.itemView.option_view_1.text = updatedScore.toString()
+                    predictionMap[item.id!!] = updatedScore
+                }
             }
         }
 

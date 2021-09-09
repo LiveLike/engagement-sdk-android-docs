@@ -11,7 +11,7 @@ interface NumberPredictionWidgetModel: LiveLikeWidgetMediator {
     /**
      * submits the answer for prediction
      */
-    fun submitPrediction(options:List<OptionsItem>)
+    fun lockInVote(options:List<OptionsItem>)
 
     /**
      * it returns the latest user interaction for the widget

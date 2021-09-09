@@ -52,6 +52,7 @@ import com.livelike.livelikedemo.models.CheerMeterRequestResponse
 import com.livelike.livelikedemo.models.EmojiSliderRequest
 import com.livelike.livelikedemo.models.FollowUpRequest
 import com.livelike.livelikedemo.models.FollowUpResponse
+import com.livelike.livelikedemo.models.NumberPredictionResponse
 import com.livelike.livelikedemo.models.PollRequestResponse
 import com.livelike.livelikedemo.models.PredictionRequest
 import com.livelike.livelikedemo.models.PredictionResponse
@@ -99,6 +100,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
     private val alerts = "alerts"
     private val cheerMeter = "cheer-meters"
     private val textAsk = "text-asks"
+    private val imgNumberPrediction = "image-number-predictions"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,8 +155,14 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 PostType(twoOptions, false, cheerMeter, 2),
 
                 PostType("Text Ask", true),
-                PostType(twoOptions, false, textAsk, 2)
-            )
+                PostType(twoOptions, false, textAsk, 2) ,
+
+                PostType("Image Prediction", true),
+                PostType("Image Number Prediction", false, imgNumberPrediction, 2)
+
+
+
+        )
         )
         rcyl_view.adapter = adapter
         val jsonTheme = intent.getStringExtra("jsonTheme")
@@ -482,6 +490,17 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                     )
                                 }
                             }
+
+                            imgNumberPrediction ->{
+                                for (i in 0 until type.count) {
+                                    options.add(
+                                        Option(
+                                            description = "Option $i",
+                                            image_url = images[i]
+                                        )
+                                    )
+                                }
+                            }
                         }
 
                         val request = when (type.url) {
@@ -557,6 +576,14 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 "PT30S",
                                 "this is the title",
                             )
+                            imgNumberPrediction -> PredictionRequest(
+                                "The confirmation Message",
+                                options,
+                                null,
+                                programId,
+                                question,
+                                "PT10S"
+                            )
                             else -> null
                         }
                         scope.launch {
@@ -589,6 +616,10 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 )
                                 textAsk -> gson.fromJson(
                                     responseString, TextAskResponse::class.java
+                                )
+                                imgNumberPrediction -> gson.fromJson(
+                                    responseString,
+                                    NumberPredictionResponse::class.java
                                 )
                                 else -> null
                             }
@@ -659,6 +690,10 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                     }
                                 }
                                 is CheerMeterRequestResponse -> {
+                                    it.schedule_url?.let { it1 -> putAPI(it1) }
+                                }
+
+                                is NumberPredictionResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
                             }
