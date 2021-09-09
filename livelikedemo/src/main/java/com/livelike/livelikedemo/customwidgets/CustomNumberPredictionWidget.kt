@@ -2,6 +2,7 @@ package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.OptionsItem
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
+import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterVoteState
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import com.livelike.livelikedemo.R
@@ -55,6 +59,22 @@ class CustomNumberPredictionWidget :
         super.onAttachedToWindow()
         var widgetData = numberPredictionWidgetViewModel?.widgetData
         widgetData?.let { liveLikeWidget ->
+
+            numberPredictionWidgetViewModel?.loadInteractionHistory(object : LiveLikeCallback<List<NumberPredictionWidgetUserInteraction>>() {
+                override fun onResponse(
+                    result: List<NumberPredictionWidgetUserInteraction>?,
+                    error: String?
+                ) {
+                    if (result != null) {
+                        if (result.isNotEmpty()) {
+                            for (element in result) {
+                                Log.d("interaction-prediction", element.optionId)
+                            }
+                        }
+                    }
+                }
+            })
+
             liveLikeWidget.options?.let { option ->
                 if (option.size > 2) {
                     binding.rcylPredictionList.layoutManager =
@@ -71,18 +91,11 @@ class CustomNumberPredictionWidget :
                 binding.btn1.setOnClickListener {
                     val map = adapter.getPredictedScore()
                     var optionList = mutableListOf<OptionsItem>()
-                    map.forEach { map ->
-
-                        var optionItem = option.find {
-                            it?.id == map.key
-                        }
-                        // change/add value in the option item and then add to the array list
-                        if (optionItem != null) {
-                            optionList.add(optionItem)
-                        }
+                    map.forEach { item ->
+                        optionList.add(OptionsItem(id = item.key,number = item.value))
                     }
+                    numberPredictionWidgetViewModel?.submitPrediction(optionList)
                 }
-
             }
 
             binding.txt.text = liveLikeWidget.question
@@ -131,21 +144,23 @@ class CustomNumberPredictionWidget :
         ) {
             val item = list[position]
 
-            /* Glide.with(context)
+                Glide.with(context)
                  .load(item.imageUrl)
                  .into(holder.itemView.img_1
-                 )*/
+                 )
 
-            holder.itemView.img_1.text = item.description
+            //holder.itemView.img_1.text = item.description
 
             holder.itemView.plus.setOnClickListener {
                 var updatedScore = holder.itemView.option_view_1.text.toString().toInt() + 1
+                item.number = updatedScore
                 holder.itemView.option_view_1.text = updatedScore.toString()
                 predictionMap[item.id!!] = updatedScore
             }
 
             holder.itemView.minus.setOnClickListener {
                 var updatedScore = holder.itemView.option_view_1.text.toString().toInt() - 1
+                item.number = updatedScore
                 holder.itemView.option_view_1.text = updatedScore.toString()
                 predictionMap[item.id!!] = updatedScore
             }

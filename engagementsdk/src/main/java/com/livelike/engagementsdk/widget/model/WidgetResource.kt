@@ -91,7 +91,8 @@ data class Option(
     val vote_url: String? = "",
     val image_url: String? = "",
     var answer_count: Int? = 0,
-    var vote_count: Int? = 0
+    var vote_count: Int? = 0,
+    var number:Int? = 0
 ) {
     @Deprecated("Use getPercent instead")
     fun getPercentVote(total: Float): Int {

@@ -19,6 +19,7 @@ import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepos
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import kotlinx.coroutines.launch
+import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
@@ -54,24 +55,24 @@ internal class NumberPredictionViewModel(
     private var currentWidgetType: WidgetType? = null
 
 
-    init{
+    init {
         widgetObserver(widgetInfos)
     }
 
 
-    private fun widgetObserver(widgetInfos: WidgetInfos?){
+    private fun widgetObserver(widgetInfos: WidgetInfos?) {
         if (widgetInfos != null) {
             val resource =
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
-                    resource.getMergedOptions()?.forEach { option ->
-                        predictionStateList.add(
-                            NumberPredictionState(
-                                optionID = option.id,
-                                predictionValue = 0
-                            )
+                resource.getMergedOptions()?.forEach { option ->
+                    predictionStateList.add(
+                        NumberPredictionState(
+                            optionID = option.id,
+                            predictionValue = 0
                         )
-                    }
+                    )
+                }
 
                 data.onNext(
                     WidgetType.fromString(widgetInfos.type)?.let {
@@ -90,28 +91,44 @@ internal class NumberPredictionViewModel(
     }
 
 
-    override fun submitPrediction(options : ArrayList<OptionsItem>) {
-      /*  uiScope.launch {
-            val jsonArray = JSONArray()
+    override fun submitPrediction(options: List<OptionsItem>) {
+
+        val jsonArray = JSONArray()
+        val votesObj = JSONObject()
 
             //create the json array to be posted
-      if (options.size > 0) {
-          for (i in 0 until options.size) {
-              try {
-                  val jsonObject = JSONObject()
-                  jsonObject.put("option_id", options[i].toString())
-                  jsonObject.put("value", 0)
-                  jsonArray.put(i, jsonObject)
-              } catch (e: JSONException) {
-                  e.printStackTrace()
-              }
-          }
-      }
+            if (options.isNotEmpty()) {
+                for (i in options.indices) {
 
+                    data.currentData?.let { widget ->
+                        val option =
+                            widget.resource.getMergedOptions()?.find { it.id == options[i].id }
+                        option?.number = options[i].number
+
+                        try {
+                            val jsonObject = JSONObject()
+                            jsonObject.put("option_id", option?.id)
+                            jsonObject.put("number", option?.number)
+                            jsonArray.put(i, jsonObject)
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+
+                        votesObj.put("votes", jsonArray)
+                        lockInPrediction(votesObj)
+                    }
+                }
+            }
+        }
+
+
+
+    private fun lockInPrediction(votesObj: JSONObject) {
+        uiScope.launch {
             data.latest()?.resource?.vote_url?.let {
                 dataClient.voteAsync(
                     it,
-                    body = jsonArray.toString()
+                    body = votesObj.toString()
                         .toRequestBody("application/json".toMediaTypeOrNull()),
                     accessToken = userRepository.userAccessToken,
                     type = RequestType.POST,
@@ -119,8 +136,7 @@ internal class NumberPredictionViewModel(
                     userRepository = userRepository
                 )
             }
-
-        }*/
+        }
     }
 
 
@@ -189,6 +205,6 @@ internal class NumberPredictionViewModel(
 }
 
 data class NumberPredictionState(
-    var optionID:String,
+    var optionID: String,
     var predictionValue: Int
 )
