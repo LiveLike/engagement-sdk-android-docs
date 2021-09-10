@@ -110,22 +110,36 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                 )
             }
             voteUrl = jsonObject.extractStringOrEmpty("url")
-            val voteApiResponse = gson.fromJson<VoteApiResponse>(jsonObject, VoteApiResponse::class.java)
-            voteApiResponse?.claimToken?.let {
-                widgetId?.let { widgetId ->
-                    EngagementSDK.predictionWidgetVoteRepository.add(PredictionWidgetVote(widgetId, it)) {}
+            try {
+                val voteApiResponse =
+                    gson.fromJson<VoteApiResponse>(jsonObject, VoteApiResponse::class.java)
+                voteApiResponse?.claimToken?.let {
+                    widgetId?.let { widgetId ->
+                        EngagementSDK.predictionWidgetVoteRepository.add(
+                            PredictionWidgetVote(
+                                widgetId,
+                                it
+                            )
+                        ) {}
+                    }
                 }
-            }
-            voteApiResponse.rewards?.let {
-                for (reward in it) {
-                    userRepository?.run {
-                        rewardItemMapCache[reward.rewardId]?.let {
-                            currentUserStream.latest()?.let { user ->
-                                userProfileDelegate?.userProfile(user, Reward(it, reward.rewardItemAmount), RewardSource.WIDGETS)
+                voteApiResponse.rewards?.let {
+                    for (reward in it) {
+                        userRepository?.run {
+                            rewardItemMapCache[reward.rewardId]?.let {
+                                currentUserStream.latest()?.let { user ->
+                                    userProfileDelegate?.userProfile(
+                                        user,
+                                        Reward(it, reward.rewardItemAmount),
+                                        RewardSource.WIDGETS
+                                    )
+                                }
                             }
                         }
                     }
                 }
+            }catch (ex:Exception){
+                logError { ex.message }
             }
             return@afterPrevious voteUrl
         }

@@ -2,33 +2,24 @@ package com.livelike.engagementsdk.widget.viewModel
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeWidget
-import com.livelike.engagementsdk.OptionsItem
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.core.data.models.PredictionVotes
-import com.livelike.engagementsdk.core.data.models.VoteApiResponse
+import com.livelike.engagementsdk.core.data.models.NumberPredictionVotes
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.RequestType
-import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
-import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
-import java.io.IOException
 
 
 internal class NumberPredictionWidget(
@@ -96,7 +87,7 @@ internal class NumberPredictionViewModel(
     /**
      * creates the request for submission of prediction votes (prediction for all options is mandatory)
      */
-    override fun lockInVote(options: List<PredictionVotes>) {
+    override fun lockInVote(options: List<NumberPredictionVotes>) {
         val jsonArray = JsonArray()
         val votesObj = JsonObject()
 
@@ -145,45 +136,12 @@ internal class NumberPredictionViewModel(
      * get the last interaction
      */
     override fun getUserInteraction(): NumberPredictionWidgetUserInteraction? {
-        return widgetInteractionRepository?.getWidgetInteraction(
-            widgetInfos.widgetId,
-            WidgetKind.fromString(widgetInfos.type)
-        )
+        return null
     }
 
 
     override fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<NumberPredictionWidgetUserInteraction>>) {
-        uiScope.launch {
-            try {
-                val results =
-                    widgetInteractionRepository?.fetchRemoteInteractions(
-                        widgetId = widgetInfos.widgetId,
-                        widgetKind = widgetInfos.type
-                    )
 
-                if (results is Result.Success) {
-                    if (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_NUMBER_PREDICTION) {
-                        liveLikeCallback.onResponse(
-                            results.data.interactions.textNumberPrediction, null
-                        )
-                    } else if (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_NUMBER_PREDICTION) {
-                        liveLikeCallback.onResponse(
-                            results.data.interactions.imageNumberPrediction, null
-                        )
-                    }
-                } else if (results is Result.Error) {
-                    liveLikeCallback.onResponse(
-                        null, results.exception.message
-                    )
-                }
-            } catch (e: JsonParseException) {
-                e.printStackTrace()
-                liveLikeCallback.onResponse(null, e.message)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                liveLikeCallback.onResponse(null, e.message)
-            }
-        }
     }
 
     override val widgetData: LiveLikeWidget

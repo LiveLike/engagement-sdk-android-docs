@@ -2,7 +2,6 @@ package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,11 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.OptionsItem
-import com.livelike.engagementsdk.core.data.models.PredictionVotes
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
-import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
-import com.livelike.engagementsdk.widget.viewModel.CheerMeterVoteState
+import com.livelike.engagementsdk.core.data.models.NumberPredictionVotes
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import com.livelike.livelikedemo.R
 import com.livelike.livelikedemo.databinding.CustomNumberPredictionWidgetBinding
@@ -92,9 +87,9 @@ class CustomNumberPredictionWidget :
                 // predict button click
                 binding.btn1.setOnClickListener {
                     val map = adapter.getPredictedScore()
-                    var optionList = mutableListOf<PredictionVotes>()
+                    var optionList = mutableListOf<NumberPredictionVotes>()
                     map.forEach { item ->
-                        optionList.add(PredictionVotes(optionId = item.key,number = item.value))
+                        optionList.add(NumberPredictionVotes(optionId = item.key,number = item.value))
                     }
                     numberPredictionWidgetViewModel?.lockInVote(optionList)
                 }
