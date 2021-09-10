@@ -39,6 +39,8 @@ interface IEngagement {
 
     var leaderBoardDelegate: LeaderBoardDelegate?
 
+    var chatRoomDelegate : ChatRoomDelegate?
+
     /** Override the default auto-generated chat nickname **/
     fun updateChatNickname(nickname: String)
 

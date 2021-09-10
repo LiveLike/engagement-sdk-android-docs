@@ -158,7 +158,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
                         responseData.extractStringOrEmpty("custom_data"),
                         responseData.extractStringOrEmpty("badges_url"),
-                        responseData.extractStringOrEmpty("badge_progress_url")
+                        responseData.extractStringOrEmpty("badge_progress_url"),
+                        responseData.extractStringOrEmpty("subscribe_channel"),
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -199,7 +200,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
                         responseData.extractStringOrEmpty("custom_data"),
                         responseData.extractStringOrEmpty("badges_url"),
-                        responseData.extractStringOrEmpty("badge_progress_url")
+                        responseData.extractStringOrEmpty("badge_progress_url"),
+                        responseData.extractStringOrEmpty("subscribe_channel"),
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }

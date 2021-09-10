@@ -25,5 +25,6 @@ data class LiveLikeUser(
     internal var badgesUrl: String?,
     @SerializedName("badge_progress_url")
     internal var badgeProgressUrl: String?,
-
+    @SerializedName("subscribe_channel")
+    internal var subscribeChannel: String?,
 )
