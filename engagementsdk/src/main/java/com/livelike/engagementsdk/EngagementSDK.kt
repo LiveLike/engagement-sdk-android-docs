@@ -61,7 +61,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 /**
@@ -319,6 +321,14 @@ class EngagementSDK(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<ChatRoomMembership>
     ) {
+        addUserToChatRoom(chatRoomId, "", liveLikeCallback)
+    }
+
+    override fun addUserToChatRoom(
+        chatRoomId: String,
+        userId: String,
+        liveLikeCallback: LiveLikeCallback<ChatRoomMembership>
+    ) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
             .subscribe(this) {
                 it?.let { pair ->
@@ -343,7 +353,11 @@ class EngagementSDK(
                                     chatRoomResult.data.membershipsUrl,
                                     accessToken = pair.first.accessToken,
                                     requestType = RequestType.POST,
-                                    requestBody = RequestBody.create(null, byteArrayOf())
+                                    requestBody = when( userId.isEmpty()){
+                                        true -> RequestBody.create(null, byteArrayOf())
+                                        else -> """{"member_id":"$userId"}"""
+                                            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+                                    }
                                 )
                             if (currentUserChatRoomResult is Result.Success) {
                                 liveLikeCallback.onResponse(
