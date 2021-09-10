@@ -66,6 +66,11 @@ interface IEngagement {
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<ChatRoomMembership>
     )
+    fun addUserToChatRoom(
+        chatRoomId: String,
+        userId: String,
+        liveLikeCallback: LiveLikeCallback<ChatRoomMembership>
+    )
 
     fun getCurrentUserChatRoomList(
         liveLikePagination: LiveLikePagination,
