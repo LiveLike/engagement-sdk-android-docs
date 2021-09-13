@@ -231,6 +231,7 @@ internal class WidgetProvider {
                 widgetViewModel = NumberPredictionViewModel(
                     widgetInfos,
                     analyticsService,
+                    sdkConfiguration,
                     onDismiss,
                     userRepository,
                     widgetMessagingClient,

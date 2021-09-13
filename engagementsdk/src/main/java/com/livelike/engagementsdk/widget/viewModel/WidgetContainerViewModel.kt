@@ -182,7 +182,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 is NumberPredictionWidgetModel -> {
                     customView =
                         widgetViewViewFactory?.createNumberPredictionWidgetView(
-                            widgetView.widgetViewModel as NumberPredictionWidgetModel
+                            widgetView.widgetViewModel as NumberPredictionWidgetModel,
+                            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_NUMBER_PREDICTION
                         )
                 }
             }

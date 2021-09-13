@@ -84,9 +84,11 @@ class TimeLineWidgetFactory(
         return null
     }
 
-    override fun createNumberPredictionWidgetView(numberPredictionWidgetModel: NumberPredictionWidgetModel): View? {
+    override fun createNumberPredictionWidgetView(numberPredictionWidgetModel: NumberPredictionWidgetModel,
+                                                  isImage: Boolean): View? {
         return CustomNumberPredictionWidget(context).apply {
             this.numberPredictionWidgetViewModel = numberPredictionWidgetModel
+            this.isImage = isImage
         }
     }
 

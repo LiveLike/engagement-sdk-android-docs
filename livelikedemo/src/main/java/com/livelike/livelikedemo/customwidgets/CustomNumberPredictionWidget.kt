@@ -18,12 +18,15 @@ import kotlinx.android.synthetic.main.custom_number_prediction_item.view.img_1
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.minus
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.option_view_1
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.plus
+import kotlinx.android.synthetic.main.custom_number_prediction_item.view.text_1
 
 
 class CustomNumberPredictionWidget :
     ConstraintLayout {
     var numberPredictionWidgetViewModel: NumberPredictionWidgetModel? = null
     private lateinit var binding: CustomNumberPredictionWidgetBinding
+    var isImage = false
+    var isFollowUp = false
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -81,7 +84,7 @@ class CustomNumberPredictionWidget :
                         )
                 }
                 val adapter =
-                    PredictionListAdapter(context, ArrayList(option.map { item -> item!! }))
+                    PredictionListAdapter(context,isImage, ArrayList(option.map { item -> item!! }))
                 binding.rcylPredictionList.adapter = adapter
 
                 // predict button click
@@ -112,6 +115,7 @@ class CustomNumberPredictionWidget :
 
     class PredictionListAdapter(
         private val context: Context,
+        private val isImage: Boolean,
         val list: ArrayList<OptionsItem>
     ) : RecyclerView.Adapter<PredictionListAdapter.PredictionListItemViewHolder>() {
 
@@ -141,12 +145,20 @@ class CustomNumberPredictionWidget :
         ) {
             val item = list[position]
 
+            if(isImage){
                 Glide.with(context)
-                 .load(item.imageUrl)
-                 .into(holder.itemView.img_1
-                 )
+                    .load(item.imageUrl)
+                    .into(holder.itemView.img_1
+                    )
+                holder.itemView.text_1.visibility = View.GONE
+                holder.itemView.img_1.visibility = View.VISIBLE
 
-            //holder.itemView.img_1.text = item.description
+            }else{
+                holder.itemView.text_1.text = item.description
+                holder.itemView.text_1.visibility = View.VISIBLE
+                holder.itemView.img_1.visibility = View.GONE
+            }
+
 
             holder.itemView.plus.setOnClickListener {
                     var updatedScore = holder.itemView.option_view_1.text.toString().toInt() + 1
@@ -156,11 +168,10 @@ class CustomNumberPredictionWidget :
             }
 
             holder.itemView.minus.setOnClickListener {
-                if(holder.itemView.option_view_1.text.toString().toInt() > 0) {
                     var updatedScore = holder.itemView.option_view_1.text.toString().toInt() - 1
                     holder.itemView.option_view_1.text = updatedScore.toString()
                     predictionMap[item.id!!] = updatedScore
-                }
+
             }
         }
 

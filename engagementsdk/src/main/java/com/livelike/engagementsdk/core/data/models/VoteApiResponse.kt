@@ -10,8 +10,6 @@ class VoteApiResponse {
     @SerializedName("claim_token")
     val claimToken: String? = null
 
-    @SerializedName("votes")
-    val votes:List<NumberPredictionVotes>? = null
 }
 
 data class EarnedReward(

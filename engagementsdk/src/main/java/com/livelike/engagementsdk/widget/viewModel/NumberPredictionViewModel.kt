@@ -3,7 +3,9 @@ package com.livelike.engagementsdk.widget.viewModel
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
+import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.NumberPredictionVotes
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -16,6 +18,7 @@ import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addWidgetNumberPredictionVoted
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -30,19 +33,19 @@ internal class NumberPredictionWidget(
 internal class NumberPredictionViewModel(
     val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
+    private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     val widgetMessagingClient: WidgetManager? = null,
     val widgetInteractionRepository: WidgetInteractionRepository?
 ) : BaseViewModel(analyticsService), NumberPredictionWidgetModel {
 
-    /**
-     *this is equal to size of list of options containing vote count to synced with server for each option
-     *request is post to create the prediction vote, update will not be possible once vote is submitted
-     **/
-    var predictionStateList: MutableList<NumberPredictionState> = mutableListOf()
+
+  //  var predictionStateList: MutableList<NumberPredictionState> = mutableListOf()
 
     val data: SubscriptionManager<NumberPredictionWidget> =
+        SubscriptionManager()
+    var results: Stream<Resource> =
         SubscriptionManager()
     private var currentWidgetId: String = ""
     private var programId: String = ""
@@ -59,15 +62,13 @@ internal class NumberPredictionViewModel(
             val resource =
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
-                resource.getMergedOptions()?.forEach { option ->
-                    predictionStateList.add(
-                        NumberPredictionState(
-                            optionID = option.id,
-                            predictionValue = 0
-                        )
-                    )
-                }
-
+                subscribeWidgetResults(
+                    resource.subscribe_channel,
+                    sdkConfiguration,
+                    userRepository.currentUserStream,
+                    widgetInfos.widgetId,
+                    results
+                )
                 data.onNext(
                     WidgetType.fromString(widgetInfos.type)?.let {
                         NumberPredictionWidget(
@@ -88,26 +89,40 @@ internal class NumberPredictionViewModel(
      * creates the request for submission of prediction votes (prediction for all options is mandatory)
      */
     override fun lockInVote(options: List<NumberPredictionVotes>) {
-        val jsonArray = JsonArray()
-        val votesObj = JsonObject()
-
-        //create the json array to be posted
+        //if predicted score size does not match with option, fill in with default value 0
         data.currentData?.let { widget ->
-        if (options.isNotEmpty() && options.size == widget.resource.getMergedOptions()?.size) {
-            for (i in options.indices) {
-                    val option = widget.resource.getMergedOptions()?.find { it.id == options[i].optionId }
-                    option?.number = options[i].number
-                    option?.let {
-                        jsonArray.add(
-                            JsonObject().apply {
-                                addProperty("option_id", option.id)
-                                addProperty("number", option.number)
-                            }
-                        )
-                        votesObj.add("votes", jsonArray)
+            if (options.isNotEmpty()) {
+                val voteList = options.toMutableList()
+                if (voteList.size < widget.resource.getMergedOptions()?.size!!) {
+                    for (i in widget.resource.getMergedOptions()!!.indices) {
+                        val option =
+                            voteList.find { it.optionId == widget.resource.getMergedOptions()!![i].id }
+                        if (option == null) {
+                            voteList.add(
+                                NumberPredictionVotes(
+                                    widget.resource.getMergedOptions()!![i].id,
+                                    0
+                                )
+                            )
+                        }
                     }
                 }
-               submitVoteApi(votesObj)
+                val jsonArray = JsonArray()
+                val votesObj = JsonObject()
+
+                for (item in voteList) {
+                    jsonArray.add(
+                        JsonObject().apply {
+                            addProperty("option_id", item.optionId)
+                            addProperty("number", item.number)
+                        }
+                    )
+                    votesObj.add("votes", jsonArray)
+                }
+                submitVoteApi(votesObj)
+
+                // Save widget id and voted options (value and option id) for followup widget
+                addWidgetNumberPredictionVoted(widget.resource.id,voteList)
             }
         }
     }
@@ -131,6 +146,7 @@ internal class NumberPredictionViewModel(
             }
         }
     }
+
 
     /**
      * get the last interaction
@@ -166,8 +182,3 @@ internal class NumberPredictionViewModel(
     }
 
 }
-
-data class NumberPredictionState(
-    var optionID: String,
-    var predictionValue: Int
-)

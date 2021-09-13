@@ -59,6 +59,7 @@ interface LiveLikeWidgetViewFactory {
     ): View?
 
     fun createNumberPredictionWidgetView(
-        numberPredictionWidgetModel: NumberPredictionWidgetModel
+        numberPredictionWidgetModel: NumberPredictionWidgetModel,
+        isImage: Boolean
     ): View?
 }

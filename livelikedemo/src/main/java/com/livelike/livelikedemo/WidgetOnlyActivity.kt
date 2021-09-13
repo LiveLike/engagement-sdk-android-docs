@@ -286,9 +286,11 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun createNumberPredictionWidgetView(numberPredictionWidgetModel: NumberPredictionWidgetModel): View? {
+                override fun createNumberPredictionWidgetView(numberPredictionWidgetModel: NumberPredictionWidgetModel,
+                                                              isImage: Boolean): View? {
                     return CustomNumberPredictionWidget(this@WidgetOnlyActivity).apply {
                         this.numberPredictionWidgetViewModel = numberPredictionWidgetModel
+                        this.isImage = isImage
                     }
                 }
             }

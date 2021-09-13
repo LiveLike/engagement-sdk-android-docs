@@ -215,7 +215,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                         return null
                     }
 
-                    override fun createNumberPredictionWidgetView(numberPredictionWidgetModel: NumberPredictionWidgetModel): View? {
+                    override fun createNumberPredictionWidgetView(
+                        numberPredictionWidgetModel: NumberPredictionWidgetModel,
+                        isImage: Boolean
+                    ): View? {
                         return null
                     }
                 }
