@@ -127,6 +127,12 @@ interface IEngagement {
 
     fun getCurrentUserDetails(liveLikeCallback: LiveLikeCallback<LiveLikeUserApi>)
 
+    fun searchUser(
+        search: String,
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeUserApi>>
+    )
+
     /**
      * Returns the sponsor client
      */

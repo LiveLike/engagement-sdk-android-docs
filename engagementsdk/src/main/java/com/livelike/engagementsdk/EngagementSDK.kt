@@ -25,6 +25,7 @@ import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
 import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
 import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
+import com.livelike.engagementsdk.core.data.models.UserSearchApiResponse
 import com.livelike.engagementsdk.core.data.models.toLeadBoard
 import com.livelike.engagementsdk.core.data.models.toReward
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -46,6 +47,7 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
+import com.livelike.engagementsdk.publicapis.toLiveLikeUserApi
 import com.livelike.engagementsdk.sponsorship.Sponsor
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
@@ -83,6 +85,7 @@ class EngagementSDK(
     private var userChatRoomListResponse: UserChatRoomListResponse? = null
     private var chatRoomMemberListMap: MutableMap<String, ChatRoomMemberListResponse> =
         mutableMapOf()
+    private var userSearchApiResponse: UserSearchApiResponse? = null
     internal var configurationStream: Stream<SdkConfiguration> =
         SubscriptionManager(true)
     private val dataClient =
@@ -353,7 +356,7 @@ class EngagementSDK(
                                     chatRoomResult.data.membershipsUrl,
                                     accessToken = pair.first.accessToken,
                                     requestType = RequestType.POST,
-                                    requestBody = when( userId.isEmpty()){
+                                    requestBody = when(userId.isEmpty()){
                                         true -> RequestBody.create(null, byteArrayOf())
                                         else -> """{"member_id":"$userId"}"""
                                             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
@@ -715,6 +718,47 @@ class EngagementSDK(
                                 ),
                                 null
                             )
+                        }
+                    }
+                }
+            }
+    }
+
+    override fun searchUser(
+        search: String,
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeUserApi>>
+    ) {
+        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
+            .subscribe(this) { it ->
+                it?.let { pair ->
+                    uiScope.launch {
+                        val url = when (liveLikePagination) {
+                            LiveLikePagination.FIRST -> ""
+                            LiveLikePagination.NEXT -> userSearchApiResponse?.next
+                            LiveLikePagination.PREVIOUS -> userSearchApiResponse?.previous
+                        }
+                        if (url != null) {
+                            val userSearchResponse =
+                                dataClient.remoteCall<UserSearchApiResponse>(
+                                    url,
+                                    accessToken = pair.first.accessToken,
+                                    requestType = RequestType.GET
+                                )
+                            if (userSearchResponse is Result.Success) {
+                                userSearchApiResponse = userSearchResponse.data
+                                val list = userSearchResponse.data.results.map {
+                                    it.toLiveLikeUserApi()
+                                }
+                                liveLikeCallback.onResponse(list, null)
+                            } else if (userSearchResponse is Result.Error) {
+                                liveLikeCallback.onResponse(
+                                    null,
+                                    userSearchResponse.exception.message
+                                )
+                            }
+                        } else {
+                            liveLikeCallback.onResponse(null, "No More data to load")
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package com.livelike.livelikedemo.chatonly
 
+import android.R.attr
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -10,37 +11,53 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.livelikedemo.ChatOnlyActivity
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.chat_only_check_box.view.chk_avatar
 import kotlinx.android.synthetic.main.chat_only_check_box.view.ed_avatar
 import kotlinx.android.synthetic.main.fragment_chat_only.txt_chat_room_id
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_add
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_change
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_create
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_delete
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_mute_status
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_refresh
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_search
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_visibility
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_id
+import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_id_1
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_title
+import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_search
+import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_user_id
+import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_add
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_create
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_delete
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_mute
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_refresh
+import kotlinx.android.synthetic.main.fragment_chat_only_home.rcyl_members
+import kotlinx.android.synthetic.main.user_list_item.view.txt_name
+import android.R.attr.label
+
+import androidx.core.content.ContextCompat.getSystemService
+
+
+
 
 class ChatOnlyHomeFragment : Fragment() {
 
     private var chatRoomList: ArrayList<ChatRoomInfo> = arrayListOf()
-
+    private val adapter = UserAdapter()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -109,6 +126,32 @@ class ChatOnlyHomeFragment : Fragment() {
                     }
                 }
             )
+        }
+
+        btn_add.setOnClickListener {
+            val chatRoomId = ed_chat_room_id_1.text.toString()
+            val userId = ed_user_id.text.toString()
+            if (chatRoomId.isEmpty() || userId.isEmpty()) {
+                showToast("Enter Room Id,User Id First")
+                return@setOnClickListener
+            }
+            prg_add.visibility = View.VISIBLE
+            (activity?.application as? LiveLikeApplication)?.sdk?.addUserToChatRoom(chatRoomId,
+                userId,
+                object : LiveLikeCallback<ChatRoomMembership>() {
+                    override fun onResponse(result: ChatRoomMembership?, error: String?) {
+                        result?.let {
+                            showToast("User Added Successfully")
+                        }
+                        ed_chat_room_id_1.setText("")
+                        ed_user_id.setText("")
+                        error?.let {
+                            showToast(it)
+                        }
+                        prg_add.visibility = View.INVISIBLE
+                        btn_refresh.callOnClick()
+                    }
+                })
         }
 
         btn_mute_status.setOnClickListener {
@@ -223,7 +266,28 @@ class ChatOnlyHomeFragment : Fragment() {
             })
         }
         btn_refresh.callOnClick()
+
+
+        btn_search.setOnClickListener {
+            val search = ed_search.text.toString()
+            (activity?.application as? LiveLikeApplication)?.sdk?.searchUser(search,LiveLikePagination.FIRST,
+                object : LiveLikeCallback<List<LiveLikeUserApi>>() {
+                    override fun onResponse(result: List<LiveLikeUserApi>?, error: String?) {
+                        error?.let {
+                            showToast(it)
+                        }
+                        result?.let {
+                            adapter.userList.clear()
+                            adapter.userList.addAll(it)
+                        }
+                    }
+
+                })
+        }
+
+        rcyl_members.adapter = adapter
     }
+
 
     fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
@@ -233,4 +297,29 @@ class ChatOnlyHomeFragment : Fragment() {
         @JvmStatic
         fun newInstance() = ChatOnlyHomeFragment()
     }
+}
+
+class UserAdapter : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
+
+    val userList = arrayListOf<LiveLikeUserApi>()
+    inner class UserViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
+        return UserViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.user_list_item, parent, false)
+        )
+    }
+
+    override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
+        val user = userList[position]
+        holder.itemView.txt_name.text = user.nickname
+        holder.itemView.setOnClickListener {
+            val clipboard =
+                holder.itemView.context?.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+            val clip = ClipData.newPlainText("copied ChatRoomId", user.userId)
+            clipboard?.setPrimaryClip(clip)
+        }
+    }
+
+    override fun getItemCount(): Int = userList.size
 }
