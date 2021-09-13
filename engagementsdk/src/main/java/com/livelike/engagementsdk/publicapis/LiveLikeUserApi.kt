@@ -12,15 +12,11 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
  */
 data class LiveLikeUserApi(
     var nickname: String,
-    val accessToken: String,
+    val accessToken: String?,
+    @SerializedName("id")
     var userId: String,
-    var custom_data: String? = null,
-    var userPic: String? = null
+    var custom_data: String? = null
 )
-
-internal fun LiveLikeUser.toLiveLikeUserApi(): LiveLikeUserApi {
-    return LiveLikeUserApi(this.nickname, this.accessToken, this.id, this.custom_data, this.userPic)
-}
 
 // this model is not changed since 1.2 release in hurry, we need to fix it may require to bump to major version.
 data class LiveLikeChatMessage(val message: String?) {

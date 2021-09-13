@@ -47,7 +47,6 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
-import com.livelike.engagementsdk.publicapis.toLiveLikeUserApi
 import com.livelike.engagementsdk.sponsorship.Sponsor
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
@@ -356,7 +355,7 @@ class EngagementSDK(
                                     chatRoomResult.data.membershipsUrl,
                                     accessToken = pair.first.accessToken,
                                     requestType = RequestType.POST,
-                                    requestBody = when(userId.isEmpty()){
+                                    requestBody = when (userId.isEmpty()) {
                                         true -> RequestBody.create(null, byteArrayOf())
                                         else -> """{"member_id":"$userId"}"""
                                             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
@@ -734,7 +733,10 @@ class EngagementSDK(
                 it?.let { pair ->
                     uiScope.launch {
                         val url = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> ""
+                            LiveLikePagination.FIRST -> pair.second.userSearchUrl.replace(
+                                "{search_name}",
+                                search
+                            )
                             LiveLikePagination.NEXT -> userSearchApiResponse?.next
                             LiveLikePagination.PREVIOUS -> userSearchApiResponse?.previous
                         }
@@ -747,9 +749,7 @@ class EngagementSDK(
                                 )
                             if (userSearchResponse is Result.Success) {
                                 userSearchApiResponse = userSearchResponse.data
-                                val list = userSearchResponse.data.results.map {
-                                    it.toLiveLikeUserApi()
-                                }
+                                val list = userSearchResponse.data.results
                                 liveLikeCallback.onResponse(list, null)
                             } else if (userSearchResponse is Result.Error) {
                                 liveLikeCallback.onResponse(
@@ -1146,7 +1146,9 @@ class EngagementSDK(
         @SerializedName("pubnub_presence_timeout")
         val pubnubPresenceTimeout: Int,
         @SerializedName("badges_url")
-        val badgesUrl: String
+        val badgesUrl: String,
+        @SerializedName("user_search_url")
+        val userSearchUrl: String
     )
 
     companion object {

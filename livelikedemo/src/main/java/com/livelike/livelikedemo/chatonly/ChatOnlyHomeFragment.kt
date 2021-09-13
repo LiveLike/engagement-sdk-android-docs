@@ -1,6 +1,5 @@
 package com.livelike.livelikedemo.chatonly
 
-import android.R.attr
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -16,6 +15,8 @@ import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.publicapis.ChatRoomAdd
+import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
@@ -29,8 +30,11 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_add
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_change
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_create
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_delete
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_first
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_mute_status
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_next
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_previous
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_refresh
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_search
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_visibility
@@ -47,11 +51,6 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_mute
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_refresh
 import kotlinx.android.synthetic.main.fragment_chat_only_home.rcyl_members
 import kotlinx.android.synthetic.main.user_list_item.view.txt_name
-import android.R.attr.label
-
-import androidx.core.content.ContextCompat.getSystemService
-
-
 
 
 class ChatOnlyHomeFragment : Fragment() {
@@ -268,24 +267,33 @@ class ChatOnlyHomeFragment : Fragment() {
         btn_refresh.callOnClick()
 
 
-        btn_search.setOnClickListener {
-            val search = ed_search.text.toString()
-            (activity?.application as? LiveLikeApplication)?.sdk?.searchUser(search,LiveLikePagination.FIRST,
-                object : LiveLikeCallback<List<LiveLikeUserApi>>() {
-                    override fun onResponse(result: List<LiveLikeUserApi>?, error: String?) {
-                        error?.let {
-                            showToast(it)
-                        }
-                        result?.let {
-                            adapter.userList.clear()
-                            adapter.userList.addAll(it)
-                        }
-                    }
+        (activity?.application as? LiveLikeApplication)?.sdk?.chatRoomDelegate =
+            object : ChatRoomDelegate() {
+                override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
+                   activity?.runOnUiThread {
+                       val builder = AlertDialog.Builder(context)
+                       builder.setTitle("New Chat Room Added")
+                           .setMessage("Title: ${chatRoomAdd.chatRoomTitle}\nId: ${chatRoomAdd.id}\nBy User: ${chatRoomAdd.senderNickname}")
+                           .setCancelable(true)
+                           .show()
+                   }
+                }
+            }
 
-                })
+        btn_search.setOnClickListener {
+            search(LiveLikePagination.FIRST)
         }
 
         rcyl_members.adapter = adapter
+        btn_first.setOnClickListener {
+            search(LiveLikePagination.FIRST)
+        }
+        btn_next.setOnClickListener {
+            search(LiveLikePagination.NEXT)
+        }
+        btn_previous.setOnClickListener {
+            search(LiveLikePagination.PREVIOUS)
+        }
     }
 
 
@@ -297,11 +305,31 @@ class ChatOnlyHomeFragment : Fragment() {
         @JvmStatic
         fun newInstance() = ChatOnlyHomeFragment()
     }
+
+    private fun search(pagination: LiveLikePagination) {
+        val search = ed_search.text.toString()
+        (activity?.application as? LiveLikeApplication)?.sdk?.searchUser(search,
+            pagination,
+            object : LiveLikeCallback<List<LiveLikeUserApi>>() {
+                override fun onResponse(result: List<LiveLikeUserApi>?, error: String?) {
+                    error?.let {
+                        showToast(it)
+                    }
+                    result?.let {
+                        adapter.userList.clear()
+                        adapter.userList.addAll(it)
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+
+            })
+    }
 }
 
-class UserAdapter : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
+class UserAdapter() : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
     val userList = arrayListOf<LiveLikeUserApi>()
+
     inner class UserViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
@@ -318,6 +346,7 @@ class UserAdapter : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
                 holder.itemView.context?.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
             val clip = ClipData.newPlainText("copied ChatRoomId", user.userId)
             clipboard?.setPrimaryClip(clip)
+            Toast.makeText(holder.itemView.context, "User id copied", Toast.LENGTH_LONG).show()
         }
     }
 

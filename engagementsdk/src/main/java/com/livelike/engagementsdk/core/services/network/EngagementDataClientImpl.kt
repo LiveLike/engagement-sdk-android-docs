@@ -16,6 +16,7 @@ import com.livelike.engagementsdk.core.exceptionhelpers.safeRemoteApiCall
 import com.livelike.engagementsdk.core.utils.addAuthorizationBearer
 import com.livelike.engagementsdk.core.utils.addUserAgent
 import com.livelike.engagementsdk.core.utils.extractBoolean
+import com.livelike.engagementsdk.core.utils.extractLong
 import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
@@ -160,6 +161,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("badges_url"),
                         responseData.extractStringOrEmpty("badge_progress_url"),
                         responseData.extractStringOrEmpty("subscribe_channel"),
+                        responseData.extractLong("reported_count").toInt(),
+                        responseData.extractStringOrEmpty("created_at")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -202,6 +205,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("badges_url"),
                         responseData.extractStringOrEmpty("badge_progress_url"),
                         responseData.extractStringOrEmpty("subscribe_channel"),
+                        responseData.extractLong("reported_count").toInt(),
+                        responseData.extractStringOrEmpty("created_at")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
