@@ -54,6 +54,17 @@
                 android:layout_toLeftOf="@+id/option_view_1" />
 
             <TextView
+                android:id="@+id/text_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/plus"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                android:visibility="gone"
+                android:layout_toLeftOf="@+id/option_view_1" />
+
+
+            <TextView
                 android:id="@+id/minus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
