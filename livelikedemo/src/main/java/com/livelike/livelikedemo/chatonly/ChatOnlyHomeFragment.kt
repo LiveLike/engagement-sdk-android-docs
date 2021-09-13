@@ -273,7 +273,7 @@ class ChatOnlyHomeFragment : Fragment() {
                    activity?.runOnUiThread {
                        val builder = AlertDialog.Builder(context)
                        builder.setTitle("New Chat Room Added")
-                           .setMessage("Title: ${chatRoomAdd.chatRoomTitle}\nId: ${chatRoomAdd.id}\nBy User: ${chatRoomAdd.senderNickname}")
+                           .setMessage("Title: ${chatRoomAdd.chatRoomTitle}\nId: ${chatRoomAdd.chatRoomID}\nBy User: ${chatRoomAdd.senderNickname}")
                            .setCancelable(true)
                            .show()
                    }
