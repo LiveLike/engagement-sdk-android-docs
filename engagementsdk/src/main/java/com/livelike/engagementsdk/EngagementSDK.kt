@@ -723,48 +723,6 @@ class EngagementSDK(
             }
     }
 
-    override fun searchUser(
-        search: String,
-        liveLikePagination: LiveLikePagination,
-        liveLikeCallback: LiveLikeCallback<List<LiveLikeUserApi>>
-    ) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) { it ->
-                it?.let { pair ->
-                    uiScope.launch {
-                        val url = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> pair.second.userSearchUrl.replace(
-                                "{search_name}",
-                                search
-                            )
-                            LiveLikePagination.NEXT -> userSearchApiResponse?.next
-                            LiveLikePagination.PREVIOUS -> userSearchApiResponse?.previous
-                        }
-                        if (url != null) {
-                            val userSearchResponse =
-                                dataClient.remoteCall<UserSearchApiResponse>(
-                                    url,
-                                    accessToken = pair.first.accessToken,
-                                    requestType = RequestType.GET
-                                )
-                            if (userSearchResponse is Result.Success) {
-                                userSearchApiResponse = userSearchResponse.data
-                                val list = userSearchResponse.data.results
-                                liveLikeCallback.onResponse(list, null)
-                            } else if (userSearchResponse is Result.Error) {
-                                liveLikeCallback.onResponse(
-                                    null,
-                                    userSearchResponse.exception.message
-                                )
-                            }
-                        } else {
-                            liveLikeCallback.onResponse(null, "No More data to load")
-                        }
-                    }
-                }
-            }
-    }
-
     override fun sponsor(): Sponsor {
         return Sponsor(this)
     }

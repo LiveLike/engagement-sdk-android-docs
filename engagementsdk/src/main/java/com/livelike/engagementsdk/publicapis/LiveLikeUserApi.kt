@@ -12,7 +12,7 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
  */
 data class LiveLikeUserApi(
     var nickname: String,
-    val accessToken: String?,
+    val accessToken: String,
     @SerializedName("id")
     var userId: String,
     var custom_data: String? = null

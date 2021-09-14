@@ -30,18 +30,13 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_add
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_change
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_create
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_delete
-import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_first
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_mute_status
-import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_next
-import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_previous
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_refresh
-import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_search
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_visibility
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_id
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_id_1
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_title
-import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_search
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_user_id
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_add
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_create
@@ -49,14 +44,14 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_delete
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_mute
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_refresh
-import kotlinx.android.synthetic.main.fragment_chat_only_home.rcyl_members
 import kotlinx.android.synthetic.main.user_list_item.view.txt_name
 
 
 class ChatOnlyHomeFragment : Fragment() {
 
     private var chatRoomList: ArrayList<ChatRoomInfo> = arrayListOf()
-    private val adapter = UserAdapter()
+
+    //    private val adapter = UserAdapter()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -270,30 +265,30 @@ class ChatOnlyHomeFragment : Fragment() {
         (activity?.application as? LiveLikeApplication)?.sdk?.chatRoomDelegate =
             object : ChatRoomDelegate() {
                 override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
-                   activity?.runOnUiThread {
-                       val builder = AlertDialog.Builder(context)
-                       builder.setTitle("New Chat Room Added")
-                           .setMessage("Title: ${chatRoomAdd.chatRoomTitle}\nId: ${chatRoomAdd.chatRoomID}\nBy User: ${chatRoomAdd.senderNickname}")
-                           .setCancelable(true)
-                           .show()
-                   }
+                    activity?.runOnUiThread {
+                        val builder = AlertDialog.Builder(context)
+                        builder.setTitle("New Chat Room Added")
+                            .setMessage("Title: ${chatRoomAdd.chatRoomTitle}\nId: ${chatRoomAdd.chatRoomID}\nBy User: ${chatRoomAdd.senderNickname}")
+                            .setCancelable(true)
+                            .show()
+                    }
                 }
             }
 
-        btn_search.setOnClickListener {
-            search(LiveLikePagination.FIRST)
-        }
-
-        rcyl_members.adapter = adapter
-        btn_first.setOnClickListener {
-            search(LiveLikePagination.FIRST)
-        }
-        btn_next.setOnClickListener {
-            search(LiveLikePagination.NEXT)
-        }
-        btn_previous.setOnClickListener {
-            search(LiveLikePagination.PREVIOUS)
-        }
+//        btn_search.setOnClickListener {
+//            search(LiveLikePagination.FIRST)
+//        }
+//
+//        rcyl_members.adapter = adapter
+//        btn_first.setOnClickListener {
+//            search(LiveLikePagination.FIRST)
+//        }
+//        btn_next.setOnClickListener {
+//            search(LiveLikePagination.NEXT)
+//        }
+//        btn_previous.setOnClickListener {
+//            search(LiveLikePagination.PREVIOUS)
+//        }
     }
 
 
@@ -306,24 +301,24 @@ class ChatOnlyHomeFragment : Fragment() {
         fun newInstance() = ChatOnlyHomeFragment()
     }
 
-    private fun search(pagination: LiveLikePagination) {
-        val search = ed_search.text.toString()
-        (activity?.application as? LiveLikeApplication)?.sdk?.searchUser(search,
-            pagination,
-            object : LiveLikeCallback<List<LiveLikeUserApi>>() {
-                override fun onResponse(result: List<LiveLikeUserApi>?, error: String?) {
-                    error?.let {
-                        showToast(it)
-                    }
-                    result?.let {
-                        adapter.userList.clear()
-                        adapter.userList.addAll(it)
-                        adapter.notifyDataSetChanged()
-                    }
-                }
-
-            })
-    }
+//    private fun search(pagination: LiveLikePagination) {
+//        val search = ed_search.text.toString()
+//        (activity?.application as? LiveLikeApplication)?.sdk?.searchUser(search,
+//            pagination,
+//            object : LiveLikeCallback<List<LiveLikeUserApi>>() {
+//                override fun onResponse(result: List<LiveLikeUserApi>?, error: String?) {
+//                    error?.let {
+//                        showToast(it)
+//                    }
+//                    result?.let {
+//                        adapter.userList.clear()
+//                        adapter.userList.addAll(it)
+//                        adapter.notifyDataSetChanged()
+//                    }
+//                }
+//
+//            })
+//    }
 }
 
 class UserAdapter() : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
