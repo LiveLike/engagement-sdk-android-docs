@@ -38,6 +38,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.net.URL
 import java.util.UUID
 
@@ -68,7 +69,8 @@ internal class ChatSession(
             userRepository.currentUserStream,
             isPublicRoom,
             null,
-            dataClient = dataClient
+            dataClient = dataClient,
+            errorDelegate = errorDelegate
         )
     }
     override var getCurrentChatRoom: () -> String = { currentChatRoom?.id ?: "" }
@@ -464,5 +466,25 @@ internal class ChatSession(
 
     override fun getDeletedMessages(): ArrayList<String> {
         return deletedMsgList
+    }
+
+    override fun sendCustomChatMessage(
+        customData: String,
+        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+    ) {
+        currentChatRoom?.customMessagesUrl?.let { url ->
+            contentSessionScope.launch {
+                if (chatRepository != null) {
+                    val jsonObject = JSONObject(
+                        mapOf("custom_data" to customData)
+                    )
+                    val response = chatRepository!!.postApi(url, jsonObject.toString())
+                    liveLikeCallback.processResult(response)
+                } else {
+                    logError { "Chat repo is null" }
+                    errorDelegate?.onError("Chat Repository is Null")
+                }
+            }
+        }
     }
 }

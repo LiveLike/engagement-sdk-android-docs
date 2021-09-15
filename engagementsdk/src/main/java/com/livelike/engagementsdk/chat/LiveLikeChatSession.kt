@@ -82,4 +82,14 @@ interface LiveLikeChatSession {
      * to get the deleted messages from the loaded message
      */
     fun getDeletedMessages(): ArrayList<String>
+
+    /**
+     * send Custom Chat Message
+     * @customData : json String data
+     * @liveLikeCallback : callback to provide the message object
+     */
+    fun sendCustomChatMessage(
+        customData: String,
+        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+    )
 }
