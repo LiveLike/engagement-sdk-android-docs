@@ -12,13 +12,17 @@ import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addWidgetNumberPredictionVoted
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetNumberPredictionVotedAnswerList
+import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -38,7 +42,7 @@ internal class NumberPredictionViewModel(
     private val userRepository: UserRepository,
     val widgetMessagingClient: WidgetManager? = null,
     val widgetInteractionRepository: WidgetInteractionRepository?
-) : BaseViewModel(analyticsService), NumberPredictionWidgetModel {
+) : BaseViewModel(analyticsService), NumberPredictionWidgetModel,NumberPredictionFollowUpWidgetModel {
 
 
   //  var predictionStateList: MutableList<NumberPredictionState> = mutableListOf()
@@ -121,7 +125,7 @@ internal class NumberPredictionViewModel(
                 }
                 submitVoteApi(votesObj)
 
-                // Save widget id and voted options (value and option id) for followup widget
+                // Save widget id and voted options (number and option id) for followup widget
                 addWidgetNumberPredictionVoted(widget.resource.id,voteList)
             }
         }
@@ -147,6 +151,13 @@ internal class NumberPredictionViewModel(
         }
     }
 
+    /**
+     * get the predicted scores
+     */
+    override fun getPredictionVotes(): List<NumberPredictionVotes>? {
+        val resource = data.currentData?.resource
+        return getWidgetNumberPredictionVotedAnswerList(if (resource?.text_number_prediction_id.isNullOrEmpty()) resource?.image_number_prediction_id else resource?.text_number_prediction_id)
+    }
 
     /**
      * get the last interaction

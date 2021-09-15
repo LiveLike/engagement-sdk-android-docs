@@ -28,6 +28,7 @@ import com.livelike.engagementsdk.widget.WidgetType.ALERT
 import com.livelike.engagementsdk.widget.WidgetType.CHEER_METER
 import com.livelike.engagementsdk.widget.WidgetType.COLLECT_BADGE
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_NUMBER_PREDICTION
+import com.livelike.engagementsdk.widget.WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_PREDICTION_FOLLOW_UP
@@ -37,6 +38,7 @@ import com.livelike.engagementsdk.widget.WidgetType.TEXT_NUMBER_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.POINTS_TUTORIAL
 import com.livelike.engagementsdk.widget.WidgetType.SOCIAL_EMBED
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_ASK
+import com.livelike.engagementsdk.widget.WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_POLL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
@@ -227,7 +229,8 @@ internal class WidgetProvider {
                 )
             }
 
-            TEXT_NUMBER_PREDICTION ,IMAGE_NUMBER_PREDICTION-> NumberPredictionView(context).apply {
+            TEXT_NUMBER_PREDICTION ,TEXT_NUMBER_PREDICTION_FOLLOW_UP,
+            IMAGE_NUMBER_PREDICTION,IMAGE_NUMBER_PREDICTION_FOLLOW_UP-> NumberPredictionView(context).apply {
                 widgetViewModel = NumberPredictionViewModel(
                     widgetInfos,
                     analyticsService,

@@ -70,11 +70,14 @@ internal fun getWidgetNumberPredictionVoted(): Array<NumberPredictionSavedWidget
 
 internal fun getWidgetNumberPredictionVotedAnswerList(id: String?): List<NumberPredictionVotes> {
     val votedList = getWidgetNumberPredictionVoted()
-    val optionList : MutableList<NumberPredictionVotes> = mutableListOf()
-    for (item in votedList) {
-        if (item.id == id) optionList.add(NumberPredictionVotes(item.optionId, item.number))
+    if(votedList.isNotEmpty()){
+        val optionList : MutableList<NumberPredictionVotes> = mutableListOf()
+        for (item in votedList) {
+            if (item.id == id) optionList.add(NumberPredictionVotes(item.optionId, item.number))
+        }
+        return optionList.toList()
     }
-    return optionList.toList()
+    return emptyList()
 }
 
 

@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
@@ -89,6 +90,17 @@ class TimeLineWidgetFactory(
         return CustomNumberPredictionWidget(context).apply {
             this.numberPredictionWidgetViewModel = numberPredictionWidgetModel
             this.isImage = isImage
+        }
+    }
+
+    override fun createNumberPredictionFollowupWidgetView(
+        followUpWidgetViewModel: NumberPredictionFollowUpWidgetModel,
+        isImage: Boolean
+    ): View? {
+        return CustomNumberPredictionWidget(context).apply {
+            this.followUpWidgetViewModel = followUpWidgetViewModel
+            this.isImage = isImage
+            this.isFollowUp = true
         }
     }
 

@@ -39,6 +39,7 @@ import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
@@ -217,6 +218,13 @@ class ExoPlayerActivity : AppCompatActivity() {
 
                     override fun createNumberPredictionWidgetView(
                         numberPredictionWidgetModel: NumberPredictionWidgetModel,
+                        isImage: Boolean
+                    ): View? {
+                        return null
+                    }
+
+                    override fun createNumberPredictionFollowupWidgetView(
+                        followUpWidgetViewModel: NumberPredictionFollowUpWidgetModel,
                         isImage: Boolean
                     ): View? {
                         return null

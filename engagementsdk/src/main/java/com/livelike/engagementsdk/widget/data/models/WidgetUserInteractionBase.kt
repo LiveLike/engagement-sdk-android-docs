@@ -113,8 +113,8 @@ class NumberPredictionWidgetUserInteraction(
     val isCorrect: Boolean,
     @field:SerializedName("claim_token")
     val claimToken: String?,
-    @field:SerializedName("value")
-    val value:Int,
+    @field:SerializedName("number")
+    val number:Int,
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)

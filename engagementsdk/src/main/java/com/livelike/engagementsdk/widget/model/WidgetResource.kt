@@ -19,6 +19,8 @@ internal open class Resource(
     val text_prediction_id: String = "",
     val image_prediction_id: String = "",
     val text_prediction_url: String = "",
+    val image_number_prediction_id: String= "",
+    val text_number_prediction_id: String= "",
     val correct_option_id: String = "",
     val confirmation_message: String = "",
     val testTag: String = "",
@@ -92,7 +94,7 @@ data class Option(
     val image_url: String? = "",
     var answer_count: Int? = 0,
     var vote_count: Int? = 0,
-    var number:Int? = 0
+    var correct_number:Int? = 0
 ) {
     @Deprecated("Use getPercent instead")
     fun getPercentVote(total: Float): Int {

@@ -22,5 +22,7 @@ fun WidgetType.toAnalyticsString(): String {
         WidgetType.TEXT_ASK -> "Text Ask"
         WidgetType.TEXT_NUMBER_PREDICTION -> "Text Number Prediction"
         WidgetType.IMAGE_NUMBER_PREDICTION -> "Image Number Prediction"
+        WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP -> "Image Number Prediction Follow-up"
+        WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP -> "Text Number Prediction Follow-up"
     }
 }

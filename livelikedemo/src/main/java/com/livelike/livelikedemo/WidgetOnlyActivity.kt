@@ -30,6 +30,7 @@ import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
@@ -291,6 +292,17 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     return CustomNumberPredictionWidget(this@WidgetOnlyActivity).apply {
                         this.numberPredictionWidgetViewModel = numberPredictionWidgetModel
                         this.isImage = isImage
+                    }
+                }
+
+                override fun createNumberPredictionFollowupWidgetView(
+                    followUpWidgetViewModel: NumberPredictionFollowUpWidgetModel,
+                    isImage: Boolean
+                ): View? {
+                    return CustomNumberPredictionWidget(this@WidgetOnlyActivity).apply {
+                        this.followUpWidgetViewModel = followUpWidgetViewModel
+                        this.isImage = isImage
+                        this.isFollowUp = true
                     }
                 }
             }
@@ -584,7 +596,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 null,
                                 programId,
                                 question,
-                                "PT10S"
+                                "PT30S"
                             )
                             else -> null
                         }
