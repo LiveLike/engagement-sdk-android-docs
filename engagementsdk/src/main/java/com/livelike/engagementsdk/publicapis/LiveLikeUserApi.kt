@@ -1,5 +1,7 @@
 package com.livelike.engagementsdk.publicapis
 
+import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
@@ -11,6 +13,7 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 data class LiveLikeUserApi(
     var nickname: String,
     val accessToken: String,
+    @SerializedName("id")
     var userId: String,
     var custom_data: String? = null
 )
@@ -135,3 +138,23 @@ internal fun ChatRoom.toLiveLikeChatRoom(): ChatRoomInfo {
         this.customData
     )
 }
+
+data class ChatRoomAdd(
+    val id: String,
+    @SerializedName("chat_room_id")
+    val chatRoomID: String,
+    @SerializedName("chat_room_title")
+    val chatRoomTitle: String,
+    @SerializedName("sender_id")
+    val senderID: String,
+    @SerializedName("sender_nickname")
+    val senderNickname: String,
+    @SerializedName("sender_image_url")
+    val senderImageURL: String? = null,
+    @SerializedName("badge_image_url")
+    val badgeImageURL: String? = null,
+    @SerializedName("sender_profile_url")
+    val senderProfileURL: String,
+    @SerializedName("created_at")
+    val createdAt: String
+)

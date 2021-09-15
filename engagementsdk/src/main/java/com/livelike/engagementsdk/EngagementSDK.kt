@@ -15,6 +15,7 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.data.repository.ChatRoomRepository
+import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatRoomMessagingClient
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
@@ -24,6 +25,7 @@ import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
 import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
 import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
+import com.livelike.engagementsdk.core.data.models.UserSearchApiResponse
 import com.livelike.engagementsdk.core.data.models.toLeadBoard
 import com.livelike.engagementsdk.core.data.models.toReward
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -39,16 +41,15 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSha
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.gamification.Badges
+import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.sponsorship.Sponsor
-import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
-import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
@@ -61,7 +62,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 /**
@@ -81,6 +84,7 @@ class EngagementSDK(
     private var userChatRoomListResponse: UserChatRoomListResponse? = null
     private var chatRoomMemberListMap: MutableMap<String, ChatRoomMemberListResponse> =
         mutableMapOf()
+    private var userSearchApiResponse: UserSearchApiResponse? = null
     internal var configurationStream: Stream<SdkConfiguration> =
         SubscriptionManager(true)
     private val dataClient =
@@ -101,6 +105,12 @@ class EngagementSDK(
             field = value
             userRepository.leaderBoardDelegate = value
         }
+    override var chatRoomDelegate: ChatRoomDelegate? = null
+        set(value) {
+            field = value
+            setUpPubNubClient()
+        }
+
     override var analyticService: Stream<AnalyticsService> =
         SubscriptionManager()
 
@@ -137,11 +147,12 @@ class EngagementSDK(
                 }
             }
         }
-        userRepository.currentUserStream.subscribe(this.javaClass.simpleName) {
-            it?.accessToken?.let { token ->
+        userRepository.currentUserStream.subscribe(this.javaClass.simpleName) { user ->
+            user?.accessToken?.let { token ->
                 userRepository.currentUserStream.unsubscribe(this.javaClass.simpleName)
                 accessTokenDelegate!!.storeAccessToken(token)
             }
+            setUpPubNubClient()
         }
         val url = originURL?.plus("/api/v1/applications/$clientId")
             ?: BuildConfig.CONFIG_URL.plus("applications/$clientId")
@@ -161,6 +172,25 @@ class EngagementSDK(
                     (it as Result.Error).exception.message
                         ?: "Some Error occurred, used sdk logger for more details"
                 )
+            }
+        }
+    }
+
+    private var pubnubClient: PubnubChatRoomMessagingClient? = null
+
+    private fun setUpPubNubClient() {
+        if (pubnubClient == null && chatRoomDelegate != null) {
+            configurationStream.latest()?.let { config ->
+                userRepository.currentUserStream.latest()?.let {
+                    pubnubClient = PubnubChatRoomMessagingClient(
+                        config.pubNubKey,
+                        config.pubnubHeartbeatInterval,
+                        it.id,
+                        config.pubnubPresenceTimeout
+                    )
+                    pubnubClient?.chatRoomDelegate = chatRoomDelegate
+                    pubnubClient?.subscribe(arrayListOf(it.subscribeChannel!!))
+                }
             }
         }
     }
@@ -293,6 +323,14 @@ class EngagementSDK(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<ChatRoomMembership>
     ) {
+        addUserToChatRoom(chatRoomId, "", liveLikeCallback)
+    }
+
+    override fun addUserToChatRoom(
+        chatRoomId: String,
+        userId: String,
+        liveLikeCallback: LiveLikeCallback<ChatRoomMembership>
+    ) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
             .subscribe(this) {
                 it?.let { pair ->
@@ -317,7 +355,11 @@ class EngagementSDK(
                                     chatRoomResult.data.membershipsUrl,
                                     accessToken = pair.first.accessToken,
                                     requestType = RequestType.POST,
-                                    requestBody = RequestBody.create(null, byteArrayOf())
+                                    requestBody = when (userId.isEmpty()) {
+                                        true -> RequestBody.create(null, byteArrayOf())
+                                        else -> """{"member_id":"$userId"}"""
+                                            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+                                    }
                                 )
                             if (currentUserChatRoomResult is Result.Success) {
                                 liveLikeCallback.onResponse(
@@ -525,10 +567,10 @@ class EngagementSDK(
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
                     val url = "${
-                    it.leaderboardDetailUrlTemplate?.replace(
-                        TEMPLATE_LEADER_BOARD_ID,
-                        leaderBoardId
-                    )
+                        it.leaderboardDetailUrlTemplate?.replace(
+                            TEMPLATE_LEADER_BOARD_ID,
+                            leaderBoardId
+                        )
                     }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
                         url,
@@ -566,10 +608,10 @@ class EngagementSDK(
                             job.add(
                                 launch {
                                     val url = "${
-                                    it.leaderboardDetailUrlTemplate?.replace(
-                                        TEMPLATE_LEADER_BOARD_ID,
-                                        leaderBoardId.get(i)
-                                    )
+                                        it.leaderboardDetailUrlTemplate?.replace(
+                                            TEMPLATE_LEADER_BOARD_ID,
+                                            leaderBoardId.get(i)
+                                        )
                                     }"
                                     val result = dataClient.remoteCall<LeaderBoardResource>(
                                         url,
@@ -694,6 +736,7 @@ class EngagementSDK(
      * TODO: all stream close,instance clear
      */
     override fun close() {
+        pubnubClient?.destroy()
         analyticService.latest()?.destroy()
         analyticService.clear()
     }
@@ -757,10 +800,10 @@ class EngagementSDK(
                     val entriesUrl = when (pair.first) {
                         LiveLikePagination.FIRST -> {
                             val url = "${
-                            it.leaderboardDetailUrlTemplate?.replace(
-                                TEMPLATE_LEADER_BOARD_ID,
-                                leaderBoardId
-                            )
+                                it.leaderboardDetailUrlTemplate?.replace(
+                                    TEMPLATE_LEADER_BOARD_ID,
+                                    leaderBoardId
+                                )
                             }"
                             val result = dataClient.remoteCall<LeaderBoardResource>(
                                 url,
@@ -830,10 +873,10 @@ class EngagementSDK(
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
                     val url = "${
-                    it.leaderboardDetailUrlTemplate?.replace(
-                        TEMPLATE_LEADER_BOARD_ID,
-                        leaderBoardId
-                    )
+                        it.leaderboardDetailUrlTemplate?.replace(
+                            TEMPLATE_LEADER_BOARD_ID,
+                            leaderBoardId
+                        )
                     }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
                         url,
@@ -884,10 +927,10 @@ class EngagementSDK(
         profileId: String
     ): Result<LeaderBoardEntry> {
         val url = "${
-        sdkConfig.leaderboardDetailUrlTemplate?.replace(
-            TEMPLATE_LEADER_BOARD_ID,
-            leaderBoardId
-        )
+            sdkConfig.leaderboardDetailUrlTemplate?.replace(
+                TEMPLATE_LEADER_BOARD_ID,
+                leaderBoardId
+            )
         }"
         val result = dataClient.remoteCall<LeaderBoardResource>(
             url,
@@ -1061,7 +1104,9 @@ class EngagementSDK(
         @SerializedName("pubnub_presence_timeout")
         val pubnubPresenceTimeout: Int,
         @SerializedName("badges_url")
-        val badgesUrl: String
+        val badgesUrl: String,
+        @SerializedName("user_search_url")
+        val userSearchUrl: String
     )
 
     companion object {
