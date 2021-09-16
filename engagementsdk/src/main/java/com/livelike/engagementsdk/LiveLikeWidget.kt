@@ -196,8 +196,8 @@ data class OptionsItem(
     @field:SerializedName("answer_count")
     val answerCount: Int? = null,
 
-    @field:SerializedName("correct_number")
-    val correctNumber: Int? = null
+    @field:SerializedName("number")
+    val number: Int? = null
 )
 
 data class ReactionsItem(

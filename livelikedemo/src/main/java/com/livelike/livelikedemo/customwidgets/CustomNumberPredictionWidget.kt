@@ -2,6 +2,7 @@ package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.OptionsItem
 import com.livelike.engagementsdk.core.data.models.NumberPredictionVotes
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
+import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
+import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import com.livelike.livelikedemo.R
@@ -33,11 +38,11 @@ class CustomNumberPredictionWidget :
     var isFollowUp = false
 
     constructor(context: Context) : super(context) {
-        init(null, 0)
+        init()
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
+        init()
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
@@ -45,11 +50,11 @@ class CustomNumberPredictionWidget :
         attrs,
         defStyle
     ) {
-        init(attrs, defStyle)
+        init()
     }
 
 
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
+    private fun init() {
         binding = CustomNumberPredictionWidgetBinding.inflate(
             LayoutInflater.from(context),
             this@CustomNumberPredictionWidget,
@@ -61,29 +66,23 @@ class CustomNumberPredictionWidget :
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         var widgetData = numberPredictionWidgetViewModel?.widgetData
-        // var voteResults = numberPredictionWidgetViewModel?.voteResults
         if (isFollowUp) {
             widgetData = followUpWidgetViewModel?.widgetData
-            //voteResults = followUpWidgetViewModel?.voteResults
         }
-        widgetData?.let { liveLikeWidget ->
 
-            /*    //load interaction history
-            numberPredictionWidgetViewModel?.loadInteractionHistory(object : LiveLikeCallback<List<NumberPredictionWidgetUserInteraction>>() {
-                override fun onResponse(
-                    result: List<NumberPredictionWidgetUserInteraction>?,
-                    error: String?
-                ) {
-                    if (result != null) {
-                        if (result.isNotEmpty()) {
-                            for (element in result) {
-                                Log.d("interaction-prediction", element.optionId)
-                            }
-                        }
-                    }
+        numberPredictionWidgetViewModel?.loadInteractionHistory(object :
+            LiveLikeCallback<List<NumberPredictionWidgetUserInteraction>>() {
+            override fun onResponse(
+                result: List<NumberPredictionWidgetUserInteraction>?,
+                error: String?
+            ) {
+                result?.forEach {
+                    Log.d("CustomPredictionWidget","CustomNoPredictionWidget.onResponse>>${it.optionId} =>${it.number}")
                 }
-            })*/
+            }
 
+        })
+        widgetData?.let { liveLikeWidget ->
             liveLikeWidget.options?.let { option ->
                 if (option.size > 2) {
                     binding.rcylPredictionList.layoutManager =
@@ -93,7 +92,6 @@ class CustomNumberPredictionWidget :
                         )
                 }
 
-
                 val adapter =
                     PredictionListAdapter(
                         context,
@@ -101,66 +99,76 @@ class CustomNumberPredictionWidget :
                         ArrayList(option.map { item -> item!! })
                     )
                 binding.rcylPredictionList.adapter = adapter
-                enableLockButton()
-
-                // predict button click
-                binding.btn1.setOnClickListener {
-                    if (!isFollowUp) {
-                        val map = adapter.getPredictedScore()
-                        val optionList = mutableListOf<NumberPredictionVotes>()
-                        map.forEach { item ->
-                            optionList.add(
-                                NumberPredictionVotes(
-                                    optionId = item.key,
-                                    number = item.value
-                                )
-                            )
-                        }
-                        numberPredictionWidgetViewModel?.lockInVote(optionList).apply {
-                            disableLockButton()
-                            Toast.makeText(context, "score submitted", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-
                 binding.txt.text = liveLikeWidget.question
 
-                binding.imgClose.setOnClickListener {
-                    finish()
-                    this.removeAllViews()
-                }
-
+                enableLockButton()
+                setOnClickListeners(adapter)
                 if (isFollowUp) {
                     binding.btn1.visibility = View.GONE
                 }else{
                     binding.btn1.visibility = View.VISIBLE
                 }
 
-                var isCorrect = false
-                if (isFollowUp) {
-                    val votedList = followUpWidgetViewModel?.getPredictionVotes()
-                            if(option.size == votedList?.size){
-                                for (i in option.indices) {
-                                    isCorrect = option[i]?.id == votedList[i].optionId && option[i]?.correctNumber == votedList[i].number
-                                }
-                                    Toast.makeText(
-                                        context,
-                                        when (isCorrect) {
-                                            true -> "Correct"
-                                            else -> "Incorrect"
-                                        },
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                            }
+                if(isFollowUp) {
+                    verifyPredictedAnswer()
                 }
 
                 if (isFollowUp) {
                     option.forEach { op ->
-                        adapter.predictionMap[op?.id!!] = op.correctNumber ?: 0
+                        adapter.predictionMap[op?.id!!] = op.number ?: 0
                     }
                     adapter.isFollowUp = true
                 }
+            }
+        }
+    }
 
+    private fun setOnClickListeners(adapter:PredictionListAdapter){
+        // predict button click
+        binding.btn1.setOnClickListener {
+            if (!isFollowUp) {
+                val maps = adapter.getPredictedScore()
+                val optionList = mutableListOf<NumberPredictionVotes>()
+                for(item in maps){
+                    optionList.add(
+                        NumberPredictionVotes(
+                            optionId = item.key,
+                            number = item.value
+                        )
+                    )
+                }
+                numberPredictionWidgetViewModel?.lockInVote(optionList).apply {
+                    disableLockButton()
+                    Toast.makeText(context, "score submitted", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        binding.imgClose.setOnClickListener {
+            finish()
+            this.removeAllViews()
+        }
+    }
+
+
+    private fun verifyPredictedAnswer(){
+        var isCorrect = false
+        followUpWidgetViewModel?.widgetData?.options?.let { option ->
+            if (isFollowUp) {
+                val votedList = followUpWidgetViewModel?.getPredictionVotes()
+                if(option.size == votedList?.size){
+                    for (i in option.indices) {
+                        isCorrect =
+                            option[i]?.id == votedList[i].optionId && option[i]?.number == votedList[i].number
+                    }
+                    Toast.makeText(
+                        context,
+                        when (isCorrect) {
+                            true -> "Correct"
+                            else -> "Incorrect"
+                        },
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
