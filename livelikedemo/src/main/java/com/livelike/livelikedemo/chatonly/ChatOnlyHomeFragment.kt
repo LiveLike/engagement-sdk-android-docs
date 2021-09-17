@@ -25,7 +25,6 @@ import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.chat_only_check_box.view.chk_avatar
 import kotlinx.android.synthetic.main.chat_only_check_box.view.ed_avatar
-import kotlinx.android.synthetic.main.fragment_chat_only.txt_chat_room_id
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_add
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_change
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_create
@@ -196,7 +195,7 @@ class ChatOnlyHomeFragment : Fragment() {
         btn_change.setOnClickListener {
             AlertDialog.Builder(context).apply {
                 setTitle("Select a private group")
-                setItems(chatRoomList.map { it.id }.toTypedArray()) { _, which ->
+                setItems(chatRoomList.map { "${it.id}(${it.title})" }.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
 //                    (application as LiveLikeApplication).removePrivateSession()
                     val session = (activity as? ChatOnlyActivity)?.sessionMap?.get(
@@ -229,7 +228,7 @@ class ChatOnlyHomeFragment : Fragment() {
         }
 
         btn_delete.setOnClickListener {
-            val id = txt_chat_room_id.text.toString()
+            val id = ed_chat_room_id.text.toString()
             if (id.isNotEmpty()) {
                 prg_delete.visibility = View.VISIBLE
                 (activity?.application as? LiveLikeApplication)?.sdk?.deleteCurrentUserFromChatRoom(
@@ -242,12 +241,12 @@ class ChatOnlyHomeFragment : Fragment() {
                                 (activity?.application as? LiveLikeApplication)?.removePrivateSession()
                             }
                             prg_delete.visibility = View.INVISIBLE
-//                            btn_refresh.callOnClick()
+                            btn_refresh.callOnClick()
                         }
                     }
                 )
             } else {
-                showToast("Select Room")
+                showToast("Enter Room ID")
             }
         }
 
@@ -267,7 +266,7 @@ class ChatOnlyHomeFragment : Fragment() {
                 override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
                     activity?.runOnUiThread {
                         val builder = AlertDialog.Builder(context)
-                        builder.setTitle("New Chat Room Added")
+                        builder.setTitle("You are added to Chat Room")
                             .setMessage("Title: ${chatRoomAdd.chatRoomTitle}\nId: ${chatRoomAdd.chatRoomID}\nBy User: ${chatRoomAdd.senderNickname}")
                             .setCancelable(true)
                             .show()

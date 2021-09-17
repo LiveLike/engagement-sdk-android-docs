@@ -236,16 +236,18 @@ internal open class EngagementDataClientImpl :
         url: String,
         requestType: RequestType,
         requestBody: RequestBody? = null,
-        accessToken: String?
+        accessToken: String?,
+        parseFullError: Boolean = false
     ): Result<T> {
-        return remoteCall(url.toHttpUrl(), requestType, requestBody, accessToken)
+        return remoteCall(url.toHttpUrl(), requestType, requestBody, accessToken, parseFullError)
     }
 
     internal suspend inline fun <reified T : Any> remoteCall(
         url: HttpUrl,
         requestType: RequestType,
         requestBody: RequestBody? = null,
-        accessToken: String?
+        accessToken: String?,
+        parseFullError: Boolean = false
     ): Result<T> {
         return safeRemoteApiCall({
             withContext(Dispatchers.IO) {
@@ -274,7 +276,10 @@ internal open class EngagementDataClientImpl :
                     val msg = execute.message
                     val errorMsg = when (msg.isNotEmpty()) {
                         true -> msg
-                        else -> errorJson.get("detail").asString
+                        else -> when (parseFullError) {
+                            true -> errorJson
+                            else -> errorJson.get("detail").asString
+                        }
                     }
                     Result.Error(
                         IOException(
