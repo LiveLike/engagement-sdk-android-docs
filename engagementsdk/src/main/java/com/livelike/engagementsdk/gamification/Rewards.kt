@@ -9,13 +9,15 @@ import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 
 internal class Rewards(
     val configurationUserPairFlow: Flow<Pair<LiveLikeUser, EngagementSDK.SdkConfiguration>>,
@@ -82,12 +84,15 @@ internal class Rewards(
                                 null
                             ).run {
                                 if (this is Result.Success) {
-                                    liveLikeCallback.onResponse(this.data.rewardItemBalanceList.associate { rewardItemBalance ->
-                                        Pair(
-                                            rewardItemBalance.rewardItemId,
-                                            rewardItemBalance.rewardItemBalance
-                                        )
-                                    }, null)
+                                    liveLikeCallback.onResponse(
+                                        this.data.rewardItemBalanceList.associate { rewardItemBalance ->
+                                            Pair(
+                                                rewardItemBalance.rewardItemId,
+                                                rewardItemBalance.rewardItemBalance
+                                            )
+                                        },
+                                        null
+                                    )
                                 } else if (this is Result.Error) {
                                     liveLikeCallback.onResponse(
                                         null,
@@ -95,13 +100,11 @@ internal class Rewards(
                                     )
                                 }
                             }
-
                         }
                     }
                 }
             }
         }
-
     }
 
     override fun transferAmountToProfileId(
@@ -110,12 +113,29 @@ internal class Rewards(
         receiverProfileId: String,
         liveLikeCallback: LiveLikeCallback<TransferRewardItemResponse>
     ) {
-        TODO("Not yet implemented")
+
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                pair.first?.let {
+                    it.rewardItemTransferUrl?.let { url ->
+
+                        val body = gson.toJson(TransferRewardItemRequest(receiverProfileId, amount, rewardItemId))
+                            .toRequestBody("application/json".toMediaTypeOrNull())
+
+                        dataClient.remoteCall<TransferRewardItemResponse>(
+                            url,
+                            RequestType.GET,
+                            body,
+                            null
+                        ).run {
+                            liveLikeCallback.processResult(this)
+                        }
+                    }
+                }
+            }
+        }
     }
-
-
 }
-
 
 /**
 All the apis related to rewards item discovery, balance and transfer exposed here
@@ -131,7 +151,6 @@ interface IRewardsClient {
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItem>>
     )
 
-
     fun getRewardItemsBalance(
         rewardItemIds: List<String>,
         liveLikeCallback: LiveLikeCallback<Map<String, Int>>
@@ -144,7 +163,6 @@ interface IRewardsClient {
         liveLikeCallback: LiveLikeCallback<TransferRewardItemResponse>
     )
 }
-
 
 internal data class RewardItemBalancesApiResponse(
     @SerializedName("reward_item_balances")
@@ -160,8 +178,15 @@ internal data class RewardItemBalance(
     val rewardItemName: String
 )
 
+internal data class TransferRewardItemRequest(
+    val receiver_profile_id: String,
+    val reward_item_amount: Int,
+    val reward_item_id: String
+)
 
-class TransferRewardItemResponse {
-
-}
-
+data class TransferRewardItemResponse(
+    val created_at: String,
+    val new_balance: Int,
+    val previous_balance: Int,
+    val recipient_new_balance: Int
+)
