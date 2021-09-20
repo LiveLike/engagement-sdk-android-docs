@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.gamification
 
+import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
@@ -13,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 
 internal class Rewards(
@@ -62,7 +64,44 @@ internal class Rewards(
         rewardItemIds: List<String>,
         liveLikeCallback: LiveLikeCallback<Map<String, Int>>
     ) {
-        TODO("Not yet implemented")
+
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                pair.first?.let {
+                    it.rewardItemBalancesUrl?.let { url ->
+                        val httpUrl = url.toHttpUrlOrNull()?.newBuilder()?.apply {
+                            for (id in rewardItemIds) {
+                                addQueryParameter("reward_item_id", id)
+                            }
+                        }
+                        httpUrl?.build()?.let { httpUrl ->
+                            dataClient.remoteCall<RewardItemBalancesApiResponse>(
+                                httpUrl,
+                                RequestType.GET,
+                                null,
+                                null
+                            ).run {
+                                if (this is Result.Success) {
+                                    liveLikeCallback.onResponse(this.data.rewardItemBalanceList.associate { rewardItemBalance ->
+                                        Pair(
+                                            rewardItemBalance.rewardItemId,
+                                            rewardItemBalance.rewardItemBalance
+                                        )
+                                    }, null)
+                                } else if (this is Result.Error) {
+                                    liveLikeCallback.onResponse(
+                                        null,
+                                        this.exception.message ?: "Error in fetching data"
+                                    )
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     override fun transferAmountToProfileId(
@@ -80,14 +119,17 @@ internal class Rewards(
 
 /**
 All the apis related to rewards item discovery, balance and transfer exposed here
-*/
+ */
 interface IRewardsClient {
 
     /**
      * fetch all the rewards item associated to the client id passed at initialization of sdk
      * to fetch next page function need to be called again with LiveLikePagination.NEXT and for first call as LiveLikePagination.FIRST
      **/
-    fun getAllRewards(liveLikePagination: LiveLikePagination, liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItem>>)
+    fun getAllRewards(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItem>>
+    )
 
 
     fun getRewardItemsBalance(
@@ -104,7 +146,22 @@ interface IRewardsClient {
 }
 
 
-class TransferRewardItemResponse{
+internal data class RewardItemBalancesApiResponse(
+    @SerializedName("reward_item_balances")
+    val rewardItemBalanceList: List<RewardItemBalance>
+)
+
+internal data class RewardItemBalance(
+    @SerializedName("reward_item_balance")
+    val rewardItemBalance: Int,
+    @SerializedName("reward_item_id")
+    val rewardItemId: String,
+    @SerializedName("reward_item_name")
+    val rewardItemName: String
+)
+
+
+class TransferRewardItemResponse {
 
 }
 
