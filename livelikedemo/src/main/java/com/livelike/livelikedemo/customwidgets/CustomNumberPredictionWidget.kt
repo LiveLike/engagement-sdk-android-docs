@@ -132,7 +132,6 @@ class CustomNumberPredictionWidget :
         }
         binding.imgClose.setOnClickListener {
             finish()
-            this.removeAllViews()
         }
     }
 

@@ -205,6 +205,7 @@ internal class NumberPredictionViewModel(
 
 
     override fun finish() {
+        onDismiss()
         cleanUp()
     }
 
