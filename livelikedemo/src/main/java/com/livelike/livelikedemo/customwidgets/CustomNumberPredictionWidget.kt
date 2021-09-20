@@ -70,18 +70,6 @@ class CustomNumberPredictionWidget :
             widgetData = followUpWidgetViewModel?.widgetData
         }
 
-        numberPredictionWidgetViewModel?.loadInteractionHistory(object :
-            LiveLikeCallback<List<NumberPredictionWidgetUserInteraction>>() {
-            override fun onResponse(
-                result: List<NumberPredictionWidgetUserInteraction>?,
-                error: String?
-            ) {
-                result?.forEach {
-                    Log.d("CustomPredictionWidget","CustomNoPredictionWidget.onResponse>>${it.optionId} =>${it.number}")
-                }
-            }
-
-        })
         widgetData?.let { liveLikeWidget ->
             liveLikeWidget.options?.let { option ->
                 if (option.size > 2) {
@@ -101,7 +89,8 @@ class CustomNumberPredictionWidget :
                 binding.rcylPredictionList.adapter = adapter
                 binding.txt.text = liveLikeWidget.question
 
-                enableLockButton()
+                getInteractedData(adapter) // get user interaction
+
                 setOnClickListeners(adapter)
                 if (isFollowUp) {
                     binding.btn1.visibility = View.GONE
@@ -109,17 +98,16 @@ class CustomNumberPredictionWidget :
                     binding.btn1.visibility = View.VISIBLE
                 }
 
-                if(isFollowUp) {
-                    verifyPredictedAnswer()
-                }
-
                 if (isFollowUp) {
-                    option.forEach { op ->
-                        adapter.predictionMap[op?.id!!] = op.number ?: 0
+                    val votedList = followUpWidgetViewModel?.getPredictionVotes()
+                    votedList?.forEach { op ->
+                        adapter.predictionMap[op?.optionId!!] = op.number ?: 0
                     }
                     adapter.isFollowUp = true
+                    verifyPredictedAnswer()
                 }
             }
+
         }
     }
 
@@ -138,7 +126,6 @@ class CustomNumberPredictionWidget :
                     )
                 }
                 numberPredictionWidgetViewModel?.lockInVote(optionList).apply {
-                    disableLockButton()
                     Toast.makeText(context, "score submitted", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -158,7 +145,7 @@ class CustomNumberPredictionWidget :
                 if(option.size == votedList?.size){
                     for (i in option.indices) {
                         isCorrect =
-                            option[i]?.id == votedList[i].optionId && option[i]?.number == votedList[i].number
+                            option[i]?.id == votedList[i].optionId && option[i]?.correctNumber == votedList[i].number
                     }
                     Toast.makeText(
                         context,
@@ -173,19 +160,32 @@ class CustomNumberPredictionWidget :
         }
     }
 
+    //get user interacted data from load history api
+    private fun getInteractedData(adapter:PredictionListAdapter){
+        numberPredictionWidgetViewModel?.loadInteractionHistory(object :
+            LiveLikeCallback<List<NumberPredictionWidgetUserInteraction>>() {
+            override fun onResponse(
+                result: List<NumberPredictionWidgetUserInteraction>?,
+                error: String?
+            ) {
+                if(!result.isNullOrEmpty()){
+                    result?.forEach { it ->
+                        it.votes?.let{ scores ->
+                            Log.d("CustomPredictionWidget","CustomNoPredictionWidget.onResponse>>${scores}")
+                            adapter.setInteractedData(scores)
+                            adapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+
+            }
+        })
+
+    }
+
     fun finish() {
         numberPredictionWidgetViewModel?.finish()
         followUpWidgetViewModel?.finish()
-    }
-
-    private fun enableLockButton() {
-        binding.btn1.isEnabled = true
-        binding.btn1.alpha = 1f
-    }
-
-    private fun disableLockButton() {
-        binding.btn1.isEnabled = false
-        binding.btn1.alpha = 0.5f
     }
 
 
@@ -246,6 +246,14 @@ class CustomNumberPredictionWidget :
                 holder.itemView.option_view_1.text = "${predictionMap[item.id!!] ?: 0}"
             }
 
+            if(!isFollowUp) {
+                if (item.number != null) {
+                    holder.itemView.option_view_1.text = item.number.toString()
+                } else {
+                    holder.itemView.option_view_1.text = "0"
+                }
+            }
+
 
             holder.itemView.plus.setOnClickListener {
                 if (!isFollowUp) {
@@ -269,5 +277,10 @@ class CustomNumberPredictionWidget :
 
         override fun getItemCount(): Int = list.size
 
+        fun setInteractedData(interactedList:List<NumberPredictionVotes>){
+            for (i in list.indices){
+                if(list[i].id == interactedList[i].optionId) list[i].number = interactedList[i].number
+         }
+        }
     }
 }

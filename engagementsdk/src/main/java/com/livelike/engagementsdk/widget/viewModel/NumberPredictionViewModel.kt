@@ -14,6 +14,7 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.formatIsoZoned8601
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetManager
@@ -46,10 +47,10 @@ internal class NumberPredictionViewModel(
     private val userRepository: UserRepository,
     val widgetMessagingClient: WidgetManager? = null,
     val widgetInteractionRepository: WidgetInteractionRepository?
-) : BaseViewModel(analyticsService), NumberPredictionWidgetModel,NumberPredictionFollowUpWidgetModel {
+) : BaseViewModel(analyticsService), NumberPredictionWidgetModel,
+    NumberPredictionFollowUpWidgetModel {
 
 
-  //  var predictionStateList: MutableList<NumberPredictionState> = mutableListOf()
 
     val data: SubscriptionManager<NumberPredictionWidget> =
         SubscriptionManager()
@@ -97,53 +98,31 @@ internal class NumberPredictionViewModel(
      *submission of prediction votes (prediction for all options is mandatory)
      */
     override fun lockInVote(options: List<NumberPredictionVotes>) {
-        if(options.isNullOrEmpty()) return
+        if (options.isNullOrEmpty()) return
         data.currentData?.let { widget ->
-            val voteList = checkIfAllOptionsAreVoted(options, widget)
-            val jsonArray = JsonArray()
-                val votesObj = JsonObject()
-                for (item in voteList) {
-                    jsonArray.add(
-                        JsonObject().apply {
-                            addProperty("option_id", item.optionId)
-                            addProperty("number", item.number)
-                        }
-                    )
-                    votesObj.add("votes", jsonArray)
-                    // save interaction locally
-                    saveInteraction(item)
-                }
-                submitVoteApi(votesObj)
-
-                // Save widget id and voted options (number and option id) for followup widget
-                addWidgetNumberPredictionVoted(widget.resource.id,voteList)
-        }
-    }
-
- /**
-    checks if all options are voted, else fill in with default value 0
- */
-    private fun checkIfAllOptionsAreVoted(
-        options: List<NumberPredictionVotes>,
-        widget: NumberPredictionWidget
-    ): MutableList<NumberPredictionVotes> {
-
-        val voteList = options.toMutableList()
-        if (voteList.size < widget.resource.getMergedOptions()?.size!!) {
-            for (i in widget.resource.getMergedOptions()!!.indices) {
-                val option =
-                    voteList.find { it.optionId == widget.resource.getMergedOptions()!![i].id }
-                if (option == null) {
-                    voteList.add(
-                        NumberPredictionVotes(
-                            widget.resource.getMergedOptions()!![i].id,
-                            0
-                        )
-                    )
-                }
+            if (options.size < widget.resource.getMergedOptions()?.size!!) {
+                logDebug { "submit prediction for all options" }
+                return
             }
+            // val voteList = checkIfAllOptionsAreVoted(options, widget)
+            val jsonArray = JsonArray()
+            val votesObj = JsonObject()
+            for (item in options) {
+                jsonArray.add(
+                    JsonObject().apply {
+                        addProperty("option_id", item.optionId)
+                        addProperty("number", item.number)
+                    }
+                )
+                votesObj.add("votes", jsonArray)
+            }
+            submitVoteApi(votesObj)
+            // save interaction locally
+            saveInteraction(options)
+
+            // Save widget id and voted options (number and option id) for followup widget
+            addWidgetNumberPredictionVoted(widget.resource.id, options)
         }
-        return voteList
     }
 
 
@@ -233,16 +212,14 @@ internal class NumberPredictionViewModel(
         trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
     }
 
-    internal fun saveInteraction(option: NumberPredictionVotes) {
+    internal fun saveInteraction(option: List<NumberPredictionVotes>) {
         widgetInteractionRepository?.saveWidgetInteraction(
             NumberPredictionWidgetUserInteraction(
-                option.optionId,
+                "",
                 "",
                 ZonedDateTime.now().formatIsoZoned8601(),
                 getUserInteraction()?.url,
-                false,
-                "",
-                option.number,
+                option,
                 widgetInfos.widgetId,
                 widgetInfos.type
             )

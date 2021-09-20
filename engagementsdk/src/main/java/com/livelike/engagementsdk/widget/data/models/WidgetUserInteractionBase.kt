@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.widget.data.models
 
 import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.core.data.models.NumberPredictionVotes
 
 abstract class WidgetUserInteractionBase(
     @field:SerializedName("id")
@@ -104,17 +105,13 @@ class TextAskUserInteraction(
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
 class NumberPredictionWidgetUserInteraction(
-    @field:SerializedName("option_id")
-    val optionId: String,
     id: String,
     createdAt: String,
     url: String?,
-    @field:SerializedName("is_correct")
-    val isCorrect: Boolean,
     @field:SerializedName("claim_token")
     val claimToken: String?,
-    @field:SerializedName("number")
-    val number:Int,
+    @field:SerializedName("votes")
+    val votes: List<NumberPredictionVotes>?,
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
