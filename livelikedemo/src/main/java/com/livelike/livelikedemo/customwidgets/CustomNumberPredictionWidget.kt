@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.custom_number_prediction_item.view.minus
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.option_view_1
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.plus
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.text_1
-
+import kotlinx.android.synthetic.main.custom_number_prediction_widget.view.result_tv
 
 
 class CustomNumberPredictionWidget :
@@ -105,6 +105,8 @@ class CustomNumberPredictionWidget :
                     }
                     adapter.isFollowUp = true
                     verifyPredictedAnswer()
+                }else{
+                    result_tv.visibility = GONE
                 }
             }
 
@@ -146,14 +148,19 @@ class CustomNumberPredictionWidget :
                         isCorrect =
                             option[i]?.id == votedList[i].optionId && option[i]?.correctNumber == votedList[i].number
                     }
-                    Toast.makeText(
+                    /*Toast.makeText(
                         context,
                         when (isCorrect) {
                             true -> "Correct"
                             else -> "Incorrect"
                         },
                         Toast.LENGTH_SHORT
-                    ).show()
+                    ).show()*/
+                    result_tv.text = when (isCorrect) {
+                        true -> "Correct"
+                        else -> "Incorrect"
+                    }
+                    result_tv.visibility = VISIBLE
                 }
             }
         }
@@ -161,6 +168,14 @@ class CustomNumberPredictionWidget :
 
     //get user interacted data from load history api
     private fun getInteractedData(adapter:PredictionListAdapter){
+        var lists = numberPredictionWidgetViewModel?.getUserInteraction()
+        lists?.votes?.let{ scores ->
+            Log.d("CustomPredictionWidget","CustomNoPredictionWidget.onResponse>>${scores}")
+            adapter.setInteractedData(scores)
+            adapter.notifyDataSetChanged()
+        }
+
+        // this is just to test the load interaction api
         numberPredictionWidgetViewModel?.loadInteractionHistory(object :
             LiveLikeCallback<List<NumberPredictionWidgetUserInteraction>>() {
             override fun onResponse(
@@ -168,15 +183,8 @@ class CustomNumberPredictionWidget :
                 error: String?
             ) {
                 if(!result.isNullOrEmpty()){
-                    result?.forEach { it ->
-                        it.votes?.let{ scores ->
-                            Log.d("CustomPredictionWidget","CustomNoPredictionWidget.onResponse>>${scores}")
-                            adapter.setInteractedData(scores)
-                            adapter.notifyDataSetChanged()
-                        }
-                    }
+                    Log.d("CustomPredictionWidget","CustomNoPredictionWidget.onResponse>>${result}")
                 }
-
             }
         })
 
