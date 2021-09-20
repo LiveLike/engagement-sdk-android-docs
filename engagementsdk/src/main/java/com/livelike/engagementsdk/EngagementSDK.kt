@@ -39,16 +39,16 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSha
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.gamification.Badges
+import com.livelike.engagementsdk.gamification.IRewardsClient
+import com.livelike.engagementsdk.gamification.Rewards
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.sponsorship.Sponsor
-import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
-import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
@@ -689,6 +689,10 @@ class EngagementSDK(
         return Badges(configurationStream, dataClient, sdkScope)
     }
 
+    override fun rewards(): IRewardsClient {
+        return Rewards(configurationUserPairFlow, dataClient, sdkScope)
+    }
+
     /**
      * Closing all the services , stream and clear the variable
      * TODO: all stream close,instance clear
@@ -1061,7 +1065,9 @@ class EngagementSDK(
         @SerializedName("pubnub_presence_timeout")
         val pubnubPresenceTimeout: Int,
         @SerializedName("badges_url")
-        val badgesUrl: String
+        val badgesUrl: String,
+        @SerializedName("reward_items_url")
+        internal var rewardItemsUrl: String?
     )
 
     companion object {
