@@ -355,9 +355,10 @@ class EngagementSDK(
                                     chatRoomResult.data.membershipsUrl,
                                     accessToken = pair.first.accessToken,
                                     requestType = RequestType.POST,
+                                    parseFullError = true,
                                     requestBody = when (userId.isEmpty()) {
                                         true -> RequestBody.create(null, byteArrayOf())
-                                        else -> """{"member_id":"$userId"}"""
+                                        else -> """{"profile_id":"$userId"}"""
                                             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
                                     }
                                 )
