@@ -143,19 +143,16 @@ class CustomNumberPredictionWidget :
         followUpWidgetViewModel?.widgetData?.options?.let { option ->
             if (isFollowUp) {
                 val votedList = followUpWidgetViewModel?.getPredictionVotes()
-                if(option.size == votedList?.size){
-                    for (i in option.indices) {
-                        isCorrect =
-                            option[i]?.id == votedList[i].optionId && option[i]?.correctNumber == votedList[i].number
+
+                if(option.size == votedList?.size) {
+                    for (i in votedList.indices) {
+                        val votedOption = votedList[i]
+
+                        val op = option.find { it?.id == votedOption.optionId }
+                        if (op != null && votedOption.number == op.correctNumber) {
+                            isCorrect = true
+                        }
                     }
-                    /*Toast.makeText(
-                        context,
-                        when (isCorrect) {
-                            true -> "Correct"
-                            else -> "Incorrect"
-                        },
-                        Toast.LENGTH_SHORT
-                    ).show()*/
                     result_tv.text = when (isCorrect) {
                         true -> "Correct"
                         else -> "Incorrect"
