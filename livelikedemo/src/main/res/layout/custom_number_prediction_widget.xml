@@ -44,7 +44,7 @@
         android:id="@+id/rcyl_prediction_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#B8B8B8"
+        android:background="#D3D3D3"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,7 +60,7 @@
         app:layout_constraintTop_toBottomOf="@+id/rcyl_prediction_list"
         android:textStyle="bold"
         android:visibility="gone"
-        android:textSize="24sp"
+        android:textSize="18sp"
         android:text="bvnbvnbvbn"
         android:textColor="@color/cheer_meter_team2_color2"/>
 
@@ -81,7 +81,6 @@
     <Button
         android:id="@+id/claim_rewards"
         app:layout_constraintTop_toBottomOf="@+id/result_tv"
-        android:layout_marginLeft="20dp"
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_gravity="left"

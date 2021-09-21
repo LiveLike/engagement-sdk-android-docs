@@ -19,6 +19,7 @@ import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWid
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import com.livelike.livelikedemo.R
 import com.livelike.livelikedemo.databinding.CustomNumberPredictionWidgetBinding
+import kotlinx.android.synthetic.main.custom_number_prediction_item.view.correct_op
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.img_1
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.minus
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.option_view_1
@@ -156,19 +157,10 @@ class CustomNumberPredictionWidget :
                     val op = option.find { it?.id == votedOption.optionId }
                     isCorrect = op != null && votedOption.number == op.correctNumber
                 }
-                showCorrectOption(isCorrect)
             }
         }
     }
 
-
-    private fun showCorrectOption(isCorrect: Boolean) {
-        result_tv.text = when (isCorrect) {
-            true -> "Correct"
-            else -> "Incorrect"
-        }
-        result_tv.visibility = VISIBLE
-    }
 
     //get user interacted data from load history api
     private fun getInteractedData(adapter: PredictionListAdapter) {
@@ -258,6 +250,10 @@ class CustomNumberPredictionWidget :
 
             if (isFollowUp) {
                 holder.itemView.option_view_1.text = "${predictionMap[item.id!!] ?: 0}"
+                holder.itemView.correct_op.text =  item.correctNumber.toString()
+                holder.itemView.correct_op.visibility = View.VISIBLE
+            }else{
+                holder.itemView.correct_op.visibility = View.GONE
             }
 
             if (!isFollowUp) {
