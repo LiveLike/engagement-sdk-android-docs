@@ -28,6 +28,7 @@ import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetNumb
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import kotlinx.coroutines.launch
+import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.threeten.bp.ZonedDateTime
@@ -95,7 +96,7 @@ internal class NumberPredictionViewModel(
     }
 
     /**
-     *submission of prediction votes (prediction for all options is mandatory)
+     * submission of prediction votes (prediction for all options is mandatory)
      */
     override fun lockInVote(options: List<NumberPredictionVotes>) {
         if (options.isNullOrEmpty()) return
@@ -104,7 +105,6 @@ internal class NumberPredictionViewModel(
                 logDebug { "submit prediction for all options" }
                 return
             }
-            // val voteList = checkIfAllOptionsAreVoted(options, widget)
             val jsonArray = JsonArray()
             val votesObj = JsonObject()
             for (item in options) {
@@ -139,7 +139,8 @@ internal class NumberPredictionViewModel(
                     accessToken = userRepository.userAccessToken,
                     type = RequestType.POST,
                     useVoteUrl = false,
-                    userRepository = userRepository
+                    userRepository = userRepository,
+                    widgetId = currentWidgetId
                 )
             }
         }
@@ -151,6 +152,51 @@ internal class NumberPredictionViewModel(
     override fun getPredictionVotes(): List<NumberPredictionVotes>? {
         val resource = data.currentData?.resource
         return getWidgetNumberPredictionVotedAnswerList(if (resource?.text_number_prediction_id.isNullOrEmpty()) resource?.image_number_prediction_id else resource?.text_number_prediction_id)
+    }
+
+
+    private fun getNumberPredictionId(it: NumberPredictionWidget): String {
+        if (it.resource.text_number_prediction_id.isNullOrEmpty()) {
+            return it.resource.image_number_prediction_id
+        }
+        return it.resource.text_number_prediction_id
+    }
+
+
+    override fun claimRewards() {
+        claimPredictionRewards()
+    }
+
+    /**
+     * claim rewards
+     */
+    private fun claimPredictionRewards() {
+        data.currentData?.let { resources ->
+            val widgetId =
+                if (resources.resource.text_number_prediction_id.isEmpty()) (resources.resource.image_number_prediction_id) else (resources.resource.text_number_prediction_id)
+            widgetInfos.widgetId = widgetId
+            uiScope.launch {
+                widgetInteractionRepository?.fetchRemoteInteractions(
+                    widgetId = widgetInfos.widgetId,
+                    widgetKind = widgetInfos.type
+                )
+                var claimToken = EngagementSDK.predictionWidgetVoteRepository.get(
+                    (getNumberPredictionId(resources)?:""))
+                if(claimToken.isNullOrEmpty()) claimToken = getUserInteraction()?.claimToken ?: ""
+                resources.resource.claim_url?.let { url ->
+                    dataClient.voteAsync(
+                        url,
+                        useVoteUrl = false,
+                        body = FormBody.Builder()
+                            .add("claim_token", claimToken).build(),
+                        type = RequestType.POST,
+                        accessToken = userRepository.userAccessToken,
+                        userRepository = userRepository,
+                        widgetId = currentWidgetId
+                    )
+                }
+            }
+        }
     }
 
     /**

@@ -158,6 +158,8 @@ internal class WidgetInteractionRepository(
             WidgetType.TEXT_ASK -> "text_ask"
             WidgetType.TEXT_NUMBER_PREDICTION -> "text_number_prediction"
             WidgetType.IMAGE_NUMBER_PREDICTION -> "image_number_prediction"
+            WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP -> "text_number_prediction"
+            WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP -> "image_number_prediction"
             else -> ""
         }
     }

@@ -11,6 +11,11 @@ interface NumberPredictionFollowUpWidgetModel: LiveLikeWidgetMediator {
      * returns the predicted scores which was voted previously
      **/
     fun getPredictionVotes(): List<NumberPredictionVotes>?
+
+    /**
+     * claim earned rewards if any for the chosen prediction
+     **/
+    fun claimRewards()
     
     /**
      * it returns the latest user interaction for the widget

@@ -158,6 +158,9 @@ class CustomNumberPredictionWidget :
                         else -> "Incorrect"
                     }
                     result_tv.visibility = VISIBLE
+                    if(isCorrect){
+                        followUpWidgetViewModel?.claimRewards()
+                    }
                 }
             }
         }
