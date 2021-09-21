@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.custom_number_prediction_item.view.minus
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.option_view_1
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.plus
 import kotlinx.android.synthetic.main.custom_number_prediction_item.view.text_1
+import kotlinx.android.synthetic.main.custom_number_prediction_widget.view.claim_rewards
 import kotlinx.android.synthetic.main.custom_number_prediction_widget.view.result_tv
 
 
@@ -92,8 +93,10 @@ class CustomNumberPredictionWidget :
                 setOnClickListeners(adapter)
                 if (isFollowUp) {
                     binding.btn1.visibility = View.GONE
+                    claim_rewards.visibility = View.VISIBLE
                 } else {
                     binding.btn1.visibility = View.VISIBLE
+                    claim_rewards.visibility = View.GONE
                 }
 
                 if (isFollowUp) {
@@ -133,6 +136,10 @@ class CustomNumberPredictionWidget :
         binding.imgClose.setOnClickListener {
             finish()
         }
+
+        claim_rewards.setOnClickListener{
+            followUpWidgetViewModel?.claimRewards()
+        }
     }
 
     /**
@@ -147,28 +154,20 @@ class CustomNumberPredictionWidget :
                     val votedOption = votedList[i]
 
                     val op = option.find { it?.id == votedOption.optionId }
-                    if (op != null && votedOption.number == op.correctNumber) {
-                        isCorrect = true
-                    }
+                    isCorrect = op != null && votedOption.number == op.correctNumber
                 }
-                claimRewards(isCorrect)
+                showCorrectOption(isCorrect)
             }
         }
     }
 
 
-    /**
-     * claim reward if votes are correct
-     */
-    private fun claimRewards(isCorrect: Boolean) {
+    private fun showCorrectOption(isCorrect: Boolean) {
         result_tv.text = when (isCorrect) {
             true -> "Correct"
             else -> "Incorrect"
         }
         result_tv.visibility = VISIBLE
-        if (isCorrect) {
-            followUpWidgetViewModel?.claimRewards()
-        }
     }
 
     //get user interacted data from load history api

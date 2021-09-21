@@ -7,8 +7,8 @@
 
     <ImageButton
         android:id="@+id/img_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_marginRight="15dp"
         android:layout_gravity="right"
         app:layout_constraintTop_toTopOf="parent"
@@ -73,7 +73,25 @@
         android:background="#4B0082"
         android:scaleType="centerInside"
         android:text="Lock"
+        android:textSize="12sp"
+        android:textAllCaps="false"
         app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/livelike_white" />
+
+    <Button
+        android:id="@+id/claim_rewards"
+        app:layout_constraintTop_toBottomOf="@+id/result_tv"
+        android:layout_marginLeft="20dp"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_gravity="left"
+        android:background="#4B0082"
+        android:textAllCaps="false"
+        android:textSize="12sp"
+        android:visibility="gone"
+        android:scaleType="centerInside"
+        android:text="Claim Reward"
+        app:layout_constraintLeft_toRightOf="@+id/btn_1"
         android:textColor="@color/livelike_white" />
 
 
