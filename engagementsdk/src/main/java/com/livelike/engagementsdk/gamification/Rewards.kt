@@ -20,14 +20,14 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
 internal class Rewards(
-    val configurationUserPairFlow: Flow<Pair<LiveLikeUser, EngagementSDK.SdkConfiguration>>,
-    val dataClient: EngagementDataClientImpl,
-    val sdkScope: CoroutineScope
+    private val configurationUserPairFlow: Flow<Pair<LiveLikeUser, EngagementSDK.SdkConfiguration>>,
+    private val dataClient: EngagementDataClientImpl,
+    private val sdkScope: CoroutineScope
 ) : IRewardsClient {
 
     private var lastRewardItemsPage: LLPaginatedResult<RewardItem>? = null
 
-    override fun getAllRewards(
+    override fun getApplicationRewardItems(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItem>>
     ) {
@@ -146,16 +146,23 @@ interface IRewardsClient {
      * fetch all the rewards item associated to the client id passed at initialization of sdk
      * to fetch next page function need to be called again with LiveLikePagination.NEXT and for first call as LiveLikePagination.FIRST
      **/
-    fun getAllRewards(
+    fun getApplicationRewardItems(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItem>>
     )
-
+    /**
+     * fetch all the current user's balance for the passed rewardItemIDs
+     * in callback you will receive a map of rewardItemId and balance
+     **/
     fun getRewardItemsBalance(
         rewardItemIds: List<String>,
         liveLikeCallback: LiveLikeCallback<Map<String, Int>>
     )
 
+    /**
+     * transfer specified reward item amount to the profileID
+     * amount should be a positive whole number
+     **/
     fun transferAmountToProfileId(
         rewardItemId: String,
         amount: Int,
@@ -179,14 +186,17 @@ internal data class RewardItemBalance(
 )
 
 internal data class TransferRewardItemRequest(
-    val receiver_profile_id: String,
-    val reward_item_amount: Int,
-    val reward_item_id: String
+    @SerializedName("receiver_profile_id")
+    val receiverProfileId: String,
+    @SerializedName("reward_item_amount")
+    val rewardItemAmount: Int,
+    @SerializedName("reward_item_id")
+    val rewardItemId: String
 )
 
 data class TransferRewardItemResponse(
-    val created_at: String,
-    val new_balance: Int,
-    val previous_balance: Int,
-    val recipient_new_balance: Int
+    @SerializedName("created_at")
+    val createdAt: String,
+    @SerializedName("new_balance")
+    val newBalance: Int
 )
