@@ -19,8 +19,10 @@ internal open class Resource(
     val text_prediction_id: String = "",
     val image_prediction_id: String = "",
     val text_prediction_url: String = "",
-    val image_number_prediction_id: String= "",
-    val text_number_prediction_id: String= "",
+    @field:SerializedName("image_number_prediction_id")
+    val imageNumberPredictionId: String= "",
+    @field:SerializedName("text_number_prediction_id")
+    val textNumberPredictionId: String= "",
     val correct_option_id: String = "",
     val confirmation_message: String = "",
     val testTag: String = "",

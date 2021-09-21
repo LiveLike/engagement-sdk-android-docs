@@ -151,15 +151,15 @@ internal class NumberPredictionViewModel(
      */
     override fun getPredictionVotes(): List<NumberPredictionVotes>? {
         val resource = data.currentData?.resource
-        return getWidgetNumberPredictionVotedAnswerList(if (resource?.text_number_prediction_id.isNullOrEmpty()) resource?.image_number_prediction_id else resource?.text_number_prediction_id)
+        return getWidgetNumberPredictionVotedAnswerList(if (resource?.textNumberPredictionId.isNullOrEmpty()) resource?.imageNumberPredictionId else resource?.textNumberPredictionId)
     }
 
 
     private fun getNumberPredictionId(it: NumberPredictionWidget): String {
-        if (it.resource.text_number_prediction_id.isNullOrEmpty()) {
-            return it.resource.image_number_prediction_id
+        if (it.resource.textNumberPredictionId.isNullOrEmpty()) {
+            return it.resource.imageNumberPredictionId
         }
-        return it.resource.text_number_prediction_id
+        return it.resource.textNumberPredictionId
     }
 
 
@@ -173,7 +173,7 @@ internal class NumberPredictionViewModel(
     private fun claimPredictionRewards() {
         data.currentData?.let { resources ->
             val widgetId =
-                if (resources.resource.text_number_prediction_id.isEmpty()) (resources.resource.image_number_prediction_id) else (resources.resource.text_number_prediction_id)
+                if (resources.resource.textNumberPredictionId.isEmpty()) (resources.resource.imageNumberPredictionId) else (resources.resource.textNumberPredictionId)
             widgetInfos.widgetId = widgetId
             uiScope.launch {
                 widgetInteractionRepository?.fetchRemoteInteractions(

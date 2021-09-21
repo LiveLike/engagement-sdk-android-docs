@@ -15,8 +15,6 @@ import com.livelike.engagementsdk.OptionsItem
 import com.livelike.engagementsdk.core.data.models.NumberPredictionVotes
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
-import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
-import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import com.livelike.livelikedemo.R
@@ -94,7 +92,7 @@ class CustomNumberPredictionWidget :
                 setOnClickListeners(adapter)
                 if (isFollowUp) {
                     binding.btn1.visibility = View.GONE
-                }else{
+                } else {
                     binding.btn1.visibility = View.VISIBLE
                 }
 
@@ -105,7 +103,7 @@ class CustomNumberPredictionWidget :
                     }
                     adapter.isFollowUp = true
                     verifyPredictedAnswer()
-                }else{
+                } else {
                     result_tv.visibility = GONE
                 }
             }
@@ -113,13 +111,13 @@ class CustomNumberPredictionWidget :
         }
     }
 
-    private fun setOnClickListeners(adapter:PredictionListAdapter){
+    private fun setOnClickListeners(adapter: PredictionListAdapter) {
         // predict button click
         binding.btn1.setOnClickListener {
             if (!isFollowUp) {
                 val maps = adapter.getPredictedScore()
                 val optionList = mutableListOf<NumberPredictionVotes>()
-                for(item in maps){
+                for (item in maps) {
                     optionList.add(
                         NumberPredictionVotes(
                             optionId = item.key,
@@ -137,40 +135,47 @@ class CustomNumberPredictionWidget :
         }
     }
 
-
-    private fun verifyPredictedAnswer(){
+    /**
+     * verify if votes submitted are correct
+     */
+    private fun verifyPredictedAnswer() {
         var isCorrect = false
         followUpWidgetViewModel?.widgetData?.options?.let { option ->
-            if (isFollowUp) {
-                val votedList = followUpWidgetViewModel?.getPredictionVotes()
+            val votedList = followUpWidgetViewModel?.getPredictionVotes()
+            if (option.size == votedList?.size) {
+                for (i in votedList.indices) {
+                    val votedOption = votedList[i]
 
-                if(option.size == votedList?.size) {
-                    for (i in votedList.indices) {
-                        val votedOption = votedList[i]
-
-                        val op = option.find { it?.id == votedOption.optionId }
-                        if (op != null && votedOption.number == op.correctNumber) {
-                            isCorrect = true
-                        }
-                    }
-                    result_tv.text = when (isCorrect) {
-                        true -> "Correct"
-                        else -> "Incorrect"
-                    }
-                    result_tv.visibility = VISIBLE
-                    if(isCorrect){
-                        followUpWidgetViewModel?.claimRewards()
+                    val op = option.find { it?.id == votedOption.optionId }
+                    if (op != null && votedOption.number == op.correctNumber) {
+                        isCorrect = true
                     }
                 }
+                claimRewards(isCorrect)
             }
         }
     }
 
+
+    /**
+     * claim reward if votes are correct
+     */
+    private fun claimRewards(isCorrect: Boolean) {
+        result_tv.text = when (isCorrect) {
+            true -> "Correct"
+            else -> "Incorrect"
+        }
+        result_tv.visibility = VISIBLE
+        if (isCorrect) {
+            followUpWidgetViewModel?.claimRewards()
+        }
+    }
+
     //get user interacted data from load history api
-    private fun getInteractedData(adapter:PredictionListAdapter){
-        var lists = numberPredictionWidgetViewModel?.getUserInteraction()
-        lists?.votes?.let{ scores ->
-            Log.d("CustomPredictionWidget","CustomNoPredictionWidget.onResponse>>${scores}")
+    private fun getInteractedData(adapter: PredictionListAdapter) {
+        val lists = numberPredictionWidgetViewModel?.getUserInteraction()
+        lists?.votes?.let { scores ->
+            Log.d("CustomPredictionWidget", "CustomNoPredictionWidget.onResponse>>${scores}")
             adapter.setInteractedData(scores)
             adapter.notifyDataSetChanged()
         }
@@ -182,8 +187,11 @@ class CustomNumberPredictionWidget :
                 result: List<NumberPredictionWidgetUserInteraction>?,
                 error: String?
             ) {
-                if(!result.isNullOrEmpty()){
-                    Log.d("CustomPredictionWidget","CustomNoPredictionWidget.onResponse>>${result}")
+                if (!result.isNullOrEmpty()) {
+                    Log.d(
+                        "CustomPredictionWidget",
+                        "CustomNoPredictionWidget.onResponse>>${result}"
+                    )
                 }
             }
         })
@@ -253,7 +261,7 @@ class CustomNumberPredictionWidget :
                 holder.itemView.option_view_1.text = "${predictionMap[item.id!!] ?: 0}"
             }
 
-            if(!isFollowUp) {
+            if (!isFollowUp) {
                 if (item.number != null) {
                     holder.itemView.option_view_1.text = item.number.toString()
                 } else {
@@ -284,10 +292,11 @@ class CustomNumberPredictionWidget :
 
         override fun getItemCount(): Int = list.size
 
-        fun setInteractedData(interactedList:List<NumberPredictionVotes>){
-            for (i in list.indices){
-                if(list[i].id == interactedList[i].optionId) list[i].number = interactedList[i].number
-         }
+        fun setInteractedData(interactedList: List<NumberPredictionVotes>) {
+            for (i in list.indices) {
+                if (list[i].id == interactedList[i].optionId) list[i].number =
+                    interactedList[i].number
+            }
         }
     }
 }
