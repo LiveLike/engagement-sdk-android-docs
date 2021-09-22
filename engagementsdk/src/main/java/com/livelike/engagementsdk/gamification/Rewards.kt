@@ -110,7 +110,7 @@ internal class Rewards(
     override fun transferAmountToProfileId(
         rewardItemId: String,
         amount: Int,
-        receiverProfileId: String,
+        recipientProfileId: String,
         liveLikeCallback: LiveLikeCallback<TransferRewardItemResponse>
     ) {
 
@@ -119,7 +119,7 @@ internal class Rewards(
                 pair.first?.let {
                     it.rewardItemTransferUrl?.let { url ->
 
-                        val body = gson.toJson(TransferRewardItemRequest(receiverProfileId, amount, rewardItemId))
+                        val body = gson.toJson(TransferRewardItemRequest(recipientProfileId, amount, rewardItemId))
                             .toRequestBody("application/json".toMediaTypeOrNull())
 
                         dataClient.remoteCall<TransferRewardItemResponse>(
@@ -166,7 +166,7 @@ interface IRewardsClient {
     fun transferAmountToProfileId(
         rewardItemId: String,
         amount: Int,
-        receiverProfileId: String,
+        recipientProfileId: String,
         liveLikeCallback: LiveLikeCallback<TransferRewardItemResponse>
     )
 }
@@ -186,7 +186,7 @@ internal data class RewardItemBalance(
 )
 
 internal data class TransferRewardItemRequest(
-    @SerializedName("receiver_profile_id")
+    @SerializedName("recipient_profile_id")
     val receiverProfileId: String,
     @SerializedName("reward_item_amount")
     val rewardItemAmount: Int,
