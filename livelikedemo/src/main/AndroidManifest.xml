@@ -23,8 +23,7 @@
         tools:replace="android:allowBackup">
         <activity
             android:name=".RewardsClientTestActivity"
-            android:screenOrientation="portrait"
-            android:exported="true" />
+            android:screenOrientation="portrait" />
         <activity android:name=".WidgetJsonActivity" />
         <activity android:name=".BadgesCollectionActivity" />
         <activity android:name=".SponsorTestActivity" />
