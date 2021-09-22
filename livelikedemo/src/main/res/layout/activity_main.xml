@@ -580,6 +580,14 @@
                     app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
 
                 <Button
+                    android:id="@+id/rewards_client_test"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="Rewards Client Test"
+                    app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
+
+                <Button
                     android:id="@+id/unclaimed_interaction"
                     style="@style/TestAppButton"
                     android:layout_width="match_parent"

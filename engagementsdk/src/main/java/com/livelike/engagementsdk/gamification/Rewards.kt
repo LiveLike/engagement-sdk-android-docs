@@ -81,7 +81,7 @@ internal class Rewards(
                                 httpUrl,
                                 RequestType.GET,
                                 null,
-                                null
+                                pair.first.accessToken
                             ).run {
                                 if (this is Result.Success) {
                                     liveLikeCallback.onResponse(
@@ -126,7 +126,7 @@ internal class Rewards(
                             url,
                             RequestType.GET,
                             body,
-                            null
+                            pair.first.accessToken
                         ).run {
                             liveLikeCallback.processResult(this)
                         }
