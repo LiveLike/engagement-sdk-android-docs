@@ -9,9 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
 import com.livelike.engagementsdk.core.data.models.RewardItem
+import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.gamification.IRewardsClient
+import com.livelike.engagementsdk.gamification.TransferRewardItemResponse
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import kotlinx.android.synthetic.main.reward_is_client_test_activity.enter_amount_et
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.progress_bar
+import kotlinx.android.synthetic.main.reward_is_client_test_activity.receipent_profile_id
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_item_balance
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_item_spinnner
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.send_btn
@@ -23,7 +27,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
 
     var selectedrewardItem: RewardItem? = null
 
-    var rewardItemBalanceMap: Map<String, Int>? = null
+    val rewardItemBalanceMap: MutableMap<String, Int> = mutableMapOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +55,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
             object : LiveLikeCallback<Map<String, Int>>() {
                 override fun onResponse(result: Map<String, Int>?, error: String?) {
                     result?.let {
-                        rewardItemBalanceMap = result
+                        rewardItemBalanceMap.putAll(result)
                         runOnUiThread {
                             initUI()
                         }
@@ -64,9 +68,10 @@ class RewardsClientTestActivity : AppCompatActivity() {
     private fun initUI() {
         progress_bar.visibility = View.GONE
 
-        rewardIems?.let { rewardIems->
+        rewardIems?.let { rewardIems ->
 
-            val adapter = ArrayAdapter(this,android.R.layout.simple_spinner_item,rewardIems.map { it.name })
+            val adapter =
+                ArrayAdapter(this, android.R.layout.simple_spinner_item, rewardIems.map { it.name })
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             reward_item_spinnner.adapter = adapter
 
@@ -89,9 +94,52 @@ class RewardsClientTestActivity : AppCompatActivity() {
                 }
 
             send_btn.setOnClickListener {
-                if(selectedrewardItem==null){
+                if (selectedrewardItem == null) {
                     showError("Please select reward item")
-                }else{
+                } else {
+                    if (!validateUuid(receipent_profile_id.text.toString())) {
+                        showError("Please Enter valid recipeint id")
+                        return@setOnClickListener
+                    }
+                    if (enter_amount_et.text.isEmpty()) {
+                        showError("Please Enter amount")
+                        return@setOnClickListener
+                    }
+                    if (enter_amount_et.text.isBlank() || enter_amount_et.text.toString().toInt() > (rewardItemBalanceMap?.get(
+                            selectedrewardItem?.id ?: ""
+                        ) ?: 0)
+                    ) {
+                        showError("Please Enter amount less than or equal to available balance")
+                        return@setOnClickListener
+                    }
+
+                    progress_bar.visibility = View.VISIBLE
+
+                    rewardsClient.transferAmountToProfileId(selectedrewardItem!!.id,
+                        enter_amount_et.text.toString().toInt(),
+                        receipent_profile_id.text.toString(),
+                        object : LiveLikeCallback<TransferRewardItemResponse>() {
+                            override fun onResponse(
+                                result: TransferRewardItemResponse?,
+                                error: String?
+                            ) {
+                                result?.let {
+                                    rewardItemBalanceMap.put(
+                                        selectedrewardItem?.id ?: "",
+                                        it.newBalance
+                                    )
+                                }
+                                runOnUiThread {
+                                    enter_amount_et.setText("")
+                                    reward_item_balance.text =
+                                        "Balance : ${(rewardItemBalanceMap?.get(selectedrewardItem?.id ?: "") ?: "0")}"
+                                    progress_bar.visibility = View.GONE
+                                    showError("amount sent successfully")
+                                }
+                                showError(error)
+                            }
+
+                        })
 
                 }
             }

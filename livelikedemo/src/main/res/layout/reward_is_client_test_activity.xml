@@ -31,6 +31,7 @@
         android:layout_marginTop="32dp"
         android:hint="enter amount"
         android:inputType="number"
+        android:maxLength="6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/reward_item_spinnner" />
 
@@ -40,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:hint="Recipeint profile id "
-        android:inputType="number"
+        android:inputType="text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/enter_amount_et" />
 

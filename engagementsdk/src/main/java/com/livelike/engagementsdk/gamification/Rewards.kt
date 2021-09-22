@@ -124,7 +124,7 @@ internal class Rewards(
 
                         dataClient.remoteCall<TransferRewardItemResponse>(
                             url,
-                            RequestType.GET,
+                            RequestType.POST,
                             body,
                             pair.first.accessToken
                         ).run {
