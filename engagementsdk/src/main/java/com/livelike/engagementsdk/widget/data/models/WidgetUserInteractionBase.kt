@@ -80,6 +80,8 @@ class PredictionWidgetUserInteraction(
     val isCorrect: Boolean,
     @field:SerializedName("claim_token")
     val claimToken: String?,
+    @field:SerializedName("votes")
+    val votes: List<NumberPredictionVotes>?,
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
