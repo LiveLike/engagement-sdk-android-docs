@@ -139,6 +139,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             }
         }
 
+    var chatViewDelegate: ChatViewDelegate? = null
+        set(value) {
+            field = value
+            viewModel?.chatAdapter?.chatViewDelegate = value
+        }
+
     private val viewModel: ChatViewModel?
         get() = (session as ChatSession?)?.chatViewModel
 
@@ -640,6 +646,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      */
     private fun setDataSource(chatAdapter: ChatRecyclerAdapter) {
         chatdisplay.let { rv ->
+            chatAdapter.chatViewDelegate = chatViewDelegate
             rv.adapter = chatAdapter
             val lm = rv.layoutManager as LinearLayoutManager
             lm.recycleChildrenOnDetach = true

@@ -75,6 +75,11 @@ data class LiveLikeChatMessage(val message: String?) {
      * data for custom message
      */
     var custom_data: String? = null
+
+    /**
+     * if the message is deleted when chat is showing
+     */
+    var isDeleted : Boolean = false
 }
 
 enum class ChatMessageType(val key: String) {
@@ -125,6 +130,7 @@ internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
         this.custom_data = this@toLiveLikeChatMessage.custom_data
         this.senderId = this@toLiveLikeChatMessage.senderId
         this.timestamp = epochTimeStamp.toString()
+        this.isDeleted = this@toLiveLikeChatMessage.isDeleted
     }
 }
 
