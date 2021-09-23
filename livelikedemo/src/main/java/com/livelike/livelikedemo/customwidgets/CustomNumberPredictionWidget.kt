@@ -119,16 +119,7 @@ class CustomNumberPredictionWidget :
         // predict button click
         binding.btn1.setOnClickListener {
             if (!isFollowUp) {
-                val maps = adapter.getPredictedScore()
-                val optionList = mutableListOf<NumberPredictionVotes>()
-                for (item in maps) {
-                    optionList.add(
-                        NumberPredictionVotes(
-                            optionId = item.key,
-                            number = item.value
-                        )
-                    )
-                }
+                val optionList = submitVoteRequest(adapter)
                 numberPredictionWidgetViewModel?.lockInVote(optionList).apply {
                     Toast.makeText(context, "score submitted", Toast.LENGTH_SHORT).show()
                 }
@@ -142,6 +133,35 @@ class CustomNumberPredictionWidget :
             followUpWidgetViewModel?.claimRewards()
         }
     }
+
+
+
+    private fun submitVoteRequest(adapter: PredictionListAdapter):List<NumberPredictionVotes> {
+        val optionList = mutableListOf<NumberPredictionVotes>()
+        val maps = adapter.getPredictedScore()
+        if(maps.isNullOrEmpty()){
+            val options = numberPredictionWidgetViewModel?.widgetData?.options
+            for(item in options!!){
+                optionList.add(
+                    NumberPredictionVotes(
+                        optionId = item?.id!!,
+                        number = 0
+                    )
+                )
+            }
+        }else{
+            for (item in maps) {
+                optionList.add(
+                    NumberPredictionVotes(
+                        optionId = item.key,
+                        number = item.value
+                    )
+                )
+            }
+        }
+        return optionList
+    }
+
 
     /**
      * verify if votes submitted are correct
@@ -280,7 +300,6 @@ class CustomNumberPredictionWidget :
                     holder.itemView.option_view_1.text = updatedScore.toString()
                     predictionMap[item.id!!] = updatedScore
                 }
-
             }
         }
 
