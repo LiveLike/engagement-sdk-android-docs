@@ -27,14 +27,18 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.WidgetType.ALERT
 import com.livelike.engagementsdk.widget.WidgetType.CHEER_METER
 import com.livelike.engagementsdk.widget.WidgetType.COLLECT_BADGE
+import com.livelike.engagementsdk.widget.WidgetType.IMAGE_NUMBER_PREDICTION
+import com.livelike.engagementsdk.widget.WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_QUIZ
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_SLIDER
+import com.livelike.engagementsdk.widget.WidgetType.TEXT_NUMBER_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.POINTS_TUTORIAL
 import com.livelike.engagementsdk.widget.WidgetType.SOCIAL_EMBED
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_ASK
+import com.livelike.engagementsdk.widget.WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_POLL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
@@ -46,6 +50,7 @@ import com.livelike.engagementsdk.widget.view.AlertWidgetView
 import com.livelike.engagementsdk.widget.view.CheerMeterView
 import com.livelike.engagementsdk.widget.view.CollectBadgeWidgetView
 import com.livelike.engagementsdk.widget.view.EmojiSliderWidgetView
+import com.livelike.engagementsdk.widget.view.NumberPredictionView
 import com.livelike.engagementsdk.widget.view.PollView
 import com.livelike.engagementsdk.widget.view.PredictionView
 import com.livelike.engagementsdk.widget.view.QuizView
@@ -59,6 +64,7 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CollectBadgeWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.NumberPredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
@@ -137,6 +143,7 @@ internal class WidgetProvider {
                     widgetInteractionRepository
                 )
             }
+
             TEXT_POLL, IMAGE_POLL -> PollView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
                 this.widgetsTheme = liveLikeEngagementTheme?.widgets
@@ -152,6 +159,7 @@ internal class WidgetProvider {
                     widgetInteractionRepository
                 )
             }
+
             POINTS_TUTORIAL -> PointsTutorialView(context).apply {
                 this.widgetsTheme = liveLikeEngagementTheme?.widgets
                 this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
@@ -216,6 +224,19 @@ internal class WidgetProvider {
                     onDismiss,
                     userRepository,
                     programRepository,
+                    widgetMessagingClient,
+                    widgetInteractionRepository
+                )
+            }
+
+            TEXT_NUMBER_PREDICTION ,TEXT_NUMBER_PREDICTION_FOLLOW_UP,
+            IMAGE_NUMBER_PREDICTION,IMAGE_NUMBER_PREDICTION_FOLLOW_UP-> NumberPredictionView(context).apply {
+                widgetViewModel = NumberPredictionViewModel(
+                    widgetInfos,
+                    analyticsService,
+                    sdkConfiguration,
+                    onDismiss,
+                    userRepository,
                     widgetMessagingClient,
                     widgetInteractionRepository
                 )

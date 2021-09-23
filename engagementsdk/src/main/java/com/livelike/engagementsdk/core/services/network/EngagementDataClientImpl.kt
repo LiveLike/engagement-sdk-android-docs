@@ -290,7 +290,7 @@ internal open class EngagementDataClientImpl :
         suspendCoroutine<JsonObject> {
             val request = Request.Builder()
                 .url(url)
-                .method(requestType.name, body ?: RequestBody.create(null, ByteString.EMPTY))
+                .method(requestType.name, body ?: ByteString.EMPTY.toRequestBody(null))
                 .addUserAgent()
                 .addAuthorizationBearer(accessToken)
                 .build()
@@ -304,6 +304,7 @@ internal open class EngagementDataClientImpl :
                 override fun onResponse(call: Call, response: Response) {
                     try {
                         val s = response.body?.string()
+                        logDebug { "prediction response $s" }
                         it.resume(JsonParser.parseString(s).asJsonObject)
                     } catch (e: Exception) {
                         logError { e }
