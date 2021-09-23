@@ -13,17 +13,17 @@ interface NumberPredictionFollowUpWidgetModel: LiveLikeWidgetMediator {
     fun getPredictionVotes(): List<NumberPredictionVotes>?
 
     /**
-     * claim earned rewards if any for the chosen prediction
+     * Attempts to claim rewards for this Number Prediction Follow Up
      **/
     fun claimRewards()
-    
+
     /**
-     * it returns the latest user interaction for the widget
+     * Call this to load the latest user interaction for this widget
      */
     fun getUserInteraction(): NumberPredictionWidgetUserInteraction?
 
     /**
-     * returns widget interactions from remote source
+     * Call this to load the user's interaction history for this Widget
      */
     fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<NumberPredictionWidgetUserInteraction>>)
 }

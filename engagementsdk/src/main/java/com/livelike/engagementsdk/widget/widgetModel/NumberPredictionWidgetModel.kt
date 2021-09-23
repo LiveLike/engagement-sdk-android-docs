@@ -8,17 +8,18 @@ import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
 interface NumberPredictionWidgetModel: LiveLikeWidgetMediator {
 
     /**
-     * submits the answer for prediction
+     * Locks the user's vote
+     * @param options A List of vote submission for each options. All options must be submitted at the same time.
      */
     fun lockInVote(options:List<NumberPredictionVotes>)
 
     /**
-     * it returns the latest user interaction for the widget
+     * Call this to load the latest user interaction for this widget
      */
     fun getUserInteraction(): NumberPredictionWidgetUserInteraction?
 
     /**
-     * returns widget interactions from remote source
+     * Call this to load the user's interaction history for this Widget
      */
     fun loadInteractionHistory(liveLikeCallback: LiveLikeCallback<List<NumberPredictionWidgetUserInteraction>>)
 }

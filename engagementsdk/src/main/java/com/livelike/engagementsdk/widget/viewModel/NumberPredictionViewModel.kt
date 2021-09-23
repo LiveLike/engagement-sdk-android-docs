@@ -147,7 +147,7 @@ internal class NumberPredictionViewModel(
     }
 
     /**
-     * get the predicted scores
+     * Returns the votes submitted
      */
     override fun getPredictionVotes(): List<NumberPredictionVotes>? {
         val resource = data.currentData?.resource
@@ -200,7 +200,7 @@ internal class NumberPredictionViewModel(
     }
 
     /**
-     * get the last interaction
+     * Returns the last interaction
      */
     override fun getUserInteraction(): NumberPredictionWidgetUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
