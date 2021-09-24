@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.widget.services.network
 
 import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.BuildConfig
@@ -138,7 +139,7 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                         }
                     }
                 }
-            }catch (ex:Exception){
+            }catch (ex: JsonParseException){
                 logError { ex.message }
             }
             return@afterPrevious voteUrl
