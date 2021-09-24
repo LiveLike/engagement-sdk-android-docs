@@ -161,7 +161,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     init {
         context.scanForActivity()?.window?.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-                    or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
         context.obtainStyledAttributes(
             attrs,
@@ -189,7 +189,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         set(value) {
             field = value
             value?.let {
-                viewModel?.chatAdapter?.linksRegex = it.toRegex()
+                if (value.isNotEmpty())
+                    viewModel?.chatAdapter?.linksRegex = it.toRegex()
             }
         }
 
@@ -306,7 +307,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         viewModel?.apply {
             chatAdapter.showLinks = enableChatMessageURLs
             chatMessageUrlPatterns?.let {
-                chatAdapter.linksRegex = it.toRegex()
+                if (it.isNotEmpty())
+                    chatAdapter.linksRegex = it.toRegex()
             }
             chatAdapter.currentChatReactionPopUpViewPos = -1
             chatAdapter.chatViewThemeAttribute = chatAttribute
@@ -326,7 +328,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         autoScroll = true
                         checkEmptyChat()
                         if (viewModel?.isLastItemVisible == true && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
-                                .not()
+                            .not()
                         ) {
                             snapToLive()
                         } else if (chatAdapter.isReactionPopUpShowing() || viewModel?.isLastItemVisible == false) {
@@ -661,6 +663,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                                 false
                             }
                     if (endHasBeenReached) {
+                        viewModel?.isLastItemVisible = true
                         autoScroll = false
                     }
                 }

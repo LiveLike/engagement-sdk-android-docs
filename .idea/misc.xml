@@ -3,12 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="livelikedemo/src/main/res/layout/custom_cheer_meter.xml" value="0.3802083333333333" />
-        <entry key="livelikedemo/src/main/res/layout/sponsor_layout.xml" value="0.3802083333333333" />
+        <entry key="../../../../layout/custom_preview.xml" value="0.40185185185185185" />
+        <entry key="engagementsdk/src/main/res/drawable/alert_rounded_corner_with_background.xml" value="0.3902564102564103" />
+        <entry key="engagementsdk/src/main/res/layout/default_sponsor_ui.xml" value="0.33" />
+        <entry key="engagementsdk/src/main/res/layout/widget_alert.xml" value="0.3802083333333333" />
+        <entry key="engagementsdk/src/main/res/layout/widget_text_option_selection.xml" value="0.3802083333333333" />
+        <entry key="livelikedemo/src/main/res/layout/activity_main.xml" value="0.19351570415400202" />
+        <entry key="livelikedemo/src/main/res/layout/activity_widget_json.xml" value="0.32518115942028986" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

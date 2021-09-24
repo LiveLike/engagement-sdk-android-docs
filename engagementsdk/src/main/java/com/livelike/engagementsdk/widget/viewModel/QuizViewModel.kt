@@ -70,7 +70,8 @@ internal class QuizViewModel(
         SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> =
         SubscriptionManager()
-//    var state: Stream<String> =
+
+    //    var state: Stream<String> =
 //        SubscriptionManager() // results
     var adapter: WidgetOptionsViewAdapter? = null
     private var timeoutStarted = false
@@ -113,14 +114,20 @@ internal class QuizViewModel(
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
         if (widgetInfos != null &&
             (
-                WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_QUIZ ||
-                    WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ
-                )
+                    WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_QUIZ ||
+                            WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ
+                    )
         ) {
             val resource =
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
-                subscribeWidgetResults(resource.subscribe_channel, sdkConfiguration, userRepository.currentUserStream, widgetInfos.widgetId, results)
+                subscribeWidgetResults(
+                    resource.subscribe_channel,
+                    sdkConfiguration,
+                    userRepository.currentUserStream,
+                    widgetInfos.widgetId,
+                    results
+                )
                 data.onNext(
                     WidgetType.fromString(widgetInfos.type)?.let {
                         QuizWidget(
@@ -271,7 +278,10 @@ internal class QuizViewModel(
         uiScope.launch {
             try {
                 val results =
-                    widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
+                    widgetInteractionRepository?.fetchRemoteInteractions(
+                        widgetId = widgetInfos.widgetId,
+                        widgetKind = widgetInfos.type
+                    )
 
                 if (results is Result.Success) {
                     if (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ) {

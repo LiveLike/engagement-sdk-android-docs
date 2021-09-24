@@ -2,7 +2,10 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
+import com.google.gson.JsonParser
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
@@ -20,6 +23,7 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.logAnalytics
 import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.core.services.messaging.proxies.withPreloader
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.gson
@@ -32,6 +36,7 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetManager
+import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
@@ -39,10 +44,12 @@ import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInterac
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.PublishedWidgetListResponse
 import com.livelike.engagementsdk.widget.data.models.UnclaimedWidgetInteractionList
+import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +64,7 @@ import java.io.IOException
 
 internal class ContentSession(
     clientId: String,
-    sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
+    private val sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val programId: String,
@@ -129,7 +136,7 @@ internal class ContentSession(
                                     PublishedWidgetListResponse::class.java
                                 )
 
-                            widgetInteractionRepository.clearInteractionMap()
+                            // widgetInteractionRepository.clearInteractionMap()
 
                             // fetching widget interactions for widgets loaded
                             userRepository.currentUserStream.latest()?.let { user ->
@@ -204,10 +211,11 @@ internal class ContentSession(
         uiScope.launch {
             programFlow.collect { program ->
                 userRepository.currentUserStream.latest()?.let { user ->
-                    val interactionTemplate = program?.unclaimedWidgetInteractionsUrlTemplate?.replace(
-                        "{profile_id}",
-                        user.id
-                    ) ?: ""
+                    val interactionTemplate =
+                        program?.unclaimedWidgetInteractionsUrlTemplate?.replace(
+                            "{profile_id}",
+                            user.id
+                        ) ?: ""
 
                     interactionTemplate?.let { url ->
                         val url = when (liveLikePagination) {
@@ -220,7 +228,8 @@ internal class ContentSession(
                                 liveLikeCallback.onResponse(null, null)
                             } else {
                                 logDebug { "url -> $url" }
-                                val jsonObject = widgetDataClient.getUnclaimedInteractions(url, user.accessToken)
+                                val jsonObject =
+                                    widgetDataClient.getUnclaimedInteractions(url, user.accessToken)
                                 unclaimedInteractionResponse =
                                     gson.fromJson(
                                         jsonObject.toString(),
@@ -253,6 +262,46 @@ internal class ContentSession(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    override fun getWidgetInteraction(
+        widgetId: String,
+        widgetKind: String,
+        widgetInteractionUrl: String,
+        liveLikeCallback: LiveLikeCallback<WidgetUserInteractionBase>
+    ) {
+        uiScope.launch {
+            val interactionResult = widgetInteractionRepository.fetchRemoteInteractions(
+                widgetId = widgetId,
+                widgetKind = widgetKind,
+                widgetInteractionUrl = widgetInteractionUrl
+            )
+            if (interactionResult is com.livelike.engagementsdk.core.services.network.Result.Success) {
+                interactionResult.data.interactions.let {
+                    var widgetType = widgetKind
+                    widgetType = if (widgetType.contains("follow-up")) {
+                        "$widgetType-updated"
+                    } else {
+                        "$widgetType-created"
+                    }
+                    liveLikeCallback.onResponse(
+                        when (WidgetType.fromString(widgetType)) {
+                            WidgetType.TEXT_PREDICTION_FOLLOW_UP, WidgetType.TEXT_PREDICTION -> it.textPrediction?.firstOrNull()
+                            WidgetType.IMAGE_PREDICTION_FOLLOW_UP, WidgetType.IMAGE_PREDICTION -> it.imagePrediction?.firstOrNull()
+                            WidgetType.IMAGE_POLL -> it.imagePoll?.firstOrNull()
+                            WidgetType.TEXT_POLL -> it.textPoll?.firstOrNull()
+                            WidgetType.IMAGE_QUIZ -> it.imageQuiz?.firstOrNull()
+                            WidgetType.TEXT_QUIZ -> it.textQuiz?.firstOrNull()
+                            WidgetType.CHEER_METER -> it.cheerMeter?.firstOrNull()
+                            WidgetType.IMAGE_SLIDER -> it.emojiSlider?.firstOrNull()
+                            else -> null
+                        }, null
+                    )
+                }
+            } else if (interactionResult is Result.Error) {
+                liveLikeCallback.onResponse(null, interactionResult.exception.message)
             }
         }
     }
@@ -366,8 +415,10 @@ internal class ContentSession(
 
         widgetInteractionRepository =
             WidgetInteractionRepository(
-                context = applicationContext, programID = programId,
-                userRepository = userRepository, programUrlTemplate = programRepository.programUrlTemplate
+                context = applicationContext,
+                programID = programId,
+                userRepository = userRepository,
+                programUrlTemplate = programRepository.programUrlTemplate
             )
     }
 
@@ -418,7 +469,8 @@ internal class ContentSession(
         widgetView: FrameLayout,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
-        widgetContainer.isLayoutTransitionEnabled = applicationContext.resources.getBoolean(R.bool.livelike_widget_component_layout_transition_enabled)
+        widgetContainer.isLayoutTransitionEnabled =
+            applicationContext.resources.getBoolean(R.bool.livelike_widget_component_layout_transition_enabled)
         widgetContainer.setWidgetContainer(widgetView, widgetViewThemeAttributes)
     }
 
@@ -460,6 +512,41 @@ internal class ContentSession(
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
         logDebug { "initialized Widget Messaging" }
+    }
+
+    override fun getWidgetModelFromJson(widgetResourceJson: JsonObject): BaseViewModel? {
+        var widgetType = widgetResourceJson.get("kind").asString
+        widgetType = if (widgetType.contains("follow-up")) {
+            "$widgetType-updated"
+        } else {
+            "$widgetType-created"
+        }
+        val widgetId = widgetResourceJson["id"].asString
+        return WidgetProvider().getWidgetModel(
+            null,
+            WidgetInfos(widgetType, widgetResourceJson, widgetId),
+            applicationContext,
+            analyticServiceStream.latest() ?: MockAnalyticsService(),
+            sdkConfiguration.latest()!!,
+            {
+                //currentWidgetViewStream.onNext(null)
+            },
+            userRepository,
+            null,
+            SubscriptionManager(),
+            widgetInteractionRepository
+        )
+    }
+
+    override fun getWidgetModelFromLiveLikeWidget(liveLikeWidget: LiveLikeWidget): BaseViewModel? {
+        try {
+            val jsonObject = GsonBuilder().create().toJson(liveLikeWidget)
+            return getWidgetModelFromJson(JsonParser.parseString(jsonObject).asJsonObject)
+        } catch (ex: JsonParseException) {
+            logDebug { "Invalid json passed for get WidgetModel" }
+            ex.printStackTrace()
+        }
+        return null
     }
 
     // ////// Global Session Controls ////////

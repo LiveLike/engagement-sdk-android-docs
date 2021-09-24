@@ -196,7 +196,7 @@ class WidgetsTimeLineView(
     private fun lockAlreadyInteractedQuizAndEmojiSlider(widgets: List<TimelineWidgetResource>) {
         widgets.forEach {
             val kind = it.liveLikeWidget.kind
-            if (kind == WidgetKind.IMAGE_SLIDER.event || kind?.contains(WidgetKind.QUIZ.event) == true) {
+            if (kind == WidgetKind.IMAGE_SLIDER.event || kind?.contains(WidgetKind.QUIZ.event) == true || kind?.contains(WidgetKind.TEXT_ASK.event) == true) {
                 if ((timeLineViewModel.contentSession as ContentSession)?.widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
                         it.liveLikeWidget.id ?: "",
                         WidgetKind.fromString(kind)

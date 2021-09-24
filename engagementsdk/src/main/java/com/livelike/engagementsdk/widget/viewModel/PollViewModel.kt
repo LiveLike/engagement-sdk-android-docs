@@ -163,14 +163,20 @@ internal class PollViewModel(
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
         if (widgetInfos != null &&
             (
-                WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL ||
-                    WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL
-                )
+                    WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL ||
+                            WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL
+                    )
         ) {
             val resource =
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
-                subscribeWidgetResults(resource.subscribe_channel, sdkConfiguration, userRepository.currentUserStream, widgetInfos.widgetId, results)
+                subscribeWidgetResults(
+                    resource.subscribe_channel,
+                    sdkConfiguration,
+                    userRepository.currentUserStream,
+                    widgetInfos.widgetId,
+                    results
+                )
                 data.onNext(
                     WidgetType.fromString(widgetInfos.type)?.let {
                         PollWidget(
@@ -296,14 +302,19 @@ internal class PollViewModel(
 
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
-            widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->
-                val url = widget.resource.getMergedOptions()!![position].getMergedVoteUrl()
+            option?.let {
+                val url = option.getMergedVoteUrl()
                 url?.let {
-                    voteApi(it, widget.resource.getMergedOptions()!![position].id, userRepository)
-                    if (option != null) {
-                        saveInteraction(option)
-                    }
+                    voteApi(
+                        it,
+                        option.id,
+                        userRepository,
+                        patchVoteUrl = getUserInteraction()?.url
+                    )
                 }
+            }
+            if (option != null) {
+                saveInteraction(option)
             }
         }
     }
@@ -321,7 +332,10 @@ internal class PollViewModel(
         uiScope.launch {
             try {
                 val results =
-                    widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
+                    widgetInteractionRepository?.fetchRemoteInteractions(
+                        widgetId = widgetInfos.widgetId,
+                        widgetKind = widgetInfos.type
+                    )
 
                 if (results is Result.Success) {
                     if (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL) {

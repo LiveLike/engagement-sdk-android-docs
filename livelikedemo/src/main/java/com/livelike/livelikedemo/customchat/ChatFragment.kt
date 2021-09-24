@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -17,7 +18,6 @@ import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.livelikedemo.BuildConfig
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
@@ -98,21 +98,21 @@ class ChatFragment : Fragment() {
         // testing purpose wheather we the data is received and rendered correctly
         // will remove this latter
 
-       /* (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
-            var programId = homeChat.channel.llProgram
+        /* (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
+             var programId = homeChat.channel.llProgram
 
-            if(programId.equals("5b4b2538-02c3-4ad2-820a-2c5e6da66314",ignoreCase = true)){
-                custom.visibility = View.VISIBLE
-                (activity as CustomChatActivity).selectedHomeChat?.session?.chatSession?.
-                connectToChatRoom("4121f7af-9f18-43e5-a658-0ac364e2f176", object : LiveLikeCallback<Unit>() {
-                    override fun onResponse(result: Unit?, error: String?) {
-                        println("ChatOnlyActivity.onResponse -> $result -> $error")
-                    }
-                })
-            }else{
-                custom.visibility = View.GONE
-            }
-        }*/
+             if(programId.equals("5b4b2538-02c3-4ad2-820a-2c5e6da66314",ignoreCase = true)){
+                 custom.visibility = View.VISIBLE
+                 (activity as CustomChatActivity).selectedHomeChat?.session?.chatSession?.
+                 connectToChatRoom("4121f7af-9f18-43e5-a658-0ac364e2f176", object : LiveLikeCallback<Unit>() {
+                     override fun onResponse(result: Unit?, error: String?) {
+                         println("ChatOnlyActivity.onResponse -> $result -> $error")
+                     }
+                 })
+             }else{
+                 custom.visibility = View.GONE
+             }
+         }*/
 
         ed_msg.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -209,8 +209,8 @@ class ChatFragment : Fragment() {
                 scope.launch(Dispatchers.IO) {
                     sendCustomMessage(
                         "{\n" +
-                            "  \"custom_data\": \"heyaa, this is for testing\"\n" +
-                            "}"
+                                "  \"check1\": \"heyaa, this is for testing\"\n" +
+                                "}"
                     )
                 }
             }
@@ -240,29 +240,43 @@ class ChatFragment : Fragment() {
 
     // custom message api call
     private fun sendCustomMessage(post: String? = null) {
+        (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
+            post?.let {
+                homeChat.session.chatSession.sendCustomChatMessage(post, object : LiveLikeCallback<LiveLikeChatMessage>() {
+                    override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                        activity?.runOnUiThread {
+                            result?.let {
+                                Log.d("responseCode", result.id!!)
+                            }
+                            error?.let {
+                                println("ChatFragment.onResponse>> $error")
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                })
+            }
 
-        (activity as CustomChatActivity).selectedHomeChat?.let {
-
-            var chatRoomId = it.session.chatSession.getCurrentChatRoom()
-            Log.d("custom-message1", chatRoomId)
-            val urls =
-                "${com.livelike.engagementsdk.BuildConfig.CONFIG_URL}chat-rooms/$chatRoomId/custom-messages/"
-
-            Log.d("custom-message", urls)
-
-            val body = post?.toRequestBody()
-            val request: Request = Request.Builder()
-                .url(urls)
-                .method("POST", body)
-                .addHeader(
-                    authorization,
-                    accessToken
-                )
-                .addHeader(contentType, applicationJSON)
-                .build()
-            val response: Response = client.newCall(request).execute()
-            val code = response.code
-            Log.d("responseCode", code.toString())
+//            var chatRoomId = homeChat.session.chatSession.getCurrentChatRoom()
+//            Log.d("custom-message1", chatRoomId)
+//            val urls =
+//                "${com.livelike.engagementsdk.BuildConfig.CONFIG_URL}chat-rooms/$chatRoomId/custom-messages/"
+//
+//            Log.d("custom-message", urls)
+//
+//            val body = post?.toRequestBody()
+//            val request: Request = Request.Builder()
+//                .url(urls)
+//                .method("POST", body)
+//                .addHeader(
+//                    authorization,
+//                    accessToken
+//                )
+//                .addHeader(contentType, applicationJSON)
+//                .build()
+//            val response: Response = client.newCall(request).execute()
+//            val code = response.code
+//            Log.d("responseCode", code.toString())
         }
     }
 
@@ -338,7 +352,10 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
 
                     if (jsonObject.has("kind")) {
                         holder.itemView.widget_view.visibility = View.VISIBLE
-                        holder.itemView.widget_view.displayWidget((holder.itemView.context.applicationContext as LiveLikeApplication).sdk, jsonObject)
+                        holder.itemView.widget_view.displayWidget(
+                            (holder.itemView.context.applicationContext as LiveLikeApplication).sdk,
+                            jsonObject
+                        )
                     } else {
                         holder.itemView.custom_tv.visibility = View.VISIBLE
                         holder.itemView.widget_view.visibility = View.GONE

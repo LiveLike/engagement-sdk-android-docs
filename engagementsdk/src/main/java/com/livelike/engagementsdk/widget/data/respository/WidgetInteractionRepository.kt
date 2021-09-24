@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.widget.data.respository
 
 import android.content.Context
 import com.livelike.engagementsdk.TEMPLATE_PROGRAM_ID
-import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
@@ -65,6 +64,7 @@ internal class WidgetInteractionRepository(
                 interactions.imagePoll?.let { interactionList.addAll(it) }
                 interactions.imagePrediction?.let { interactionList.addAll(it) }
                 interactions.imageQuiz?.let { interactionList.addAll(it) }
+                interactions.textAsk?.let { interactionList.addAll(it) }
             }
             interactionList.forEach {
                 if (it is CheerMeterUserInteraction && widgetInteractionMap[it.widgetId] != null) {
@@ -82,8 +82,9 @@ internal class WidgetInteractionRepository(
      *
      **/
     internal suspend fun fetchRemoteInteractions(
-        widgetInfo: WidgetInfos,
-        widgetInteractionUrl: String? = null
+        widgetInteractionUrl: String? = null,
+        widgetId: String,
+        widgetKind: String
     ): Result<UserWidgetInteractionApi>? {
         var results: Result<UserWidgetInteractionApi>? = null
         if (programRepository.program == null) {
@@ -99,7 +100,7 @@ internal class WidgetInteractionRepository(
                 if (programResults is Result.Success) {
                     results = userRepository.userAccessToken?.let {
                         fetchAndStoreWidgetInteractions(
-                            getInteractionUrl(widgetInfo, widgetInteractionUrl),
+                            getInteractionUrl(widgetInteractionUrl, widgetId, widgetKind),
                             it
                         )
                     }
@@ -110,7 +111,7 @@ internal class WidgetInteractionRepository(
         } else {
             results = userRepository.userAccessToken?.let {
                 fetchAndStoreWidgetInteractions(
-                    getInteractionUrl(widgetInfo, widgetInteractionUrl),
+                    getInteractionUrl(widgetInteractionUrl, widgetId, widgetKind),
                     it
                 )
             }
@@ -122,8 +123,9 @@ internal class WidgetInteractionRepository(
      * get interaction url with appended widget kind and widget id
      **/
     private fun getInteractionUrl(
-        widgetInfo: WidgetInfos,
-        widgetInteractionUrl: String? = null
+        widgetInteractionUrl: String? = null,
+        widgetId: String,
+        widgetKind: String
     ): String {
         var url =
             userRepository.currentUserStream.latest()?.id?.let {
@@ -134,7 +136,7 @@ internal class WidgetInteractionRepository(
             } ?: ""
 
         if (url.isNotEmpty() && widgetInteractionUrl == null) {
-            url += "?${getWidgetKindBasedOnType(widgetInfo.type)}_id=${widgetInfo.widgetId}"
+            url += "?${getWidgetKindBasedOnType(widgetKind)}_id=${widgetId}"
         }
         return url
     }
@@ -151,6 +153,7 @@ internal class WidgetInteractionRepository(
             WidgetType.IMAGE_SLIDER -> "emoji_slider"
             WidgetType.TEXT_PREDICTION_FOLLOW_UP -> "text_prediction"
             WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> "image_prediction"
+            WidgetType.TEXT_ASK -> "text_ask"
             else -> ""
         }
     }

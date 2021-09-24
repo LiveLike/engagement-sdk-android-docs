@@ -15,6 +15,8 @@ import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.TextAskWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
 
 class TimeLineWidgetFactory(
     val context: Context,
@@ -69,6 +71,14 @@ class TimeLineWidgetFactory(
     }
 
     override fun createImageSliderWidgetView(imageSliderWidgetModel: ImageSliderWidgetModel): View? {
+        return null
+    }
+
+    override fun createVideoAlertWidgetView(videoAlertWidgetModel: VideoAlertWidgetModel): View? {
+        return null
+    }
+
+    override fun createTextAskWidgetView(imageSliderWidgetModel: TextAskWidgetModel): View? {
         return null
     }
 

@@ -67,4 +67,9 @@
 
     <string name="livelike_vote_label">वोट</string>
     <string name="livelike_voted_label">मतदान किया!</string>
+
+    <string name="livelike_poll_tag">मतदान</string>
+    <string name="livelike_quiz_tag">प्रश्नोत्तरी</string>
+    <string name="livelike_prediction_tag">भविष्यवाणी करना</string>
+    <string name="livelike_follow_up_tag">जाँच करना</string>
 </resources>

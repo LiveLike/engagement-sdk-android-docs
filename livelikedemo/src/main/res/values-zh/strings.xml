@@ -66,4 +66,9 @@
     <string name="livelike_vote_label">投票</string>
     <string name="livelike_voted_label">投票了！</string>
 
+    <string name="livelike_poll_tag">民意调查</string>
+    <string name="livelike_quiz_tag">测验</string>
+    <string name="livelike_prediction_tag">预测</string>
+    <string name="livelike_follow_up_tag">跟进</string>
+
 </resources>

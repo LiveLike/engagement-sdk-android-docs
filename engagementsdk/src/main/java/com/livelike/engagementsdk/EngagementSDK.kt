@@ -39,17 +39,16 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSha
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.gamification.Badges
+import com.livelike.engagementsdk.gamification.IRewardsClient
+import com.livelike.engagementsdk.gamification.Rewards
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.sponsorship.Sponsor
-import com.livelike.engagementsdk.widget.WidgetType
-import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
-import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
@@ -228,7 +227,9 @@ class EngagementSDK(
                                 ChatRoomInfo(
                                     chatRoomResult.data.id,
                                     chatRoomResult.data.title,
-                                    chatRoomResult.data.visibility
+                                    chatRoomResult.data.visibility,
+                                    chatRoomResult.data.contentFilter,
+                                    chatRoomResult.data.customData
                                 ),
                                 null
                             )
@@ -274,7 +275,9 @@ class EngagementSDK(
                                 ChatRoomInfo(
                                     chatRoomResult.data.id,
                                     chatRoomResult.data.title,
-                                    chatRoomResult.data.visibility
+                                    chatRoomResult.data.visibility,
+                                    chatRoomResult.data.contentFilter,
+                                    chatRoomResult.data.customData
                                 ),
                                 null
                             )
@@ -367,7 +370,10 @@ class EngagementSDK(
                                 val list = userChatRoomListResponse!!.results?.map {
                                     ChatRoomInfo(
                                         it?.chatRoom?.id!!,
-                                        it.chatRoom.title
+                                        it.chatRoom.title,
+                                        it.chatRoom.visibility,
+                                        it.chatRoom.contentFilter,
+                                        it.chatRoom.customData
                                     )
                                 }
                                 liveLikeCallback.onResponse(list, null)
@@ -519,10 +525,10 @@ class EngagementSDK(
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
                     val url = "${
-                        it.leaderboardDetailUrlTemplate?.replace(
-                            TEMPLATE_LEADER_BOARD_ID,
-                            leaderBoardId
-                        )
+                    it.leaderboardDetailUrlTemplate?.replace(
+                        TEMPLATE_LEADER_BOARD_ID,
+                        leaderBoardId
+                    )
                     }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
                         url,
@@ -560,10 +566,10 @@ class EngagementSDK(
                             job.add(
                                 launch {
                                     val url = "${
-                                        it.leaderboardDetailUrlTemplate?.replace(
-                                            TEMPLATE_LEADER_BOARD_ID,
-                                            leaderBoardId.get(i)
-                                        )
+                                    it.leaderboardDetailUrlTemplate?.replace(
+                                        TEMPLATE_LEADER_BOARD_ID,
+                                        leaderBoardId.get(i)
+                                    )
                                     }"
                                     val result = dataClient.remoteCall<LeaderBoardResource>(
                                         url,
@@ -683,6 +689,10 @@ class EngagementSDK(
         return Badges(configurationStream, dataClient, sdkScope)
     }
 
+    override fun rewards(): IRewardsClient {
+        return Rewards(configurationUserPairFlow, dataClient, sdkScope)
+    }
+
     /**
      * Closing all the services , stream and clear the variable
      * TODO: all stream close,instance clear
@@ -751,10 +761,10 @@ class EngagementSDK(
                     val entriesUrl = when (pair.first) {
                         LiveLikePagination.FIRST -> {
                             val url = "${
-                                it.leaderboardDetailUrlTemplate?.replace(
-                                    TEMPLATE_LEADER_BOARD_ID,
-                                    leaderBoardId
-                                )
+                            it.leaderboardDetailUrlTemplate?.replace(
+                                TEMPLATE_LEADER_BOARD_ID,
+                                leaderBoardId
+                            )
                             }"
                             val result = dataClient.remoteCall<LeaderBoardResource>(
                                 url,
@@ -824,10 +834,10 @@ class EngagementSDK(
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
                     val url = "${
-                        it.leaderboardDetailUrlTemplate?.replace(
-                            TEMPLATE_LEADER_BOARD_ID,
-                            leaderBoardId
-                        )
+                    it.leaderboardDetailUrlTemplate?.replace(
+                        TEMPLATE_LEADER_BOARD_ID,
+                        leaderBoardId
+                    )
                     }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
                         url,
@@ -878,10 +888,10 @@ class EngagementSDK(
         profileId: String
     ): Result<LeaderBoardEntry> {
         val url = "${
-            sdkConfig.leaderboardDetailUrlTemplate?.replace(
-                TEMPLATE_LEADER_BOARD_ID,
-                leaderBoardId
-            )
+        sdkConfig.leaderboardDetailUrlTemplate?.replace(
+            TEMPLATE_LEADER_BOARD_ID,
+            leaderBoardId
+        )
         }"
         val result = dataClient.remoteCall<LeaderBoardResource>(
             url,
@@ -926,45 +936,6 @@ class EngagementSDK(
             try {
                 val jsonObject = widgetDataClient.getWidgetDataFromIdAndKind(widgetId, widgetKind)
                 val widget = gson.fromJson(jsonObject, LiveLikeWidget::class.java)
-                var widgetType = jsonObject.get("kind").asString
-                widgetType = if (widgetType.contains("follow-up")) {
-                    "$widgetType-updated"
-                } else {
-                    "$widgetType-created"
-                }
-                val programId = jsonObject.get("program_id").asString
-
-                val widgetInteractionRepository = WidgetInteractionRepository(
-                    applicationContext,
-                    programId,
-                    userRepository,
-                    configurationStream.latest()?.programDetailUrlTemplate
-                )
-
-                val interactionResult = widgetInteractionRepository.fetchRemoteInteractions(
-                    WidgetInfos(widgetType, jsonObject, widgetId),
-                    widgetInteractionUrl = widget.widgetInteractionUrl
-                )
-                if (interactionResult is com.livelike.engagementsdk.core.services.network.Result.Success) {
-                    interactionResult.data.interactions.let {
-                        widget.widgetUserInteraction =  when (WidgetType.fromString(widgetType)) {
-                            WidgetType.TEXT_PREDICTION_FOLLOW_UP, WidgetType.TEXT_PREDICTION -> it.textPrediction?.firstOrNull()
-                            WidgetType.IMAGE_PREDICTION_FOLLOW_UP,WidgetType.IMAGE_PREDICTION -> it.imagePrediction?.firstOrNull()
-                            WidgetType.IMAGE_POLL -> it.imagePoll?.firstOrNull()
-                            WidgetType.TEXT_POLL -> it.textPoll?.firstOrNull()
-                            WidgetType.IMAGE_QUIZ -> it.imageQuiz?.firstOrNull()
-                            WidgetType.TEXT_QUIZ -> it.textQuiz?.firstOrNull()
-                            WidgetType.CHEER_METER -> it.cheerMeter?.firstOrNull()
-                            WidgetType.IMAGE_SLIDER -> it.emojiSlider?.firstOrNull()
-                            else -> null
-                        }
-                    }
-                }
-//                widget.widgetUserInteraction =
-//                    widgetInteractionRepository.getWidgetInteraction(
-//                        widgetId,
-//                        WidgetKind.fromString(widgetType)
-//                    )
                 liveLikeCallback.onResponse(
                     widget,
                     null
@@ -1094,7 +1065,9 @@ class EngagementSDK(
         @SerializedName("pubnub_presence_timeout")
         val pubnubPresenceTimeout: Int,
         @SerializedName("badges_url")
-        val badgesUrl: String
+        val badgesUrl: String,
+        @SerializedName("reward_items_url")
+        internal var rewardItemsUrl: String?
     )
 
     companion object {

@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.sponsorship.SponsorModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 
 /**
@@ -70,6 +71,9 @@ class LiveLikeWidgetEntity {
     var interactionTime: Long? = null
 
     var customData: String? = null
+
+    @field:SerializedName("sponsors")
+    var sponsors: List<SponsorModel>? = null
 
     data class Option(
 

@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.core.data.respository.BaseRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
@@ -145,6 +146,15 @@ internal class ChatRepository(
         pubnubChatMessagingClient?.loadMessagesWithReactions(
             channel,
             limit
+        )
+    }
+
+    suspend fun postApi(url: String, customData: String): Result<LiveLikeChatMessage> {
+        return dataClient.remoteCall(
+            url,
+            accessToken = authKey,
+            requestType = RequestType.POST,
+            requestBody = customData.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
         )
     }
 }

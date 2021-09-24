@@ -68,8 +68,8 @@ class ChatOnlyHomeFragment : Fragment() {
                         val response = when {
                             result != null ->
                                 "${
-                                result.title
-                                    ?: "No Title"
+                                    result.title
+                                        ?: "No Title"
                                 }(${result.id}),  Room Id copy to clipboard"
                             else -> error
                         }
@@ -85,6 +85,7 @@ class ChatOnlyHomeFragment : Fragment() {
                 }
             )
         }
+
         btn_join.setOnClickListener {
             val id = ed_chat_room_id.text.toString()
             if (id.isEmpty()) {
@@ -215,11 +216,11 @@ class ChatOnlyHomeFragment : Fragment() {
 
         btn_visibility.setOnClickListener {
             (activity as? ChatOnlyActivity)?.selectVisibility(object :
-                    ChatOnlyFragment.VisibilityInterface {
-                    override fun onSelectItem(visibility: Visibility) {
-                        btn_visibility.text = visibility.name
-                    }
-                })
+                ChatOnlyFragment.VisibilityInterface {
+                override fun onSelectItem(visibility: Visibility) {
+                    btn_visibility.text = visibility.name
+                }
+            })
         }
         btn_refresh.callOnClick()
     }

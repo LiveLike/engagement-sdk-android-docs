@@ -63,6 +63,7 @@ import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
 import kotlinx.android.synthetic.main.activity_main.progressBar
+import kotlinx.android.synthetic.main.activity_main.rewards_client_test
 import kotlinx.android.synthetic.main.activity_main.sample_app
 import kotlinx.android.synthetic.main.activity_main.sdk_version
 import kotlinx.android.synthetic.main.activity_main.sponsor_test
@@ -78,6 +79,7 @@ import kotlinx.android.synthetic.main.activity_main.unclaimed_interaction
 import kotlinx.android.synthetic.main.activity_main.view_pager_sample
 import kotlinx.android.synthetic.main.activity_main.widget_viewModel
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
+import kotlinx.android.synthetic.main.activity_main.widgets_json_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 import java.io.BufferedReader
 import java.io.FileInputStream
@@ -271,6 +273,10 @@ class MainActivity : AppCompatActivity() {
 
         unclaimed_interaction.setOnClickListener {
             startActivity(Intent(this, UnclaimedInteractionActivity::class.java))
+        }
+
+        widgets_json_button.setOnClickListener {
+            startActivity(Intent(this,WidgetJsonActivity::class.java))
         }
 
         private_group_button.setOnClickListener {
@@ -529,6 +535,10 @@ class MainActivity : AppCompatActivity() {
         }
         badges_collection.setOnClickListener {
             startActivity(Intent(this, BadgesCollectionActivity::class.java))
+        }
+
+        rewards_client_test.setOnClickListener {
+            startActivity(Intent(this, RewardsClientTestActivity::class.java))
         }
 
         (application as LiveLikeApplication).removePublicSession()

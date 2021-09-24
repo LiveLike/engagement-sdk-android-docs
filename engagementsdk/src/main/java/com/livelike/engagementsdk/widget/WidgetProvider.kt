@@ -3,12 +3,16 @@ package com.livelike.engagementsdk.widget
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
+import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
@@ -30,6 +34,7 @@ import com.livelike.engagementsdk.widget.WidgetType.IMAGE_QUIZ
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_SLIDER
 import com.livelike.engagementsdk.widget.WidgetType.POINTS_TUTORIAL
 import com.livelike.engagementsdk.widget.WidgetType.SOCIAL_EMBED
+import com.livelike.engagementsdk.widget.WidgetType.TEXT_ASK
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_POLL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
@@ -45,6 +50,7 @@ import com.livelike.engagementsdk.widget.view.PollView
 import com.livelike.engagementsdk.widget.view.PredictionView
 import com.livelike.engagementsdk.widget.view.QuizView
 import com.livelike.engagementsdk.widget.view.SocialEmbedWidgetView
+import com.livelike.engagementsdk.widget.view.TextAskView
 import com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
 import com.livelike.engagementsdk.widget.view.components.VideoAlertWidgetView
@@ -58,9 +64,12 @@ import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
+import com.livelike.engagementsdk.widget.viewModel.TextAskViewModel
 import com.livelike.engagementsdk.widget.viewModel.VideoWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import kotlinx.android.synthetic.main.atom_widget_tag_view.view.tagTextView
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.tagView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 import java.util.Calendar
@@ -110,6 +119,7 @@ internal class WidgetProvider {
                     widgetInteractionRepository
                 )
             }
+
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
@@ -194,6 +204,22 @@ internal class WidgetProvider {
                     widgetInfos, analyticsService, onDismiss
                 )
             }
+
+            TEXT_ASK -> TextAskView(context).apply {
+                widgetViewThemeAttributes = widgetThemeAttributes
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
+                widgetViewModel = TextAskViewModel(
+                    widgetInfos,
+                    analyticsService,
+                    sdkConfiguration,
+                    onDismiss,
+                    userRepository,
+                    programRepository,
+                    widgetMessagingClient,
+                    widgetInteractionRepository
+                )
+            }
             else -> null
         }
         logDebug { "Widget created from provider, type: ${WidgetType.fromString(widgetInfos.type)}" }
@@ -201,13 +227,116 @@ internal class WidgetProvider {
         specifiedWidgetView?.widgetInfos = widgetInfos
         return specifiedWidgetView
     }
+
+    fun getWidgetModel(
+        widgetMessagingClient: WidgetManager? = null,
+        widgetInfos: WidgetInfos,
+        context: Context,
+        analyticsService: AnalyticsService,
+        sdkConfiguration: EngagementSDK.SdkConfiguration,
+        onDismiss: () -> Unit,
+        userRepository: UserRepository,
+        programRepository: ProgramRepository? = null,
+        animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
+        widgetInteractionRepository: WidgetInteractionRepository? = null
+    ): BaseViewModel? {
+        val baseViewModel = when (WidgetType.fromString(widgetInfos.type)) {
+            ALERT -> AlertWidgetViewModel(widgetInfos, analyticsService, onDismiss)
+            VIDEO_ALERT -> VideoWidgetViewModel(widgetInfos, analyticsService, onDismiss)
+            TEXT_QUIZ, IMAGE_QUIZ -> QuizViewModel(
+                widgetInfos,
+                analyticsService,
+                sdkConfiguration,
+                context,
+                onDismiss,
+                userRepository,
+                programRepository,
+                widgetMessagingClient,
+                widgetInteractionRepository
+            )
+            IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
+            TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionViewModel(
+                widgetInfos,
+                context,
+                analyticsService,
+                sdkConfiguration,
+                onDismiss,
+                userRepository,
+                programRepository,
+                widgetMessagingClient,
+                widgetInteractionRepository
+            )
+            TEXT_POLL, IMAGE_POLL -> PollViewModel(
+                widgetInfos,
+                analyticsService,
+                sdkConfiguration,
+                onDismiss,
+                userRepository,
+                programRepository,
+                widgetMessagingClient,
+                widgetInteractionRepository
+            )
+
+            POINTS_TUTORIAL -> PointTutorialWidgetViewModel(
+                onDismiss,
+                analyticsService,
+                programRepository?.rewardType ?: RewardsType.NONE,
+                programRepository?.programGamificationProfileStream?.latest()
+            )
+
+            COLLECT_BADGE -> CollectBadgeWidgetViewModel(
+                gson.fromJson(
+                    widgetInfos.payload,
+                    Badge::class.java
+                ),
+                onDismiss, analyticsService, animationEventsStream
+            )
+
+            CHEER_METER -> CheerMeterViewModel(
+                widgetInfos,
+                analyticsService,
+                sdkConfiguration,
+                onDismiss,
+                userRepository,
+                programRepository,
+                widgetMessagingClient,
+                widgetInteractionRepository
+            )
+
+            IMAGE_SLIDER -> EmojiSliderWidgetViewModel(
+                widgetInfos, analyticsService, sdkConfiguration, onDismiss,
+                userRepository, programRepository, widgetMessagingClient,
+                widgetInteractionRepository
+            )
+
+            SOCIAL_EMBED -> SocialEmbedViewModel(
+                widgetInfos, analyticsService, onDismiss
+            )
+
+
+            TEXT_ASK -> TextAskViewModel(
+                widgetInfos,
+                analyticsService,
+                sdkConfiguration,
+                onDismiss,
+                userRepository,
+                programRepository,
+                widgetMessagingClient,
+                widgetInteractionRepository
+            )
+            else -> null
+        }
+        logDebug { "WidgetModel created from provider, type: ${WidgetType.fromString(widgetInfos.type)}" }
+        return baseViewModel
+    }
+
 }
 
 abstract class SpecifiedWidgetView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+) : LinearLayout(context, attrs, defStyleAttr) {
 
     internal var fontFamilyProvider: FontFamilyProvider? = null
 
@@ -225,6 +354,15 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
 
     lateinit var widgetData: LiveLikeWidgetEntity
 
+
+    init {
+        layoutParams = LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        orientation = VERTICAL
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         widgetData =
@@ -237,6 +375,21 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
             500
         )
         subscribeWidgetStateAndPublishToLifecycleListener()
+    }
+
+    /**
+     * would inflate and add sponsor ui as a widget view footer if sponsor exists
+     */
+    protected fun wouldInflateSponsorUi() {
+        widgetData.sponsors?.let {
+            if (it.isNotEmpty()) {
+                val sponsor = it[0]
+                val sponsorView = inflate(context, R.layout.default_sponsor_ui, null)
+                addView(sponsorView)
+                val sponsorImageView = sponsorView.findViewById<ImageView>(R.id.sponsor_iv)
+                Glide.with(context).load(sponsor.logoUrl).into(sponsorImageView)
+            }
+        }
     }
 
     private fun subscribeWidgetStateAndPublishToLifecycleListener() {
@@ -271,11 +424,14 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         var animationLength = AndroidResource.parseDuration(time).toFloat()
         var remainingAnimationLength = animationLength
         if (widgetViewModel?.timerStartTime != null) {
-            remainingAnimationLength = animationLength - (Calendar.getInstance().timeInMillis - (widgetViewModel?.timerStartTime ?: 0)).toFloat()
+            remainingAnimationLength =
+                animationLength - (Calendar.getInstance().timeInMillis - (widgetViewModel?.timerStartTime
+                    ?: 0)).toFloat()
         } else {
             widgetViewModel?.timerStartTime = Calendar.getInstance().timeInMillis
         }
-        val animationEggTimerProgress = (animationLength - remainingAnimationLength) / animationLength
+        val animationEggTimerProgress =
+            (animationLength - remainingAnimationLength) / animationLength
 
         if ((animationEggTimerProgress ?: 0f) < 1f) {
             animationEggTimerProgress?.let {
@@ -300,6 +456,29 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     }
 
     /**
+     * this method in used to apply theme on tag view
+     **/
+    protected fun applyThemeOnTagView(it: WidgetBaseThemeComponent) {
+        tagView?.componentTheme = it.tag
+        AndroidResource.updateThemeForView(tagTextView, it.tag, fontFamilyProvider)
+    }
+
+
+    /**
+     * this method in used to set tag view with style changes (default appearance)
+     **/
+    protected fun setTagViewWithStyleChanges(tag: String) {
+        if (tag.isNotEmpty()) {
+            tagView.tag = tag
+            tagView.visibility = View.VISIBLE
+            AndroidResource.updateDefaultThemeForTagView(titleTextView, titleView)
+        } else {
+            tagView.visibility = View.GONE
+            titleTextView.isAllCaps = true
+        }
+    }
+
+    /**
      * override this method in respective widgets to respect runtime unified json theme updation
      **/
     open fun applyTheme(theme: WidgetsTheme) {
@@ -319,10 +498,10 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         val nextStateOrdinal = widgetStates.ordinal
         widgetViewModel?.widgetState?.onNext(
             WidgetStates.values()[
-                min(
-                    nextStateOrdinal,
-                    WidgetStates.FINISHED.ordinal
-                )
+                    min(
+                        nextStateOrdinal,
+                        WidgetStates.FINISHED.ordinal
+                    )
             ]
         )
     }
@@ -331,10 +510,10 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         val nextStateOrdinal = (widgetViewModel?.widgetState?.latest()?.ordinal ?: 0) + 1
         widgetViewModel?.widgetState?.onNext(
             WidgetStates.values()[
-                min(
-                    nextStateOrdinal,
-                    WidgetStates.FINISHED.ordinal
-                )
+                    min(
+                        nextStateOrdinal,
+                        WidgetStates.FINISHED.ordinal
+                    )
             ]
         )
     }

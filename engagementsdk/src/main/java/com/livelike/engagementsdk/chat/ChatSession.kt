@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
+import com.livelike.engagementsdk.ChatRoomListener
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
@@ -37,6 +38,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.net.URL
 import java.util.UUID
 
@@ -67,7 +69,8 @@ internal class ChatSession(
             userRepository.currentUserStream,
             isPublicRoom,
             null,
-            dataClient = dataClient
+            dataClient = dataClient,
+            errorDelegate = errorDelegate
         )
     }
     override var getCurrentChatRoom: () -> String = { currentChatRoom?.id ?: "" }
@@ -189,6 +192,13 @@ internal class ChatSession(
     }
 
     private var msgListener: MessageListener? = null
+    private var chatRoomListener: ChatRoomListener? = null
+
+    private val proxyChatRoomListener = object : ChatRoomListener {
+        override fun onChatRoomUpdate(chatRoom: ChatRoomInfo) {
+            chatRoomListener?.onChatRoomUpdate(chatRoom)
+        }
+    }
 
     private fun initializeChatMessaging(
         currentPlayheadTime: () -> EpochTime
@@ -205,6 +215,7 @@ internal class ChatSession(
         chatClient = chatClient?.toChatQueue()
             ?.apply {
                 msgListener = proxyMsgListener
+                chatRoomListener = this@ChatSession.proxyChatRoomListener
                 this.renderer = chatViewModel
                 chatViewModel.chatLoaded = false
                 chatViewModel.chatListener = this
@@ -271,7 +282,10 @@ internal class ChatSession(
                                     pubnubClientForMessageCount =
                                         chatRepository?.establishChatMessagingConnection() as PubnubChatMessagingClient
                                 }
-                                pubnubClientForMessageCount?.getMessageCountV1(channel, startTimestamp)
+                                pubnubClientForMessageCount?.getMessageCountV1(
+                                    channel,
+                                    startTimestamp
+                                )
                                     ?.run {
                                         callback.processResult(this)
                                     }
@@ -344,6 +358,10 @@ internal class ChatSession(
         messageListener: MessageListener
     ) {
         msgListener = messageListener
+    }
+
+    override fun setChatRoomListener(chatRoomListener: ChatRoomListener) {
+        this.chatRoomListener = chatRoomListener
     }
 
     override var avatarUrl: String? = null
@@ -448,5 +466,25 @@ internal class ChatSession(
 
     override fun getDeletedMessages(): ArrayList<String> {
         return deletedMsgList
+    }
+
+    override fun sendCustomChatMessage(
+        customData: String,
+        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+    ) {
+        currentChatRoom?.customMessagesUrl?.let { url ->
+            contentSessionScope.launch {
+                if (chatRepository != null) {
+                    val jsonObject = JSONObject(
+                        mapOf("custom_data" to customData)
+                    )
+                    val response = chatRepository!!.postApi(url, jsonObject.toString())
+                    liveLikeCallback.processResult(response)
+                } else {
+                    logError { "Chat repo is null" }
+                    errorDelegate?.onError("Chat Repository is Null")
+                }
+            }
+        }
     }
 }

@@ -71,6 +71,7 @@ internal class PredictionViewModel(
         get() = programRepository?.rewardType ?: RewardsType.NONE
     val data: SubscriptionManager<PredictionWidget?> =
         SubscriptionManager()
+
     //    var state: Stream<String?> =
 //        SubscriptionManager() // confirmation, followup
     var results: Stream<Resource> =
@@ -102,7 +103,13 @@ internal class PredictionViewModel(
                 val resource =
                     gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
                 resource?.apply {
-                    subscribeWidgetResults(resource.subscribe_channel, sdkConfiguration, userRepository.currentUserStream, widgetInfos.widgetId, results)
+                    subscribeWidgetResults(
+                        resource.subscribe_channel,
+                        sdkConfiguration,
+                        userRepository.currentUserStream,
+                        widgetInfos.widgetId,
+                        results
+                    )
                     data.onNext(PredictionWidget(type, resource))
                 }
 
@@ -135,14 +142,14 @@ internal class PredictionViewModel(
                     val selectedPredictionId =
                         getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
                     // not sure, why this has been added
-                   /* uiScope.launch {
-                        delay(
-                            if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(
-                                timeout
-                            ) else 0
-                        )
-                        dismissWidget(DismissAction.TIMEOUT)
-                    }*/
+                    /* uiScope.launch {
+                         delay(
+                             if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(
+                                 timeout
+                             ) else 0
+                         )
+                         dismissWidget(DismissAction.TIMEOUT)
+                     }*/
                 }
             } else {
                 uiScope.launch {
@@ -279,10 +286,14 @@ internal class PredictionViewModel(
 
     private fun claimPredictionRewards() {
         data.currentData?.let { resources ->
-            val widgetId = if (resources.resource.text_prediction_id.isEmpty()) (resources.resource.image_prediction_id) else (resources.resource.text_prediction_id)
+            val widgetId =
+                if (resources.resource.text_prediction_id.isEmpty()) (resources.resource.image_prediction_id) else (resources.resource.text_prediction_id)
             widgetInfos.widgetId = widgetId
             uiScope.launch {
-                widgetInteractionRepository?.fetchRemoteInteractions(widgetInfos)
+                widgetInteractionRepository?.fetchRemoteInteractions(
+                    widgetId = widgetInfos.widgetId,
+                    widgetKind = widgetInfos.type
+                )
                 resources.resource.claim_url?.let { url ->
                     dataClient.voteAsync(
                         url,
@@ -338,10 +349,15 @@ internal class PredictionViewModel(
         )
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
-            widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->
-                val url = widget.resource.getMergedOptions()!![position].getMergedVoteUrl()
+            option?.let {
+                val url = option.getMergedVoteUrl()
                 url?.let {
-                    voteApi(it, widget.resource.getMergedOptions()!![position].id, userRepository)
+                    voteApi(
+                        it,
+                        option.id,
+                        userRepository,
+                        patchVoteUrl = getUserInteraction()?.url
+                    )
                 }
             }
             // Save widget id and voted option for followup widget
@@ -365,7 +381,10 @@ internal class PredictionViewModel(
         uiScope.launch {
             try {
                 val results =
-                    widgetInteractionRepository?.fetchRemoteInteractions(widgetInfo = widgetInfos)
+                    widgetInteractionRepository?.fetchRemoteInteractions(
+                        widgetId = widgetInfos.widgetId,
+                        widgetKind = widgetInfos.type
+                    )
 
                 if (results is Result.Success) {
                     if (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_PREDICTION) {
