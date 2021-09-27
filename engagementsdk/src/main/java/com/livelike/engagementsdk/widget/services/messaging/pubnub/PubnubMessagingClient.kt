@@ -20,7 +20,7 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 
-internal class PubnubMessagingClient(
+internal open class PubnubMessagingClient(
     subscriberKey: String,
     pubnubHeartbeatInterval: Int,
     uuid: String,
@@ -39,12 +39,18 @@ internal class PubnubMessagingClient(
     init {
         pubnubConfiguration.subscribeKey = subscriberKey
         pubnubConfiguration.uuid = uuid
-        pubnubConfiguration.setPresenceTimeoutWithCustomInterval(pubnubPresenceTimeout, pubnubHeartbeatInterval)
+        pubnubConfiguration.setPresenceTimeoutWithCustomInterval(
+            pubnubPresenceTimeout,
+            pubnubHeartbeatInterval
+        )
         pubnub = PubNub(pubnubConfiguration)
 
-        val client = this
-
         // Extract SubscribeCallback?
+        //adding as method to override in inheritance
+        addPubnubListener()
+    }
+
+    open fun addPubnubListener() {
         pubnub.addListener(object : PubnubSubscribeCallbackAdapter() {
             override fun status(pubnub: PubNub, status: PNStatus) {
                 when (status.operation) {
@@ -56,20 +62,20 @@ internal class PubnubMessagingClient(
                         when (status.category) {
                             PNStatusCategory.PNConnectedCategory -> {
                                 // this is expected for a subscribe, this means there is no error or issue whatsoever
-                                listener?.onClientMessageStatus(client, ConnectionStatus.CONNECTED)
+                                listener?.onClientMessageStatus(this@PubnubMessagingClient, ConnectionStatus.CONNECTED)
                             }
 
                             PNStatusCategory.PNReconnectedCategory -> {
                                 // this usually occurs if subscribe temporarily fails but reconnects. This means
                                 // there was an error but there is no longer any issue
-                                listener?.onClientMessageStatus(client, ConnectionStatus.CONNECTED)
+                                listener?.onClientMessageStatus(this@PubnubMessagingClient, ConnectionStatus.CONNECTED)
                             }
 
                             PNStatusCategory.PNDisconnectedCategory -> {
                                 // this is the expected category for an unsubscribe. This means there
                                 // was no error in unsubscribing from everything
                                 listener?.onClientMessageStatus(
-                                    client,
+                                    this@PubnubMessagingClient,
                                     ConnectionStatus.DISCONNECTED
                                 )
                             }
@@ -78,7 +84,7 @@ internal class PubnubMessagingClient(
                                 // this means that PAM does allow this client to subscribe to this
                                 // channel and channel group configuration. This is another explicit error
                                 listener?.onClientMessageError(
-                                    client,
+                                    this@PubnubMessagingClient,
                                     Error("Access Denied", "Access Denied")
                                 )
                             }
@@ -119,7 +125,7 @@ internal class PubnubMessagingClient(
                     timeoutMs
                 )
                 logDebug { "$pdtString - Received message from pubnub: $clientMessage" }
-                listener?.onClientMessageEvent(client, clientMessage)
+                listener?.onClientMessageEvent(this@PubnubMessagingClient, clientMessage)
             }
 
             override fun presence(pubnub: PubNub, presence: PNPresenceEventResult) {}

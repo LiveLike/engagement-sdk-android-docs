@@ -16,6 +16,7 @@ import com.livelike.engagementsdk.core.exceptionhelpers.safeRemoteApiCall
 import com.livelike.engagementsdk.core.utils.addAuthorizationBearer
 import com.livelike.engagementsdk.core.utils.addUserAgent
 import com.livelike.engagementsdk.core.utils.extractBoolean
+import com.livelike.engagementsdk.core.utils.extractLong
 import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
@@ -158,7 +159,10 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
                         responseData.extractStringOrEmpty("custom_data"),
                         responseData.extractStringOrEmpty("badges_url"),
-                        responseData.extractStringOrEmpty("badge_progress_url")
+                        responseData.extractStringOrEmpty("badge_progress_url"),
+                        responseData.extractStringOrEmpty("subscribe_channel"),
+                        responseData.extractLong("reported_count").toInt(),
+                        responseData.extractStringOrEmpty("created_at")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -199,7 +203,10 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
                         responseData.extractStringOrEmpty("custom_data"),
                         responseData.extractStringOrEmpty("badges_url"),
-                        responseData.extractStringOrEmpty("badge_progress_url")
+                        responseData.extractStringOrEmpty("badge_progress_url"),
+                        responseData.extractStringOrEmpty("subscribe_channel"),
+                        responseData.extractLong("reported_count").toInt(),
+                        responseData.extractStringOrEmpty("created_at")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -229,16 +236,18 @@ internal open class EngagementDataClientImpl :
         url: String,
         requestType: RequestType,
         requestBody: RequestBody? = null,
-        accessToken: String?
+        accessToken: String?,
+        fullErrorJson: Boolean = false
     ): Result<T> {
-        return remoteCall(url.toHttpUrl(), requestType, requestBody, accessToken)
+        return remoteCall(url.toHttpUrl(), requestType, requestBody, accessToken, fullErrorJson)
     }
 
     internal suspend inline fun <reified T : Any> remoteCall(
         url: HttpUrl,
         requestType: RequestType,
         requestBody: RequestBody? = null,
-        accessToken: String?
+        accessToken: String?,
+        fullErrorJson: Boolean = false
     ): Result<T> {
         return safeRemoteApiCall({
             withContext(Dispatchers.IO) {
@@ -267,7 +276,10 @@ internal open class EngagementDataClientImpl :
                     val msg = execute.message
                     val errorMsg = when (msg.isNotEmpty()) {
                         true -> msg
-                        else -> errorJson.get("detail").asString
+                        else -> when (fullErrorJson) {
+                            true -> errorJson
+                            else -> errorJson.get("detail").asString
+                        }
                     }
                     Result.Error(
                         IOException(

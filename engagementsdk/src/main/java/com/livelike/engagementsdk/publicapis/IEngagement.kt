@@ -39,6 +39,8 @@ interface IEngagement {
 
     var leaderBoardDelegate: LeaderBoardDelegate?
 
+    var chatRoomDelegate : ChatRoomDelegate?
+
     /** Override the default auto-generated chat nickname **/
     fun updateChatNickname(nickname: String)
 
@@ -62,6 +64,11 @@ interface IEngagement {
 
     fun addCurrentUserToChatRoom(
         chatRoomId: String,
+        liveLikeCallback: LiveLikeCallback<ChatRoomMembership>
+    )
+    fun addUserToChatRoom(
+        chatRoomId: String,
+        userId: String,
         liveLikeCallback: LiveLikeCallback<ChatRoomMembership>
     )
 
