@@ -30,6 +30,8 @@ import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
@@ -39,6 +41,7 @@ import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
 import com.livelike.livelikedemo.customwidgets.CustomImageSlider
+import com.livelike.livelikedemo.customwidgets.CustomNumberPredictionWidget
 import com.livelike.livelikedemo.customwidgets.CustomPollWidget
 import com.livelike.livelikedemo.customwidgets.CustomPredictionWidget
 import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
@@ -50,6 +53,8 @@ import com.livelike.livelikedemo.models.CheerMeterRequestResponse
 import com.livelike.livelikedemo.models.EmojiSliderRequest
 import com.livelike.livelikedemo.models.FollowUpRequest
 import com.livelike.livelikedemo.models.FollowUpResponse
+import com.livelike.livelikedemo.models.NumberPredictionRequest
+import com.livelike.livelikedemo.models.NumberPredictionResponse
 import com.livelike.livelikedemo.models.PollRequestResponse
 import com.livelike.livelikedemo.models.PredictionRequest
 import com.livelike.livelikedemo.models.PredictionResponse
@@ -97,6 +102,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
     private val alerts = "alerts"
     private val cheerMeter = "cheer-meters"
     private val textAsk = "text-asks"
+    private val imgNumberPrediction = "image-number-predictions"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -151,8 +157,14 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 PostType(twoOptions, false, cheerMeter, 2),
 
                 PostType("Text Ask", true),
-                PostType(twoOptions, false, textAsk, 2)
-            )
+                PostType(twoOptions, false, textAsk, 2) ,
+
+                PostType("Image Prediction", true),
+                PostType("Image Number Prediction", false, imgNumberPrediction, 2)
+
+
+
+        )
         )
         rcyl_view.adapter = adapter
         val jsonTheme = intent.getStringExtra("jsonTheme")
@@ -273,6 +285,25 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 override fun createTextAskWidgetView(imageSliderWidgetModel: TextAskWidgetModel): View? {
                     return CustomTextAskWidget(this@WidgetOnlyActivity).apply {
                         this.askWidgetModel = imageSliderWidgetModel
+                    }
+                }
+
+                override fun createNumberPredictionWidgetView(numberPredictionWidgetModel: NumberPredictionWidgetModel,
+                                                              isImage: Boolean): View? {
+                    return CustomNumberPredictionWidget(this@WidgetOnlyActivity).apply {
+                        this.numberPredictionWidgetViewModel = numberPredictionWidgetModel
+                        this.isImage = isImage
+                    }
+                }
+
+                override fun createNumberPredictionFollowupWidgetView(
+                    followUpWidgetViewModel: NumberPredictionFollowUpWidgetModel,
+                    isImage: Boolean
+                ): View? {
+                    return CustomNumberPredictionWidget(this@WidgetOnlyActivity).apply {
+                        this.followUpWidgetViewModel = followUpWidgetViewModel
+                        this.isImage = isImage
+                        this.isFollowUp = true
                     }
                 }
             }
@@ -464,7 +495,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                     options.add(Option(description = "Option $i"))
                                 }
                             }
-                            imgPoll, imgPrediction, cheerMeter, emojiSlider -> {
+                            imgPoll, imgPrediction, cheerMeter, emojiSlider,imgNumberPrediction -> {
                                 for (i in 0 until type.count) {
                                     options.add(
                                         Option(
@@ -549,6 +580,14 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 "PT30S",
                                 "this is the title",
                             )
+                            imgNumberPrediction -> NumberPredictionRequest(
+                                "The confirmation Message",
+                                options,
+                                null,
+                                programId,
+                                question,
+                                "PT30S"
+                            )
                             else -> null
                         }
                         scope.launch {
@@ -581,6 +620,10 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 )
                                 textAsk -> gson.fromJson(
                                     responseString, TextAskResponse::class.java
+                                )
+                                imgNumberPrediction -> gson.fromJson(
+                                    responseString,
+                                    NumberPredictionResponse::class.java
                                 )
                                 else -> null
                             }
@@ -652,6 +695,10 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 }
                                 is CheerMeterRequestResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
+                                }
+
+                                is NumberPredictionResponse -> {
+                                    it.scheduleUrl?.let { it1 -> putAPI(it1) }
                                 }
                             }
                             scope.launch {
