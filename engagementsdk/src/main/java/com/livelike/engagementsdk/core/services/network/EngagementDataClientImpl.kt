@@ -237,9 +237,9 @@ internal open class EngagementDataClientImpl :
         requestType: RequestType,
         requestBody: RequestBody? = null,
         accessToken: String?,
-        parseFullError: Boolean = false
+        fullErrorJson: Boolean = false
     ): Result<T> {
-        return remoteCall(url.toHttpUrl(), requestType, requestBody, accessToken, parseFullError)
+        return remoteCall(url.toHttpUrl(), requestType, requestBody, accessToken, fullErrorJson)
     }
 
     internal suspend inline fun <reified T : Any> remoteCall(
@@ -247,7 +247,7 @@ internal open class EngagementDataClientImpl :
         requestType: RequestType,
         requestBody: RequestBody? = null,
         accessToken: String?,
-        parseFullError: Boolean = false
+        fullErrorJson: Boolean = false
     ): Result<T> {
         return safeRemoteApiCall({
             withContext(Dispatchers.IO) {
@@ -276,7 +276,7 @@ internal open class EngagementDataClientImpl :
                     val msg = execute.message
                     val errorMsg = when (msg.isNotEmpty()) {
                         true -> msg
-                        else -> when (parseFullError) {
+                        else -> when (fullErrorJson) {
                             true -> errorJson
                             else -> errorJson.get("detail").asString
                         }
