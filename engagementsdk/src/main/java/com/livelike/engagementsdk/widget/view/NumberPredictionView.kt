@@ -1,14 +1,19 @@
 package com.livelike.engagementsdk.widget.view
 
+import android.animation.Animator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.NumberPredictionOptionAdapter
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetNumberPredictionVotedAnswerList
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.NumberPredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.NumberPredictionWidget
@@ -17,10 +22,17 @@ import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_textRecyclerView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class NumberPredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr)  {
 
@@ -47,6 +59,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         widgetObserver(viewModel?.data?.latest())
+        viewModel?.widgetState?.subscribe(javaClass.simpleName) { widgetStateObserver(it) }
     }
 
 
@@ -54,8 +67,60 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
         super.onDetachedFromWindow()
     }
 
-    private fun stateWidgetObserver(widgetStates: WidgetStates?){
 
+    private fun widgetStateObserver(widgetStates: WidgetStates?){
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                lockInteraction()
+            }
+            WidgetStates.INTERACTING -> {
+                unLockInteraction()
+                showResultAnimation = true
+
+                // show timer while widget interaction mode
+                viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
+                    showTimer(
+                        timeout, textEggTimer,
+                        {
+                            viewModel?.animationEggTimerProgress = it
+                        },
+                        {
+                            viewModel?.dismissWidget(it)
+                        }
+                    )
+                }
+            }
+            WidgetStates.RESULTS, WidgetStates.FINISHED -> {
+                lockInteraction()
+                onWidgetInteractionCompleted()
+                viewModel?.apply {
+                    if (followUp) {
+                        followupAnimation?.apply {
+                            if (viewModel?.animationPath?.isNotEmpty() == true)
+                                setAnimation(
+                                    viewModel?.animationPath
+                                )
+                            progress = viewModel?.animationProgress!!
+                            addAnimatorUpdateListener { valueAnimator ->
+                                viewModel?.animationProgress = valueAnimator.animatedFraction
+                            }
+                            if (progress != 1f) {
+                                resumeAnimation()
+                            }
+                            visibility = if (showResultAnimation) {
+                                View.VISIBLE
+                            } else {
+                                View.GONE
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        if (viewModel?.enableDefaultWidgetTransition == true) {
+            defaultStateTransitionManager(widgetStates)
+        }
     }
 
 
@@ -66,7 +131,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
                 inflated = true
                 inflate(context, R.layout.widget_text_option_selection, this@NumberPredictionView)
             }
-
+            val isFollowUp = resource.kind.contains("follow-up")
             titleView.title = resource.question
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
             lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
@@ -82,6 +147,17 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
+            }
+
+
+            if (isFollowUp) {
+                val selectedPredictionVoteList =
+                    getWidgetNumberPredictionVotedAnswerList(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
+               /* viewModel?.followupState(
+                    selectedPredictionVoteList,
+                    resource.correct_option_id,
+                    widgetViewThemeAttributes
+                )*/
             }
 
 
@@ -118,7 +194,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
                 if (!isFirstInteraction) {
                     viewModel?.dismissWidget(DismissAction.TIMEOUT)
                 }
-               /* followupAnimation.apply {
+                followupAnimation.apply {
                     addAnimatorListener(object : Animator.AnimatorListener {
                         override fun onAnimationRepeat(animation: Animator?) {
                         }
@@ -136,7 +212,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
                         override fun onAnimationStart(animation: Animator?) {
                         }
                     })
-                }*/
+                }
             }
             WidgetStates.FINISHED -> {
                 widgetObserver(null)
@@ -154,5 +230,28 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
     private fun enableLockButton() {
         btn_lock.isEnabled = true
         btn_lock.alpha = 1f
+    }
+
+
+    private fun lockInteraction() {
+        viewModel?.adapter?.selectionLocked = true
+        viewModel?.data?.latest()?.let {
+            val isFollowUp = it.resource.kind.contains("follow-up")
+            if (isFollowUp) {
+                textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
+
+            }
+        }
+    }
+
+    private fun unLockInteraction() {
+        viewModel?.data?.latest()?.let {
+            val isFollowUp = it.resource.kind.contains("follow-up")
+            if (!isFollowUp) {
+                viewModel?.adapter?.selectionLocked = false
+                // marked widget as interactive
+                viewModel?.markAsInteractive()
+            }
+        }
     }
 }

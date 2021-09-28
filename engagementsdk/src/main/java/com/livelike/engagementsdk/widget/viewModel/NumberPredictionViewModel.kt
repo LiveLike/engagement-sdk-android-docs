@@ -63,12 +63,16 @@ internal class NumberPredictionViewModel(
         SubscriptionManager()
     var results: Stream<Resource> =
         SubscriptionManager()
+    var followUp: Boolean = false
     private var currentWidgetId: String = ""
     private var programId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
     var adapter: NumberPredictionOptionAdapter? = null
     private var timeoutStarted = false
+    var animationProgress = 0f
+    var animationEggTimerProgress = 0f
+    var animationPath = ""
 
 
     init {
@@ -335,6 +339,14 @@ internal class NumberPredictionViewModel(
 
         widgetState.onNext(WidgetStates.RESULTS)
         //resultsState()
+    }
+
+    internal fun followupState(
+        selectedPredictionVotes: List<NumberPredictionVotes>,
+        correctOptionId: String,
+        widgetViewThemeAttributes: WidgetViewThemeAttributes
+    ){
+
     }
 
 }

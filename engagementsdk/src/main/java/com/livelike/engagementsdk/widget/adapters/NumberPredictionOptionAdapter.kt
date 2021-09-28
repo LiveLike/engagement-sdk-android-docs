@@ -72,7 +72,8 @@ internal class NumberPredictionOptionAdapter(
             itemView.description.text = option.description
 
             itemView.plus_btn.setOnClickListener {
-                val updatedScore: Int? = if(itemView.userInput.text.isNullOrEmpty()){
+                if (selectionLocked) return@setOnClickListener
+                val updatedScore: Int = if(itemView.userInput.text.isNullOrEmpty()){
                     0
                 }else{
                     itemView.userInput.text.toString().toInt() + 1
@@ -81,7 +82,8 @@ internal class NumberPredictionOptionAdapter(
             }
 
             itemView.minus_btn.setOnClickListener {
-                val updatedScore: Int? = if(itemView.userInput.text.isNullOrEmpty()){
+                if (selectionLocked) return@setOnClickListener
+                val updatedScore: Int = if(itemView.userInput.text.isNullOrEmpty()){
                     0
                 }else{
                     itemView.userInput.text.toString().toInt() - 1
