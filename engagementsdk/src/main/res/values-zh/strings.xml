@@ -46,5 +46,7 @@
     <string name="livelike_follow_up_tag"> </string>
     <string name="livelike_answer_label">回答</string>
     <string name="livelike_answered_label">已回答!</string>
+    <string name="livelike_predict_label">预测</string>
+    <string name="livelike_predicted_label">预料到的!</string>
 
 </resources>
