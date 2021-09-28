@@ -6,9 +6,7 @@ internal data class ImageSliderEntity(
     @field:SerializedName("initial_magnitude")
     val initialMagnitude: Float?,
     @field:SerializedName("average_magnitude")
-    val averageMagnitude: Float?,
-    @field:SerializedName("vote_url")
-    val voteUrl: String
+    val averageMagnitude: Float?
 
 ) : Resource() {
     override fun toLiveLikeWidgetResult(): LiveLikeWidgetResult {
