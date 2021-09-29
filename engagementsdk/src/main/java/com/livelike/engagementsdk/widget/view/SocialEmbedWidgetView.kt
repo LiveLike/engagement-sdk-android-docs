@@ -26,6 +26,7 @@ import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.widget_social_embed.view.progress_bar
 import kotlinx.android.synthetic.main.widget_social_embed.view.titleView
+import kotlinx.android.synthetic.main.widget_social_embed.view.txtTitleBackground
 import kotlinx.android.synthetic.main.widget_social_embed.view.web_view
 import kotlinx.android.synthetic.main.widget_social_embed.view.widgetContainer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
@@ -163,7 +164,7 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                 )
 
                 if (themeComponent.header?.background != null) {
-                    titleView?.background = AndroidResource.createDrawable(themeComponent.header)
+                    txtTitleBackground?.background = AndroidResource.createDrawable(themeComponent.header)
                 }
 
                 themeComponent.header?.padding?.let {

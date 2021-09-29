@@ -245,7 +245,12 @@ enum class WidgetType(val event: String) {
     IMAGE_SLIDER("emoji-slider-created"),
     SOCIAL_EMBED("social-embed-created"),
     VIDEO_ALERT("video-alert-created"),
-    TEXT_ASK("text-ask-created");
+    TEXT_ASK("text-ask-created"),
+    TEXT_NUMBER_PREDICTION("text-number-prediction-created"),
+    IMAGE_NUMBER_PREDICTION("image-number-prediction-created"),
+    TEXT_NUMBER_PREDICTION_FOLLOW_UP("text-number-prediction-follow-up-updated"),
+    IMAGE_NUMBER_PREDICTION_FOLLOW_UP("image-number-prediction-follow-up-updated");
+
 
     companion object {
         private val map = values().associateBy(WidgetType::event)

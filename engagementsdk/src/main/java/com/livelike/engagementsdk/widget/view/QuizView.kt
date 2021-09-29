@@ -210,6 +210,9 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
             titleTextView.gravity = Gravity.START
 
+            btn_lock.text = context.resources.getString(R.string.livelike_answer_label)
+            label_lock.text = context.resources.getString(R.string.livelike_answered_label)
+
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, type)
 
             // set on click

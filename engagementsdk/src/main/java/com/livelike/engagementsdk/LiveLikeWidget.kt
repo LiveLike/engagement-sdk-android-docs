@@ -108,6 +108,10 @@ data class LiveLikeWidget(
     val imagePredictionId: String? = null,
     @field:SerializedName("text_prediction_url")
     val textPredictionUrl: String? = null,
+    @field:SerializedName("text_number_prediction_id")
+    val textNumberPredictionId: String? = null,
+    @field:SerializedName("image_number_prediction_id")
+    val imageNumberPredictionId: String? = null,
     @field:SerializedName("correct_option_id")
     val correctOptionId: String? = null,
     @field:SerializedName("title")
@@ -190,7 +194,13 @@ data class OptionsItem(
     val answerUrl: String? = null,
 
     @field:SerializedName("answer_count")
-    val answerCount: Int? = null
+    val answerCount: Int? = null,
+
+    @field:SerializedName("correct_number")
+    val correctNumber: Int? = null,
+
+    @field:SerializedName("number")
+    var number: Int? = null
 )
 
 data class ReactionsItem(
