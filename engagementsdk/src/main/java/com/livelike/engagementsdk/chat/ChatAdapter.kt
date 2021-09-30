@@ -45,6 +45,7 @@ import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.chat.stickerKeyboard.allMatches
@@ -60,6 +61,9 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.publicapis.ChatMessageType
+import com.livelike.engagementsdk.publicapis.toChatMessageType
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
@@ -93,7 +97,7 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
 internal class ChatRecyclerAdapter(
     internal var analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit,
-) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
+) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(diffChatMessage) {
     var isKeyboardOpen: Boolean = false
     internal var chatRoomId: String? = null
     internal var chatRoomName: String? = null
@@ -113,8 +117,15 @@ internal class ChatRecyclerAdapter(
     var currentChatReactionPopUpViewPos: Int = -1
     internal var chatPopUpView: ChatActionsPopupView? = null
     var showChatAvatarLogo = true
+    var chatViewDelegate: ChatViewDelegate? = null
 
-    override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
+    override fun onCreateViewHolder(root: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        if (chatViewDelegate != null) {
+            val messageType = ChatMessageType.values().find { it.ordinal == viewType }
+            if (messageType == ChatMessageType.CUSTOM_MESSAGE_CREATED) {
+                return chatViewDelegate!!.onCreateViewHolder(root, messageType)
+            }
+        }
         return ViewHolder(
             LayoutInflater.from(root.context).inflate(
                 R.layout.default_chat_cell,
@@ -124,12 +135,29 @@ internal class ChatRecyclerAdapter(
         )
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return if (chatViewDelegate != null)
+            getItem(position).messageEvent.toChatMessageType()?.ordinal ?: -1
+        else
+            super.getItemViewType(position)
+    }
+
     fun isReactionPopUpShowing(): Boolean {
         return chatPopUpView?.isShowing ?: false
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bindTo(getItem(position))
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val chatMessage = getItem(position)
+        if (chatViewDelegate != null && chatMessage.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) {
+            chatViewDelegate!!.onBindViewHolder(
+                holder,
+                chatMessage.toLiveLikeChatMessage(),
+                chatViewThemeAttribute,
+                showChatAvatarLogo
+            )
+        } else if (holder is ViewHolder) {
+            holder.bindTo(chatMessage)
+        }
         holder.itemView.requestLayout()
     }
 
@@ -144,7 +172,7 @@ internal class ChatRecyclerAdapter(
     }
 
     /** Commenting this code for now so QA finalize whether old issues are coming or not
-     Flowing code helps in accessbility related issues
+    Flowing code helps in accessbility related issues
      **/
 //    override fun onViewDetachedFromWindow(holder: ViewHolder) {
 //        holder.hideFloatingUI()
@@ -253,6 +281,7 @@ internal class ChatRecyclerAdapter(
 
         fun bindTo(item: ChatMessage?) {
             v.tag = item
+
             setMessage(item)
             updateBackground()
             if (item?.timetoken != 0L) {
@@ -794,9 +823,9 @@ internal class ChatRecyclerAdapter(
                                 }
                                 chatMessage.minHeight =
                                     (chatMessageTextSize.toInt() * columnCount) + when {
-                                    lines != columnCount -> (lines * chatMessageTextSize.toInt())
-                                    else -> 0
-                                }
+                                        lines != columnCount -> (lines * chatMessageTextSize.toInt())
+                                        else -> 0
+                                    }
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
