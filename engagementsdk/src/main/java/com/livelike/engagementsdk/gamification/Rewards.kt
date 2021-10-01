@@ -119,7 +119,13 @@ internal class Rewards(
                 pair.first?.let {
                     it.rewardItemTransferUrl?.let { url ->
 
-                        val body = gson.toJson(TransferRewardItemRequest(recipientProfileId, amount, rewardItemId))
+                        val body = gson.toJson(
+                            TransferRewardItemRequest(
+                                recipientProfileId,
+                                amount,
+                                rewardItemId
+                            )
+                        )
                             .toRequestBody("application/json".toMediaTypeOrNull())
 
                         dataClient.remoteCall<TransferRewardItemResponse>(
@@ -150,6 +156,7 @@ interface IRewardsClient {
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItem>>
     )
+
     /**
      * fetch all the current user's balance for the passed rewardItemIDs
      * in callback you will receive a map of rewardItemId and balance
@@ -195,8 +202,16 @@ internal data class TransferRewardItemRequest(
 )
 
 data class TransferRewardItemResponse(
+    @SerializedName("id")
+    val id: String,
     @SerializedName("created_at")
     val createdAt: String,
-    @SerializedName("new_balance")
-    val newBalance: Int
+    @SerializedName("recipient_profile_id")
+    val recipientProfileId: String,
+    @SerializedName("reward_item_amount")
+    val rewardItemAmount: Int,
+    @SerializedName("reward_item_id")
+    val rewardItemId: String,
+    @SerializedName("sender_profile_id")
+    val senderProfileId: String
 )
