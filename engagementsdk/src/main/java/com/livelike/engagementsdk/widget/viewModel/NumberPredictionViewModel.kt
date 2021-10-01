@@ -131,7 +131,7 @@ internal class NumberPredictionViewModel(
      */
     private fun submitVoteApi(votesObj: JsonObject) {
         uiScope.launch {
-            data.latest()?.resource?.vote_url?.let {
+            data.latest()?.resource?.voteUrl?.let {
                 dataClient.voteAsync(
                     it,
                     body = votesObj.toString()

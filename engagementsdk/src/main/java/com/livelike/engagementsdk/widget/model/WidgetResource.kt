@@ -35,7 +35,8 @@ internal open class Resource(
     val engagement_percent: String = "",
     val claim_url: String? = null,
     val reply_url: String? = "",
-    val vote_url: String? = null
+    @field:SerializedName("vote_url")
+    val voteUrl: String? = null
 ) {
 
     init {
