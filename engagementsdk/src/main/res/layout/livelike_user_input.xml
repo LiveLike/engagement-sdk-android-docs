@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/increment_decrement_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+   >
+
+    <EditText
+        android:id="@+id/userInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:hint="-"
+        android:textColorHint="#444444"
+        android:imeOptions="actionDone"
+        android:gravity="center_vertical"
+        android:fontFamily="@font/livelike_option_font"
+        android:background="@drawable/increment_decrement_input_box"
+        android:textColor="@color/livelike_white"
+        android:focusableInTouchMode="true"
+        android:inputType="number"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:textIsSelectable="false"
+        android:singleLine="true"
+        android:maxEms="3"
+        android:scrollbarStyle="outsideInset"
+        android:scrollHorizontally="true"/>
+
+
+</LinearLayout>

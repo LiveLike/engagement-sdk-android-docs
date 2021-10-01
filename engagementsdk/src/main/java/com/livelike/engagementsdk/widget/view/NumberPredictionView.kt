@@ -1,19 +1,22 @@
 package com.livelike.engagementsdk.widget.view
 
-import android.animation.Animator
 import android.content.Context
+import android.text.InputType
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.NumberPredictionOptionsTheme
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.adapters.NumberPredictionOptionAdapter
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetNumberPredictionVotedAnswerList
-import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
-import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.NumberPredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.NumberPredictionWidget
@@ -22,19 +25,18 @@ import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
+import kotlinx.android.synthetic.main.livelike_user_input.view.userInput
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_textRecyclerView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class NumberPredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr)  {
+class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
+    SpecifiedWidgetView(context, attr),NumberPredictionOptionAdapter.EnableSubmitListener  {
 
     private var viewModel: NumberPredictionViewModel? = null
 
@@ -65,6 +67,8 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        viewModel?.data?.unsubscribe(javaClass.simpleName)
+        viewModel?.widgetState?.unsubscribe(javaClass.simpleName)
     }
 
 
@@ -91,8 +95,13 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
                 }
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
+                disableLockButton()
+                if(viewModel?.adapter?.selectedUserVotes!!.isNotEmpty()){
+                    label_lock.visibility = View.VISIBLE
+                }
                 lockInteraction()
                 onWidgetInteractionCompleted()
+
                 viewModel?.apply {
                     if (followUp) {
                         followupAnimation?.apply {
@@ -114,6 +123,31 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
                             }
                         }
 
+                    }else{
+
+                        confirmationMessage?.apply {
+                           // if (isFirstInteraction) {
+                                text =
+                                    viewModel?.data?.currentData?.resource?.confirmation_message
+                                        ?: ""
+                                viewModel?.animationPath?.let {
+                                    viewModel?.animationProgress?.let { it1 ->
+                                        startAnimation(
+                                            it,
+                                            it1
+                                        )
+                                    }
+                                }
+                                subscribeToAnimationUpdates { value ->
+                                    viewModel?.animationProgress = value
+                                }
+                                visibility = if (showResultAnimation) {
+                                    View.VISIBLE
+                                } else {
+                                    View.GONE
+                                }
+                           // }
+                        }
                     }
                 }
             }
@@ -141,25 +175,62 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
             btn_lock.text = context.resources.getString(R.string.livelike_predict_label)
             label_lock.text = context.resources.getString(R.string.livelike_predicted_label)
 
+            // added tag for identification of widget (by default will be empty)
+            if(isFollowUp){
+                setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_number_prediction_follow_up_tag))
+            }else{
+                setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_number_prediction_tag))
+            }
+
             viewModel?.adapter = viewModel?.adapter ?: NumberPredictionOptionAdapter(optionList, type)
+            viewModel?.adapter?.apply {
+                this.submitListener = this@NumberPredictionView
+            }
 
             disableLockButton()
+            if (!isFollowUp)
+                viewModel?.apply {
+                    val rootPath = widgetViewThemeAttributes.stayTunedAnimation
+                    animationPath = AndroidResource.selectRandomLottieAnimation(
+                        rootPath,
+                        context.applicationContext
+                    ) ?: ""
+                }
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
 
+            btn_lock.setOnClickListener {
+                if (viewModel?.adapter?.selectedUserVotes!!.isEmpty() ||
+                    viewModel?.adapter?.selectedUserVotes!!.size !=  viewModel?.adapter?.myDataset?.size ) return@setOnClickListener
+
+                lockVote()
+                textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
+                viewModel?.adapter?.notifyDataSetChanged()
+            }
+
+            if (viewModel?.getUserInteraction() != null) {
+                val userSelectedVotes = viewModel?.getUserInteraction()!!.votes
+                viewModel?.adapter?.restoreSelectedVotes(userSelectedVotes!!.toMutableList())
+                findViewById<TextView>(R.id.label_lock)?.visibility = VISIBLE
+                disableLockButton()
+            }
+
+            widgetsTheme?.let {
+                applyTheme(it)
+            }
 
             if (isFollowUp) {
                 val selectedPredictionVoteList =
                     getWidgetNumberPredictionVotedAnswerList(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
-               /* viewModel?.followupState(
+                viewModel?.followupState(
                     selectedPredictionVoteList,
-                    resource.correct_option_id,
+                    resource.options,
                     widgetViewThemeAttributes
-                )*/
+                )
             }
-
+            setImeOptionDoneInKeyboard()
 
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
@@ -191,28 +262,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
                 }
             }
             WidgetStates.RESULTS -> {
-                if (!isFirstInteraction) {
-                    viewModel?.dismissWidget(DismissAction.TIMEOUT)
-                }
-                followupAnimation.apply {
-                    addAnimatorListener(object : Animator.AnimatorListener {
-                        override fun onAnimationRepeat(animation: Animator?) {
-                        }
-
-                        override fun onAnimationEnd(animation: Animator?) {
-                            viewModel?.uiScope?.launch {
-                                delay(11000)
-                                viewModel?.dismissWidget(DismissAction.TIMEOUT)
-                            }
-                        }
-
-                        override fun onAnimationCancel(animation: Animator?) {
-                        }
-
-                        override fun onAnimationStart(animation: Animator?) {
-                        }
-                    })
-                }
+               // nothing needed here
             }
             WidgetStates.FINISHED -> {
                 widgetObserver(null)
@@ -254,4 +304,53 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) : Speci
             }
         }
     }
+
+    /** changes the return key as done in keyboard */
+    private fun setImeOptionDoneInKeyboard() {
+        if(userInput != null) {
+            userInput.imeOptions = EditorInfo.IME_ACTION_DONE
+            userInput.setRawInputType(InputType.TYPE_CLASS_NUMBER)
+        }
+    }
+
+    override fun onSubmitEnabled(isSubmitBtnEnabled: Boolean) {
+       if(isSubmitBtnEnabled) {
+           enableLockButton()
+       }else{
+           disableLockButton()
+       }
+    }
+
+    /** submits user's vote */
+    private fun lockVote() {
+        isFirstInteraction = true
+        disableLockButton()
+        viewModel?.run {
+            timeOutJob?.cancel()
+            uiScope.launch {
+                lockInteractionAndSubmitVote()
+            }
+        }
+        label_lock.visibility = View.VISIBLE
+    }
+
+
+    override fun applyTheme(theme: WidgetsTheme) {
+        super.applyTheme(theme)
+        viewModel?.data?.latest()?.let { widget ->
+            theme.getThemeLayoutComponent(widget.type)?.let { themeComponent ->
+                if (themeComponent is NumberPredictionOptionsTheme) {
+                    applyThemeOnTitleView(themeComponent)
+                    applyThemeOnTagView(themeComponent)
+                    AndroidResource.createDrawable(themeComponent.body)?.let {
+                        lay_textRecyclerView.background = it
+                    }
+                   viewModel?.adapter?.component = themeComponent
+                    viewModel?.adapter?.notifyDataSetChanged()
+                }
+
+            }
+        }
+    }
+
 }

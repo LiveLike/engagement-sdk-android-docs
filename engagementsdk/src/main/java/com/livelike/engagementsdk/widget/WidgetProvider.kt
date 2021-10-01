@@ -231,8 +231,12 @@ internal class WidgetProvider {
 
             TEXT_NUMBER_PREDICTION ,TEXT_NUMBER_PREDICTION_FOLLOW_UP,
             IMAGE_NUMBER_PREDICTION,IMAGE_NUMBER_PREDICTION_FOLLOW_UP-> NumberPredictionView(context).apply {
+                widgetViewThemeAttributes = widgetThemeAttributes
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = NumberPredictionViewModel(
                     widgetInfos,
+                    context,
                     analyticsService,
                     sdkConfiguration,
                     onDismiss,

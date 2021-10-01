@@ -77,6 +77,26 @@ data class TextAskTheme(
     }
 }
 
+data class NumberPredictionOptionsTheme(
+    val optionContainer: ViewStyleProps? = null,
+    val optionInputFieldContainerEnabled: ViewStyleProps? = null,
+    val optionInputFieldContainerDisabled: ViewStyleProps? = null,
+    val optionInputFieldTextEnabled: ViewStyleProps? = null,
+    val optionInputFieldTextDisabled: ViewStyleProps? = null,
+    val optionText: ViewStyleProps? = null
+) : WidgetBaseThemeComponent(){
+    override fun validate(): String? {
+        return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
+        ?: header?.validate()
+        ?: optionContainer?.validate()
+        ?: optionInputFieldContainerEnabled?.validate()
+        ?: optionInputFieldContainerDisabled?.validate()
+        ?: optionInputFieldTextEnabled?.validate()
+        ?: optionInputFieldTextDisabled?.validate()
+        ?: title?.validate()
+    }
+}
+
 class AlertWidgetThemeComponent : WidgetBaseThemeComponent()
 
 class SocialEmbedThemeComponent : WidgetBaseThemeComponent()
@@ -90,7 +110,8 @@ data class WidgetsTheme(
     val quiz: OptionsWidgetThemeComponent? = null,
     val socialEmbed: SocialEmbedThemeComponent? = null,
     val videoAlert: AlertWidgetThemeComponent? = null,
-    val textAsk: TextAskTheme? = null
+    val textAsk: TextAskTheme? = null,
+    val numberPrediction: NumberPredictionOptionsTheme? = null,
 ) : BaseTheme() {
     override fun validate(): String? {
         return alert?.validate() ?: cheerMeter?.validate() ?: imageSlider?.validate()
@@ -99,6 +120,7 @@ data class WidgetsTheme(
             ?: quiz?.validate()
             ?: socialEmbed?.validate()
             ?: videoAlert?.validate()
+            ?: numberPrediction?.validate()
     }
 
     fun getThemeLayoutComponent(widgetType: WidgetType): WidgetBaseThemeComponent? {
@@ -113,6 +135,8 @@ data class WidgetsTheme(
             WidgetType.SOCIAL_EMBED -> socialEmbed
             WidgetType.VIDEO_ALERT -> videoAlert
             WidgetType.TEXT_ASK -> textAsk
+            WidgetType.TEXT_NUMBER_PREDICTION, WidgetType.IMAGE_NUMBER_PREDICTION -> numberPrediction
+            WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP, WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP -> numberPrediction
             else -> null
         }
     }

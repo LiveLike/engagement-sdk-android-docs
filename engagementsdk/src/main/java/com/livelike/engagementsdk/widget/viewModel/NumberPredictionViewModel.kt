@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.widget.viewModel
 
+import android.content.Context
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
@@ -27,12 +28,14 @@ import com.livelike.engagementsdk.widget.adapters.NumberPredictionOptionAdapter
 import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
+import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addWidgetNumberPredictionVoted
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetNumberPredictionVotedAnswerList
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
@@ -49,6 +52,7 @@ internal class NumberPredictionWidget(
 
 internal class NumberPredictionViewModel(
     val widgetInfos: WidgetInfos,
+    private val appContext: Context,
     private val analyticsService: AnalyticsService,
     private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
@@ -73,6 +77,7 @@ internal class NumberPredictionViewModel(
     var animationProgress = 0f
     var animationEggTimerProgress = 0f
     var animationPath = ""
+    internal var timeOutJob: Job? = null
 
 
     init {
@@ -104,7 +109,7 @@ internal class NumberPredictionViewModel(
             currentWidgetId = widgetInfos.widgetId
             programId = data.latest()?.resource?.program_id.toString()
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
-
+            interactionData.widgetDisplayed()
         }
     }
 
@@ -294,6 +299,16 @@ internal class NumberPredictionViewModel(
     private fun cleanUp() {
         currentWidgetType = null
         currentWidgetId = ""
+        timeoutStarted = false
+        adapter = null
+        animationProgress = 0f
+        animationPath = ""
+        data.onNext(null)
+        results.onNext(null)
+        animationEggTimerProgress = 0f
+        currentWidgetType = null
+        currentWidgetId = ""
+        interactionData.reset()
     }
 
     fun dismissWidget(action: DismissAction) {
@@ -326,27 +341,73 @@ internal class NumberPredictionViewModel(
                     dismissWidget(DismissAction.TIMEOUT)
                 }
             }
-            uiScope.launch {
+            timeOutJob = uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
                 lockInteractionAndSubmitVote()
             }
         }
     }
 
-    private fun lockInteractionAndSubmitVote(){
-        //adapter?.selectionLocked = true
-        //vote()
-
+    internal suspend fun lockInteractionAndSubmitVote() {
+        adapter?.selectionLocked = true
         widgetState.onNext(WidgetStates.RESULTS)
+            adapter?.selectedUserVotes?.let {
+                lockInVote(it)
+            }
+            currentWidgetType?.let {
+                analyticsService.trackWidgetInteraction(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    programId,
+                    interactionData
+                )
+            }
+
         //resultsState()
     }
 
+
     internal fun followupState(
         selectedPredictionVotes: List<NumberPredictionVotes>,
-        correctOptionId: String,
+        correctOptions: List<Option>?,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
-    ){
+    ) {
+        if (followUp)
+            return
+        followUp = true
+        adapter?.correctOptions = correctOptions
+        adapter?.selectedUserVotes = selectedPredictionVotes.toMutableList()
+        adapter?.selectionLocked = true
+        claimPredictionRewards()
+        val isUserCorrect = isUserCorrect(selectedPredictionVotes, correctOptions)
+        val rootPath =
+            if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
+        animationPath = if (selectedPredictionVotes.isNotEmpty()) {
+            AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
+        } else {
+            ""
+        }
 
+        widgetState.onNext(WidgetStates.RESULTS)
+        logDebug { "Number Prediction Widget Follow Up isUserCorrect:$isUserCorrect" }
+    }
+
+
+    private fun isUserCorrect(
+        selectedPredictionVotes: List<NumberPredictionVotes>,
+        correctVotes: List<Option>?
+    ): Boolean {
+        var isCorrect = false
+        correctVotes?.let { option ->
+            if (option.size == selectedPredictionVotes?.size) {
+                for (i in selectedPredictionVotes.indices) {
+                    val votedOption = selectedPredictionVotes[i]
+                    val op = option.find { it.id == votedOption.optionId }
+                    isCorrect = op != null && votedOption.number == op.correct_number
+                }
+            }
+        }
+        return isCorrect
     }
 
 }

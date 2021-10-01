@@ -24,5 +24,5 @@ data class NumberPredictionVotes(
     @SerializedName("option_id")
     val optionId: String,
     @SerializedName("number")
-    val number: Int
+    var number: Int
 )
