@@ -18,6 +18,6 @@ interface ChatViewDelegate {
         holder: RecyclerView.ViewHolder,
         liveLikeChatMessage: LiveLikeChatMessage,
         chatViewThemeAttributes: ChatViewThemeAttributes,
-        showChatAvatarLogo: Boolean
+        showChatAvatar: Boolean
     )
 }

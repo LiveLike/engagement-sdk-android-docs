@@ -566,7 +566,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     holder: RecyclerView.ViewHolder,
                     liveLikeChatMessage: LiveLikeChatMessage,
                     chatViewThemeAttributes: ChatViewThemeAttributes,
-                    showChatAvatarLogo: Boolean
+                    showChatAvatar: Boolean
                 ) {
                     println("ExoPlayerActivity.onBindView>> ${holder is MyCustomMsgViewHolder}")
                     chatViewThemeAttributes.chatBubbleBackgroundRes?.let {
@@ -594,7 +594,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    if (showChatAvatarLogo) {
+                    if (showChatAvatar) {
                         holder.itemView.img_sender_msg.visibility = View.VISIBLE
                         Glide.with(applicationContext)
                             .load(liveLikeChatMessage.userPic)
