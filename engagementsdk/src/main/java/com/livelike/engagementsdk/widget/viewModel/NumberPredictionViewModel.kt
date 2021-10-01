@@ -35,6 +35,7 @@ import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetNumb
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -392,7 +393,7 @@ internal class NumberPredictionViewModel(
             ""
         }
 
-        widgetState.onNext(WidgetStates.RESULTS)
+        //widgetState.onNext(WidgetStates.RESULTS)
         logDebug { "Number Prediction Widget Follow Up isUserCorrect:$isUserCorrect" }
     }
 

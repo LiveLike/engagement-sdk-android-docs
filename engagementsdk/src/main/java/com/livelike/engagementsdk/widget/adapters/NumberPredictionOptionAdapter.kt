@@ -100,8 +100,16 @@ internal class NumberPredictionOptionAdapter(
                 itemView.userInput.isCursorVisible = true
             }
 
+
+            if(widgetType == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP ||
+                widgetType == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP){
+                itemView.userInput.isFocusableInTouchMode = false
+                itemView.userInput.isCursorVisible = false
+            }
+
             itemView.userInput.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(arg0: Editable) {
+                    if (selectionLocked) return
                     val value = arg0.toString()
                     try {
                         myDataset[adapterPosition].number = value.toInt()
