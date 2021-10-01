@@ -107,7 +107,6 @@ internal class NumberPredictionOptionAdapter(
                         myDataset[adapterPosition].number = value.toInt()
                     }catch (ex:NumberFormatException){
                         logError { "Invalid input" }
-                        submitListener?.onSubmitEnabled(false)
                     }
                     updateOrAddVote()
                 }

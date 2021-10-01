@@ -326,6 +326,7 @@ internal class NumberPredictionViewModel(
         logDebug { "dismiss Number Prediction Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
+        viewModelJob.cancel()
     }
 
     fun startDismissTimeout(
@@ -335,15 +336,16 @@ internal class NumberPredictionViewModel(
     ) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            if (isFollowup) {
+            timeOutJob = if (isFollowup) {
                 uiScope.launch {
                     delay(AndroidResource.parseDuration(timeout))
                     dismissWidget(DismissAction.TIMEOUT)
                 }
-            }
-            timeOutJob = uiScope.launch {
-                delay(AndroidResource.parseDuration(timeout))
-                lockInteractionAndSubmitVote()
+            }else{
+                uiScope.launch {
+                    delay(AndroidResource.parseDuration(timeout))
+                    lockInteractionAndSubmitVote()
+                }
             }
         }
     }
@@ -362,6 +364,8 @@ internal class NumberPredictionViewModel(
                     interactionData
                 )
             }
+        delay(6500)
+        dismissWidget(DismissAction.TIMEOUT)
 
         //resultsState()
     }

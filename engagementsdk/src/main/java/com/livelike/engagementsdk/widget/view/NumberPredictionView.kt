@@ -327,7 +327,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
         disableLockButton()
         viewModel?.run {
             timeOutJob?.cancel()
-            uiScope.launch {
+             uiScope.launch {
                 lockInteractionAndSubmitVote()
             }
         }
