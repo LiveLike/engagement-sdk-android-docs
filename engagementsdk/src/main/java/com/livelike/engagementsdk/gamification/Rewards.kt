@@ -27,6 +27,8 @@ internal class Rewards(
 
     private var lastRewardItemsPage: LLPaginatedResult<RewardItem>? = null
 
+    private var lastRewardTransfersPage: LLPaginatedResult<TransferRewardItem>? = null
+
     override fun getApplicationRewardItems(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItem>>
@@ -141,6 +143,45 @@ internal class Rewards(
             }
         }
     }
+
+    override fun getRewardItemTransfers(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>
+    ) {
+        var fetchUrl: String? = null
+
+        sdkScope.launch {
+            if (lastRewardTransfersPage == null || liveLikePagination == LiveLikePagination.FIRST) {
+                configurationUserPairFlow.collect { pair ->
+                    pair.first?.let {
+                        fetchUrl = it.rewardItemTransferUrl
+                    }
+                }
+            } else {
+                fetchUrl = lastRewardTransfersPage?.getPaginationUrl(liveLikePagination)
+            }
+
+            if (fetchUrl == null) {
+                liveLikeCallback.onResponse(null, "No more data")
+            } else {
+                configurationUserPairFlow.collect { pair ->
+                    dataClient.remoteCall<LLPaginatedResult<TransferRewardItem>>(
+                        fetchUrl ?: "",
+                        RequestType.GET,
+                        null,
+                        pair.first.accessToken
+                    ).run {
+                        if (this is Result.Success) {
+                            lastRewardTransfersPage = this.data
+                        }
+                        liveLikeCallback.processResult(this)
+                    }
+                }
+            }
+        }
+    }
+
+
 }
 
 /**
@@ -176,6 +217,16 @@ interface IRewardsClient {
         recipientProfileId: String,
         liveLikeCallback: LiveLikeCallback<TransferRewardItem>
     )
+
+    /**
+     * Retrieve all reward item transfers associated
+     * with the current user profile
+     **/
+    fun getRewardItemTransfers(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>
+    )
+
 }
 
 internal data class RewardItemBalancesApiResponse(
