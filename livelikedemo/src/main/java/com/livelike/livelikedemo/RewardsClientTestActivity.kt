@@ -11,7 +11,7 @@ import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.gamification.IRewardsClient
-import com.livelike.engagementsdk.gamification.TransferRewardItemResponse
+import com.livelike.engagementsdk.gamification.TransferRewardItem
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.enter_amount_et
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.progress_bar
@@ -118,17 +118,11 @@ class RewardsClientTestActivity : AppCompatActivity() {
                     rewardsClient.transferAmountToProfileId(selectedrewardItem!!.id,
                         enter_amount_et.text.toString().toInt(),
                         receipent_profile_id.text.toString(),
-                        object : LiveLikeCallback<TransferRewardItemResponse>() {
+                        object : LiveLikeCallback<TransferRewardItem>() {
                             override fun onResponse(
-                                result: TransferRewardItemResponse?,
+                                result: TransferRewardItem?,
                                 error: String?
                             ) {
-                                result?.let {
-                                    rewardItemBalanceMap.put(
-                                        selectedrewardItem?.id ?: "",
-                                        it.newBalance
-                                    )
-                                }
                                 runOnUiThread {
                                     enter_amount_et.setText("")
                                     reward_item_balance.text =

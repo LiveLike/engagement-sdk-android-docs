@@ -111,7 +111,7 @@ internal class Rewards(
         rewardItemId: String,
         amount: Int,
         recipientProfileId: String,
-        liveLikeCallback: LiveLikeCallback<TransferRewardItemResponse>
+        liveLikeCallback: LiveLikeCallback<TransferRewardItem>
     ) {
 
         sdkScope.launch {
@@ -128,7 +128,7 @@ internal class Rewards(
                         )
                             .toRequestBody("application/json".toMediaTypeOrNull())
 
-                        dataClient.remoteCall<TransferRewardItemResponse>(
+                        dataClient.remoteCall<TransferRewardItem>(
                             url,
                             RequestType.POST,
                             body,
@@ -174,7 +174,7 @@ interface IRewardsClient {
         rewardItemId: String,
         amount: Int,
         recipientProfileId: String,
-        liveLikeCallback: LiveLikeCallback<TransferRewardItemResponse>
+        liveLikeCallback: LiveLikeCallback<TransferRewardItem>
     )
 }
 
@@ -201,7 +201,7 @@ internal data class TransferRewardItemRequest(
     val rewardItemId: String
 )
 
-data class TransferRewardItemResponse(
+data class TransferRewardItem(
     @SerializedName("id")
     val id: String,
     @SerializedName("created_at")
