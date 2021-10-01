@@ -45,4 +45,7 @@
     <string name="livelike_quiz_tag"> </string>
     <string name="livelike_prediction_tag"> </string>
     <string name="livelike_follow_up_tag"> </string>
+
+    <string name="livelike_answer_label">Answer</string>
+    <string name="livelike_answered_label">Answered!</string>
 </resources>

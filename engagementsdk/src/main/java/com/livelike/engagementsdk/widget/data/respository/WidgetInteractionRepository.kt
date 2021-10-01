@@ -65,6 +65,8 @@ internal class WidgetInteractionRepository(
                 interactions.imagePrediction?.let { interactionList.addAll(it) }
                 interactions.imageQuiz?.let { interactionList.addAll(it) }
                 interactions.textAsk?.let { interactionList.addAll(it) }
+                interactions.textNumberPrediction?.let { interactionList.addAll(it) }
+                interactions.imageNumberPrediction?.let { interactionList.addAll(it) }
             }
             interactionList.forEach {
                 if (it is CheerMeterUserInteraction && widgetInteractionMap[it.widgetId] != null) {
@@ -154,6 +156,10 @@ internal class WidgetInteractionRepository(
             WidgetType.TEXT_PREDICTION_FOLLOW_UP -> "text_prediction"
             WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> "image_prediction"
             WidgetType.TEXT_ASK -> "text_ask"
+            WidgetType.TEXT_NUMBER_PREDICTION -> "text_number_prediction"
+            WidgetType.IMAGE_NUMBER_PREDICTION -> "image_number_prediction"
+            WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP -> "text_number_prediction"
+            WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP -> "image_number_prediction"
             else -> ""
         }
     }

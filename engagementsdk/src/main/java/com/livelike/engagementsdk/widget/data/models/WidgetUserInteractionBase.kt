@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.widget.data.models
 
 import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.core.data.models.NumberPredictionVotes
 
 abstract class WidgetUserInteractionBase(
     @field:SerializedName("id")
@@ -79,6 +80,8 @@ class PredictionWidgetUserInteraction(
     val isCorrect: Boolean,
     @field:SerializedName("claim_token")
     val claimToken: String?,
+    @field:SerializedName("votes")
+    val votes: List<NumberPredictionVotes>?,
     widgetId: String,
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
@@ -103,13 +106,26 @@ class TextAskUserInteraction(
     widgetKind: String
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
+class NumberPredictionWidgetUserInteraction(
+    id: String,
+    createdAt: String,
+    url: String?,
+    @field:SerializedName("claim_token")
+    val claimToken: String?,
+    @field:SerializedName("votes")
+    val votes: List<NumberPredictionVotes>?,
+    widgetId: String,
+    widgetKind: String
+) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
+
 enum class WidgetKind(val event: String) {
     CHEER_METER("cheer-meter"),
     PREDICTION("prediction"),
     QUIZ("quiz"),
     POLL("poll"),
     IMAGE_SLIDER("emoji-slider"),
-    TEXT_ASK("text-ask");
+    TEXT_ASK("text-ask"),
+    NUMBER_PREDICTION("number-prediction");
 
     companion object {
         private val map = values().associateBy(WidgetKind::event)

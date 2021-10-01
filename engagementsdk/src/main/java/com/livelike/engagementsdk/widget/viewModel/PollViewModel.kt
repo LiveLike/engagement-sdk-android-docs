@@ -219,7 +219,7 @@ internal class PollViewModel(
         onDismiss()
         cleanUp()
     }
-
+    
     internal fun confirmationState() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation

@@ -1,6 +1,9 @@
 package com.livelike.livelikedemo.chatonly
 
 import android.app.AlertDialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -58,10 +61,17 @@ class ChatOnlyFragment : Fragment() {
                                     AlertDialog.Builder(context).apply {
                                         setTitle("Room Members")
                                         setItems(
-                                            list.map { it.nickname }
+                                            list.map { "${it.nickname} (${it.id})" }
                                                 .toTypedArray()
                                         ) { _, which ->
                                             // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
+                                            val item = list[which]
+                                            item.let {
+                                                var clipboard =
+                                                    context?.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                                                var clip = ClipData.newPlainText("copied User Id", item.id)
+                                                clipboard?.setPrimaryClip(clip)
+                                            }
                                         }
                                         create()
                                     }.show()
@@ -114,6 +124,12 @@ class ChatOnlyFragment : Fragment() {
             txt_chat_room_id.post {
                 updateData(it)
             }
+        }
+        txt_chat_room_id.setOnClickListener {
+            var clipboard =
+                context?.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+            var clip = ClipData.newPlainText("copied ChatRoom Id", txt_chat_room_id.text.toString())
+            clipboard?.setPrimaryClip(clip)
         }
     }
 

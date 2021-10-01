@@ -25,3 +25,7 @@ abstract class ErrorDelegate {
      */
     abstract fun onError(error: String)
 }
+
+abstract class ChatRoomDelegate {
+    abstract fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd)
+}

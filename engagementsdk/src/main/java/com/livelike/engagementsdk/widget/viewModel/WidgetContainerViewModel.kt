@@ -22,6 +22,8 @@ import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
@@ -124,6 +126,15 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     widgetView?.widgetViewModel as FollowUpWidgetViewModel,
                     WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_PREDICTION_FOLLOW_UP
                 )
+        }else if(WidgetType.fromString(widgetType!!) == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP ||
+            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP)
+            {
+            customView =
+                widgetViewViewFactory?.createNumberPredictionFollowupWidgetView(
+                    widgetView?.widgetViewModel as NumberPredictionFollowUpWidgetModel,
+                    WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP
+                )
+
         }
 
         if (customView == null) {
@@ -175,6 +186,14 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     customView =
                         widgetViewViewFactory?.createTextAskWidgetView(
                             widgetView.widgetViewModel as TextAskWidgetModel
+                        )
+                }
+
+                is NumberPredictionWidgetModel -> {
+                    customView =
+                        widgetViewViewFactory?.createNumberPredictionWidgetView(
+                            widgetView.widgetViewModel as NumberPredictionWidgetModel,
+                            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_NUMBER_PREDICTION
                         )
                 }
             }

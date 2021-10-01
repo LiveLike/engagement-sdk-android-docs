@@ -420,6 +420,7 @@ internal class PredictionViewModel(
                 getUserInteraction()?.url,
                 false,
                 "",
+                null,
                 widgetInfos.widgetId,
                 widgetInfos.type
             )
