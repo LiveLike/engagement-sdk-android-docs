@@ -111,7 +111,7 @@ internal class Rewards(
         rewardItemId: String,
         amount: Int,
         recipientProfileId: String,
-        liveLikeCallback: LiveLikeCallback<TransferRewardItemResponse>
+        liveLikeCallback: LiveLikeCallback<TransferRewardItem>
     ) {
 
         sdkScope.launch {
@@ -119,10 +119,16 @@ internal class Rewards(
                 pair.first?.let {
                     it.rewardItemTransferUrl?.let { url ->
 
-                        val body = gson.toJson(TransferRewardItemRequest(recipientProfileId, amount, rewardItemId))
+                        val body = gson.toJson(
+                            TransferRewardItemRequest(
+                                recipientProfileId,
+                                amount,
+                                rewardItemId
+                            )
+                        )
                             .toRequestBody("application/json".toMediaTypeOrNull())
 
-                        dataClient.remoteCall<TransferRewardItemResponse>(
+                        dataClient.remoteCall<TransferRewardItem>(
                             url,
                             RequestType.POST,
                             body,
@@ -150,6 +156,7 @@ interface IRewardsClient {
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItem>>
     )
+
     /**
      * fetch all the current user's balance for the passed rewardItemIDs
      * in callback you will receive a map of rewardItemId and balance
@@ -167,7 +174,7 @@ interface IRewardsClient {
         rewardItemId: String,
         amount: Int,
         recipientProfileId: String,
-        liveLikeCallback: LiveLikeCallback<TransferRewardItemResponse>
+        liveLikeCallback: LiveLikeCallback<TransferRewardItem>
     )
 }
 
@@ -194,9 +201,17 @@ internal data class TransferRewardItemRequest(
     val rewardItemId: String
 )
 
-data class TransferRewardItemResponse(
+data class TransferRewardItem(
+    @SerializedName("id")
+    val id: String,
     @SerializedName("created_at")
     val createdAt: String,
-    @SerializedName("new_balance")
-    val newBalance: Int
+    @SerializedName("recipient_profile_id")
+    val recipientProfileId: String,
+    @SerializedName("reward_item_amount")
+    val rewardItemAmount: Int,
+    @SerializedName("reward_item_id")
+    val rewardItemId: String,
+    @SerializedName("sender_profile_id")
+    val senderProfileId: String
 )
