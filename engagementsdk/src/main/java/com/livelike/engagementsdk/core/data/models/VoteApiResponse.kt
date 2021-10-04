@@ -9,6 +9,7 @@ class VoteApiResponse {
 
     @SerializedName("claim_token")
     val claimToken: String? = null
+
 }
 
 data class EarnedReward(
@@ -16,4 +17,12 @@ data class EarnedReward(
     val rewardId: String,
     @SerializedName("reward_item_amount")
     val rewardItemAmount: Int
+)
+
+
+data class NumberPredictionVotes(
+    @SerializedName("option_id")
+    val optionId: String,
+    @SerializedName("number")
+    val number: Int
 )

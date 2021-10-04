@@ -19,6 +19,10 @@ internal open class Resource(
     val text_prediction_id: String = "",
     val image_prediction_id: String = "",
     val text_prediction_url: String = "",
+    @field:SerializedName("image_number_prediction_id")
+    val imageNumberPredictionId: String= "",
+    @field:SerializedName("text_number_prediction_id")
+    val textNumberPredictionId: String= "",
     val correct_option_id: String = "",
     val confirmation_message: String = "",
     val testTag: String = "",
@@ -30,7 +34,9 @@ internal open class Resource(
     val engagement_count: String = "",
     val engagement_percent: String = "",
     val claim_url: String? = null,
-    val reply_url: String? = ""
+    val reply_url: String? = "",
+    @field:SerializedName("vote_url")
+    val voteUrl: String? = null
 ) {
 
     init {
@@ -90,7 +96,8 @@ data class Option(
     val vote_url: String? = "",
     val image_url: String? = "",
     var answer_count: Int? = 0,
-    var vote_count: Int? = 0
+    var vote_count: Int? = 0,
+    var number:Int? = 0
 ) {
     @Deprecated("Use getPercent instead")
     fun getPercentVote(total: Float): Int {
