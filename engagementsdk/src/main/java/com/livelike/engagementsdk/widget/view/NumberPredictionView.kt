@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.widget.view
 
+import android.animation.Animator
 import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
@@ -7,7 +8,8 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
+import android.widget.Button
+import android.widget.LinearLayout
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -24,7 +26,6 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
-import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
 import kotlinx.android.synthetic.main.livelike_user_input.view.userInput
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
@@ -33,6 +34,7 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggT
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
@@ -95,9 +97,14 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 }
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
+                showResultAnimation = true
                 disableLockButton()
-                if(viewModel?.adapter?.selectedUserVotes!!.isNotEmpty()){
-                    label_lock.visibility = View.VISIBLE
+                if(viewModel?.adapter?.selectedUserVotes != null) {
+                    if (viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
+                        viewModel?.adapter?.selectedUserVotes!!.size == viewModel?.data?.currentData?.resource?.options?.size
+                    ) {
+                        label_lock.visibility = View.VISIBLE
+                    }
                 }
                 lockInteraction()
                 onWidgetInteractionCompleted()
@@ -122,9 +129,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                                 View.GONE
                             }
                         }
-
                     }else{
-
                         confirmationMessage?.apply {
                            // if (isFirstInteraction) {
                                 text =
@@ -196,7 +201,9 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                         context.applicationContext
                     ) ?: ""
                 }
+
             textRecyclerView.apply {
+                viewModel?.adapter?.restoreSelectedVotes(viewModel?.getUserInteraction()?.votes)
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
@@ -207,13 +214,10 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
                 lockVote()
                 textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
-                viewModel?.adapter?.notifyDataSetChanged()
+               // viewModel?.adapter?.notifyDataSetChanged()
             }
 
             if (viewModel?.getUserInteraction() != null) {
-                val userSelectedVotes = viewModel?.getUserInteraction()!!.votes
-                viewModel?.adapter?.restoreSelectedVotes(userSelectedVotes!!.toMutableList())
-                findViewById<TextView>(R.id.label_lock)?.visibility = VISIBLE
                 disableLockButton()
             }
 
@@ -223,12 +227,13 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
             if (isFollowUp) {
                 val selectedPredictionVoteList =
-                    getWidgetNumberPredictionVotedAnswerList(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
-                viewModel?.followupState(
-                    selectedPredictionVoteList,
-                    resource.options,
-                    widgetViewThemeAttributes
-                )
+                    getWidgetNumberPredictionVotedAnswerList(if (resource.textNumberPredictionId.isNullOrEmpty()) resource.imageNumberPredictionId else resource.textNumberPredictionId)
+                if(selectedPredictionVoteList.isNotEmpty()) {
+                    viewModel?.followupState(
+                        selectedPredictionVoteList,
+                        widgetViewThemeAttributes
+                    )
+                }
             }
             setImeOptionDoneInKeyboard()
 
@@ -263,6 +268,25 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             }
             WidgetStates.RESULTS -> {
                // nothing needed here
+                followupAnimation.apply {
+                    addAnimatorListener(object : Animator.AnimatorListener {
+                        override fun onAnimationRepeat(animation: Animator?) {
+                        }
+
+                        override fun onAnimationEnd(animation: Animator?) {
+                            viewModel?.uiScope?.launch {
+                                delay(11000)
+                                viewModel?.dismissWidget(DismissAction.TIMEOUT)
+                            }
+                        }
+
+                        override fun onAnimationCancel(animation: Animator?) {
+                        }
+
+                        override fun onAnimationStart(animation: Animator?) {
+                        }
+                    })
+                }
             }
             WidgetStates.FINISHED -> {
                 widgetObserver(null)
@@ -271,9 +295,10 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun disableLockButton() {
-        lay_lock.visibility = VISIBLE
-        btn_lock.isEnabled = false
-        btn_lock.alpha = 0.5f
+        val lockBtn = findViewById<Button>(R.id.btn_lock)
+        findViewById<LinearLayout>(R.id.lay_lock)?.visibility = VISIBLE
+        lockBtn?.isEnabled = false
+        lockBtn?.alpha = 0.5f
     }
 
 
@@ -287,9 +312,8 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
         viewModel?.adapter?.selectionLocked = true
         viewModel?.data?.latest()?.let {
             val isFollowUp = it.resource.kind.contains("follow-up")
-            if (isFollowUp) {
+            if (isFollowUp && viewModel?.showTimer == true) {
                 textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
-
             }
         }
     }

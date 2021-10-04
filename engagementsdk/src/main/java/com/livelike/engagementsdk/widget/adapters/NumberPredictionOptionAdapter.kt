@@ -180,24 +180,30 @@ internal class NumberPredictionOptionAdapter(
             fontFamilyProvider: FontFamilyProvider?
         ) {
             logDebug { "number-prediction option background theme" }
-            val optionDescTheme: ViewStyleProps? = layoutPickerComponent?.optionText
+            val optionDescTheme: ViewStyleProps? = layoutPickerComponent?.option
             AndroidResource.updateThemeForView(itemView.description, optionDescTheme, fontFamilyProvider)
-            if (layoutPickerComponent?.optionContainer != null){
-               itemView.bkgrd.background = AndroidResource.createDrawable(layoutPickerComponent?.optionContainer)
+
+            if (layoutPickerComponent?.option != null){
+               itemView.bkgrd.background = AndroidResource.createDrawable(layoutPickerComponent?.option)
             }
 
+            //input placeholder
+            val optionInputPlaceholder: ViewStyleProps? = layoutPickerComponent?.optionInputFieldPlaceholder
+            AndroidResource.updateThemeForView( itemView.userInput, optionInputPlaceholder, fontFamilyProvider)
+
+
             // user input with state
-            if (layoutPickerComponent?.optionInputFieldContainerEnabled?.background != null &&
-                layoutPickerComponent?.optionInputFieldContainerDisabled?.background != null
+            if (layoutPickerComponent?.optionInputFieldEnabled?.background != null &&
+                layoutPickerComponent?.optionInputFieldDisabled?.background != null
             ) {
                 val userInputEnabledDrawable = AndroidResource.createDrawable(
-                    layoutPickerComponent.optionInputFieldContainerEnabled
+                    layoutPickerComponent.optionInputFieldEnabled
                 )
                 val userInputDisabledDrawable = AndroidResource.createDrawable(
-                    layoutPickerComponent.optionInputFieldContainerDisabled
+                    layoutPickerComponent.optionInputFieldDisabled
                 )
                 val inputState = StateListDrawable()
-                inputState.addState(intArrayOf(android.R.attr.state_enabled), userInputEnabledDrawable)
+                inputState.addState(intArrayOf(android.R.attr.state_focused), userInputEnabledDrawable)
                 inputState.addState(intArrayOf(), userInputDisabledDrawable)
                 itemView.userInput.background = inputState
             }
@@ -211,12 +217,14 @@ internal class NumberPredictionOptionAdapter(
     }
 
     // restores interacted data
-    fun restoreSelectedVotes(options: MutableList<NumberPredictionVotes>) {
-        this.selectedUserVotes = options
-
-        for (i in myDataset.indices) {
-            if (myDataset[i].id == options[i].optionId) myDataset[i].number = options[i].number
+    fun restoreSelectedVotes(options: List<NumberPredictionVotes>?) {
+        options?.let {
+            this.selectedUserVotes =  options.toMutableList()
+             if(options.isNotEmpty()){
+               for (i in myDataset.indices) {
+                 if (myDataset[i].id == options[i].optionId) myDataset[i].number = options[i].number
+               }
+            }
         }
-        notifyDataSetChanged()
     }
 }

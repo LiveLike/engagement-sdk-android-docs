@@ -78,21 +78,18 @@ data class TextAskTheme(
 }
 
 data class NumberPredictionOptionsTheme(
-    val optionContainer: ViewStyleProps? = null,
-    val optionInputFieldContainerEnabled: ViewStyleProps? = null,
-    val optionInputFieldContainerDisabled: ViewStyleProps? = null,
-    val optionInputFieldTextEnabled: ViewStyleProps? = null,
-    val optionInputFieldTextDisabled: ViewStyleProps? = null,
-    val optionText: ViewStyleProps? = null
+    val option: ViewStyleProps? = null,
+    val optionInputFieldEnabled: ViewStyleProps? = null,
+    val optionInputFieldDisabled: ViewStyleProps? = null,
+    val optionInputFieldPlaceholder: ViewStyleProps? = null
 ) : WidgetBaseThemeComponent(){
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
         ?: header?.validate()
-        ?: optionContainer?.validate()
-        ?: optionInputFieldContainerEnabled?.validate()
-        ?: optionInputFieldContainerDisabled?.validate()
-        ?: optionInputFieldTextEnabled?.validate()
-        ?: optionInputFieldTextDisabled?.validate()
+        ?: option?.validate()
+        ?: optionInputFieldEnabled?.validate()
+        ?: optionInputFieldDisabled?.validate()
+        ?: optionInputFieldPlaceholder?.validate()
         ?: title?.validate()
     }
 }

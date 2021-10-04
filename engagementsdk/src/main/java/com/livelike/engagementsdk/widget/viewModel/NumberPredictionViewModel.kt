@@ -35,7 +35,6 @@ import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetNumb
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -374,17 +373,15 @@ internal class NumberPredictionViewModel(
 
     internal fun followupState(
         selectedPredictionVotes: List<NumberPredictionVotes>,
-        correctOptions: List<Option>?,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
         if (followUp)
             return
         followUp = true
-        adapter?.correctOptions = correctOptions
-        adapter?.selectedUserVotes = selectedPredictionVotes.toMutableList()
         adapter?.selectionLocked = true
+        adapter?.restoreSelectedVotes(selectedPredictionVotes) // this sets the user selection
         claimPredictionRewards()
-        val isUserCorrect = isUserCorrect(selectedPredictionVotes, correctOptions)
+        val isUserCorrect = isUserCorrect(selectedPredictionVotes, data.currentData?.resource?.options)
         val rootPath =
             if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
         animationPath = if (selectedPredictionVotes.isNotEmpty()) {
@@ -393,7 +390,7 @@ internal class NumberPredictionViewModel(
             ""
         }
 
-        //widgetState.onNext(WidgetStates.RESULTS)
+        widgetState.onNext(WidgetStates.RESULTS)
         logDebug { "Number Prediction Widget Follow Up isUserCorrect:$isUserCorrect" }
     }
 
