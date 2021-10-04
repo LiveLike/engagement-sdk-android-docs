@@ -1,5 +1,6 @@
 package com.livelike.livelikedemo
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -19,6 +20,7 @@ import kotlinx.android.synthetic.main.reward_is_client_test_activity.receipent_p
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_item_balance
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_item_spinnner
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.send_btn
+import kotlinx.android.synthetic.main.reward_is_client_test_activity.show_all_reward_transfers
 
 class RewardsClientTestActivity : AppCompatActivity() {
 
@@ -105,7 +107,8 @@ class RewardsClientTestActivity : AppCompatActivity() {
                         showError("Please Enter amount")
                         return@setOnClickListener
                     }
-                    if (enter_amount_et.text.isBlank() || enter_amount_et.text.toString().toInt() > (rewardItemBalanceMap?.get(
+                    if (enter_amount_et.text.isBlank() || enter_amount_et.text.toString()
+                            .toInt() > (rewardItemBalanceMap?.get(
                             selectedrewardItem?.id ?: ""
                         ) ?: 0)
                     ) {
@@ -139,6 +142,51 @@ class RewardsClientTestActivity : AppCompatActivity() {
             }
         }
 
+        show_all_reward_transfers.setOnClickListener {
+            showAllRewardsTransfers()
+        }
+
+    }
+
+    private fun showAllRewardsTransfers() {
+        progress_bar.visibility = View.VISIBLE
+        rewardsClient.getRewardItemTransfers(
+            LiveLikePagination.FIRST,
+            object : LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>() {
+                override fun onResponse(
+                    result: LLPaginatedResult<TransferRewardItem>?,
+                    error: String?
+                ) {
+                    runOnUiThread {
+                        progress_bar.visibility = View.GONE
+                        result?.results?.let {
+                            val list = it.map { getRewardTransferString(it)}
+                            AlertDialog.Builder(this@RewardsClientTestActivity).apply {
+                                setTitle("Rewards transfer list")
+                                setItems(list.toTypedArray()) { _, _ ->
+                                }
+                                create()
+                            }.show()
+
+
+                        }
+                    }
+                    showError(error)
+                }
+            })
+    }
+
+    private fun getRewardTransferString(transferRewardItem: TransferRewardItem): String {
+        val transferRewardItemRow = StringBuilder()
+        val rewardItem = rewardIems?.find { transferRewardItem.rewardItemId == it.id }?.name ?: "NA"
+        if (transferRewardItem.senderProfileId == ((applicationContext as LiveLikeApplication).sdk.userStream.latest()?.userId
+                ?: "")
+        ) {
+            transferRewardItemRow.append("Received ${transferRewardItem.rewardItemAmount} $rewardItem from ${transferRewardItem.senderProfileId}")
+        } else {
+            transferRewardItemRow.append("Send ${transferRewardItem.rewardItemAmount} $rewardItem to ${transferRewardItem.recipientProfileId}")
+        }
+        return transferRewardItemRow.toString()
     }
 
     fun showError(error: String?) {
