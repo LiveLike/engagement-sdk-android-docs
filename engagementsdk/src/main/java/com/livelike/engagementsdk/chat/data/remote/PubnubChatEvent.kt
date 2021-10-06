@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DEL
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_DELETED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_UPDATED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_INVITE
 
 internal data class PubnubChatEvent<T>(
     @SerializedName("event")
@@ -26,7 +27,8 @@ internal enum class PubnubChatEventType(val key: String) {
     IMAGE_DELETED("image-deleted"),
     CUSTOM_MESSAGE_CREATED("custom-message-created"),
     CHATROOM_UPDATED("chatroom-updated"),
-    CHATROOM_ADDED("chat-room-add")
+    CHATROOM_ADDED("chat-room-add"),
+    CHATROOM_INVITE("chat-room-invite")
 }
 
 internal fun String.toPubnubChatEventType(): PubnubChatEventType? =
@@ -38,5 +40,6 @@ internal fun String.toPubnubChatEventType(): PubnubChatEventType? =
         CUSTOM_MESSAGE_CREATED.key -> CUSTOM_MESSAGE_CREATED
         CHATROOM_UPDATED.key -> CHATROOM_UPDATED
         CHATROOM_ADDED.key -> CHATROOM_ADDED
+        CHATROOM_INVITE.key -> CHATROOM_INVITE
         else -> null
     }

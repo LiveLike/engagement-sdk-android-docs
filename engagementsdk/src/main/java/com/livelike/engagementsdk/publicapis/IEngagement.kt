@@ -127,6 +127,25 @@ interface IEngagement {
 
     fun getCurrentUserDetails(liveLikeCallback: LiveLikeCallback<LiveLikeUserApi>)
 
+    fun sendChatRoomInviteToUser(
+        chatRoomId: String,
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInvitation>
+    )
+
+    fun updateChatRoomInviteStatus(
+        chatRoomInvitation: ChatRoomInvitation,
+        invitationStatus: ChatRoomInvitationStatus,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInvitation>
+    )
+
+    fun getInvitationsForProfileWithInvitationStatus(
+        profileId: String,
+        liveLikePagination: LiveLikePagination,
+        invitationStatus: ChatRoomInvitationStatus,
+        liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>
+    )
+
     /**
      * Returns the sponsor client
      */

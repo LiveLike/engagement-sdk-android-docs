@@ -17,6 +17,8 @@ import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.ChatRoomAdd
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
+import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
+import com.livelike.engagementsdk.publicapis.ChatRoomInvitationStatus
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
@@ -29,26 +31,42 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_add
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_change
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_create
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_delete
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_invite
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_invite_list
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_invite_list_first
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_invite_list_next
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_invite_list_previous
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_mute_status
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_refresh
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_visibility
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_id
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_id_1
+import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_id_invite_1
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_title
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_user_id
+import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_user_invite_id
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_add
+import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_add_invite
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_create
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_delete
+import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_invite_list
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_mute
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_refresh
+import kotlinx.android.synthetic.main.fragment_chat_only_home.rcyl_invite
+import kotlinx.android.synthetic.main.invite_list_item.view.btn_accept
+import kotlinx.android.synthetic.main.invite_list_item.view.btn_reject
+import kotlinx.android.synthetic.main.invite_list_item.view.txt_invitation
 import kotlinx.android.synthetic.main.user_list_item.view.txt_name
-
 
 class ChatOnlyHomeFragment : Fragment() {
 
     private var chatRoomList: ArrayList<ChatRoomInfo> = arrayListOf()
+    private val inviteAdapter =
+        InviteListAdapter(
+            ::updateInviteStatus
+        )
 
     //    private val adapter = UserAdapter()
     override fun onCreateView(
@@ -142,6 +160,33 @@ class ChatOnlyHomeFragment : Fragment() {
                             showToast(it)
                         }
                         prg_add.visibility = View.INVISIBLE
+                        btn_refresh.callOnClick()
+                    }
+                })
+        }
+
+        btn_invite.setOnClickListener {
+            val chatRoomId = ed_chat_room_id_invite_1.text.toString()
+            val userId = ed_user_invite_id.text.toString()
+            if (chatRoomId.isEmpty() || userId.isEmpty()) {
+                showToast("Enter Room Id,User Id First")
+                return@setOnClickListener
+            }
+            prg_add_invite.visibility = View.VISIBLE
+            (activity?.application as? LiveLikeApplication)?.sdk?.sendChatRoomInviteToUser(
+                chatRoomId,
+                userId,
+                object : LiveLikeCallback<ChatRoomInvitation>() {
+                    override fun onResponse(result: ChatRoomInvitation?, error: String?) {
+                        result?.let {
+                            showToast("User Invited Successfully")
+                        }
+                        ed_chat_room_id_invite_1.setText("")
+//                        ed_user_invite_id.setText("")
+                        error?.let {
+                            showToast(it)
+                        }
+                        prg_add_invite.visibility = View.INVISIBLE
                         btn_refresh.callOnClick()
                     }
                 })
@@ -261,6 +306,21 @@ class ChatOnlyHomeFragment : Fragment() {
         btn_refresh.callOnClick()
 
 
+
+        rcyl_invite.adapter = inviteAdapter
+        btn_invite_list_first.setOnClickListener {
+            inviteList(LiveLikePagination.FIRST)
+        }
+        btn_invite_list_previous.setOnClickListener {
+            inviteList(LiveLikePagination.PREVIOUS)
+        }
+        btn_invite_list_next.setOnClickListener {
+            inviteList(LiveLikePagination.NEXT)
+        }
+        btn_invite_list.setOnClickListener {
+            inviteList(LiveLikePagination.FIRST)
+        }
+
         (activity?.application as? LiveLikeApplication)?.sdk?.chatRoomDelegate =
             object : ChatRoomDelegate() {
                 override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
@@ -271,6 +331,10 @@ class ChatOnlyHomeFragment : Fragment() {
                             .setCancelable(true)
                             .show()
                     }
+                }
+
+                override fun onReceiveInvitation(invitation: ChatRoomInvitation) {
+                    showToast("Receive invitation from ${invitation.invited_by.nickname} => ${invitation.invited_by.userId}")
                 }
             }
 
@@ -288,6 +352,47 @@ class ChatOnlyHomeFragment : Fragment() {
 //        btn_previous.setOnClickListener {
 //            search(LiveLikePagination.PREVIOUS)
 //        }
+    }
+
+    private fun inviteList(pagination: LiveLikePagination) {
+        prg_invite_list.visibility = View.VISIBLE
+        (activity?.application as? LiveLikeApplication)?.sdk?.getInvitationsForProfileWithInvitationStatus(
+            (activity?.application as? LiveLikeApplication)?.sdk?.userStream!!.latest()!!.userId,
+            pagination,
+            ChatRoomInvitationStatus.PENDING,
+            object : LiveLikeCallback<List<ChatRoomInvitation>>() {
+                override fun onResponse(result: List<ChatRoomInvitation>?, error: String?) {
+                    result?.let {
+                        inviteAdapter.inviteList.clear()
+                        inviteAdapter.inviteList.addAll(it)
+                        inviteAdapter.notifyDataSetChanged()
+                    }
+                    error?.let {
+                        showToast(it)
+                    }
+                    prg_invite_list.visibility = View.GONE
+                }
+            })
+    }
+
+    private fun updateInviteStatus(
+        chatRoomInvitation: ChatRoomInvitation,
+        chatRoomInvitationStatus: ChatRoomInvitationStatus
+    ) {
+        (activity?.application as? LiveLikeApplication)?.sdk?.updateChatRoomInviteStatus(
+            chatRoomInvitation,
+            chatRoomInvitationStatus,
+            object : LiveLikeCallback<ChatRoomInvitation>() {
+                override fun onResponse(result: ChatRoomInvitation?, error: String?) {
+                    result?.let {
+                        showToast("Status: ${it.status}")
+                    }
+                    error?.let {
+                        showToast(it)
+                    }
+                    btn_invite_list_first.callOnClick()
+                }
+            })
     }
 
 
@@ -318,6 +423,34 @@ class ChatOnlyHomeFragment : Fragment() {
 //
 //            })
 //    }
+}
+
+class InviteListAdapter(
+    private val updateStatus: (invitation: ChatRoomInvitation, status: ChatRoomInvitationStatus) -> Unit
+) :
+    RecyclerView.Adapter<InviteListAdapter.InviteListViewHolder>() {
+    inner class InviteListViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    val inviteList = arrayListOf<ChatRoomInvitation>()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InviteListViewHolder {
+        return InviteListViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.invite_list_item, parent, false)
+        )
+    }
+
+    override fun onBindViewHolder(holder: InviteListViewHolder, position: Int) {
+        val item = inviteList[position]
+        holder.itemView.txt_invitation.text =
+            "ChatRoom: ${item.chat_room.title} ,By User: ${item.invited_by.nickname}"
+        holder.itemView.btn_accept.setOnClickListener {
+            updateStatus.invoke(item,ChatRoomInvitationStatus.ACCEPTED)
+        }
+        holder.itemView.btn_reject.setOnClickListener {
+            updateStatus.invoke(item,ChatRoomInvitationStatus.REJECTED)
+        }
+    }
+
+    override fun getItemCount(): Int = inviteList.size
 }
 
 class UserAdapter() : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {

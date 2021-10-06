@@ -121,6 +121,49 @@
             android:visibility="invisible" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_invite"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:text="Invite"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/ed_chat_room_id_invite_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:hint="Enter Room Id "
+                android:textColor="@android:color/white" />
+
+            <EditText
+                android:id="@+id/ed_user_invite_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:hint="Enter User Id "
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/prg_add_invite"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="invisible" />
+    </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -191,5 +234,57 @@
             android:layout_height="20dp"
             android:visibility="invisible" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <Button
+            android:id="@+id/btn_invite_list"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:text="Get Current USer Invite list"
+            android:textSize="12sp" />
+
+        <ProgressBar
+            android:id="@+id/prg_invite_list"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_invite_list_first"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:text="First"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_invite_list_next"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:text="Next"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_invite_list_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:text="Previous"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcyl_invite"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 </LinearLayout>
