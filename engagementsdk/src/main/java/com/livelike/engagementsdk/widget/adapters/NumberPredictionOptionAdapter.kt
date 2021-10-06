@@ -129,6 +129,7 @@ internal class NumberPredictionOptionAdapter(
                     count: Int,
                     after: Int
                 ) {
+                    //nothing to be done here
                 }
 
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {

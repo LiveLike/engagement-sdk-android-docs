@@ -100,11 +100,9 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 onWidgetInteractionCompleted()
                 if(viewModel?.adapter?.selectedUserVotes != null) {
                     if (viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
-                        viewModel?.adapter?.selectedUserVotes!!.size == viewModel?.data?.currentData?.resource?.options?.size
+                        viewModel?.adapter?.selectedUserVotes!!.size == viewModel?.data?.currentData?.resource?.options?.size && viewModel?.followUp == false
                     ) {
-                        if(viewModel?.followUp == false) {
                             predictBtn.visibility = View.VISIBLE
-                        }
                     }
                 }
 
@@ -284,9 +282,11 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                         }
 
                         override fun onAnimationCancel(animation: Animator?) {
+                            //nothing needed here
                         }
 
                         override fun onAnimationStart(animation: Animator?) {
+                            //nothing needed here
                         }
                     })
                 }
