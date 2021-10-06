@@ -8,8 +8,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.LinearLayout
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -24,16 +22,15 @@ import com.livelike.engagementsdk.widget.viewModel.NumberPredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.NumberPredictionWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
-import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
-import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
 import kotlinx.android.synthetic.main.livelike_user_input.view.userInput
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_textRecyclerView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
+import kotlinx.android.synthetic.main.widget_number_prediction.view.confirmationMessage
+import kotlinx.android.synthetic.main.widget_number_prediction.view.followupAnimation
+import kotlinx.android.synthetic.main.widget_number_prediction.view.lay_textRecyclerView
+import kotlinx.android.synthetic.main.widget_number_prediction.view.predictBtn
+import kotlinx.android.synthetic.main.widget_number_prediction.view.textEggTimer
+import kotlinx.android.synthetic.main.widget_number_prediction.view.textRecyclerView
+import kotlinx.android.synthetic.main.widget_number_prediction.view.titleView
+import kotlinx.android.synthetic.main.widget_number_prediction.view.txtTitleBackground
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -99,15 +96,17 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 showResultAnimation = true
                 disableLockButton()
+                lockInteraction()
+                onWidgetInteractionCompleted()
                 if(viewModel?.adapter?.selectedUserVotes != null) {
                     if (viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
                         viewModel?.adapter?.selectedUserVotes!!.size == viewModel?.data?.currentData?.resource?.options?.size
                     ) {
-                        label_lock.visibility = View.VISIBLE
+                        if(viewModel?.followUp == false) {
+                            predictBtn.visibility = View.VISIBLE
+                        }
                     }
                 }
-                lockInteraction()
-                onWidgetInteractionCompleted()
 
                 viewModel?.apply {
                     if (followUp) {
@@ -168,7 +167,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             val optionList = resource.getMergedOptions() ?: return
             if (!inflated) {
                 inflated = true
-                inflate(context, R.layout.widget_text_option_selection, this@NumberPredictionView)
+                inflate(context, R.layout.widget_number_prediction, this@NumberPredictionView)
             }
             val isFollowUp = resource.kind.contains("follow-up")
             titleView.title = resource.question
@@ -177,14 +176,16 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             titleTextView.gravity = Gravity.START
 
 
-            btn_lock.text = context.resources.getString(R.string.livelike_predict_label)
-            label_lock.text = context.resources.getString(R.string.livelike_predicted_label)
+            predictBtn.text = context.resources.getString(R.string.livelike_predict_label)
+            predictBtn.text = context.resources.getString(R.string.livelike_predicted_label)
 
             // added tag for identification of widget (by default will be empty)
             if(isFollowUp){
                 setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_number_prediction_follow_up_tag))
+                hideLockButton()
             }else{
                 setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_number_prediction_tag))
+                showLockButton()
             }
 
             viewModel?.adapter = viewModel?.adapter ?: NumberPredictionOptionAdapter(optionList, type)
@@ -208,7 +209,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 setHasFixedSize(true)
             }
 
-            btn_lock.setOnClickListener {
+            predictBtn.setOnClickListener {
                 if (viewModel?.adapter?.selectedUserVotes!!.isEmpty() ||
                     viewModel?.adapter?.selectedUserVotes!!.size !=  viewModel?.adapter?.myDataset?.size ) return@setOnClickListener
 
@@ -219,6 +220,8 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
             if (viewModel?.getUserInteraction() != null) {
                 disableLockButton()
+            }else{
+                predictBtn.text = context.resources.getString(R.string.livelike_predict_label)
             }
 
             widgetsTheme?.let {
@@ -295,16 +298,22 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun disableLockButton() {
-        val lockBtn = findViewById<Button>(R.id.btn_lock)
-        findViewById<LinearLayout>(R.id.lay_lock)?.visibility = VISIBLE
-        lockBtn?.isEnabled = false
-        lockBtn?.alpha = 0.5f
+        predictBtn.isEnabled = false
     }
 
 
     private fun enableLockButton() {
-        btn_lock.isEnabled = true
-        btn_lock.alpha = 1f
+        predictBtn.isEnabled = true
+        predictBtn.text = context.resources.getString(R.string.livelike_predict_label)
+    }
+
+
+    private fun hideLockButton(){
+        predictBtn.visibility = GONE
+    }
+
+    private fun showLockButton(){
+        predictBtn.visibility = VISIBLE
     }
 
 
@@ -355,7 +364,8 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 lockInteractionAndSubmitVote()
             }
         }
-        label_lock.visibility = View.VISIBLE
+        //label_lock.visibility = View.VISIBLE
+        predictBtn.text = context.resources.getString(R.string.livelike_predicted_label)
     }
 
 

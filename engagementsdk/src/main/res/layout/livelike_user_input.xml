@@ -7,30 +7,53 @@
     android:gravity="center_vertical"
    >
 
+
+  <!--  <ImageView
+       android:id="@+id/minus_btn"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+        android:src="@drawable/minus_selector"
+       android:text="-"
+       android:paddingRight="3dp"
+        android:layout_marginRight="7dp"
+       />
+-->
+
+
     <EditText
         android:id="@+id/userInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
         android:hint="-"
-        android:textColorHint="#444444"
+        android:textCursorDrawable="@drawable/cursor_drawable"
+        android:textColorHint="@color/livelike_number_prediction_user_input_hint"
         android:imeOptions="actionDone"
         android:gravity="center_vertical"
-        android:fontFamily="@font/livelike_option_font"
+        android:fontFamily="@font/livelike_header_font"
         android:background="@drawable/increment_decrement_input_box"
-        android:textColor="@color/livelike_white"
+        android:textColor="@color/livelike_number_prediction_user_input"
         android:focusableInTouchMode="true"
-        android:inputType="number"
-        android:textStyle="bold"
-        android:textSize="20sp"
+        android:inputType="number|numberSigned"
+        android:textSize="@dimen/livelike_user_input_option_text_size"
         android:textIsSelectable="false"
         android:singleLine="true"
         android:maxEms="3"
         android:scrollbarStyle="outsideInset"
-        android:scrollHorizontally="true"/>
+        android:scrollHorizontally="true"
+        android:visibility="visible"/>
+
+ <!--   <ImageView
+            android:id="@+id/plus_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/plus_selector"
+            android:layout_marginLeft="7dp"
+           />-->
+
 
 
 </LinearLayout>

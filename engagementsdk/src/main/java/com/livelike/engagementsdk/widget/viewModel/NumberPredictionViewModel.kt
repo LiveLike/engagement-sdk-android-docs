@@ -382,6 +382,7 @@ internal class NumberPredictionViewModel(
         adapter?.restoreSelectedVotes(selectedPredictionVotes) // this sets the user selection
         claimPredictionRewards()
         val isUserCorrect = isUserCorrect(selectedPredictionVotes, data.currentData?.resource?.options)
+        adapter?.isCorrect = isUserCorrect
         val rootPath =
             if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
         animationPath = if (selectedPredictionVotes.isNotEmpty()) {

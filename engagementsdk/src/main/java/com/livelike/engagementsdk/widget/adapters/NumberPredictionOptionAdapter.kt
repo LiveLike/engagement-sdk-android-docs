@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.FontFamilyProvider
@@ -24,6 +25,7 @@ import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
 import kotlinx.android.synthetic.main.livelike_user_input.view.userInput
 import kotlinx.android.synthetic.main.widget_number_prediction_item.view.bkgrd
+import kotlinx.android.synthetic.main.widget_number_prediction_item.view.correct_answer
 import kotlinx.android.synthetic.main.widget_number_prediction_item.view.description
 import kotlinx.android.synthetic.main.widget_number_prediction_item.view.imgView
 
@@ -32,14 +34,15 @@ internal class NumberPredictionOptionAdapter(
     var myDataset: List<Option>,
     private val widgetType: WidgetType,
     var submitListener: EnableSubmitListener? = null,
-    var correctOptions: List<Option>? = null,
     var component: NumberPredictionOptionsTheme? = null
+
 
 ) : RecyclerView.Adapter<NumberPredictionOptionAdapter.OptionViewHolder>() {
 
     var fontFamilyProvider: FontFamilyProvider? = null
     var selectionLocked = false
     var needToEnableSubmit = false
+    var isCorrect = false
     var selectedUserVotes = mutableListOf<NumberPredictionVotes>()
 
 
@@ -69,7 +72,7 @@ internal class NumberPredictionOptionAdapter(
 
 
     inner class OptionViewHolder(view: View) :
-        RecyclerView.ViewHolder(view) {
+        RecyclerView.ViewHolder(view){
 
 
         @SuppressLint("ClickableViewAccessibility")
@@ -89,34 +92,35 @@ internal class NumberPredictionOptionAdapter(
             }
 
             itemView.description.text = option.description
+            itemView.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_user_input))
+
             if (option.number != null) {
                 itemView.userInput.setText(option.number.toString())
                 itemView.userInput.isFocusableInTouchMode = false
                 itemView.userInput.isCursorVisible = false
-            } else {
-                itemView.userInput.hint = "-"
-                itemView.userInput.isEnabled = true
-                itemView.userInput.isFocusableInTouchMode = true
-                itemView.userInput.isCursorVisible = true
             }
-
 
             if(widgetType == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP ||
                 widgetType == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP){
-                itemView.userInput.isFocusableInTouchMode = false
-                itemView.userInput.isCursorVisible = false
+                showCorrectOptionWithBackground(option)
+            }else{
+                itemView.correct_answer.visibility = View.GONE
             }
 
             itemView.userInput.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(arg0: Editable) {
                     if (selectionLocked) return
+
                     val value = arg0.toString()
-                    try {
-                        myDataset[adapterPosition].number = value.toInt()
-                    }catch (ex:NumberFormatException){
-                        logError { "Invalid input" }
+                    if(value.isNotEmpty()) {
+                        try {
+                            myDataset[adapterPosition].number = value.toInt()
+                        } catch (ex: NumberFormatException) {
+                            logError { "Invalid input" }
+                            return
+                        }
+                        updateOrAddVote()
                     }
-                    updateOrAddVote()
                 }
 
                 override fun beforeTextChanged(
@@ -209,6 +213,35 @@ internal class NumberPredictionOptionAdapter(
             }
         }
 
+        // shows correct option
+        private fun showCorrectOptionWithBackground(option: Option){
+            if(!isCorrect){
+                showUserVotesWithBackground(option)
+            }else{
+                itemView.userInput.visibility = View.GONE
+            }
+            itemView.userInput.isFocusable = false
+            itemView.userInput.isFocusableInTouchMode = false
+            itemView.correct_answer.visibility = View.VISIBLE
+            itemView.correct_answer.isFocusable = false
+            itemView.correct_answer.isFocusableInTouchMode = false
+            itemView.correct_answer.setText(option.correct_number.toString())
+            itemView.correct_answer.background = ContextCompat.getDrawable(itemView.context, R.drawable.correct_background)
+        }
+
+        // show user votes with background
+        private fun showUserVotesWithBackground(option: Option){
+            if (option.number != null) {
+                itemView.userInput.visibility = View.VISIBLE
+                itemView.userInput.setText(option.number.toString())
+                itemView.userInput.background = (ContextCompat.getDrawable(itemView.context, R.drawable.wrong_background))
+                itemView.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_wrong_answer))
+
+            }else{
+                itemView.userInput.background = (ContextCompat.getDrawable(itemView.context, R.drawable.increment_decrement_input_box))
+                itemView.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_user_input_hint))
+            }
+        }
     }
 
     // used for enabling/disabling button when all options are entered
@@ -227,4 +260,5 @@ internal class NumberPredictionOptionAdapter(
             }
         }
     }
+
 }
