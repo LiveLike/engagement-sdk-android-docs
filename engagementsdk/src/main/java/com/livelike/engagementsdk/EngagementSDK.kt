@@ -766,8 +766,7 @@ class EngagementSDK(
         }
     }
 
-    override fun getInvitationsForProfileWithInvitationStatus(
-        profileId: String,
+    override fun getInvitationsForCurrentProfileWithInvitationStatus(
         liveLikePagination: LiveLikePagination,
         invitationStatus: ChatRoomInvitationStatus,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>
@@ -777,22 +776,62 @@ class EngagementSDK(
                 it?.let {
                     uiScope.launch {
                         val url = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> it.second.profileChatRoomInvitationsUrlTemplate.replace(
-                                TEMPLATE_PROFILE_ID,
-                                profileId
-                            )
-                            LiveLikePagination.NEXT -> invitationListForProfile[profileId]?.next
-                            LiveLikePagination.PREVIOUS -> invitationListForProfile[profileId]?.previous
+                            LiveLikePagination.FIRST -> "${
+                                it.second.profileChatRoomInvitationsUrlTemplate.replace(
+                                    TEMPLATE_PROFILE_ID,
+                                    it.first.id
+                                )
+                            }&status=${invitationStatus.key}"
+                            LiveLikePagination.NEXT -> invitationListForProfile[it.first.id]?.next
+                            LiveLikePagination.PREVIOUS -> invitationListForProfile[it.first.id]?.previous
                         }
                         if (url != null) {
                             val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
-                                "$url&status=${invitationStatus.key}",
+                                "$url",
                                 RequestType.GET,
                                 requestBody = null,
                                 userAccessToken
                             )
                             if (result is Result.Success) {
-                                invitationListForProfile[profileId] = result.data
+                                invitationListForProfile[it.first.id] = result.data
+                                liveLikeCallback.onResponse(result.data.results, null)
+                            } else if (result is Result.Error) {
+                                liveLikeCallback.onResponse(
+                                    null,
+                                    result.exception.message
+                                )
+                            }
+                        } else {
+                            liveLikeCallback.onResponse(null, "No More data to load")
+                        }
+                    }
+                }
+            }
+    }
+
+    override fun getInvitationsByCurrentProfileWithInvitationStatus(
+        liveLikePagination: LiveLikePagination,
+        invitationStatus: ChatRoomInvitationStatus,
+        liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>
+    ) {
+        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
+            .subscribe(this) {
+                it?.let {
+                    uiScope.launch {
+                        val url = when (liveLikePagination) {
+                            LiveLikePagination.FIRST -> "${it.second.chatRoomsInvitationsUrl}&invited_by=${it.first.id}&status=${invitationStatus.key}"
+                            LiveLikePagination.NEXT -> invitationListForProfile[it.first.id]?.next
+                            LiveLikePagination.PREVIOUS -> invitationListForProfile[it.first.id]?.previous
+                        }
+                        if (url != null) {
+                            val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
+                                "$url",
+                                RequestType.GET,
+                                requestBody = null,
+                                userAccessToken
+                            )
+                            if (result is Result.Success) {
+                                invitationListForProfile[it.first.id] = result.data
                                 liveLikeCallback.onResponse(result.data.results, null)
                             } else if (result is Result.Error) {
                                 liveLikeCallback.onResponse(

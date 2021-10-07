@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_change
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_create
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_delete
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_invite
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_invite_by_list
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_invite_list
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_invite_list_first
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_invite_list_next
@@ -50,6 +51,7 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_add
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_add_invite
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_create
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_delete
+import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_invite_by_list
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_invite_list
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_mute
@@ -321,6 +323,30 @@ class ChatOnlyHomeFragment : Fragment() {
             inviteList(LiveLikePagination.FIRST)
         }
 
+        btn_invite_by_list.setOnClickListener {
+            prg_invite_by_list.visibility = View.VISIBLE
+            (activity?.application as? LiveLikeApplication)?.sdk?.getInvitationsByCurrentProfileWithInvitationStatus(
+                LiveLikePagination.FIRST,
+                ChatRoomInvitationStatus.PENDING,
+                object : LiveLikeCallback<List<ChatRoomInvitation>>() {
+                    override fun onResponse(result: List<ChatRoomInvitation>?, error: String?) {
+                        result?.let {
+                            AlertDialog.Builder(context).apply {
+                                setTitle("List")
+                                setItems(it.map { "${it.invited_profile.nickname} => (${it.chat_room.title},${it.chat_room_id})" }
+                                    .toTypedArray()) { _, _ ->
+                                }
+                                create()
+                            }.show()
+                        }
+                        error?.let {
+                            showToast(it)
+                        }
+                        prg_invite_by_list.visibility = View.INVISIBLE
+                    }
+                })
+        }
+
         (activity?.application as? LiveLikeApplication)?.sdk?.chatRoomDelegate =
             object : ChatRoomDelegate() {
                 override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
@@ -356,8 +382,7 @@ class ChatOnlyHomeFragment : Fragment() {
 
     private fun inviteList(pagination: LiveLikePagination) {
         prg_invite_list.visibility = View.VISIBLE
-        (activity?.application as? LiveLikeApplication)?.sdk?.getInvitationsForProfileWithInvitationStatus(
-            (activity?.application as? LiveLikeApplication)?.sdk?.userStream!!.latest()!!.userId,
+        (activity?.application as? LiveLikeApplication)?.sdk?.getInvitationsForCurrentProfileWithInvitationStatus(
             pagination,
             ChatRoomInvitationStatus.PENDING,
             object : LiveLikeCallback<List<ChatRoomInvitation>>() {
@@ -366,6 +391,9 @@ class ChatOnlyHomeFragment : Fragment() {
                         inviteAdapter.inviteList.clear()
                         inviteAdapter.inviteList.addAll(it)
                         inviteAdapter.notifyDataSetChanged()
+                        if (it.isEmpty()) {
+                            showToast("List Empty")
+                        }
                     }
                     error?.let {
                         showToast(it)
@@ -397,7 +425,9 @@ class ChatOnlyHomeFragment : Fragment() {
 
 
     fun showToast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        activity?.runOnUiThread {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        }
     }
 
     companion object {
@@ -441,12 +471,12 @@ class InviteListAdapter(
     override fun onBindViewHolder(holder: InviteListViewHolder, position: Int) {
         val item = inviteList[position]
         holder.itemView.txt_invitation.text =
-            "ChatRoom: ${item.chat_room.title} ,By User: ${item.invited_by.nickname}"
+            "ChatRoom: ${item.chat_room.title},${item.chat_room_id} ,By User: ${item.invited_by.nickname}"
         holder.itemView.btn_accept.setOnClickListener {
-            updateStatus.invoke(item,ChatRoomInvitationStatus.ACCEPTED)
+            updateStatus.invoke(item, ChatRoomInvitationStatus.ACCEPTED)
         }
         holder.itemView.btn_reject.setOnClickListener {
-            updateStatus.invoke(item,ChatRoomInvitationStatus.REJECTED)
+            updateStatus.invoke(item, ChatRoomInvitationStatus.REJECTED)
         }
     }
 

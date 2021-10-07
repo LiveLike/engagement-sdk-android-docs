@@ -139,8 +139,13 @@ interface IEngagement {
         liveLikeCallback: LiveLikeCallback<ChatRoomInvitation>
     )
 
-    fun getInvitationsForProfileWithInvitationStatus(
-        profileId: String,
+    fun getInvitationsForCurrentProfileWithInvitationStatus(
+        liveLikePagination: LiveLikePagination,
+        invitationStatus: ChatRoomInvitationStatus,
+        liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>
+    )
+
+    fun getInvitationsByCurrentProfileWithInvitationStatus(
         liveLikePagination: LiveLikePagination,
         invitationStatus: ChatRoomInvitationStatus,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>

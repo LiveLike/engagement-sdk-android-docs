@@ -241,10 +241,29 @@
         android:gravity="center_vertical">
 
         <Button
+            android:id="@+id/btn_invite_by_list"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:text="Get By Current User Invite list"
+            android:textSize="12sp" />
+
+        <ProgressBar
+            android:id="@+id/prg_invite_by_list"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <Button
             android:id="@+id/btn_invite_list"
             android:layout_width="wrap_content"
             android:layout_height="34dp"
-            android:text="Get Current USer Invite list"
+            android:text="Get For Current User Invite list"
             android:textSize="12sp" />
 
         <ProgressBar
