@@ -184,7 +184,7 @@ class ChatOnlyHomeFragment : Fragment() {
                             showToast("User Invited Successfully")
                         }
                         ed_chat_room_id_invite_1.setText("")
-//                        ed_user_invite_id.setText("")
+                        ed_user_invite_id.setText("")
                         error?.let {
                             showToast(it)
                         }

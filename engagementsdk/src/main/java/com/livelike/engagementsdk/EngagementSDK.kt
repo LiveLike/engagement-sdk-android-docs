@@ -741,7 +741,7 @@ class EngagementSDK(
                             RequestType.POST,
                             requestBody = """{"chat_room_id":"$chatRoomId","invited_profile_id":"$profileId"}"""
                                 .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
-                            userAccessToken
+                            userAccessToken, true
                         )
                         liveLikeCallback.processResult(result)
                     }
@@ -760,7 +760,8 @@ class EngagementSDK(
                 RequestType.PATCH,
                 requestBody = """{"status":"${invitationStatus.key}"}"""
                     .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
-                userAccessToken
+                userAccessToken,
+                true
             )
             liveLikeCallback.processResult(result)
         }
@@ -782,18 +783,18 @@ class EngagementSDK(
                                     it.first.id
                                 )
                             }&status=${invitationStatus.key}"
-                            LiveLikePagination.NEXT -> invitationListForProfile[it.first.id]?.next
-                            LiveLikePagination.PREVIOUS -> invitationListForProfile[it.first.id]?.previous
+                            LiveLikePagination.NEXT -> invitationForProfileMap[it.first.id]?.next
+                            LiveLikePagination.PREVIOUS -> invitationForProfileMap[it.first.id]?.previous
                         }
                         if (url != null) {
                             val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
-                                "$url",
+                                url,
                                 RequestType.GET,
                                 requestBody = null,
-                                userAccessToken
+                                userAccessToken, true
                             )
                             if (result is Result.Success) {
-                                invitationListForProfile[it.first.id] = result.data
+                                invitationForProfileMap[it.first.id] = result.data
                                 liveLikeCallback.onResponse(result.data.results, null)
                             } else if (result is Result.Error) {
                                 liveLikeCallback.onResponse(
@@ -820,18 +821,18 @@ class EngagementSDK(
                     uiScope.launch {
                         val url = when (liveLikePagination) {
                             LiveLikePagination.FIRST -> "${it.second.chatRoomsInvitationsUrl}&invited_by=${it.first.id}&status=${invitationStatus.key}"
-                            LiveLikePagination.NEXT -> invitationListForProfile[it.first.id]?.next
-                            LiveLikePagination.PREVIOUS -> invitationListForProfile[it.first.id]?.previous
+                            LiveLikePagination.NEXT -> invitationByProfileMap[it.first.id]?.next
+                            LiveLikePagination.PREVIOUS -> invitationByProfileMap[it.first.id]?.previous
                         }
                         if (url != null) {
                             val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
-                                "$url",
+                                url,
                                 RequestType.GET,
                                 requestBody = null,
-                                userAccessToken
+                                userAccessToken, true
                             )
                             if (result is Result.Success) {
-                                invitationListForProfile[it.first.id] = result.data
+                                invitationByProfileMap[it.first.id] = result.data
                                 liveLikeCallback.onResponse(result.data.results, null)
                             } else if (result is Result.Error) {
                                 liveLikeCallback.onResponse(
@@ -848,7 +849,8 @@ class EngagementSDK(
     }
 
 
-    private val invitationListForProfile = hashMapOf<String, ChatRoomInvitationResponse>()
+    private val invitationForProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
+    private val invitationByProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
 
 
     override fun sponsor(): Sponsor {
