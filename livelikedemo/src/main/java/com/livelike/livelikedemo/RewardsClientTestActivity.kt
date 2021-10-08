@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.gamification.IRewardsClient
+import com.livelike.engagementsdk.gamification.RewardItemBalance
 import com.livelike.engagementsdk.gamification.TransferRewardItem
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.enter_amount_et
@@ -45,24 +46,27 @@ class RewardsClientTestActivity : AppCompatActivity() {
                         fetchRewardItemBalances(it.map { it.id })
                         rewardIems = it
                     }
-                    showError(error)
+                    showToast(error)
                 }
             })
 
     }
 
     fun fetchRewardItemBalances(ids: List<String>) {
-        rewardsClient.getRewardItemsBalance(
+        rewardsClient.getRewardItemBalances(
+            LiveLikePagination.FIRST,
             ids,
-            object : LiveLikeCallback<Map<String, Int>>() {
-                override fun onResponse(result: Map<String, Int>?, error: String?) {
+            object : LiveLikeCallback<LLPaginatedResult<RewardItemBalance>>() {
+                override fun onResponse(result: LLPaginatedResult<RewardItemBalance>?, error: String?) {
                     result?.let {
-                        rewardItemBalanceMap.putAll(result)
+                        result.results?.forEach {
+                            rewardItemBalanceMap.put(it.rewardItemId,it.rewardItemBalance)
+                        }
                         runOnUiThread {
                             initUI()
                         }
                     }
-                    showError(error)
+                    showToast(error)
                 }
             })
     }
@@ -97,14 +101,14 @@ class RewardsClientTestActivity : AppCompatActivity() {
 
             send_btn.setOnClickListener {
                 if (selectedrewardItem == null) {
-                    showError("Please select reward item")
+                    showToast("Please select reward item")
                 } else {
                     if (!validateUuid(receipent_profile_id.text.toString())) {
-                        showError("Please Enter valid recipeint id")
+                        showToast("Please Enter valid recipeint id")
                         return@setOnClickListener
                     }
                     if (enter_amount_et.text.isEmpty()) {
-                        showError("Please Enter amount")
+                        showToast("Please Enter amount")
                         return@setOnClickListener
                     }
                     if (enter_amount_et.text.isBlank() || enter_amount_et.text.toString()
@@ -112,7 +116,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
                             selectedrewardItem?.id ?: ""
                         ) ?: 0)
                     ) {
-                        showError("Please Enter amount less than or equal to available balance")
+                        showToast("Please Enter amount less than or equal to available balance")
                         return@setOnClickListener
                     }
 
@@ -131,9 +135,12 @@ class RewardsClientTestActivity : AppCompatActivity() {
                                     reward_item_balance.text =
                                         "Balance : ${(rewardItemBalanceMap?.get(selectedrewardItem?.id ?: "") ?: "0")}"
                                     progress_bar.visibility = View.GONE
-                                    showError("amount sent successfully")
                                 }
-                                showError(error)
+                                if (error == null) {
+                                    showToast("amount sent successfully")
+                                } else {
+                                    showToast(error)
+                                }
                             }
 
                         })
@@ -168,10 +175,9 @@ class RewardsClientTestActivity : AppCompatActivity() {
                                 create()
                             }.show()
 
-
                         }
                     }
-                    showError(error)
+                    showToast(error)
                 }
             })
     }
@@ -189,8 +195,8 @@ class RewardsClientTestActivity : AppCompatActivity() {
         return transferRewardItemRow.toString()
     }
 
-    fun showError(error: String?) {
-        error?.let {
+    fun showToast(message: String?) {
+        message?.let {
             runOnUiThread {
                 Toast.makeText(this, it, Toast.LENGTH_LONG).show()
             }

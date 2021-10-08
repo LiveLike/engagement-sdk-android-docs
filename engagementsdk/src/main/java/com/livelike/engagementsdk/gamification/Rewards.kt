@@ -64,9 +64,10 @@ internal class Rewards(
         }
     }
 
-    override fun getRewardItemsBalance(
+    override fun getRewardItemBalances(
+        liveLikePagination: LiveLikePagination,
         rewardItemIds: List<String>,
-        liveLikeCallback: LiveLikeCallback<Map<String, Int>>
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItemBalance>>
     ) {
 
         sdkScope.launch {
@@ -79,7 +80,7 @@ internal class Rewards(
                             }
                         }
                         httpUrl?.build()?.let { httpUrl ->
-                            dataClient.remoteCall<RewardItemBalancesApiResponse>(
+                            dataClient.remoteCall<LLPaginatedResult<RewardItemBalance>>(
                                 httpUrl,
                                 RequestType.GET,
                                 null,
@@ -87,12 +88,7 @@ internal class Rewards(
                             ).run {
                                 if (this is Result.Success) {
                                     liveLikeCallback.onResponse(
-                                        this.data.rewardItemBalanceList.associate { rewardItemBalance ->
-                                            Pair(
-                                                rewardItemBalance.rewardItemId,
-                                                rewardItemBalance.rewardItemBalance
-                                            )
-                                        },
+                                        this.data,
                                         null
                                     )
                                 } else if (this is Result.Error) {
@@ -202,9 +198,10 @@ interface IRewardsClient {
      * fetch all the current user's balance for the passed rewardItemIDs
      * in callback you will receive a map of rewardItemId and balance
      **/
-    fun getRewardItemsBalance(
+    fun getRewardItemBalances(
+        liveLikePagination: LiveLikePagination,
         rewardItemIds: List<String>,
-        liveLikeCallback: LiveLikeCallback<Map<String, Int>>
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItemBalance>>
     )
 
     /**
@@ -229,12 +226,13 @@ interface IRewardsClient {
 
 }
 
+@Deprecated("use paginates result class")
 internal data class RewardItemBalancesApiResponse(
     @SerializedName("reward_item_balances")
     val rewardItemBalanceList: List<RewardItemBalance>
 )
 
-internal data class RewardItemBalance(
+data class RewardItemBalance(
     @SerializedName("reward_item_balance")
     val rewardItemBalance: Int,
     @SerializedName("reward_item_id")
