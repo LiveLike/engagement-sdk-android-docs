@@ -278,12 +278,17 @@ internal open class EngagementDataClientImpl :
                     val error = execute.body?.string()
                     val errorJson = JsonParser.parseString(error).asJsonObject
                     val msg = execute.message
-                    val errorMsg = when (msg.isNotEmpty()) {
-                        true -> msg
-                        else -> when (fullErrorJson) {
-                            true -> errorJson
-                            else -> errorJson.get("detail").asString
+                    logError { error }
+                    var errorMsg = try {
+                        when (msg.isNotEmpty()) {
+                            true -> msg
+                            else -> when (fullErrorJson) {
+                                true -> errorJson.toString()
+                                else -> errorJson.get("detail")?.asString ?: ""
+                            }
                         }
+                    } catch (e: NullPointerException) {
+                        msg
                     }
                     Result.Error(
                         IOException(
