@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
 import com.livelike.engagementsdk.gamification.Badges
+import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.sponsorship.Sponsor
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
@@ -136,6 +137,11 @@ interface IEngagement {
      * Returns the Badges client
      */
     fun badges(): Badges
+
+    /**
+     * Returns the Rewards client
+     */
+    fun rewards(): IRewardsClient
 
     fun close()
 }
