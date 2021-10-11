@@ -820,7 +820,7 @@ class EngagementSDK(
                 it?.let {
                     uiScope.launch {
                         val url = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> "${it.second.chatRoomsInvitationsUrl}&invited_by=${it.first.id}&status=${invitationStatus.key}"
+                            LiveLikePagination.FIRST -> "${it.second.chatRoomsInvitationsUrl}&invited_by_id=${it.first.id}&status=${invitationStatus.key}"
                             LiveLikePagination.NEXT -> invitationByProfileMap[it.first.id]?.next
                             LiveLikePagination.PREVIOUS -> invitationByProfileMap[it.first.id]?.previous
                         }
