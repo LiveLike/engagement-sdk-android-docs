@@ -15,7 +15,6 @@ definitions:
           - sonar
           - gradlewrapper
         script:
-          - size: 2x # Double resources available for this step.
           - pipe: sonarsource/sonarcloud-scan:1.2.0
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.4
           - ./gradlew lintProductionRelease
