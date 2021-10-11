@@ -23,6 +23,11 @@ definitions:
           - build/libs/**
 
 pipelines:                 # More info here: https://confluence.atlassian.com/bitbucket/configure-bitbucket-pipelines-yml-792298910.html
+
+  pull-requests:
+    '**':
+      - step: *build-test-sonarcloud
+
   branches:
     master:
       - step: *build-test-sonarcloud
@@ -38,7 +43,3 @@ pipelines:                 # More info here: https://confluence.atlassian.com/bi
             - pipe: bugsnag-integrations/bugsnag-build-report:0.2.2
               variables:
                 API_KEY: 'abb12b7b7d7868c07733e3e3808656c8'
-
-  pull-requests:
-    '**':
-      - step: *build-test-sonarcloud
