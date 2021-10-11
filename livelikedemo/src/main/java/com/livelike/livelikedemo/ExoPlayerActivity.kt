@@ -2,19 +2,27 @@ package com.livelike.livelikedemo
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.method.ScrollingMovementMethod
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.Constraints
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -22,6 +30,8 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
+import com.livelike.engagementsdk.chat.ChatViewDelegate
+import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
@@ -29,7 +39,9 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycl
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.registerLogsHandler
 import com.livelike.engagementsdk.core.utils.unregisterLogsHandler
+import com.livelike.engagementsdk.publicapis.ChatMessageType
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
@@ -54,6 +66,7 @@ import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import kotlinx.android.synthetic.main.activity_exo_player.btn_custom_message
 import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.live_blog
@@ -63,11 +76,17 @@ import kotlinx.android.synthetic.main.activity_exo_player.playerView
 import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
 import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
+import kotlinx.android.synthetic.main.custom_msg_item.view.img_sender_msg
+import kotlinx.android.synthetic.main.custom_msg_item.view.lay_msg_back
+import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg
+import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_sender_name
+import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_time
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_id
 import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
 import java.util.Date
+import java.util.Random
 import java.util.Timer
 import java.util.TimerTask
 
@@ -364,7 +383,40 @@ class ExoPlayerActivity : AppCompatActivity() {
                     println(text)
                 }
             }
+
+
+
+        btn_custom_message.setOnClickListener {
+            session?.chatSession?.sendCustomChatMessage("{" +
+                    "\"custom_message\": \"${getRandomString((10..50).random())}\"" +
+                    "}", object : LiveLikeCallback<LiveLikeChatMessage>() {
+                override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                    result?.let {
+                        println("ExoPlayerActivity.onResponse> ${it.id}")
+                    }
+                    error?.let {
+                        Toast.makeText(applicationContext, error, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+        }
     }
+
+    class MyCustomMsgViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    private fun getRandomString(sizeOfRandomString: Int): String {
+        val random = Random()
+        val sb = StringBuilder(sizeOfRandomString)
+        for (i in 0 until sizeOfRandomString) {
+            sb.append(ALLOWED_CHARACTERS[random.nextInt(ALLOWED_CHARACTERS.length)])
+            if (random.nextBoolean()) {
+                sb.append(" ")
+            }
+        }
+        return sb.toString()
+    }
+
+    private val ALLOWED_CHARACTERS = "0123456789qwertyuiopasdfghjklzxcvbnm"
 
     override fun onBackPressed() {
         if (this.isTaskRoot) {
@@ -514,7 +566,73 @@ class ExoPlayerActivity : AppCompatActivity() {
             if (showLink) {
                 chat_view.chatMessageUrlPatterns = customLink
             }
+
+            chat_view.chatViewDelegate = object : ChatViewDelegate {
+                override fun onCreateViewHolder(
+                    parent: ViewGroup,
+                    viewType: ChatMessageType
+                ): RecyclerView.ViewHolder {
+                    return MyCustomMsgViewHolder(
+                        LayoutInflater.from(parent.context)
+                            .inflate(R.layout.custom_msg_item, parent, false)
+                    )
+                }
+
+                override fun onBindViewHolder(
+                    holder: RecyclerView.ViewHolder,
+                    liveLikeChatMessage: LiveLikeChatMessage,
+                    chatViewThemeAttributes: ChatViewThemeAttributes,
+                    showChatAvatar: Boolean
+                ) {
+                    println("ExoPlayerActivity.onBindView>> ${holder is MyCustomMsgViewHolder}")
+                    chatViewThemeAttributes.chatBubbleBackgroundRes?.let {
+                        if (it < 0) {
+                            holder.itemView.lay_msg_back.setBackgroundColor(it)
+                        } else {
+                            val value = TypedValue()
+                            try {
+                                holder.itemView.lay_msg_back.context.resources.getValue(
+                                    it,
+                                    value,
+                                    true
+                                )
+                                when (value.type) {
+                                    TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> holder.itemView.lay_msg_back.setBackgroundResource(
+                                        it
+                                    )
+                                    TypedValue.TYPE_NULL -> holder.itemView.lay_msg_back.setBackgroundColor(
+                                        Color.TRANSPARENT
+                                    )
+                                    else -> holder.itemView.lay_msg_back.setBackgroundColor(Color.TRANSPARENT)
+                                }
+                            } catch (e: Resources.NotFoundException) {
+                                holder.itemView.lay_msg_back.setBackgroundColor(it)
+                            }
+                        }
+                    }
+                    if (showChatAvatar) {
+                        holder.itemView.img_sender_msg.visibility = View.VISIBLE
+                        Glide.with(applicationContext)
+                            .load(liveLikeChatMessage.userPic)
+                            .error(R.drawable.coin)
+                            .placeholder(R.drawable.coin)
+                            .into(holder.itemView.img_sender_msg)
+                    } else {
+                        holder.itemView.img_sender_msg.visibility = View.GONE
+                    }
+                    holder.itemView.txt_msg.text = liveLikeChatMessage.custom_data
+                    holder.itemView.txt_msg_sender_name.text = liveLikeChatMessage.nickname
+                    holder.itemView.txt_msg_time.text = liveLikeChatMessage.timestamp
+                    if (liveLikeChatMessage.isDeleted) {
+                        holder.itemView.txt_msg.text = "This msg is deleted"
+                        holder.itemView.txt_msg.setTypeface(null, Typeface.ITALIC)
+                    } else {
+                        holder.itemView.txt_msg.setTypeface(null, Typeface.NORMAL)
+                    }
+                }
+            }
             chat_view?.setSession(session!!.chatSession)
+
         }
         player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
     }

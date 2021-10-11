@@ -116,7 +116,9 @@ internal class ChatViewModel(
             0,
             messages.filter {
                 !deletedMessages.contains(it.id) && !getBlockedUsers()
-                    .contains(it.senderId) && (it.messageEvent != PubnubChatEventType.CUSTOM_MESSAGE_CREATED)
+                    .contains(it.senderId)
+            }.filter {
+                chatAdapter.chatViewDelegate != null || (chatAdapter.chatViewDelegate == null && it.messageEvent != PubnubChatEventType.CUSTOM_MESSAGE_CREATED)
             }.map {
                 it.isFromMe = userStream.latest()?.id == it.senderId
                 it
@@ -140,7 +142,8 @@ internal class ChatViewModel(
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
 
         // if custom message is received, ignore that, custom messages doesn't need to be shown in UI
-        if (message.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) return
+        // if integrator provide the chatViewDelegate that means we are allowing to show the custom message
+        if (chatAdapter.chatViewDelegate == null && message.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) return
 
         if (getBlockedUsers()
                 .contains(message.senderId)
