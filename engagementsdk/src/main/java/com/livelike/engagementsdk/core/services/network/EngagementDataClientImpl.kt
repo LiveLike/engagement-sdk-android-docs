@@ -160,6 +160,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("custom_data"),
                         responseData.extractStringOrEmpty("badges_url"),
                         responseData.extractStringOrEmpty("badge_progress_url"),
+                        responseData.extractStringOrEmpty("reward_item_balances_url"),
+                        responseData.extractStringOrEmpty("reward_item_transfer_url"),
                         responseData.extractStringOrEmpty("subscribe_channel"),
                         responseData.extractLong("reported_count").toInt(),
                         responseData.extractStringOrEmpty("created_at")
@@ -204,6 +206,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("custom_data"),
                         responseData.extractStringOrEmpty("badges_url"),
                         responseData.extractStringOrEmpty("badge_progress_url"),
+                        responseData.extractStringOrEmpty("reward_item_balances_url"),
+                        responseData.extractStringOrEmpty("reward_item_transfer_url"),
                         responseData.extractStringOrEmpty("subscribe_channel"),
                         responseData.extractLong("reported_count").toInt(),
                         responseData.extractStringOrEmpty("created_at")
@@ -274,12 +278,17 @@ internal open class EngagementDataClientImpl :
                     val error = execute.body?.string()
                     val errorJson = JsonParser.parseString(error).asJsonObject
                     val msg = execute.message
-                    val errorMsg = when (msg.isNotEmpty()) {
-                        true -> msg
-                        else -> when (fullErrorJson) {
-                            true -> errorJson
-                            else -> errorJson.get("detail").asString
+                    logError { error }
+                    var errorMsg = try {
+                        when (msg.isNotEmpty()) {
+                            true -> msg
+                            else -> when (fullErrorJson) {
+                                true -> errorJson.toString()
+                                else -> errorJson.get("detail")?.asString ?: ""
+                            }
                         }
+                    } catch (e: NullPointerException) {
+                        msg
                     }
                     Result.Error(
                         IOException(

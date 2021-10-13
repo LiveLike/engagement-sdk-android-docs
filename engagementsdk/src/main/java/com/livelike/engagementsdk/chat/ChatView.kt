@@ -9,13 +9,8 @@ import android.text.Spannable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.Gravity
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.view.View.OnLayoutChangeListener
-import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -24,24 +19,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.livelike.engagementsdk.CHAT_PROVIDER
-import com.livelike.engagementsdk.DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER
-import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.KeyboardHideReason
-import com.livelike.engagementsdk.KeyboardType
-import com.livelike.engagementsdk.LiveLikeUser
-import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.ViewAnimationEvents
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import com.livelike.engagementsdk.chat.stickerKeyboard.FragmentClickListener
-import com.livelike.engagementsdk.chat.stickerKeyboard.Sticker
-import com.livelike.engagementsdk.chat.stickerKeyboard.StickerKeyboardView
-import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
-import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
-import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
-import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
-import com.livelike.engagementsdk.chat.stickerKeyboard.targetByteArrays
-import com.livelike.engagementsdk.chat.stickerKeyboard.targetDrawables
+import com.livelike.engagementsdk.chat.stickerKeyboard.*
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.core.utils.animators.buildScaleAnimator
@@ -52,32 +32,12 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.view.loadImage
-import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
-import kotlinx.android.synthetic.main.chat_input.view.button_emoji
-import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
-import kotlinx.android.synthetic.main.chat_input.view.chat_input_border
-import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
-import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
-import kotlinx.android.synthetic.main.chat_user_profile_bar.view.gamification_badge_iv
-import kotlinx.android.synthetic.main.chat_user_profile_bar.view.pointView
-import kotlinx.android.synthetic.main.chat_user_profile_bar.view.rank_label
-import kotlinx.android.synthetic.main.chat_user_profile_bar.view.rank_value
-import kotlinx.android.synthetic.main.chat_user_profile_bar.view.user_profile_tv
-import kotlinx.android.synthetic.main.chat_view.view.chatInput
-import kotlinx.android.synthetic.main.chat_view.view.chat_view
-import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
-import kotlinx.android.synthetic.main.chat_view.view.chatdisplayBack
-import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
-import kotlinx.android.synthetic.main.chat_view.view.snap_live
-import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
-import kotlinx.android.synthetic.main.chat_view.view.swipeToRefresh
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.android.synthetic.main.chat_input.view.*
+import kotlinx.android.synthetic.main.chat_user_profile_bar.view.*
+import kotlinx.android.synthetic.main.chat_view.view.*
+import kotlinx.coroutines.*
 import pl.droidsonroids.gif.MultiCallback
-import java.util.Date
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -137,6 +97,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             user_profile_display_LL?.apply {
                 visibility = if (value) View.VISIBLE else View.GONE
             }
+        }
+
+    var chatViewDelegate: ChatViewDelegate? = null
+        set(value) {
+            field = value
+            viewModel?.chatAdapter?.chatViewDelegate = value
         }
 
     private val viewModel: ChatViewModel?
@@ -331,7 +297,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             .not()
                         ) {
                             snapToLive()
-                        } else if (chatAdapter.isReactionPopUpShowing() || viewModel?.isLastItemVisible == false) {
+                        } else if (chatAdapter.isReactionPopUpShowing() || (viewModel?.isLastItemVisible == false && chatAdapter.itemCount > 0)) {
                             showSnapToLive()
                         }
                     }
@@ -640,6 +606,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      */
     private fun setDataSource(chatAdapter: ChatRecyclerAdapter) {
         chatdisplay.let { rv ->
+            chatAdapter.chatViewDelegate = chatViewDelegate
             rv.adapter = chatAdapter
             val lm = rv.layoutManager as LinearLayoutManager
             lm.recycleChildrenOnDetach = true

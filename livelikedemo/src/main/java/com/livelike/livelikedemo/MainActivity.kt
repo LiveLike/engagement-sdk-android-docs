@@ -63,6 +63,7 @@ import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
 import kotlinx.android.synthetic.main.activity_main.progressBar
+import kotlinx.android.synthetic.main.activity_main.rewards_client_test
 import kotlinx.android.synthetic.main.activity_main.sample_app
 import kotlinx.android.synthetic.main.activity_main.sdk_version
 import kotlinx.android.synthetic.main.activity_main.sponsor_test
@@ -534,6 +535,10 @@ class MainActivity : AppCompatActivity() {
         }
         badges_collection.setOnClickListener {
             startActivity(Intent(this, BadgesCollectionActivity::class.java))
+        }
+
+        rewards_client_test.setOnClickListener {
+            startActivity(Intent(this, RewardsClientTestActivity::class.java))
         }
 
         (application as LiveLikeApplication).removePublicSession()

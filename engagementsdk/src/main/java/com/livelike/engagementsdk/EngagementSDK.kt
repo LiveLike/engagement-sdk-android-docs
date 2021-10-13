@@ -41,6 +41,8 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSha
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.gamification.Badges
+import com.livelike.engagementsdk.gamification.IRewardsClient
+import com.livelike.engagementsdk.gamification.Rewards
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
@@ -732,6 +734,10 @@ class EngagementSDK(
         return Badges(configurationStream, dataClient, sdkScope)
     }
 
+    override fun rewards(): IRewardsClient {
+        return Rewards(configurationUserPairFlow, dataClient, sdkScope)
+    }
+
     /**
      * Closing all the services , stream and clear the variable
      * TODO: all stream close,instance clear
@@ -1106,6 +1112,8 @@ class EngagementSDK(
         val pubnubPresenceTimeout: Int,
         @SerializedName("badges_url")
         val badgesUrl: String,
+        @SerializedName("reward_items_url")
+        internal var rewardItemsUrl: String?,
         @SerializedName("user_search_url")
         val userSearchUrl: String
     )
