@@ -21,6 +21,9 @@
         android:versionName="1"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
+        <activity
+            android:name=".RewardsClientTestActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".WidgetJsonActivity" />
         <activity android:name=".BadgesCollectionActivity" />
         <activity android:name=".SponsorTestActivity" />

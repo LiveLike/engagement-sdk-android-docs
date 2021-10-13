@@ -25,6 +25,10 @@ data class LiveLikeUser(
     internal var badgesUrl: String?,
     @SerializedName("badge_progress_url")
     internal var badgeProgressUrl: String?,
+    @SerializedName("reward_item_balances_url")
+    internal var rewardItemBalancesUrl: String?,
+    @SerializedName("reward_item_transfer_url")
+    internal var rewardItemTransferUrl: String?,
     @SerializedName("subscribe_channel")
     internal var subscribeChannel: String?,
     @SerializedName("reported_count") val reportedCount: Int,

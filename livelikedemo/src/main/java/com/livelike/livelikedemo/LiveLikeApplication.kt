@@ -3,6 +3,7 @@ package com.livelike.livelikedemo
 import android.app.Application
 import android.content.Context
 import android.os.Looper
+import android.util.Log
 import com.google.android.exoplayer2.ui.PlayerView
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
@@ -10,6 +11,7 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.core.utils.registerLogsHandler
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
@@ -43,6 +45,16 @@ class LiveLikeApplication : Application() {
         initSDK()
 //        TODO: THIS SHOULD BE FIXED ASAP
 //        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
+        reigsterLogsHandler()
+    }
+
+    private fun reigsterLogsHandler() {
+        registerLogsHandler(object :
+                (String) -> Unit {
+            override fun invoke(text: String) {
+               Log.d("engagement sdk logs : ", text)
+            }
+        })
     }
 
     private fun initSDK() {
