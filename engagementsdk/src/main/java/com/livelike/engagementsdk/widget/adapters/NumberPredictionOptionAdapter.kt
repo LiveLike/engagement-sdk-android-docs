@@ -43,6 +43,7 @@ internal class NumberPredictionOptionAdapter(
     var selectionLocked = false
     var needToEnableSubmit = false
     var isCorrect = false
+    var selectedPosition = RecyclerView.NO_POSITION
     var selectedUserVotes = mutableListOf<NumberPredictionVotes>()
 
 
@@ -58,7 +59,6 @@ internal class NumberPredictionOptionAdapter(
 
     override fun onBindViewHolder(holder: OptionViewHolder, position: Int) {
         val item = myDataset[position]
-
         // sets the data
         holder.setData(
             item,
@@ -100,27 +100,39 @@ internal class NumberPredictionOptionAdapter(
                 itemView.userInput.isCursorVisible = false
             }
 
+            //lock prediction when followup received
+            if(option.correct_number != null && option.number == null){
+                itemView.userInput.isFocusableInTouchMode = false
+                itemView.userInput.isCursorVisible = false
+            }
+
             if(widgetType == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP ||
                 widgetType == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP){
-                showCorrectOptionWithBackground(option)
+                itemView.correct_answer.visibility = View.VISIBLE
+                showCorrectPrediction(option)
+
             }else{
-                itemView.correct_answer.visibility = View.GONE
+                itemView.correct_answer.visibility = View.GONE //this shows only for followup
             }
+
 
             itemView.userInput.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(arg0: Editable) {
-                    if (selectionLocked) return
-
+                    if (adapterPosition == RecyclerView.NO_POSITION || selectionLocked) return
                     val value = arg0.toString()
-                    if(value.isNotEmpty()) {
+                    if(value.isEmpty()){
+                        selectedPosition = adapterPosition
+                        myDataset[selectedPosition].number = null
+                    }else{
                         try {
-                            myDataset[adapterPosition].number = value.toInt()
+                            selectedPosition = adapterPosition
+                            myDataset[selectedPosition].number = value.toInt()
                         } catch (ex: NumberFormatException) {
                             logError { "Invalid input" }
                             return
                         }
-                        updateOrAddVote()
                     }
+                    addRemovePredictionData()
                 }
 
                 override fun beforeTextChanged(
@@ -138,7 +150,7 @@ internal class NumberPredictionOptionAdapter(
             })
 
 
-            itemView.userInput.setOnEditorActionListener { v, actionId, event ->
+            itemView.userInput.setOnEditorActionListener { v, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     val imm =
                         v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -159,8 +171,8 @@ internal class NumberPredictionOptionAdapter(
 
         }
 
-        // add votes for submission
-        private fun updateOrAddVote() {
+        // add/removes votes for submission
+        private fun addRemovePredictionData() {
             val userVote: NumberPredictionVotes? =
                 selectedUserVotes.find { it.optionId == myDataset[adapterPosition].id }
             if (userVote == null) {
@@ -171,9 +183,12 @@ internal class NumberPredictionOptionAdapter(
                     )
                 )
             } else {
-                userVote.number = myDataset[adapterPosition].number!!
+                if(myDataset[adapterPosition].number != null) {
+                    userVote.number = myDataset[adapterPosition].number!!
+                }else{
+                    selectedUserVotes.remove(userVote)
+                }
             }
-
             needToEnableSubmit = selectedUserVotes.size == myDataset.size
             submitListener?.onSubmitEnabled(needToEnableSubmit)
         }
@@ -214,24 +229,21 @@ internal class NumberPredictionOptionAdapter(
             }
         }
 
-        // shows correct option
-        private fun showCorrectOptionWithBackground(option: Option){
+        // shows correct predictions
+        private fun showCorrectPrediction(option: Option){
             if(!isCorrect){
-                showUserVotesWithBackground(option)
+                showUserSelectedPrediction(option) //for wrong answer
             }else{
-                itemView.userInput.visibility = View.GONE
+                itemView.userInput.visibility = View.GONE //this is only visible if correct answer is predicted
             }
             itemView.userInput.isFocusable = false
             itemView.userInput.isFocusableInTouchMode = false
-            itemView.correct_answer.visibility = View.VISIBLE
-            itemView.correct_answer.isFocusable = false
-            itemView.correct_answer.isFocusableInTouchMode = false
             itemView.correct_answer.setText(option.correct_number.toString())
-            itemView.correct_answer.background = ContextCompat.getDrawable(itemView.context, R.drawable.correct_background)
         }
 
-        // show user votes with background
-        private fun showUserVotesWithBackground(option: Option){
+
+        // show user prediction with background
+        private fun showUserSelectedPrediction(option: Option){
             if (option.number != null) {
                 itemView.userInput.visibility = View.VISIBLE
                 itemView.userInput.setText(option.number.toString())
@@ -239,7 +251,7 @@ internal class NumberPredictionOptionAdapter(
                 itemView.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_wrong_answer))
 
             }else{
-                itemView.userInput.background = (ContextCompat.getDrawable(itemView.context, R.drawable.increment_decrement_input_box))
+                itemView.userInput.background = (ContextCompat.getDrawable(itemView.context, R.drawable.user_input_background))
                 itemView.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_user_input_hint))
             }
         }

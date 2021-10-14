@@ -34,7 +34,7 @@
         android:imeOptions="actionDone"
         android:gravity="center_vertical"
         android:fontFamily="@font/livelike_header_font"
-        android:background="@drawable/increment_decrement_input_box"
+        android:background="@drawable/input_box_selector"
         android:textColor="@color/livelike_number_prediction_user_input"
         android:focusableInTouchMode="true"
         android:inputType="number|numberSigned"

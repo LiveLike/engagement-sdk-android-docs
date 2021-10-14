@@ -49,35 +49,7 @@
         tools:text="blah blah blah blah blah  blah blah blha snbsbdfnsbndfbsnbfnsbdnbsdnfbnsdbf nvbv nnnbbnbnb nbmnbnbnmbnbnbnbnbnbnbnbnbnb"
         />
 
-   <!-- <EditText
-        android:id="@+id/correct_answer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginRight="16dp"
-        tools:text="89"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
-        android:hint="-"
-        android:textColorHint="@color/livelike_number_prediction_user_input_hint"
-        android:imeOptions="actionDone"
-        android:gravity="center_vertical"
-        android:fontFamily="@font/livelike_header_font"
-        android:background="@drawable/correct_background"
-        android:textColor="@color/livelike_number_prediction_correct_answer"
-        android:focusableInTouchMode="true"
-        android:inputType="number|numberSigned"
-        android:textSize="@dimen/livelike_user_input_option_text_size"
-        android:textIsSelectable="false"
-        android:singleLine="true"
-        android:maxEms="3"
-        android:scrollbarStyle="outsideInset"
-        android:scrollHorizontally="true"
-        android:visibility="visible"/>-->
+
 
     <EditText
         android:id="@+id/correct_answer"
@@ -98,7 +70,8 @@
         android:fontFamily="@font/livelike_header_font"
         android:background="@drawable/correct_background"
         android:textColor="@color/livelike_number_prediction_correct_answer"
-        android:focusableInTouchMode="true"
+        android:focusableInTouchMode="false"
+        android:focusable="false"
         android:inputType="number|numberSigned"
         android:textSize="@dimen/livelike_user_input_option_text_size"
         android:textIsSelectable="false"

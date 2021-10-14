@@ -97,6 +97,7 @@
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="4"
+            android:layout_marginBottom="12dp"
             tools:listitem="@layout/atom_widget_image_item" />
 
      <!--  <include
@@ -107,12 +108,12 @@
             android:id="@+id/predictBtn"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="12dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/livelike_ama_send_margin_left"
             android:background="@drawable/ama_send_button_layout"
-            android:minWidth="70dp"
+            android:fontFamily="@font/livelike_header_font"
+            android:minWidth="80dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:text="@string/livelike_predict_label"

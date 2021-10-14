@@ -35,7 +35,7 @@ import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetNumb
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
@@ -67,7 +67,7 @@ internal class NumberPredictionViewModel(
         SubscriptionManager()
     var results: Stream<Resource> =
         SubscriptionManager()
-    var followUp: Boolean = false
+    var numberPredictionFollowUp: Boolean = false
     private var currentWidgetId: String = ""
     private var programId: String = ""
     private var currentWidgetType: WidgetType? = null
@@ -77,7 +77,7 @@ internal class NumberPredictionViewModel(
     var animationProgress = 0f
     var animationEggTimerProgress = 0f
     var animationPath = ""
-    internal var timeOutJob: Job? = null
+   // internal var timeOutJob: Job? = null
 
 
     init {
@@ -180,6 +180,13 @@ internal class NumberPredictionViewModel(
         return it.resource.textNumberPredictionId
     }
 
+    private fun getNumberPredictionKind(it: NumberPredictionWidget): String {
+        if (it.resource.textNumberPredictionId.isNullOrEmpty()) {
+            return "image-number-prediction"
+        }
+        return "text-number-prediction"
+    }
+
 
     override fun claimRewards() {
         claimPredictionRewards()
@@ -190,8 +197,7 @@ internal class NumberPredictionViewModel(
      */
     private fun claimPredictionRewards() {
         data.currentData?.let { resources ->
-            val widgetId =
-                if (resources.resource.textNumberPredictionId.isEmpty()) (resources.resource.imageNumberPredictionId) else (resources.resource.textNumberPredictionId)
+            val widgetId = getNumberPredictionId(resources)
             widgetInfos.widgetId = widgetId
             uiScope.launch {
                 widgetInteractionRepository?.fetchRemoteInteractions(
@@ -297,6 +303,7 @@ internal class NumberPredictionViewModel(
     }
 
     private fun cleanUp() {
+        uiScope.cancel()
         currentWidgetType = null
         currentWidgetId = ""
         timeoutStarted = false
@@ -306,8 +313,6 @@ internal class NumberPredictionViewModel(
         data.onNext(null)
         results.onNext(null)
         animationEggTimerProgress = 0f
-        currentWidgetType = null
-        currentWidgetId = ""
         interactionData.reset()
     }
 
@@ -336,7 +341,7 @@ internal class NumberPredictionViewModel(
     ) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            timeOutJob = if (isFollowup) {
+           if (isFollowup) {
                 uiScope.launch {
                     delay(AndroidResource.parseDuration(timeout))
                     dismissWidget(DismissAction.TIMEOUT)
@@ -372,12 +377,12 @@ internal class NumberPredictionViewModel(
 
 
     internal fun followupState(
-        selectedPredictionVotes: List<NumberPredictionVotes>,
+        selectedPredictionVotes: List<NumberPredictionVotes>?,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
-        if (followUp)
+        if (numberPredictionFollowUp)
             return
-        followUp = true
+        numberPredictionFollowUp = true
         adapter?.selectionLocked = true
         adapter?.restoreSelectedVotes(selectedPredictionVotes) // this sets the user selection
         claimPredictionRewards()
@@ -385,7 +390,7 @@ internal class NumberPredictionViewModel(
         adapter?.isCorrect = isUserCorrect
         val rootPath =
             if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
-        animationPath = if (selectedPredictionVotes.isNotEmpty()) {
+        animationPath = if (selectedPredictionVotes?.isNotEmpty() == true) {
             AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
         } else {
             ""
@@ -397,10 +402,11 @@ internal class NumberPredictionViewModel(
 
 
     private fun isUserCorrect(
-        selectedPredictionVotes: List<NumberPredictionVotes>,
+        selectedPredictionVotes: List<NumberPredictionVotes>?,
         correctVotes: List<Option>?
     ): Boolean {
         var isCorrect = false
+        if(selectedPredictionVotes?.isEmpty() == true) return false
         correctVotes?.let { option ->
             if (option.size == selectedPredictionVotes?.size) {
                 for (i in selectedPredictionVotes.indices) {

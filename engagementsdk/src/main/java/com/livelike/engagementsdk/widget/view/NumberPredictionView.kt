@@ -100,14 +100,14 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 onWidgetInteractionCompleted()
                 if(viewModel?.adapter?.selectedUserVotes != null) {
                     if (viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
-                        viewModel?.adapter?.selectedUserVotes!!.size == viewModel?.data?.currentData?.resource?.options?.size && viewModel?.followUp == false
+                        viewModel?.adapter?.selectedUserVotes!!.size == viewModel?.data?.currentData?.resource?.options?.size && viewModel?.numberPredictionFollowUp == false
                     ) {
                             predictBtn.visibility = View.VISIBLE
                     }
                 }
 
                 viewModel?.apply {
-                    if (followUp) {
+                    if (numberPredictionFollowUp) {
                         followupAnimation?.apply {
                             if (viewModel?.animationPath?.isNotEmpty() == true)
                                 setAnimation(
@@ -229,12 +229,10 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             if (isFollowUp) {
                 val selectedPredictionVoteList =
                     getWidgetNumberPredictionVotedAnswerList(if (resource.textNumberPredictionId.isNullOrEmpty()) resource.imageNumberPredictionId else resource.textNumberPredictionId)
-                if(selectedPredictionVoteList.isNotEmpty()) {
                     viewModel?.followupState(
                         selectedPredictionVoteList,
                         widgetViewThemeAttributes
                     )
-                }
             }
             setImeOptionDoneInKeyboard()
 
@@ -268,7 +266,6 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 }
             }
             WidgetStates.RESULTS -> {
-               // nothing needed here
                 followupAnimation.apply {
                     addAnimatorListener(object : Animator.AnimatorListener {
                         override fun onAnimationRepeat(animation: Animator?) {
@@ -298,22 +295,30 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun disableLockButton() {
-        predictBtn.isEnabled = false
+        if(predictBtn!=null) {
+            predictBtn.isEnabled = false
+        }
     }
 
 
     private fun enableLockButton() {
-        predictBtn.isEnabled = true
-        predictBtn.text = context.resources.getString(R.string.livelike_predict_label)
+        if(predictBtn!=null) {
+            predictBtn.isEnabled = true
+            predictBtn.text = context.resources.getString(R.string.livelike_predict_label)
+        }
     }
 
 
     private fun hideLockButton(){
-        predictBtn.visibility = GONE
+        if(predictBtn!=null) {
+            predictBtn.visibility = GONE
+        }
     }
 
     private fun showLockButton(){
-        predictBtn.visibility = VISIBLE
+        if(predictBtn!=null) {
+            predictBtn.visibility = VISIBLE
+        }
     }
 
 
@@ -359,12 +364,10 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
         isFirstInteraction = true
         disableLockButton()
         viewModel?.run {
-            timeOutJob?.cancel()
              uiScope.launch {
                 lockInteractionAndSubmitVote()
             }
         }
-        //label_lock.visibility = View.VISIBLE
         predictBtn.text = context.resources.getString(R.string.livelike_predicted_label)
     }
 

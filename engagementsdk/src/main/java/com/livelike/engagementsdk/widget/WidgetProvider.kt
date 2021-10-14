@@ -349,6 +349,19 @@ internal class WidgetProvider {
                 widgetMessagingClient,
                 widgetInteractionRepository
             )
+
+            TEXT_NUMBER_PREDICTION, TEXT_NUMBER_PREDICTION_FOLLOW_UP,
+            IMAGE_NUMBER_PREDICTION, IMAGE_NUMBER_PREDICTION_FOLLOW_UP -> NumberPredictionViewModel(
+                widgetInfos,
+                context,
+                analyticsService,
+                sdkConfiguration,
+                onDismiss,
+                userRepository,
+                widgetMessagingClient,
+                widgetInteractionRepository
+            )
+
             else -> null
         }
         logDebug { "WidgetModel created from provider, type: ${WidgetType.fromString(widgetInfos.type)}" }
