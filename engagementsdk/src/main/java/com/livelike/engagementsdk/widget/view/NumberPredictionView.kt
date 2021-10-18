@@ -98,6 +98,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 showResultAnimation = true
                 disableLockButton()
+                predictBtn.text = context.resources.getString(R.string.livelike_predicted_label)
                 lockInteraction()
                 onWidgetInteractionCompleted()
                     if (viewModel?.adapter?.selectedUserVotes != null && viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
@@ -213,8 +214,8 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                     viewModel?.adapter?.selectedUserVotes!!.size !=  viewModel?.adapter?.myDataset?.size ) return@setOnClickListener
 
                 lockVote()
-                textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
-                viewModel?.adapter?.notifyDataSetChanged()
+                disableLockButton()
+                predictBtn.text = context.resources.getString(R.string.livelike_predicted_label)
             }
 
             if (viewModel?.getUserInteraction() != null) {
@@ -247,7 +248,6 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             removeAllViews()
             parent?.let { (it as ViewGroup).removeAllViews() }
         }
-
     }
 
 
@@ -361,12 +361,13 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
     /** submits user's vote */
     private fun lockVote() {
         isFirstInteraction = true
-        disableLockButton()
         viewModel?.run {
              uiScope.launch {
                 lockInteractionAndSubmitVote()
             }
         }
+        viewModel?.adapter?.notifyDataSetChanged()
+        disableLockButton()
         predictBtn.text = context.resources.getString(R.string.livelike_predicted_label)
     }
 

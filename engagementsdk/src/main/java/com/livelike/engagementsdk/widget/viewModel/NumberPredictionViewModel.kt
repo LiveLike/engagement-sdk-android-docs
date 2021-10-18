@@ -345,6 +345,7 @@ internal class NumberPredictionViewModel(
                 uiScope.launch {
                     delay(AndroidResource.parseDuration(timeout))
                     lockInteractionAndSubmitVote()
+                    resultsState()
                 }
             }
         }
@@ -352,22 +353,26 @@ internal class NumberPredictionViewModel(
 
     internal suspend fun lockInteractionAndSubmitVote() {
         adapter?.selectionLocked = true
-        widgetState.onNext(WidgetStates.RESULTS)
             adapter?.selectedUserVotes?.let {
                 lockInVote(it)
             }
-            currentWidgetType?.let {
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    programId,
-                    interactionData
-                )
-            }
-        delay(6500)
-        dismissWidget(DismissAction.TIMEOUT)
+    }
 
-        //resultsState()
+
+    internal fun resultsState() {
+        widgetState.onNext(WidgetStates.RESULTS)
+        currentWidgetType?.let {
+            analyticsService.trackWidgetInteraction(
+                it.toAnalyticsString(),
+                currentWidgetId,
+                programId,
+                interactionData
+            )
+        }
+        uiScope.launch {
+            delay(3000)
+            dismissWidget(DismissAction.TIMEOUT)
+        }
     }
 
 
