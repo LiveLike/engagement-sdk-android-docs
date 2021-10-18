@@ -129,7 +129,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                         }
                     }else{
                         confirmationMessage?.apply {
-                           // if (isFirstInteraction) {
+                            if (isFirstInteraction) {
                                 text =
                                     viewModel?.data?.currentData?.resource?.confirmation_message
                                         ?: ""
@@ -144,12 +144,13 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                                 subscribeToAnimationUpdates { value ->
                                     viewModel?.animationProgress = value
                                 }
+
                                 visibility = if (showResultAnimation) {
                                     View.VISIBLE
                                 } else {
                                     View.GONE
                                 }
-                           // }
+                            }
                         }
                     }
                 }

@@ -1,59 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/increment_decrement_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="center_vertical"
-   >
-
-
-  <!--  <ImageView
-       android:id="@+id/minus_btn"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-        android:src="@drawable/minus_selector"
-       android:text="-"
-       android:paddingRight="3dp"
-        android:layout_marginRight="7dp"
-       />
--->
+    android:gravity="center_vertical">
 
 
     <EditText
         android:id="@+id/userInput"
-        android:layout_width="wrap_content"
+        android:layout_width="51dp"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
         android:hint="-"
         android:textCursorDrawable="@drawable/cursor_drawable"
         android:textColorHint="@color/livelike_number_prediction_user_input_hint"
         android:imeOptions="actionDone"
-        android:gravity="center_vertical"
+        android:textSize="@dimen/livelike_user_input_option_text_size"
+        android:gravity="center_vertical|center_horizontal"
         android:fontFamily="@font/livelike_header_font"
         android:background="@drawable/input_box_selector"
         android:textColor="@color/livelike_number_prediction_user_input"
         android:focusableInTouchMode="true"
         android:inputType="number|numberSigned"
-        android:textSize="@dimen/livelike_user_input_option_text_size"
         android:textIsSelectable="false"
         android:singleLine="true"
         android:maxEms="3"
-        android:scrollbarStyle="outsideInset"
-        android:scrollHorizontally="true"
         android:visibility="visible"/>
-
- <!--   <ImageView
-            android:id="@+id/plus_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/plus_selector"
-            android:layout_marginLeft="7dp"
-           />-->
-
 
 
 </LinearLayout>
