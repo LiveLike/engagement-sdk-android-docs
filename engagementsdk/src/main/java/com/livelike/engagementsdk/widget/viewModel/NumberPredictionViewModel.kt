@@ -145,7 +145,7 @@ internal class NumberPredictionViewModel(
 
 
     /**
-     * call the vote api
+     * calls the vote api
      */
     private fun submitVoteApi(votesObj: JsonObject) {
         uiScope.launch {
@@ -172,19 +172,14 @@ internal class NumberPredictionViewModel(
         return getWidgetNumberPredictionVotedAnswerList(if (resource?.textNumberPredictionId.isNullOrEmpty()) resource?.imageNumberPredictionId else resource?.textNumberPredictionId)
     }
 
-
+    /**
+     * Returns associated prediction id for followups
+     */
     private fun getNumberPredictionId(it: NumberPredictionWidget): String {
         if (it.resource.textNumberPredictionId.isNullOrEmpty()) {
             return it.resource.imageNumberPredictionId
         }
         return it.resource.textNumberPredictionId
-    }
-
-    private fun getNumberPredictionKind(it: NumberPredictionWidget): String {
-        if (it.resource.textNumberPredictionId.isNullOrEmpty()) {
-            return "image-number-prediction"
-        }
-        return "text-number-prediction"
     }
 
 

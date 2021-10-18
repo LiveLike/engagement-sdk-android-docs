@@ -100,10 +100,6 @@
             android:layout_marginBottom="12dp"
             tools:listitem="@layout/atom_widget_image_item" />
 
-     <!--  <include
-            layout="@layout/common_lock_btn_lay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />-->
        <Button
             android:id="@+id/predictBtn"
             android:layout_width="wrap_content"
@@ -117,6 +113,7 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:text="@string/livelike_predict_label"
+            android:textAllCaps="true"
             android:textColor="@color/ama_send_button_text_color_selector"
             android:textDirection="locale"
             android:textSize="14sp" />

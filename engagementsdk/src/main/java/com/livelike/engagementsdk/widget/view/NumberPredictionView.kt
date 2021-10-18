@@ -43,6 +43,8 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
     private var isFirstInteraction = false
 
+    private var isFollowUp = false
+
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
     override var widgetViewModel: BaseViewModel? = null
@@ -98,13 +100,11 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 disableLockButton()
                 lockInteraction()
                 onWidgetInteractionCompleted()
-                if(viewModel?.adapter?.selectedUserVotes != null) {
-                    if (viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
+                    if (viewModel?.adapter?.selectedUserVotes != null && viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
                         viewModel?.adapter?.selectedUserVotes!!.size == viewModel?.data?.currentData?.resource?.options?.size && viewModel?.numberPredictionFollowUp == false
                     ) {
                             predictBtn.visibility = View.VISIBLE
                     }
-                }
 
                 viewModel?.apply {
                     if (numberPredictionFollowUp) {
@@ -167,7 +167,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 inflated = true
                 inflate(context, R.layout.widget_number_prediction, this@NumberPredictionView)
             }
-            val isFollowUp = resource.kind.contains("follow-up")
+            isFollowUp = resource.kind.contains("follow-up")
             titleView.title = resource.question
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
             lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
@@ -184,6 +184,15 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             }else{
                 setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_number_prediction_tag))
                 showLockButton()
+
+                // animation path
+                viewModel?.apply {
+                    val rootPath = widgetViewThemeAttributes.stayTunedAnimation
+                    animationPath = AndroidResource.selectRandomLottieAnimation(
+                        rootPath,
+                        context.applicationContext
+                    ) ?: ""
+                }
             }
 
             viewModel?.adapter = viewModel?.adapter ?: NumberPredictionOptionAdapter(optionList, type)
@@ -192,14 +201,6 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             }
 
             disableLockButton()
-            if (!isFollowUp)
-                viewModel?.apply {
-                    val rootPath = widgetViewThemeAttributes.stayTunedAnimation
-                    animationPath = AndroidResource.selectRandomLottieAnimation(
-                        rootPath,
-                        context.applicationContext
-                    ) ?: ""
-                }
 
             textRecyclerView.apply {
                 viewModel?.adapter?.restoreSelectedVotes(viewModel?.getUserInteraction()?.votes)
@@ -213,7 +214,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
                 lockVote()
                 textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
-               // viewModel?.adapter?.notifyDataSetChanged()
+                viewModel?.adapter?.notifyDataSetChanged()
             }
 
             if (viewModel?.getUserInteraction() != null) {
@@ -257,7 +258,6 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             }
             WidgetStates.INTERACTING -> {
                 viewModel?.data?.latest()?.let {
-                    val isFollowUp = it.resource.kind.contains("follow-up")
                     viewModel?.startDismissTimeout(
                         it.resource.timeout,
                         isFollowUp,
@@ -269,6 +269,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 followupAnimation.apply {
                     addAnimatorListener(object : Animator.AnimatorListener {
                         override fun onAnimationRepeat(animation: Animator?) {
+                            //nothing needed here
                         }
 
                         override fun onAnimationEnd(animation: Animator?) {
@@ -325,7 +326,6 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
     private fun lockInteraction() {
         viewModel?.adapter?.selectionLocked = true
         viewModel?.data?.latest()?.let {
-            val isFollowUp = it.resource.kind.contains("follow-up")
             if (isFollowUp && viewModel?.showTimer == true) {
                 textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
             }
@@ -334,7 +334,6 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
     private fun unLockInteraction() {
         viewModel?.data?.latest()?.let {
-            val isFollowUp = it.resource.kind.contains("follow-up")
             if (!isFollowUp) {
                 viewModel?.adapter?.selectionLocked = false
                 // marked widget as interactive

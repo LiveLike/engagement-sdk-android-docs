@@ -75,7 +75,6 @@ internal class NumberPredictionOptionAdapter(
         RecyclerView.ViewHolder(view){
 
 
-        @SuppressLint("ClickableViewAccessibility")
         fun setData(
             option: Option,
             widgetType: WidgetType,
@@ -115,6 +114,37 @@ internal class NumberPredictionOptionAdapter(
                 itemView.correct_answer.visibility = View.GONE //this shows only for followup
             }
 
+            setListeners()
+            setItemBackground(component, fontFamilyProvider)
+
+        }
+
+        // add/removes votes for submission
+        private fun addRemovePredictionData() {
+            val userVote: NumberPredictionVotes? =
+                selectedUserVotes.find { it.optionId == myDataset[adapterPosition].id }
+            if (userVote == null) {
+                selectedUserVotes.add(
+                    NumberPredictionVotes(
+                        myDataset[adapterPosition].id,
+                        myDataset[adapterPosition].number!!
+                    )
+                )
+            } else {
+                if(myDataset[adapterPosition].number != null) {
+                    userVote.number = myDataset[adapterPosition].number!!
+                }else{
+                    selectedUserVotes.remove(userVote)
+                }
+            }
+            needToEnableSubmit = selectedUserVotes.size == myDataset.size
+            submitListener?.onSubmitEnabled(needToEnableSubmit)
+        }
+
+
+        // set listeners
+        @SuppressLint("ClickableViewAccessibility")
+        private fun setListeners(){
 
             itemView.userInput.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(arg0: Editable) {
@@ -167,30 +197,6 @@ internal class NumberPredictionOptionAdapter(
                 }
                 false
             }
-            setItemBackground(component, fontFamilyProvider)
-
-        }
-
-        // add/removes votes for submission
-        private fun addRemovePredictionData() {
-            val userVote: NumberPredictionVotes? =
-                selectedUserVotes.find { it.optionId == myDataset[adapterPosition].id }
-            if (userVote == null) {
-                selectedUserVotes.add(
-                    NumberPredictionVotes(
-                        myDataset[adapterPosition].id,
-                        myDataset[adapterPosition].number!!
-                    )
-                )
-            } else {
-                if(myDataset[adapterPosition].number != null) {
-                    userVote.number = myDataset[adapterPosition].number!!
-                }else{
-                    selectedUserVotes.remove(userVote)
-                }
-            }
-            needToEnableSubmit = selectedUserVotes.size == myDataset.size
-            submitListener?.onSubmitEnabled(needToEnableSubmit)
         }
 
 

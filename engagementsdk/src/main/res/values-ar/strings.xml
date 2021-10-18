@@ -49,5 +49,5 @@
     <string name="livelike_answer_label">إجابة</string>
     <string name="livelike_answered_label">أجاب!</string>
     <string name="livelike_predict_label">يتنبأ</string>
-    <string name="livelike_predicted_label">وتوقع!</string>
+    <string name="livelike_predicted_label">وتوقع</string>
 </resources>
