@@ -100,23 +100,46 @@
             android:layout_marginBottom="12dp"
             tools:listitem="@layout/atom_widget_image_item" />
 
+    <LinearLayout
+        android:id="@+id/lay_lock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
        <Button
             android:id="@+id/predictBtn"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_marginBottom="12dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/livelike_ama_send_margin_left"
             android:background="@drawable/ama_send_button_layout"
             android:fontFamily="@font/livelike_header_font"
+            android:textAllCaps="false"
             android:minWidth="80dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:text="@string/livelike_predict_label"
-            android:textAllCaps="true"
             android:textColor="@color/ama_send_button_text_color_selector"
             android:textDirection="locale"
             android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/label_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/livelike_predicted_label"
+            android:textColor="#FFF"
+            android:textSize="18sp"
+            android:visibility="invisible"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
+
     </LinearLayout>
 
     <com.livelike.engagementsdk.widget.view.components.ConfirmMessageView

@@ -52,5 +52,5 @@
     <string name="livelike_answered_label">Answered!</string>
 
     <string name="livelike_predict_label">Predict</string>
-    <string name="livelike_predicted_label">Predicted</string>
+    <string name="livelike_predicted_label">Predicted!</string>
 </resources>

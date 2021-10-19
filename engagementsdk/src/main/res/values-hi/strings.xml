@@ -49,5 +49,5 @@
     <string name="livelike_answer_label">उत्तर</string>
     <string name="livelike_answered_label">जवाब!</string>
     <string name="livelike_predict_label">भविष्यवाणी करना</string>
-    <string name="livelike_predicted_label">भविष्यवाणी की</string>
+    <string name="livelike_predicted_label">भविष्यवाणी की!</string>
 </resources>

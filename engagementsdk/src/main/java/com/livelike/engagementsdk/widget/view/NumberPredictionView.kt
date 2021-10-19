@@ -25,6 +25,8 @@ import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.livelike_user_input.view.userInput
 import kotlinx.android.synthetic.main.widget_number_prediction.view.confirmationMessage
 import kotlinx.android.synthetic.main.widget_number_prediction.view.followupAnimation
+import kotlinx.android.synthetic.main.widget_number_prediction.view.label_lock
+import kotlinx.android.synthetic.main.widget_number_prediction.view.lay_lock
 import kotlinx.android.synthetic.main.widget_number_prediction.view.lay_textRecyclerView
 import kotlinx.android.synthetic.main.widget_number_prediction.view.predictBtn
 import kotlinx.android.synthetic.main.widget_number_prediction.view.textEggTimer
@@ -98,7 +100,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 showResultAnimation = true
                 disableLockButton()
-                predictBtn.text = context.resources.getString(R.string.livelike_predicted_label)
+                label_lock.visibility = View.VISIBLE
                 lockInteraction()
                 onWidgetInteractionCompleted()
                     if (viewModel?.adapter?.selectedUserVotes != null && viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
@@ -175,10 +177,6 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
             titleTextView.gravity = Gravity.START
 
-
-            predictBtn.text = context.resources.getString(R.string.livelike_predict_label)
-            predictBtn.text = context.resources.getString(R.string.livelike_predicted_label)
-
             // added tag for identification of widget (by default will be empty)
             if(isFollowUp){
                 setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_number_prediction_follow_up_tag))
@@ -216,13 +214,14 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
                 lockVote()
                 disableLockButton()
-                predictBtn.text = context.resources.getString(R.string.livelike_predicted_label)
+                label_lock.visibility = View.VISIBLE
             }
 
             if (viewModel?.getUserInteraction() != null) {
                 disableLockButton()
+                label_lock.visibility = View.VISIBLE
             }else{
-                predictBtn.text = context.resources.getString(R.string.livelike_predict_label)
+                label_lock.visibility = View.GONE
             }
 
             widgetsTheme?.let {
@@ -306,21 +305,17 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
     private fun enableLockButton() {
         if(predictBtn!=null) {
             predictBtn.isEnabled = true
-            predictBtn.text = context.resources.getString(R.string.livelike_predict_label)
+            label_lock.visibility = GONE
         }
     }
 
 
     private fun hideLockButton(){
-        if(predictBtn!=null) {
-            predictBtn.visibility = GONE
-        }
+        lay_lock.visibility = GONE
     }
 
     private fun showLockButton(){
-        if(predictBtn!=null) {
-            predictBtn.visibility = VISIBLE
-        }
+        lay_lock.visibility = VISIBLE
     }
 
 
@@ -369,7 +364,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
         }
         viewModel?.adapter?.notifyDataSetChanged()
         disableLockButton()
-        predictBtn.text = context.resources.getString(R.string.livelike_predicted_label)
+        label_lock.visibility = View.VISIBLE
     }
 
 
