@@ -779,12 +779,10 @@ class EngagementSDK(
                 it?.let {
                     uiScope.launch {
                         val url = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> "${
-                                it.second.profileChatRoomInvitationsUrlTemplate.replace(
-                                    TEMPLATE_PROFILE_ID,
-                                    it.first.id
-                                )
-                            }&status=${invitationStatus.key}"
+                            LiveLikePagination.FIRST -> it.second.profileChatRoomReceivedInvitationsUrlTemplate.replace(
+                                "{profile_id}",
+                                it.first.id
+                            ).replace("{status}", invitationStatus.key)
                             LiveLikePagination.NEXT -> invitationForProfileMap[it.first.id]?.next
                             LiveLikePagination.PREVIOUS -> invitationForProfileMap[it.first.id]?.previous
                         }
@@ -822,7 +820,10 @@ class EngagementSDK(
                 it?.let {
                     uiScope.launch {
                         val url = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> "${it.second.chatRoomsInvitationsUrl}&invited_by_id=${it.first.id}&status=${invitationStatus.key}"
+                            LiveLikePagination.FIRST -> it.second.profileChatRoomSentInvitationsUrlTemplate.replace(
+                                "{invited_by_id}",
+                                it.first.id
+                            ).replace("{status}", invitationStatus.key)
                             LiveLikePagination.NEXT -> invitationByProfileMap[it.first.id]?.next
                             LiveLikePagination.PREVIOUS -> invitationByProfileMap[it.first.id]?.previous
                         }
@@ -1251,8 +1252,10 @@ class EngagementSDK(
         val chatRoomInvitationDetailUrlTemplate: String,
         @SerializedName("create_chat_room_invitation_url")
         val createChatRoomInvitationUrl: String,
-        @SerializedName("profile_chat_room_invitations_url_template")
-        val profileChatRoomInvitationsUrlTemplate: String,
+        @SerializedName("profile_chat_room_received_invitations_url_template")
+        val profileChatRoomReceivedInvitationsUrlTemplate: String,
+        @SerializedName("profile_chat_room_sent_invitations_url_template")
+        val profileChatRoomSentInvitationsUrlTemplate: String,
     )
 
     companion object {
