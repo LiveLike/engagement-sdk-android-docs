@@ -213,8 +213,6 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                     viewModel?.adapter?.selectedUserVotes!!.size !=  viewModel?.adapter?.myDataset?.size ) return@setOnClickListener
 
                 lockVote()
-                disableLockButton()
-                label_lock.visibility = View.VISIBLE
             }
 
             if (viewModel?.getUserInteraction() != null) {
@@ -362,7 +360,9 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 lockInteractionAndSubmitVote()
             }
         }
-        viewModel?.adapter?.notifyDataSetChanged()
+        viewModel?.adapter?.needToEnableSubmit=false
+        //viewModel?.adapter?.notifyDataSetChanged()
+
         disableLockButton()
         label_lock.visibility = View.VISIBLE
     }

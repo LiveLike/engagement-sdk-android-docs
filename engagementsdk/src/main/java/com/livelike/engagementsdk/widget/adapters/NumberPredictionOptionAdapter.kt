@@ -17,7 +17,6 @@ import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.data.models.NumberPredictionVotes
 import com.livelike.engagementsdk.core.utils.AndroidResource
-import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.NumberPredictionOptionsTheme
 import com.livelike.engagementsdk.widget.ViewStyleProps
@@ -115,7 +114,7 @@ internal class NumberPredictionOptionAdapter(
             }
 
             setListeners()
-            setItemBackground(component, fontFamilyProvider)
+            setItemBackground(component, fontFamilyProvider,widgetType)
 
         }
 
@@ -145,7 +144,6 @@ internal class NumberPredictionOptionAdapter(
         // set listeners
         @SuppressLint("ClickableViewAccessibility")
         private fun setListeners(){
-
             itemView.userInput.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(arg0: Editable) {
                     if (adapterPosition == RecyclerView.NO_POSITION || selectionLocked) return
@@ -203,9 +201,10 @@ internal class NumberPredictionOptionAdapter(
         // this is mainly used for theming purpose
         private fun setItemBackground(
             layoutPickerComponent: NumberPredictionOptionsTheme?,
-            fontFamilyProvider: FontFamilyProvider?
+            fontFamilyProvider: FontFamilyProvider?,
+            widgetType: WidgetType
         ) {
-            logDebug { "number-prediction option background theme" }
+
             val optionDescTheme: ViewStyleProps? = layoutPickerComponent?.option
             AndroidResource.updateThemeForView(itemView.description, optionDescTheme, fontFamilyProvider)
 
@@ -232,6 +231,20 @@ internal class NumberPredictionOptionAdapter(
                 inputState.addState(intArrayOf(android.R.attr.state_focused), userInputEnabledDrawable)
                 inputState.addState(intArrayOf(), userInputDisabledDrawable)
                 itemView.userInput.background = inputState
+            }
+
+            // followup correct/incorrect input background
+            if(widgetType == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP ||
+                widgetType == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP) {
+
+                    if(layoutPickerComponent?.optionInputFieldCorrect?.background != null){
+                        itemView.correct_answer.background =
+                            AndroidResource.createDrawable(layoutPickerComponent?.optionInputFieldCorrect)
+                    }else{
+                        itemView.correct_answer.background = (ContextCompat.getDrawable(itemView.context, R.drawable.correct_background))
+                    }
+                    if (itemView.userInput.visibility == View.VISIBLE && layoutPickerComponent?.optionInputFieldIncorrect?.background != null) itemView.userInput.background =
+                        AndroidResource.createDrawable(layoutPickerComponent?.optionInputFieldIncorrect)
             }
         }
 

@@ -81,7 +81,10 @@ data class NumberPredictionOptionsTheme(
     val option: ViewStyleProps? = null,
     val optionInputFieldEnabled: ViewStyleProps? = null,
     val optionInputFieldDisabled: ViewStyleProps? = null,
-    val optionInputFieldPlaceholder: ViewStyleProps? = null
+    val optionInputFieldPlaceholder: ViewStyleProps? = null,
+    val optionInputFieldCorrect: ViewStyleProps? = null,
+    val optionInputFieldIncorrect: ViewStyleProps? = null
+
 ) : WidgetBaseThemeComponent(){
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
@@ -90,6 +93,8 @@ data class NumberPredictionOptionsTheme(
         ?: optionInputFieldEnabled?.validate()
         ?: optionInputFieldDisabled?.validate()
         ?: optionInputFieldPlaceholder?.validate()
+        ?: optionInputFieldCorrect?.validate()
+        ?: optionInputFieldIncorrect?.validate()
         ?: title?.validate()
     }
 }
