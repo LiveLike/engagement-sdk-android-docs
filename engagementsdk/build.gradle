@@ -20,8 +20,6 @@ android {
         minSdkVersion rootProject.minSdkVersion
         compileSdkVersion rootProject.targetSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 1
-        versionName "2.25"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'proguard-rules.pro'
@@ -101,6 +99,10 @@ android {
         debug
         release
     }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -142,6 +144,12 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
 //    testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "org.mockito.kotlin:mockito-kotlin:3.1.0"
+
+    // to mock network layer and rest api resources
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.9.2")
+    // Optional -- Robolectric environment
+    testImplementation 'androidx.test:core:1.4.0'
+    testImplementation 'org.robolectric:robolectric:4.6'
 }
 
 repositories {
