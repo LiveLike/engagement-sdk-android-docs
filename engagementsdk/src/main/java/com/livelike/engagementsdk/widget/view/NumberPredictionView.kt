@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.widget.view
 
-import android.animation.Animator
+
 import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
@@ -23,8 +23,6 @@ import com.livelike.engagementsdk.widget.viewModel.NumberPredictionWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.livelike_user_input.view.userInput
-import kotlinx.android.synthetic.main.widget_number_prediction.view.confirmationMessage
-import kotlinx.android.synthetic.main.widget_number_prediction.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_number_prediction.view.label_lock
 import kotlinx.android.synthetic.main.widget_number_prediction.view.lay_lock
 import kotlinx.android.synthetic.main.widget_number_prediction.view.lay_textRecyclerView
@@ -82,7 +80,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
-                showResultAnimation = true
+                showResultAnimation = false
 
                 // show timer while widget interaction mode
                 viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
@@ -98,7 +96,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 }
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
-                showResultAnimation = true
+                showResultAnimation = false
                 disableLockButton()
                 label_lock.visibility = View.VISIBLE
                 lockInteraction()
@@ -108,54 +106,6 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                     ) {
                             predictBtn.visibility = View.VISIBLE
                     }
-
-                viewModel?.apply {
-                    if (numberPredictionFollowUp) {
-                        followupAnimation?.apply {
-                            if (viewModel?.animationPath?.isNotEmpty() == true)
-                                setAnimation(
-                                    viewModel?.animationPath
-                                )
-                            progress = viewModel?.animationProgress!!
-                            addAnimatorUpdateListener { valueAnimator ->
-                                viewModel?.animationProgress = valueAnimator.animatedFraction
-                            }
-                            if (progress != 1f) {
-                                resumeAnimation()
-                            }
-                            visibility = if (showResultAnimation) {
-                                View.VISIBLE
-                            } else {
-                                View.GONE
-                            }
-                        }
-                    }else{
-                        confirmationMessage?.apply {
-                            if (isFirstInteraction) {
-                                text =
-                                    viewModel?.data?.currentData?.resource?.confirmation_message
-                                        ?: ""
-                                viewModel?.animationPath?.let {
-                                    viewModel?.animationProgress?.let { it1 ->
-                                        startAnimation(
-                                            it,
-                                            it1
-                                        )
-                                    }
-                                }
-                                subscribeToAnimationUpdates { value ->
-                                    viewModel?.animationProgress = value
-                                }
-
-                                visibility = if (showResultAnimation) {
-                                    View.VISIBLE
-                                } else {
-                                    View.GONE
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {
@@ -184,15 +134,6 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             }else{
                 setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_number_prediction_tag))
                 showLockButton()
-
-                // animation path
-                viewModel?.apply {
-                    val rootPath = widgetViewThemeAttributes.stayTunedAnimation
-                    animationPath = AndroidResource.selectRandomLottieAnimation(
-                        rootPath,
-                        context.applicationContext
-                    ) ?: ""
-                }
             }
 
             viewModel?.adapter = viewModel?.adapter ?: NumberPredictionOptionAdapter(optionList, type)
@@ -264,27 +205,13 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 }
             }
             WidgetStates.RESULTS -> {
-                followupAnimation.apply {
-                    addAnimatorListener(object : Animator.AnimatorListener {
-                        override fun onAnimationRepeat(animation: Animator?) {
-                            //nothing needed here
+                viewModel?.uiScope?.launch {
+                    if(isFollowUp) {
+                        viewModel?.data?.latest()?.let {
+                            delay(AndroidResource.parseDuration(it.resource.timeout))
+                            viewModel?.dismissWidget(DismissAction.TIMEOUT)
                         }
-
-                        override fun onAnimationEnd(animation: Animator?) {
-                            viewModel?.uiScope?.launch {
-                                delay(11000)
-                                viewModel?.dismissWidget(DismissAction.TIMEOUT)
-                            }
-                        }
-
-                        override fun onAnimationCancel(animation: Animator?) {
-                            //nothing needed here
-                        }
-
-                        override fun onAnimationStart(animation: Animator?) {
-                            //nothing needed here
-                        }
-                    })
+                    }
                 }
             }
             WidgetStates.FINISHED -> {
