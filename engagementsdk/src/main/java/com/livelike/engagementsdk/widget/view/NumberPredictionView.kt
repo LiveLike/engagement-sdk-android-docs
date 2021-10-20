@@ -360,8 +360,8 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 lockInteractionAndSubmitVote()
             }
         }
-        viewModel?.adapter?.needToEnableSubmit=false
-        //viewModel?.adapter?.notifyDataSetChanged()
+        viewModel?.adapter?.selectionLocked = true
+        viewModel?.adapter?.notifyDataSetChanged()
 
         disableLockButton()
         label_lock.visibility = View.VISIBLE
