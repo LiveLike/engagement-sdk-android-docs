@@ -88,14 +88,6 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 "}"
         input_widget_json.setText(json)
 
-        val myWidgetsList: ArrayList<LiveLikeWidget> = GsonBuilder().create()
-            .fromJson(
-                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
-                    PREF_MY_WIDGETS,
-                    null
-                ),
-                object : TypeToken<List<LiveLikeWidget>>() {}.type
-            ) ?: arrayListOf()
         val channelManager = (application as LiveLikeApplication).channelManager
         val channel = channelManager.selectedChannel
         val session = (application as LiveLikeApplication).createPublicSession(

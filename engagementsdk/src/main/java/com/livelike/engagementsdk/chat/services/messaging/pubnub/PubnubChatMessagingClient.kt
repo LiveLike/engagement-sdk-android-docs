@@ -100,7 +100,6 @@ internal class PubnubChatMessagingClient(
         if (!connectedChannels.contains(channel)) {
             connectedChannels.add(channel)
             flushPublishedMessage(*connectedChannels.toTypedArray())
-            val endTimeStamp = Calendar.getInstance().timeInMillis
             pubnub.subscribe().channels(listOf(channel)).execute()
 //            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
         }
@@ -498,7 +497,7 @@ internal class PubnubChatMessagingClient(
 
     private fun isMessageModerated(jsonObject: JsonObject): Boolean {
         // added this check since in payload content filter was coming as string (json primitive) instead of array
-        var contentfilter = jsonObject.getAsJsonObject("payload")?.get("content_filter")
+        val contentfilter = jsonObject.getAsJsonObject("payload")?.get("content_filter")
         return if (contentfilter?.isJsonPrimitive == true) {
             false
         } else {

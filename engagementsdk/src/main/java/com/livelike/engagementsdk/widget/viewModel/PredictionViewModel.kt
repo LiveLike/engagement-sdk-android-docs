@@ -136,19 +136,6 @@ internal class PredictionViewModel(
                     delay(AndroidResource.parseDuration(timeout))
                     dismissWidget(DismissAction.TIMEOUT)
                 }
-                data.currentData?.apply {
-                    val selectedPredictionId =
-                        getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isEmpty()) resource.image_prediction_id else resource.text_prediction_id)
-                    // not sure, why this has been added
-                    /* uiScope.launch {
-                         delay(
-                             if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(
-                                 timeout
-                             ) else 0
-                         )
-                         dismissWidget(DismissAction.TIMEOUT)
-                     }*/
-                }
             } else {
                 uiScope.launch {
                     delay(AndroidResource.parseDuration(timeout))

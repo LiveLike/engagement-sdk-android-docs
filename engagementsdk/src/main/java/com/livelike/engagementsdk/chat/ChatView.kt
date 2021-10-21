@@ -573,7 +573,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         ) {
             val scrcoords = IntArray(2)
             v.getLocationOnScreen(scrcoords)
-            val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
             var outsideStickerKeyboardBound =
                 (v.bottom - sticker_keyboard.height - button_chat_send.height - button_emoji.height)
