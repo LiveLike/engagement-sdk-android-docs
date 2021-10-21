@@ -98,11 +98,12 @@ internal class NumberPredictionOptionAdapter(
                 itemView.userInput.isCursorVisible = false
             }
 
-            //lock prediction when followup received
-            if(option.correct_number != null && option.number == null){
+
+            if(selectionLocked){
                 itemView.userInput.isFocusableInTouchMode = false
                 itemView.userInput.isCursorVisible = false
             }
+
 
             if(widgetType == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP ||
                 widgetType == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP){

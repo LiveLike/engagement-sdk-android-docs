@@ -103,7 +103,9 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                     if (viewModel?.adapter?.selectedUserVotes != null && viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
                         viewModel?.adapter?.selectedUserVotes!!.size == viewModel?.data?.currentData?.resource?.options?.size && viewModel?.numberPredictionFollowUp == false
                     ) {
-                            predictBtn.visibility = View.VISIBLE
+                        label_lock.visibility = View.VISIBLE
+                    }else{
+                        label_lock.visibility = View.GONE
                     }
             }
         }
