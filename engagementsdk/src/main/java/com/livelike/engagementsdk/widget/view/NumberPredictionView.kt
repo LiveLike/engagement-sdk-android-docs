@@ -80,7 +80,6 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
-                showResultAnimation = false
 
                 // show timer while widget interaction mode
                 viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
@@ -96,11 +95,11 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 }
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
-                showResultAnimation = false
+                lockInteraction()
                 disableLockButton()
                 label_lock.visibility = View.VISIBLE
-                lockInteraction()
                 onWidgetInteractionCompleted()
+
                     if (viewModel?.adapter?.selectedUserVotes != null && viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
                         viewModel?.adapter?.selectedUserVotes!!.size == viewModel?.data?.currentData?.resource?.options?.size && viewModel?.numberPredictionFollowUp == false
                     ) {

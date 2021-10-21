@@ -388,13 +388,6 @@ internal class NumberPredictionViewModel(
         claimPredictionRewards()
         val isUserCorrect = isUserCorrect(selectedPredictionVotes, data.currentData?.resource?.options)
         adapter?.isCorrect = isUserCorrect
-        val rootPath =
-            if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
-        animationPath = if (selectedPredictionVotes?.isNotEmpty() == true) {
-            AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
-        } else {
-            ""
-        }
 
         widgetState.onNext(WidgetStates.RESULTS)
         logDebug { "Number Prediction Widget Follow Up isUserCorrect:$isUserCorrect" }
