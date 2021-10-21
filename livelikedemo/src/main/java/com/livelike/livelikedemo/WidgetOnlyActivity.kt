@@ -634,20 +634,16 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         response?.let {
                             when (it) {
                                 is AlertResponse -> {
-                                    it.schedule_url?.let{it1 -> putAPI(it1)}
+                                    putAPI( it.schedule_url )
                                 }
                                 is PollRequestResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
                                 is QuizResponse -> {
-                                    it.schedule_url?.let{it1 -> putAPI(it1)
-                                    }
-
+                                    putAPI( it.schedule_url )
                                 }
                                 is TextAskResponse -> {
-                                    it.schedule_url?.let{it1 -> putAPI(it1)
-                                    }
-
+                                    putAPI( it.schedule_url )
                                 }
                                 is PredictionResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }

@@ -47,7 +47,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
         val call = client.newCall(request)
         call.enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                e?.message?.let { Log.e("ChannelMgr", it) }
+                e.message?.let { Log.e("ChannelMgr", it) }
             }
 
             override fun onResponse(call: okhttp3.Call, response: Response) {
@@ -60,12 +60,12 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                         val json = JSONObject(responseData)
                         val results = json.getJSONArray("results")
                         val nextUrl = json.getString("next")
-                        if (nextUrl != null && nextUrl != "null")
+                        if (nextUrl != "null")
                             this@ChannelManager.nextUrl = nextUrl
                         else
                             this@ChannelManager.nextUrl = null
                         val previousUrl = json.getString("previous")
-                        if (previousUrl != null && previousUrl != "null")
+                        if (previousUrl != "null")
                             this@ChannelManager.previousUrl = previousUrl
                         else
                             this@ChannelManager.previousUrl = null

@@ -150,22 +150,18 @@ internal class ContentSession(
                             }
 
                             publishedWidgetListResponse?.results?.filter {
-                                it?.let {
-                                    var widgetType = it.kind
-                                    widgetType = if (widgetType?.contains("follow-up") == true) {
-                                        "$widgetType-updated"
-                                    } else {
-                                        "$widgetType-created"
-                                    }
-                                    return@filter WidgetType.fromString(widgetType) != null
+                                var widgetType = it.kind
+                                widgetType = if (widgetType?.contains("follow-up") == true) {
+                                    "$widgetType-updated"
+                                } else {
+                                    "$widgetType-created"
                                 }
-                                return@filter false
+                                return@filter WidgetType.fromString(widgetType) != null
+                            }.let {
+                                liveLikeCallback.onResponse(
+                                    it, null
+                                )
                             }
-                                .let {
-                                    liveLikeCallback.onResponse(
-                                        it, null
-                                    )
-                                }
                         }
                     } catch (e: JsonParseException) {
                         e.printStackTrace()
@@ -217,49 +213,45 @@ internal class ContentSession(
                             user.id
                         ) ?: ""
 
-                    interactionTemplate?.let { url ->
-                        val url = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> url
-                            LiveLikePagination.NEXT -> unclaimedInteractionResponse?.next
-                            LiveLikePagination.PREVIOUS -> unclaimedInteractionResponse?.previous
-                        }
-                        try {
-                            if (url == null) {
-                                liveLikeCallback.onResponse(null, null)
-                            } else {
-                                logDebug { "url -> $url" }
-                                val jsonObject =
-                                    widgetDataClient.getUnclaimedInteractions(url, user.accessToken)
-                                unclaimedInteractionResponse =
-                                    gson.fromJson(
-                                        jsonObject.toString(),
-                                        UnclaimedWidgetInteractionList::class.java
-                                    )
+                    val url = when (liveLikePagination) {
+                        LiveLikePagination.FIRST -> interactionTemplate
+                        LiveLikePagination.NEXT -> unclaimedInteractionResponse?.next
+                        LiveLikePagination.PREVIOUS -> unclaimedInteractionResponse?.previous
+                    }
+                    try {
+                        if (url == null) {
+                            liveLikeCallback.onResponse(null, null)
+                        } else {
+                            logDebug { "url -> $url" }
+                            val jsonObject =
+                                widgetDataClient.getUnclaimedInteractions(url, user.accessToken)
+                            unclaimedInteractionResponse =
+                                gson.fromJson(
+                                    jsonObject.toString(),
+                                    UnclaimedWidgetInteractionList::class.java
+                                )
 
-                                unclaimedInteractionResponse?.results?.filter {
-                                    it?.let {
-                                        var widgetType = it.widgetKind
-                                        widgetType = if (widgetType?.contains("follow-up")) {
-                                            "$widgetType-updated"
-                                        } else {
-                                            "$widgetType-created"
-                                        }
-                                        return@filter WidgetType.fromString(widgetType) != null
-                                    }
+                            unclaimedInteractionResponse?.results?.filter {
+                                var widgetType = it.widgetKind
+                                widgetType = if (widgetType.contains("follow-up")) {
+                                    "$widgetType-updated"
+                                } else {
+                                    "$widgetType-created"
                                 }
-                                    .let {
-                                        liveLikeCallback.onResponse(
-                                            it, null
-                                        )
-                                    }
+                                return@filter WidgetType.fromString(widgetType) != null
+
+                            }.let {
+                                liveLikeCallback.onResponse(
+                                    it, null
+                                )
                             }
-                        } catch (e: JsonParseException) {
-                            e.printStackTrace()
-                            liveLikeCallback.onResponse(null, e.message)
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                            liveLikeCallback.onResponse(null, e.message)
                         }
+                    } catch (e: JsonParseException) {
+                        e.printStackTrace()
+                        liveLikeCallback.onResponse(null, e.message)
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        liveLikeCallback.onResponse(null, e.message)
                     }
                 }
             }

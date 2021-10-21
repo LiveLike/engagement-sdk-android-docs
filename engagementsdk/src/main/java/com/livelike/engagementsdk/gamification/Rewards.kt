@@ -38,9 +38,7 @@ internal class Rewards(
         sdkScope.launch {
             if (lastRewardItemsPage == null || liveLikePagination == LiveLikePagination.FIRST) {
                 configurationUserPairFlow.collect { pair ->
-                    pair.second?.let {
-                        fetchUrl = it.rewardItemsUrl
-                    }
+                    fetchUrl = pair.second.rewardItemsUrl
                 }
             } else {
                 fetchUrl = lastRewardItemsPage?.getPaginationUrl(liveLikePagination)
@@ -72,31 +70,29 @@ internal class Rewards(
 
         sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-                pair.first?.let {
-                    it.rewardItemBalancesUrl?.let { url ->
-                        val httpUrl = url.toHttpUrlOrNull()?.newBuilder()?.apply {
-                            for (id in rewardItemIds) {
-                                addQueryParameter("reward_item_id", id)
-                            }
+                pair.first.rewardItemBalancesUrl?.let { url ->
+                    val httpUrl = url.toHttpUrlOrNull()?.newBuilder()?.apply {
+                        for (id in rewardItemIds) {
+                            addQueryParameter("reward_item_id", id)
                         }
-                        httpUrl?.build()?.let { httpUrl ->
-                            dataClient.remoteCall<LLPaginatedResult<RewardItemBalance>>(
-                                httpUrl,
-                                RequestType.GET,
-                                null,
-                                pair.first.accessToken
-                            ).run {
-                                if (this is Result.Success) {
-                                    liveLikeCallback.onResponse(
-                                        this.data,
-                                        null
-                                    )
-                                } else if (this is Result.Error) {
-                                    liveLikeCallback.onResponse(
-                                        null,
-                                        this.exception.message ?: "Error in fetching data"
-                                    )
-                                }
+                    }
+                    httpUrl?.build()?.let { httpUrl ->
+                        dataClient.remoteCall<LLPaginatedResult<RewardItemBalance>>(
+                            httpUrl,
+                            RequestType.GET,
+                            null,
+                            pair.first.accessToken
+                        ).run {
+                            if (this is Result.Success) {
+                                liveLikeCallback.onResponse(
+                                    this.data,
+                                    null
+                                )
+                            } else if (this is Result.Error) {
+                                liveLikeCallback.onResponse(
+                                    null,
+                                    this.exception.message ?: "Error in fetching data"
+                                )
                             }
                         }
                     }
@@ -114,26 +110,24 @@ internal class Rewards(
 
         sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-                pair.first?.let {
-                    it.rewardItemTransferUrl?.let { url ->
+                pair.first.rewardItemTransferUrl?.let { url ->
 
-                        val body = gson.toJson(
-                            TransferRewardItemRequest(
-                                recipientProfileId,
-                                amount,
-                                rewardItemId
-                            )
+                    val body = gson.toJson(
+                        TransferRewardItemRequest(
+                            recipientProfileId,
+                            amount,
+                            rewardItemId
                         )
-                            .toRequestBody("application/json".toMediaTypeOrNull())
+                    )
+                        .toRequestBody("application/json".toMediaTypeOrNull())
 
-                        dataClient.remoteCall<TransferRewardItem>(
-                            url,
-                            RequestType.POST,
-                            body,
-                            pair.first.accessToken
-                        ).run {
-                            liveLikeCallback.processResult(this)
-                        }
+                    dataClient.remoteCall<TransferRewardItem>(
+                        url,
+                        RequestType.POST,
+                        body,
+                        pair.first.accessToken
+                    ).run {
+                        liveLikeCallback.processResult(this)
                     }
                 }
             }
@@ -149,9 +143,7 @@ internal class Rewards(
         sdkScope.launch {
             if (lastRewardTransfersPage == null || liveLikePagination == LiveLikePagination.FIRST) {
                 configurationUserPairFlow.collect { pair ->
-                    pair.first?.let {
-                        fetchUrl = it.rewardItemTransferUrl
-                    }
+                    fetchUrl = pair.first.rewardItemTransferUrl
                 }
             } else {
                 fetchUrl = lastRewardTransfersPage?.getPaginationUrl(liveLikePagination)

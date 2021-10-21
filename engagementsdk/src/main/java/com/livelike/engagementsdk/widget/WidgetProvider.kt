@@ -459,7 +459,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
             return
         }
 
-        var animationLength = AndroidResource.parseDuration(time).toFloat()
+        val animationLength = AndroidResource.parseDuration(time).toFloat()
         var remainingAnimationLength = animationLength
         if (widgetViewModel?.timerStartTime != null) {
             remainingAnimationLength =
@@ -472,15 +472,13 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
             (animationLength - remainingAnimationLength) / animationLength
 
         if ((animationEggTimerProgress ?: 0f) < 1f) {
-            animationEggTimerProgress?.let {
-                v?.startAnimationFrom(
-                    it,
-                    remainingAnimationLength,
-                    onUpdate,
-                    dismissAction,
-                    widgetViewModel?.showDismissButton ?: true
-                )
-            }
+            v?.startAnimationFrom(
+                animationEggTimerProgress,
+                remainingAnimationLength,
+                onUpdate,
+                dismissAction,
+                widgetViewModel?.showDismissButton ?: true
+            )
         }
     }
 

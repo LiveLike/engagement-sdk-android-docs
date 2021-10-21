@@ -65,8 +65,8 @@ internal class EmojiSliderWidgetViewModel(
     override fun vote(value: String) {
         uiScope.launch {
             data.latest()?.voteUrl?.let {
-                val fetchedUrl = dataClient.voteAsync(
-                    it, "", userRepository?.userAccessToken,
+                dataClient.voteAsync(
+                    it, "", userRepository.userAccessToken,
                     FormBody.Builder()
                         .add("magnitude", value).build(),
                     userRepository = userRepository
@@ -112,7 +112,7 @@ internal class EmojiSliderWidgetViewModel(
     }
 
     override val widgetData: LiveLikeWidget
-        get() = gson.fromJson(widgetInfos?.payload, LiveLikeWidget::class.java)
+        get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
 
     override val voteResults: Stream<LiveLikeWidgetResult>
         get() = results.map { it.toLiveLikeWidgetResult() }

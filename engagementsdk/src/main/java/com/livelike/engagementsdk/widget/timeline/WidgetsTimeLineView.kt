@@ -157,7 +157,7 @@ class WidgetsTimeLineView(
                                         pair.second[0].liveLikeWidget.timeout ?: ""
                                     )
                                 )
-                                pair.second[0]?.widgetState = WidgetStates.RESULTS
+                                pair.second[0].widgetState = WidgetStates.RESULTS
                                 adapter.notifyItemChanged(adapter.list.indexOf(widget))
                             }
                         }
@@ -183,7 +183,7 @@ class WidgetsTimeLineView(
         widgets.forEach {
             val kind = it.liveLikeWidget.kind
             if (kind?.contains(WidgetKind.PREDICTION.event) == true) {
-                if ((timeLineViewModel.contentSession as ContentSession)?.widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
+                if ((timeLineViewModel.contentSession as ContentSession).widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
                         it.liveLikeWidget.id ?: "",
                         WidgetKind.fromString(kind)
                     ) != null
@@ -199,7 +199,7 @@ class WidgetsTimeLineView(
             val kind = it.liveLikeWidget.kind
             if (kind == WidgetKind.IMAGE_SLIDER.event || kind?.contains(WidgetKind.QUIZ.event) == true ||
                    kind?.contains(WidgetKind.TEXT_ASK.event) == true || kind?.contains(WidgetKind.NUMBER_PREDICTION.event) == true) {
-                if ((timeLineViewModel.contentSession as ContentSession)?.widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
+                if ((timeLineViewModel.contentSession as ContentSession).widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
                         it.liveLikeWidget.id ?: "",
                         WidgetKind.fromString(kind)
                     ) != null
@@ -214,7 +214,7 @@ class WidgetsTimeLineView(
      * this locks the prediction widgets, when followup is received
      **/
     private fun wouldLockPredictionWidgets(widgets: List<TimelineWidgetResource>) {
-        var followUpWidgetPredictionIds = widgets.filter {
+        val followUpWidgetPredictionIds = widgets.filter {
             it.liveLikeWidget.kind?.contains("follow-up") ?: false
         }.map { it.liveLikeWidget.textPredictionId ?: it.liveLikeWidget.imagePredictionId ?: it.liveLikeWidget.textNumberPredictionId ?: it.liveLikeWidget.imageNumberPredictionId}
 
@@ -358,7 +358,7 @@ class WidgetsTimeLineView(
     private fun snapToLiveForTimeline() {
         timeline_rv?.let { rv ->
             hideSnapToLiveForWidgets()
-            timeLineViewModel.timeLineWidgets?.size?.let {
+            timeLineViewModel.timeLineWidgets.size.let {
                 timeline_rv.postDelayed(
                     {
                         rv.smoothScrollToPosition(0)

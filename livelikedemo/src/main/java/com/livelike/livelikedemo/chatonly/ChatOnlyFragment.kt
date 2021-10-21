@@ -52,7 +52,7 @@ class ChatOnlyFragment : Fragment() {
                     object : LiveLikeCallback<List<LiveLikeUser>>() {
                         override fun onResponse(result: List<LiveLikeUser>?, error: String?) {
                             if (result?.isNotEmpty() == true)
-                                txt_chat_room_members_count?.text = "Members: ${result?.size ?: 0}"
+                                txt_chat_room_members_count?.text = "Members: ${result.size ?: 0}"
                             else
                                 txt_chat_room_members_count?.text = ""
                             prg_members.visibility = View.INVISIBLE
@@ -67,9 +67,9 @@ class ChatOnlyFragment : Fragment() {
                                             // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
                                             val item = list[which]
                                             item.let {
-                                                var clipboard =
+                                                val clipboard =
                                                     context?.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-                                                var clip = ClipData.newPlainText("copied User Id", item.id)
+                                                val clip = ClipData.newPlainText("copied User Id", item.id)
                                                 clipboard?.setPrimaryClip(clip)
                                             }
                                         }
@@ -126,9 +126,9 @@ class ChatOnlyFragment : Fragment() {
             }
         }
         txt_chat_room_id.setOnClickListener {
-            var clipboard =
+            val clipboard =
                 context?.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-            var clip = ClipData.newPlainText("copied ChatRoom Id", txt_chat_room_id.text.toString())
+            val clip = ClipData.newPlainText("copied ChatRoom Id", txt_chat_room_id.text.toString())
             clipboard?.setPrimaryClip(clip)
         }
     }

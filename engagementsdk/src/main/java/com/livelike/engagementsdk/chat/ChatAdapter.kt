@@ -549,24 +549,22 @@ internal class ChatRecyclerAdapter(
         }
 
         private fun getTextWithCustomLinks(spannableString: SpannableString): SpannableString {
-            linksRegex?.let {
-                val result = it.toPattern().matcher(spannableString)
-                while (result.find()) {
-                    val start = result.start()
-                    val end = result.end()
-                    spannableString.setSpan(
-                        InternalURLSpan(
-                            spannableString.subSequence(start, end).toString(),
-                            message?.id,
-                            chatRoomId,
-                            chatRoomName,
-                            analyticsService
-                        ),
-                        start,
-                        end,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                }
+            val result = linksRegex.toPattern().matcher(spannableString)
+            while (result.find()) {
+                val start = result.start()
+                val end = result.end()
+                spannableString.setSpan(
+                    InternalURLSpan(
+                        spannableString.subSequence(start, end).toString(),
+                        message?.id,
+                        chatRoomId,
+                        chatRoomName,
+                        analyticsService
+                    ),
+                    start,
+                    end,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
             }
             return spannableString
         }

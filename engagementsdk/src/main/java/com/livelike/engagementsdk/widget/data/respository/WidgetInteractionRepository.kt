@@ -55,19 +55,18 @@ internal class WidgetInteractionRepository(
 
         if (widgetInteractionsResult is com.livelike.engagementsdk.core.services.network.Result.Success) {
             val interactionList = mutableListOf<WidgetUserInteractionBase>()
-            widgetInteractionsResult.data.interactions?.let { interactions ->
-                interactions.cheerMeter?.let { interactionList.addAll(it) }
-                interactions.emojiSlider?.let { interactionList.addAll(it) }
-                interactions.textPoll?.let { interactionList.addAll(it) }
-                interactions.textPrediction?.let { interactionList.addAll(it) }
-                interactions.textQuiz?.let { interactionList.addAll(it) }
-                interactions.imagePoll?.let { interactionList.addAll(it) }
-                interactions.imagePrediction?.let { interactionList.addAll(it) }
-                interactions.imageQuiz?.let { interactionList.addAll(it) }
-                interactions.textAsk?.let { interactionList.addAll(it) }
-                interactions.textNumberPrediction?.let { interactionList.addAll(it) }
-                interactions.imageNumberPrediction?.let { interactionList.addAll(it) }
-            }
+            val interactions = widgetInteractionsResult.data.interactions
+            interactions.cheerMeter?.let { interactionList.addAll(it) }
+            interactions.emojiSlider?.let { interactionList.addAll(it) }
+            interactions.textPoll?.let { interactionList.addAll(it) }
+            interactions.textPrediction?.let { interactionList.addAll(it) }
+            interactions.textQuiz?.let { interactionList.addAll(it) }
+            interactions.imagePoll?.let { interactionList.addAll(it) }
+            interactions.imagePrediction?.let { interactionList.addAll(it) }
+            interactions.imageQuiz?.let { interactionList.addAll(it) }
+            interactions.textAsk?.let { interactionList.addAll(it) }
+            interactions.textNumberPrediction?.let { interactionList.addAll(it) }
+            interactions.imageNumberPrediction?.let { interactionList.addAll(it) }
             interactionList.forEach {
                 if (it is CheerMeterUserInteraction && widgetInteractionMap[it.widgetId] != null) {
                     it.totalScore += (widgetInteractionMap[it.widgetId] as CheerMeterUserInteraction).totalScore

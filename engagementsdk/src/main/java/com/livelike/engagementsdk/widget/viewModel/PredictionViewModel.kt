@@ -114,7 +114,7 @@ internal class PredictionViewModel(
                 }
 
                 currentWidgetId = widgetInfos.widgetId
-                programId = data?.currentData?.resource?.program_id.toString()
+                programId = data.currentData?.resource?.program_id.toString()
                 currentWidgetType = type
                 interactionData.widgetDisplayed()
             }
@@ -122,8 +122,6 @@ internal class PredictionViewModel(
             data.onNext(null)
         }
     }
-
-    private val runnable = Runnable { }
 
     // TODO: need to move the followup logic back to the widget observer instead of there
     fun startDismissTimout(
@@ -140,7 +138,7 @@ internal class PredictionViewModel(
                 }
                 data.currentData?.apply {
                     val selectedPredictionId =
-                        getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
+                        getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isEmpty()) resource.image_prediction_id else resource.text_prediction_id)
                     // not sure, why this has been added
                     /* uiScope.launch {
                          delay(
@@ -312,7 +310,7 @@ internal class PredictionViewModel(
     }
 
     private fun getPredictionId(it: PredictionWidget): String? {
-        if (it.resource.text_prediction_id.isNullOrEmpty()) {
+        if (it.resource.text_prediction_id.isEmpty()) {
             return it.resource.image_prediction_id
         }
         return it.resource.text_prediction_id
@@ -361,7 +359,7 @@ internal class PredictionViewModel(
                 }
             }
             // Save widget id and voted option for followup widget
-            addWidgetPredictionVoted(widget.resource.id ?: "", option?.id ?: "")
+            addWidgetPredictionVoted(widget.resource.id, option?.id ?: "")
 
             // save interaction locally
             if (option != null) {
