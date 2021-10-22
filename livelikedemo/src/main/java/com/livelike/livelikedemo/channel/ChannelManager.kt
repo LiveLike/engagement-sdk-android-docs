@@ -57,7 +57,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                         appContext.getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
                             .getString(PREFERENCE_CHANNEL_ID, "")
                     try {
-                        val json = JSONObject(responseData)
+                        val json = JSONObject(responseData ?: "")
                         val results = json.getJSONArray("results")
                         val nextUrl = json.getString("next")
                         if (nextUrl != "null")

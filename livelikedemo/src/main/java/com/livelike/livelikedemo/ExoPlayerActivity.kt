@@ -324,11 +324,11 @@ class ExoPlayerActivity : AppCompatActivity() {
                                             result: List<LiveLikeWidget>?,
                                             error: String?
                                         ) {
-                                            result?.map { it!! }.let {
+                                            result?.map { it }.let {
                                                 DialogUtils.showMyWidgetsDialog(
                                                     context,
                                                     (application as LiveLikeApplication).sdk,
-                                                    ArrayList(it),
+                                                    ArrayList(it ?: emptyList()),
                                                     object : LiveLikeCallback<LiveLikeWidget>() {
                                                         override fun onResponse(
                                                             result: LiveLikeWidget?,
