@@ -471,7 +471,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         val animationEggTimerProgress =
             (animationLength - remainingAnimationLength) / animationLength
 
-        if ((animationEggTimerProgress ?: 0f) < 1f) {
+        if (animationEggTimerProgress < 1f) {
             v?.startAnimationFrom(
                 animationEggTimerProgress,
                 remainingAnimationLength,

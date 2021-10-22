@@ -52,7 +52,7 @@ class ChatOnlyFragment : Fragment() {
                     object : LiveLikeCallback<List<LiveLikeUser>>() {
                         override fun onResponse(result: List<LiveLikeUser>?, error: String?) {
                             if (result?.isNotEmpty() == true)
-                                txt_chat_room_members_count?.text = "Members: ${result.size ?: 0}"
+                                txt_chat_room_members_count?.text = "Members: ${result.size}"
                             else
                                 txt_chat_room_members_count?.text = ""
                             prg_members.visibility = View.INVISIBLE
