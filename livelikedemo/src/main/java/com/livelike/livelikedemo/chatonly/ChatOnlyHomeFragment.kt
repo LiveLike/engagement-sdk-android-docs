@@ -61,6 +61,7 @@ import kotlinx.android.synthetic.main.invite_list_item.view.btn_accept
 import kotlinx.android.synthetic.main.invite_list_item.view.btn_reject
 import kotlinx.android.synthetic.main.invite_list_item.view.txt_invitation
 import kotlinx.android.synthetic.main.user_list_item.view.txt_name
+import java.util.Locale
 
 class ChatOnlyHomeFragment : Fragment() {
 
@@ -85,7 +86,7 @@ class ChatOnlyHomeFragment : Fragment() {
         btn_create.setOnClickListener {
             val title = ed_chat_room_title.text.toString()
             val visibility =
-                if (btn_visibility.text.toString().toLowerCase().contains("visibility").not())
+                if (btn_visibility.text.toString().lowercase(Locale.getDefault()).contains("visibility").not())
                     Visibility.valueOf(btn_visibility.text.toString())
                 else
                     Visibility.everyone
