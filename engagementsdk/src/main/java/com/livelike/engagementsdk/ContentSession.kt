@@ -120,16 +120,16 @@ internal class ContentSession(
             programFlow.collect { program ->
                 program?.timelineUrl?.let { url ->
 
-                    val url = when (liveLikePagination) {
+                    val innerUrl = when (liveLikePagination) {
                         LiveLikePagination.FIRST -> url
                         LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
                         LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
                     }
                     try {
-                        if (url == null) {
+                        if (innerUrl == null) {
                             liveLikeCallback.onResponse(null, null)
                         } else {
-                            val jsonObject = widgetDataClient.getAllPublishedWidgets(url)
+                            val jsonObject = widgetDataClient.getAllPublishedWidgets(innerUrl)
                             publishedWidgetListResponse =
                                 gson.fromJson(
                                     jsonObject.toString(),

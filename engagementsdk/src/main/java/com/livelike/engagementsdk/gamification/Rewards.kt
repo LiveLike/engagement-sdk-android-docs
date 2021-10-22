@@ -76,9 +76,9 @@ internal class Rewards(
                             addQueryParameter("reward_item_id", id)
                         }
                     }
-                    httpUrl?.build()?.let { httpUrl ->
+                    httpUrl?.build()?.let { innerHttpUrl ->
                         dataClient.remoteCall<LLPaginatedResult<RewardItemBalance>>(
-                            httpUrl,
+                            innerHttpUrl,
                             RequestType.GET,
                             null,
                             pair.first.accessToken
