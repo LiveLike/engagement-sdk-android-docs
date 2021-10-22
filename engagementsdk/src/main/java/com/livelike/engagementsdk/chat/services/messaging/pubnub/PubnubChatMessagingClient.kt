@@ -533,7 +533,7 @@ internal class PubnubChatMessagingClient(
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
         if (firstTimeToken == 0L)
-            pubnub.time().async { result, status ->
+            pubnub.time().async { result, _ ->
                 firstTimeToken = result?.timetoken ?: 0
                 loadMessagesWithReactions(
                     channel,
@@ -623,7 +623,7 @@ internal class PubnubChatMessagingClient(
             .channel(channel)
             .messageTimetoken(messageTimetoken)
             .actionTimetoken(actionTimetoken)
-            .async { result, status ->
+            .async { _, status ->
                 if (!status.isError) {
                     logDebug { "own message action removed" }
                 } else {

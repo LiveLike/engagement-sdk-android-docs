@@ -207,25 +207,25 @@ class MainActivity : AppCompatActivity() {
 
         // chk_show_dismiss.isChecked = player.showNotification
         chk_show_dismiss.isChecked = false
-        chk_show_dismiss.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_show_dismiss.setOnCheckedChangeListener { _, isChecked ->
             player.showNotification = isChecked
         }
         chk_show_avatar.isChecked = player.showAvatar
-        chk_show_avatar.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_show_avatar.setOnCheckedChangeListener { _, isChecked ->
             player.showAvatar = isChecked
         }
 
-        chk_custom_widgets_ui.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_custom_widgets_ui.setOnCheckedChangeListener { _, isChecked ->
             player.customCheerMeter = isChecked
             onlyWidget.customCheerMeter = isChecked
             LiveLikeApplication.showCustomWidgetsUI = isChecked
         }
 
         chk_enable_debug.isChecked = EngagementSDK.enableDebug
-        chk_enable_debug.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_enable_debug.setOnCheckedChangeListener { _, isChecked ->
             EngagementSDK.enableDebug = isChecked
         }
-        chk_show_links.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_show_links.setOnCheckedChangeListener { _, isChecked ->
             player.showLink = isChecked
         }
 
@@ -244,14 +244,14 @@ class MainActivity : AppCompatActivity() {
                 if (channelManager.nextUrl?.isNotEmpty() == true)
                     setPositiveButton(
                         "Load Next"
-                    ) { dialog, which ->
+                    ) { dialog, _ ->
                         channelManager.loadClientConfig(channelManager.nextUrl)
                         dialog.dismiss()
                     }
                 if (channelManager.previousUrl?.isNotEmpty() == true)
                     setNeutralButton(
                         "Load Previous"
-                    ) { dialog, which ->
+                    ) { dialog, _ ->
                         channelManager.loadClientConfig(channelManager.previousUrl)
                         dialog.dismiss()
                     }
@@ -412,7 +412,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        toggle_auto_keyboard_hide.setOnCheckedChangeListener { buttonView, isChecked ->
+        toggle_auto_keyboard_hide.setOnCheckedChangeListener { _, isChecked ->
             player.keyboardClose = isChecked
         }
         toggle_auto_keyboard_hide.isChecked = player.keyboardClose

@@ -74,7 +74,7 @@ class LeaderBoardActivity : AppCompatActivity() {
                     "Score: ${result.score}",
                     "Custom Data: ${result.profile.custom_data}"
                 )
-            ) { _, which ->
+            ) { _, _ ->
             }
             create()
         }.show()

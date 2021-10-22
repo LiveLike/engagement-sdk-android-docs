@@ -200,22 +200,22 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
             }
         }
 
-        radio_ready.setOnCheckedChangeListener { buttonView, isChecked ->
+        radio_ready.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 widget_view.setState(WidgetStates.READY)
             }
         }
-        radio_interaction.setOnCheckedChangeListener { buttonView, isChecked ->
+        radio_interaction.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 widget_view.setState(WidgetStates.INTERACTING)
             }
         }
-        radio_result.setOnCheckedChangeListener { buttonView, isChecked ->
+        radio_result.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 widget_view.setState(WidgetStates.RESULTS)
             }
         }
-        radio_finished.setOnCheckedChangeListener { buttonView, isChecked ->
+        radio_finished.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 widget_view.setState(WidgetStates.FINISHED)
             }

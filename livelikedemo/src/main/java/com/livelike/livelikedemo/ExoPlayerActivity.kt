@@ -258,14 +258,14 @@ class ExoPlayerActivity : AppCompatActivity() {
                         if (cm.nextUrl?.isNotEmpty() == true)
                             setPositiveButton(
                                 "Load Next"
-                            ) { dialog, which ->
+                            ) { dialog, _ ->
                                 cm.loadClientConfig(cm.nextUrl)
                                 dialog.dismiss()
                             }
                         if (cm.previousUrl?.isNotEmpty() == true)
                             setNeutralButton(
                                 "Load Previous"
-                            ) { dialog, which ->
+                            ) { dialog, _ ->
                                 cm.loadClientConfig(cm.previousUrl)
                                 dialog.dismiss()
                             }

@@ -255,7 +255,7 @@ class ChatOnlyHomeFragment : Fragment() {
                         builder.setTitle("Avatar")
                             .setView(checkBoxView)
                             .setCancelable(false)
-                            .setPositiveButton("Done") { dialog, id ->
+                            .setPositiveButton("Done") { _, _ ->
                                 val url = checkBoxView.ed_avatar.text.toString()
                                 (activity as? ChatOnlyActivity)?.changeChatRoom(
                                     chatRoomList.elementAt(which).id,
