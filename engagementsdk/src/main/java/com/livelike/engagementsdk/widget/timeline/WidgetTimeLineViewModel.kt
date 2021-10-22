@@ -135,8 +135,7 @@ open class WidgetTimeLineViewModel(
         liveLikeWidget: LiveLikeWidget,
         timeLineWidgetApiSource: WidgetApiSource
     ): WidgetStates {
-        var isInteractive = false
-        isInteractive = if (decideWidgetInteractivity != null) {
+        val isInteractive = if (decideWidgetInteractivity != null) {
             decideWidgetInteractivity?.wouldAllowWidgetInteraction(liveLikeWidget) ?: false
         } else {
             timeLineWidgetApiSource == WidgetApiSource.REALTIME_API

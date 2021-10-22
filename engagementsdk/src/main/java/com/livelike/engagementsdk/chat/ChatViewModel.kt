@@ -213,6 +213,7 @@ internal class ChatViewModel(
     ) {
         logDebug { "add Message Reaction OwnReaction:$isOwnReaction" }
         messageList.forEachIndexed { index, chatMessage ->
+            @Suppress("SENSELESS_COMPARISON")
             if (chatMessage != null) { // added null check in reference to ES-1533 (though crash not reproducible at all)
                 chatMessage.apply {
                     if (this.timetoken == messagePubnubToken) {

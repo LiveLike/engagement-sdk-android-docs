@@ -44,7 +44,7 @@ internal class ProgramRepository(
      * @param programDetailUrlTemplate (received in engagement configuration resource)
      */
     suspend fun getProgramData(programDetailUrlTemplate: String): Result<ProgramModel> {
-        var results: Result<ProgramModel>? = null
+        var results: Result<ProgramModel>?
         results = dataClient.remoteCall<ProgramModel>(
             programDetailUrlTemplate.replace(
                 TEMPLATE_PROGRAM_ID,

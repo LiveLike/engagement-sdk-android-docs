@@ -47,7 +47,7 @@ internal open class PubnubChatRoomMessagingClient(
                     }
                     PubnubChatEventType.CHATROOM_INVITE -> {
                         val pubnubChatRoomEvent: PubnubChatEvent<ChatRoomInvitation> = gson.fromJson(
-                            message.message.asJsonObject,
+                            pnMessageResult.message.asJsonObject,
                             object : TypeToken<PubnubChatEvent<ChatRoomInvitation>>() {}.type
                         )
                         chatRoomDelegate?.onReceiveInvitation(pubnubChatRoomEvent.payload)

@@ -362,7 +362,7 @@ class EngagementSDK(
                                     requestType = RequestType.POST,
                                     fullErrorJson = true,
                                     requestBody = when (userId.isEmpty()) {
-                                        true -> RequestBody.create(null, byteArrayOf())
+                                        true -> byteArrayOf().toRequestBody(null, 0, 0)
                                         else -> """{"profile_id":"$userId"}"""
                                             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
                                     }
