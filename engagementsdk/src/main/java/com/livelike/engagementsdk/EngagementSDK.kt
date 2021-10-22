@@ -44,6 +44,9 @@ import com.livelike.engagementsdk.gamification.Badges
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.gamification.Rewards
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
+import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
+import com.livelike.engagementsdk.publicapis.ChatRoomInvitationResponse
+import com.livelike.engagementsdk.publicapis.ChatRoomInvitationStatus
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
@@ -726,6 +729,133 @@ class EngagementSDK(
             }
     }
 
+    override fun sendChatRoomInviteToUser(
+        chatRoomId: String,
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInvitation>
+    ) {
+        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
+            .subscribe(this) {
+                it?.let {
+                    uiScope.launch {
+                        val result = dataClient.remoteCall<ChatRoomInvitation>(
+                            it.second.createChatRoomInvitationUrl,
+                            RequestType.POST,
+                            requestBody = """{"chat_room_id":"$chatRoomId","invited_profile_id":"$profileId"}"""
+                                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
+                            userAccessToken, true
+                        )
+                        liveLikeCallback.processResult(result)
+                    }
+                }
+            }
+    }
+
+    override fun updateChatRoomInviteStatus(
+        chatRoomInvitation: ChatRoomInvitation,
+        invitationStatus: ChatRoomInvitationStatus,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInvitation>
+    ) {
+        uiScope.launch {
+            val result = dataClient.remoteCall<ChatRoomInvitation>(
+                chatRoomInvitation.url,
+                RequestType.PATCH,
+                requestBody = """{"status":"${invitationStatus.key}"}"""
+                    .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
+                userAccessToken,
+                true
+            )
+            liveLikeCallback.processResult(result)
+        }
+    }
+
+    override fun getInvitationsForCurrentProfileWithInvitationStatus(
+        liveLikePagination: LiveLikePagination,
+        invitationStatus: ChatRoomInvitationStatus,
+        liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>
+    ) {
+        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
+            .subscribe(this) {
+                it?.let {
+                    uiScope.launch {
+                        val url = when (liveLikePagination) {
+                            LiveLikePagination.FIRST -> it.second.profileChatRoomReceivedInvitationsUrlTemplate.replace(
+                                "{profile_id}",
+                                it.first.id
+                            ).replace("{status}", invitationStatus.key)
+                            LiveLikePagination.NEXT -> invitationForProfileMap[it.first.id]?.next
+                            LiveLikePagination.PREVIOUS -> invitationForProfileMap[it.first.id]?.previous
+                        }
+                        if (url != null) {
+                            val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
+                                url,
+                                RequestType.GET,
+                                requestBody = null,
+                                userAccessToken, true
+                            )
+                            if (result is Result.Success) {
+                                invitationForProfileMap[it.first.id] = result.data
+                                liveLikeCallback.onResponse(result.data.results, null)
+                            } else if (result is Result.Error) {
+                                liveLikeCallback.onResponse(
+                                    null,
+                                    result.exception.message
+                                )
+                            }
+                        } else {
+                            liveLikeCallback.onResponse(null, "No More data to load")
+                        }
+                    }
+                }
+            }
+    }
+
+    override fun getInvitationsByCurrentProfileWithInvitationStatus(
+        liveLikePagination: LiveLikePagination,
+        invitationStatus: ChatRoomInvitationStatus,
+        liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>
+    ) {
+        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
+            .subscribe(this) {
+                it?.let {
+                    uiScope.launch {
+                        val url = when (liveLikePagination) {
+                            LiveLikePagination.FIRST -> it.second.profileChatRoomSentInvitationsUrlTemplate.replace(
+                                "{invited_by_id}",
+                                it.first.id
+                            ).replace("{status}", invitationStatus.key)
+                            LiveLikePagination.NEXT -> invitationByProfileMap[it.first.id]?.next
+                            LiveLikePagination.PREVIOUS -> invitationByProfileMap[it.first.id]?.previous
+                        }
+                        if (url != null) {
+                            val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
+                                url,
+                                RequestType.GET,
+                                requestBody = null,
+                                userAccessToken, true
+                            )
+                            if (result is Result.Success) {
+                                invitationByProfileMap[it.first.id] = result.data
+                                liveLikeCallback.onResponse(result.data.results, null)
+                            } else if (result is Result.Error) {
+                                liveLikeCallback.onResponse(
+                                    null,
+                                    result.exception.message
+                                )
+                            }
+                        } else {
+                            liveLikeCallback.onResponse(null, "No More data to load")
+                        }
+                    }
+                }
+            }
+    }
+
+
+    private val invitationForProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
+    private val invitationByProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
+
+
     override fun sponsor(): Sponsor {
         return Sponsor(this)
     }
@@ -1115,7 +1245,17 @@ class EngagementSDK(
         @SerializedName("reward_items_url")
         internal var rewardItemsUrl: String?,
         @SerializedName("user_search_url")
-        val userSearchUrl: String
+        val userSearchUrl: String,
+        @SerializedName("chat_rooms_invitations_url")
+        val chatRoomsInvitationsUrl: String,
+        @SerializedName("chat_room_invitation_detail_url_template")
+        val chatRoomInvitationDetailUrlTemplate: String,
+        @SerializedName("create_chat_room_invitation_url")
+        val createChatRoomInvitationUrl: String,
+        @SerializedName("profile_chat_room_received_invitations_url_template")
+        val profileChatRoomReceivedInvitationsUrlTemplate: String,
+        @SerializedName("profile_chat_room_sent_invitations_url_template")
+        val profileChatRoomSentInvitationsUrlTemplate: String,
     )
 
     companion object {
