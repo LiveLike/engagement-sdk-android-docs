@@ -12,7 +12,6 @@ import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.MessageError
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_UPDATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CUSTOM_MESSAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
@@ -222,14 +221,14 @@ internal class PubnubChatMessagingClient(
 
         // Extract SubscribeCallback?
         pubnub.addListener(object : PubnubSubscribeCallbackAdapter() {
-            override fun status(pubnub: PubNub, status: PNStatus) {
-                when (status.operation) {
+            override fun status(pubnub: PubNub, pnStatus: PNStatus) {
+                when (pnStatus.operation) {
                     // let's combine unsubscribe and subscribe handling for ease of use
                     PNOperationType.PNSubscribeOperation, PNOperationType.PNUnsubscribeOperation -> {
                         // note: subscribe statuses never have traditional
                         // errors, they just have categories to represent the
                         // different issues or successes that occur as part of subscribe
-                        when (status.category) {
+                        when (pnStatus.category) {
                             PNStatusCategory.PNConnectedCategory -> {
                                 // this is expected for a subscribe, this means there is no error or issue whatsoever
                                 listener?.onClientMessageStatus(client, ConnectionStatus.CONNECTED)
@@ -276,8 +275,8 @@ internal class PubnubChatMessagingClient(
                 }
             }
 
-            override fun message(pubnub: PubNub, message: PNMessageResult) {
-                val channel = message.channel
+            override fun message(pubnub: PubNub, pnMessageResult: PNMessageResult) {
+                val channel = pnMessageResult.channel
                 if (pubnubChatRoomLastMessageTime == null)
                     pubnubChatRoomLastMessageTime = GsonBuilder().create().fromJson(
                         getSharedPreferences()
@@ -290,7 +289,7 @@ internal class PubnubChatMessagingClient(
                 pubnubChatRoomLastMessageTime?.let { map ->
                     val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> =
                         gson.fromJson(
-                            message.message.asJsonObject,
+                            pnMessageResult.message.asJsonObject,
                             object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type
                         )
                     val msgId = pubnubChatEvent.payload.messageId
@@ -300,7 +299,7 @@ internal class PubnubChatMessagingClient(
                             map.containsKey(channel) -> map[channel]
                             else -> ArrayList()
                         } ?: ArrayList()
-                    val event = message.message.asJsonObject.extractStringOrEmpty("event")
+                    val event = pnMessageResult.message.asJsonObject.extractStringOrEmpty("event")
                         .toPubnubChatEventType()
 
                     when (event) {
@@ -315,10 +314,10 @@ internal class PubnubChatMessagingClient(
                                         GsonBuilder().create().toJson(map)
                                     ).apply()
                                 processPubnubChatEvent(
-                                    message.message.asJsonObject.apply {
-                                        addProperty("pubnubToken", message.timetoken)
+                                    pnMessageResult.message.asJsonObject.apply {
+                                        addProperty("pubnubToken", pnMessageResult.timetoken)
                                     },
-                                    channel, message.timetoken
+                                    channel, pnMessageResult.timetoken
                                 )?.let {
                                     listener?.onClientMessageEvent(client, it)
                                 }
@@ -327,10 +326,10 @@ internal class PubnubChatMessagingClient(
                         }
                         else -> {
                             processPubnubChatEvent(
-                                message.message.asJsonObject.apply {
-                                    addProperty("pubnubToken", message.timetoken)
+                                pnMessageResult.message.asJsonObject.apply {
+                                    addProperty("pubnubToken", pnMessageResult.timetoken)
                                 },
-                                channel, message.timetoken
+                                channel, pnMessageResult.timetoken
                             )?.let {
                                 listener?.onClientMessageEvent(client, it)
                             }

@@ -182,9 +182,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             showChatAvatar = intent.getBooleanExtra("showAvatar", true)
             if (intent.getBooleanExtra("customCheerMeter", false))
                 widget_view?.widgetViewFactory = object : LiveLikeWidgetViewFactory {
-                    override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
+                    override fun createCheerMeterView(cheerMeterWidgetModel: CheerMeterWidgetmodel): View? {
                         return CustomCheerMeter(this@ExoPlayerActivity).apply {
-                            cheerMeterWidgetModel = viewModel
+                            this.cheerMeterWidgetModel = cheerMeterWidgetModel
                         }
                     }
 

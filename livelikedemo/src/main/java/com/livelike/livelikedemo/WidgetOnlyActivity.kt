@@ -215,9 +215,9 @@ class WidgetOnlyActivity : AppCompatActivity() {
         widget_view.setSession(session)
         if (intent.getBooleanExtra("customCheerMeter", false))
             widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
-                override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
+                override fun createCheerMeterView(cheerMeterWidgetModel: CheerMeterWidgetmodel): View? {
                     return CustomCheerMeter(this@WidgetOnlyActivity).apply {
-                        cheerMeterWidgetModel = viewModel
+                        this.cheerMeterWidgetModel = cheerMeterWidgetModel
                     }
                 }
 
