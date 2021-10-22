@@ -81,6 +81,12 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                 removeAllViews()
                 parent?.let { (it as ViewGroup).removeAllViews() }
             }
+            WidgetStates.RESULTS -> {
+
+            }
+            null -> {
+
+            }
         }
     }
 

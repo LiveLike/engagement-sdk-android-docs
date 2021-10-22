@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.MessageError
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_UPDATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CUSTOM_MESSAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
@@ -484,6 +485,12 @@ internal class PubnubChatMessagingClient(
                         },
                         channel
                     )
+                }
+                PubnubChatEventType.CHATROOM_ADDED -> {
+
+                }
+                PubnubChatEventType.CHATROOM_INVITE -> {
+
                 }
             }
             logDebug { "Received message on $channel from pubnub: ${pubnubChatEvent.payload}" }
