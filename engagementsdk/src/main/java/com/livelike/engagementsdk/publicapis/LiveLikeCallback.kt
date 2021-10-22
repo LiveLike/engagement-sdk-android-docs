@@ -28,4 +28,5 @@ abstract class ErrorDelegate {
 
 abstract class ChatRoomDelegate {
     abstract fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd)
+    abstract fun onReceiveInvitation(invitation: ChatRoomInvitation)
 }
