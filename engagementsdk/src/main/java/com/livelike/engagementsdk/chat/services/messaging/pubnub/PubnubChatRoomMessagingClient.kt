@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.publicapis.ChatRoomAdd
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
+import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubSubscribeCallbackAdapter
 import com.pubnub.api.PubNub
@@ -44,6 +45,13 @@ internal open class PubnubChatRoomMessagingClient(
                             object : TypeToken<PubnubChatEvent<ChatRoomAdd>>() {}.type
                         )
                         chatRoomDelegate?.onNewChatRoomAdded(pubnubChatRoomEvent.payload)
+                    }
+                    PubnubChatEventType.CHATROOM_INVITE -> {
+                        val pubnubChatRoomEvent: PubnubChatEvent<ChatRoomInvitation> = gson.fromJson(
+                            message.message.asJsonObject,
+                            object : TypeToken<PubnubChatEvent<ChatRoomInvitation>>() {}.type
+                        )
+                        chatRoomDelegate?.onReceiveInvitation(pubnubChatRoomEvent.payload)
                     }
                     else -> {
                         logError { "Event: $event not supported"  }

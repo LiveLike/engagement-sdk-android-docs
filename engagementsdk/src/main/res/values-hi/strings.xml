@@ -44,6 +44,10 @@
     <string name="livelike_quiz_tag"> </string>
     <string name="livelike_prediction_tag"> </string>
     <string name="livelike_follow_up_tag"> </string>
+    <string name="livelike_number_prediction_tag"> </string>
+    <string name="livelike_number_prediction_follow_up_tag"> </string>
     <string name="livelike_answer_label">उत्तर</string>
     <string name="livelike_answered_label">जवाब!</string>
+    <string name="livelike_predict_label">भविष्यवाणी करना</string>
+    <string name="livelike_predicted_label">भविष्यवाणी की!</string>
 </resources>
