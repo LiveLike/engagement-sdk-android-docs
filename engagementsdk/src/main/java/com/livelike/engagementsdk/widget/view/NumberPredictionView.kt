@@ -180,7 +180,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
-            logDebug { "showing NumberPredictionWidget" }
+
         }
 
         if (widget == null) {
