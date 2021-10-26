@@ -40,7 +40,7 @@ interface IEngagement {
 
     var leaderBoardDelegate: LeaderBoardDelegate?
 
-    var chatRoomDelegate : ChatRoomDelegate?
+    var chatRoomDelegate: ChatRoomDelegate?
 
     /** Override the default auto-generated chat nickname **/
     fun updateChatNickname(nickname: String)
@@ -67,6 +67,7 @@ interface IEngagement {
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<ChatRoomMembership>
     )
+
     fun addUserToChatRoom(
         chatRoomId: String,
         userId: String,
@@ -127,6 +128,30 @@ interface IEngagement {
     )
 
     fun getCurrentUserDetails(liveLikeCallback: LiveLikeCallback<LiveLikeUserApi>)
+
+    fun sendChatRoomInviteToUser(
+        chatRoomId: String,
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInvitation>
+    )
+
+    fun updateChatRoomInviteStatus(
+        chatRoomInvitation: ChatRoomInvitation,
+        invitationStatus: ChatRoomInvitationStatus,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInvitation>
+    )
+
+    fun getInvitationsForCurrentProfileWithInvitationStatus(
+        liveLikePagination: LiveLikePagination,
+        invitationStatus: ChatRoomInvitationStatus,
+        liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>
+    )
+
+    fun getInvitationsByCurrentProfileWithInvitationStatus(
+        liveLikePagination: LiveLikePagination,
+        invitationStatus: ChatRoomInvitationStatus,
+        liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>
+    )
 
     /**
      * Returns the sponsor client

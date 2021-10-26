@@ -114,7 +114,7 @@ class ChatOnlyFragment : Fragment() {
             it.setChatRoomListener(object : ChatRoomListener {
                 override fun onChatRoomUpdate(chatRoom: ChatRoomInfo) {
                     (activity as? ChatOnlyActivity)?.chatRoomInfo = chatRoom
-                    txt_chat_room_id.post {
+                    txt_chat_room_id?.post {
                         updateData(chatRoom)
                     }
                 }

@@ -94,6 +94,12 @@
     <color name="livelike_video_alert_body_text_color">@color/livelike_default_text_color</color>
     <color name="livelike_video_alert_link_text_color">@color/livelike_default_text_color</color>
 
+    <!--  Number prediction widget -->
+    <color name="livelike_number_prediction_correct_answer">#00f078</color>
+    <color name="livelike_number_prediction_wrong_answer">#f0003c</color>
+    <color name="livelike_number_prediction_user_input_hint">#666666</color>
+    <color name="livelike_number_prediction_user_input">#1BC6FF</color>
+
     <!--  Gamification -->
     <color name="livelike_rank_label_text_color">#fff000</color>
     <color name="livelike_rank_label_gradient_right">#4b28b4</color>

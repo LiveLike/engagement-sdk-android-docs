@@ -1,9 +1,12 @@
 package com.livelike.engagementsdk.widget.viewModel
 
+import android.content.Context
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
+import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
@@ -12,6 +15,7 @@ import com.livelike.engagementsdk.core.data.models.NumberPredictionVotes
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
@@ -19,14 +23,20 @@ import com.livelike.engagementsdk.formatIsoZoned8601
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
+import com.livelike.engagementsdk.widget.adapters.NumberPredictionOptionAdapter
 import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
+import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addWidgetNumberPredictionVoted
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetNumberPredictionVotedAnswerList
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -42,6 +52,7 @@ internal class NumberPredictionWidget(
 
 internal class NumberPredictionViewModel(
     val widgetInfos: WidgetInfos,
+    private val appContext: Context,
     private val analyticsService: AnalyticsService,
     private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
@@ -52,14 +63,21 @@ internal class NumberPredictionViewModel(
     NumberPredictionFollowUpWidgetModel {
 
 
-
     val data: SubscriptionManager<NumberPredictionWidget> =
         SubscriptionManager()
     var results: Stream<Resource> =
         SubscriptionManager()
+    var numberPredictionFollowUp: Boolean = false
     private var currentWidgetId: String = ""
     private var programId: String = ""
     private var currentWidgetType: WidgetType? = null
+    private val interactionData = AnalyticsWidgetInteractionInfo()
+    var adapter: NumberPredictionOptionAdapter? = null
+    private var timeoutStarted = false
+    var animationProgress = 0f
+    var animationEggTimerProgress = 0f
+    var animationPath = ""
+   // internal var timeOutJob: Job? = null
 
 
     init {
@@ -91,7 +109,7 @@ internal class NumberPredictionViewModel(
             currentWidgetId = widgetInfos.widgetId
             programId = data.latest()?.resource?.program_id.toString()
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
-
+            interactionData.widgetDisplayed()
         }
     }
 
@@ -127,7 +145,7 @@ internal class NumberPredictionViewModel(
 
 
     /**
-     * call the vote api
+     * calls the vote api
      */
     private fun submitVoteApi(votesObj: JsonObject) {
         uiScope.launch {
@@ -154,7 +172,9 @@ internal class NumberPredictionViewModel(
         return getWidgetNumberPredictionVotedAnswerList(if (resource?.textNumberPredictionId.isNullOrEmpty()) resource?.imageNumberPredictionId else resource?.textNumberPredictionId)
     }
 
-
+    /**
+     * Returns associated prediction id for followups
+     */
     private fun getNumberPredictionId(it: NumberPredictionWidget): String {
         if (it.resource.textNumberPredictionId.isNullOrEmpty()) {
             return it.resource.imageNumberPredictionId
@@ -172,8 +192,7 @@ internal class NumberPredictionViewModel(
      */
     private fun claimPredictionRewards() {
         data.currentData?.let { resources ->
-            val widgetId =
-                if (resources.resource.textNumberPredictionId.isEmpty()) (resources.resource.imageNumberPredictionId) else (resources.resource.textNumberPredictionId)
+            val widgetId = getNumberPredictionId(resources)
             widgetInfos.widgetId = widgetId
             uiScope.launch {
                 widgetInteractionRepository?.fetchRemoteInteractions(
@@ -181,8 +200,9 @@ internal class NumberPredictionViewModel(
                     widgetKind = widgetInfos.type
                 )
                 var claimToken = EngagementSDK.predictionWidgetVoteRepository.get(
-                    (getNumberPredictionId(resources)?:""))
-                if(claimToken.isNullOrEmpty()) claimToken = getUserInteraction()?.claimToken ?: ""
+                    (getNumberPredictionId(resources) ?: "")
+                )
+                if (claimToken.isNullOrEmpty()) claimToken = getUserInteraction()?.claimToken ?: ""
                 resources.resource.claim_url?.let { url ->
                     dataClient.voteAsync(
                         url,
@@ -278,8 +298,118 @@ internal class NumberPredictionViewModel(
     }
 
     private fun cleanUp() {
+        uiScope.cancel()
         currentWidgetType = null
         currentWidgetId = ""
+        timeoutStarted = false
+        adapter = null
+        animationProgress = 0f
+        animationPath = ""
+        data.onNext(null)
+        results.onNext(null)
+        animationEggTimerProgress = 0f
+        interactionData.reset()
+    }
+
+    fun dismissWidget(action: DismissAction) {
+        currentWidgetType?.let {
+            analyticsService.trackWidgetDismiss(
+                it.toAnalyticsString(),
+                currentWidgetId,
+                programId,
+                interactionData,
+                false,
+                action
+            )
+        }
+        widgetState.onNext(WidgetStates.FINISHED)
+        logDebug { "dismiss Number Prediction Widget, reason:${action.name}" }
+        onDismiss()
+        cleanUp()
+        viewModelJob.cancel()
+    }
+
+    fun startDismissTimeout(
+        timeout: String,
+        isFollowup: Boolean,
+        widgetViewThemeAttributes: WidgetViewThemeAttributes
+    ) {
+        if (!timeoutStarted && timeout.isNotEmpty()) {
+            timeoutStarted = true
+           if (isFollowup) {
+                uiScope.launch {
+                    delay(AndroidResource.parseDuration(timeout))
+                    dismissWidget(DismissAction.TIMEOUT)
+                }
+            }else{
+                uiScope.launch {
+                    delay(AndroidResource.parseDuration(timeout))
+                    lockInteractionAndSubmitVote()
+                    resultsState()
+                }
+            }
+        }
+    }
+
+    internal suspend fun lockInteractionAndSubmitVote() {
+        adapter?.selectionLocked = true
+            adapter?.selectedUserVotes?.let {
+                lockInVote(it)
+            }
+    }
+
+
+    internal fun resultsState() {
+        widgetState.onNext(WidgetStates.RESULTS)
+        currentWidgetType?.let {
+            analyticsService.trackWidgetInteraction(
+                it.toAnalyticsString(),
+                currentWidgetId,
+                programId,
+                interactionData
+            )
+        }
+        uiScope.launch {
+            delay(3000)
+            dismissWidget(DismissAction.TIMEOUT)
+        }
+    }
+
+
+    internal fun followupState(
+        selectedPredictionVotes: List<NumberPredictionVotes>?,
+        widgetViewThemeAttributes: WidgetViewThemeAttributes
+    ) {
+        if (numberPredictionFollowUp)
+            return
+        numberPredictionFollowUp = true
+        adapter?.selectionLocked = true
+        adapter?.restoreSelectedVotes(selectedPredictionVotes) // this sets the user selection
+        claimPredictionRewards()
+        val isUserCorrect = isUserCorrect(selectedPredictionVotes, data.currentData?.resource?.options)
+        adapter?.isCorrect = isUserCorrect
+
+        widgetState.onNext(WidgetStates.RESULTS)
+        logDebug { "Number Prediction Widget Follow Up isUserCorrect:$isUserCorrect" }
+    }
+
+
+    private fun isUserCorrect(
+        selectedPredictionVotes: List<NumberPredictionVotes>?,
+        correctVotes: List<Option>?
+    ): Boolean {
+        var isCorrect = false
+        if(selectedPredictionVotes?.isEmpty() == true) return false
+        correctVotes?.let { option ->
+            if (option.size == selectedPredictionVotes?.size) {
+                for (i in selectedPredictionVotes.indices) {
+                    val votedOption = selectedPredictionVotes[i]
+                    val op = option.find { it.id == votedOption.optionId }
+                    isCorrect = op != null && votedOption.number == op.correct_number
+                }
+            }
+        }
+        return isCorrect
     }
 
 }
