@@ -15,8 +15,8 @@ definitions:
           - sonar
           - gradlewrapper
         script:
-          - pipe: sonarsource/sonarcloud-scan:1.2.0
-          - pipe: sonarsource/sonarcloud-quality-gate:0.1.4
+          - pipe: sonarsource/sonarcloud-scan:1.3.0
+          - pipe: sonarsource/sonarcloud-quality-gate:0.1.5
         artifacts:
           - build/libs/**
 
