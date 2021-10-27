@@ -1,309 +1,406 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/lay_top"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintLeft_toRightOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/chat_toolbar">
+    android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/lay_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical">
-
-        <Button
-            android:id="@+id/btn_create"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Create"
-            android:textSize="12sp" />
-
-        <EditText
-            android:id="@+id/ed_chat_room_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="1"
-            android:hint="Enter Room title"
-            android:textColor="@android:color/white" />
-
-        <ProgressBar
-            android:id="@+id/prg_create"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="invisible" />
-
-        <Button
-            android:id="@+id/btn_visibility"
-            android:layout_width="70dp"
-            android:layout_height="34dp"
-            android:text="Visibility"
-            android:textSize="9sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical">
-
-        <Button
-            android:id="@+id/btn_join"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Join"
-            android:textSize="12sp" />
-
-        <EditText
-            android:id="@+id/ed_chat_room_id"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="1"
-            android:hint="Enter Room Id "
-            android:textColor="@android:color/white" />
-
-        <ProgressBar
-            android:id="@+id/prg_join"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="invisible" />
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_add"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Add"
-            android:textSize="12sp" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <EditText
-                android:id="@+id/ed_chat_room_id_1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:hint="Enter Room Id "
-                android:textColor="@android:color/white" />
-
-            <EditText
-                android:id="@+id/ed_user_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:hint="Enter User Id "
-                android:textColor="@android:color/white" />
-        </LinearLayout>
-
-        <ProgressBar
-            android:id="@+id/prg_add"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="invisible" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_invite"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Invite"
-            android:textSize="12sp" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <EditText
-                android:id="@+id/ed_chat_room_id_invite_1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:hint="Enter Room Id "
-                android:textColor="@android:color/white" />
-
-            <EditText
-                android:id="@+id/ed_user_invite_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:hint="Enter User Id "
-                android:textColor="@android:color/white" />
-        </LinearLayout>
-
-        <ProgressBar
-            android:id="@+id/prg_add_invite"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="invisible" />
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical">
-
-        <Button
-            android:id="@+id/btn_mute_status"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Mute status "
-            android:textSize="12sp" />
-
-        <ProgressBar
-            android:id="@+id/prg_mute"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="invisible" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical">
-
-        <Button
-            android:id="@+id/btn_change"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Change ChatRoom"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btn_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Refresh ChatRoom List"
-            android:textSize="12sp" />
-
-        <ProgressBar
-            android:id="@+id/prg_refresh"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="invisible" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical">
-
-        <Button
-            android:id="@+id/btn_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Remove User From ChatRoom"
-            android:textSize="12sp" />
-
-        <ProgressBar
-            android:id="@+id/prg_delete"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="invisible" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical">
-
-        <Button
-            android:id="@+id/btn_invite_by_list"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Get By Current User Invite list"
-            android:textSize="12sp" />
-
-        <ProgressBar
-            android:id="@+id/prg_invite_by_list"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="invisible" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical">
-
-        <Button
-            android:id="@+id/btn_invite_list"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Get For Current User Invite list"
-            android:textSize="12sp" />
-
-        <ProgressBar
-            android:id="@+id/prg_invite_list"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="invisible" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/btn_invite_list_first"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="First"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btn_invite_list_next"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Next"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btn_invite_list_previous"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Previous"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcyl_invite"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chat_toolbar">
 
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/btn_create"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Create"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/ed_chat_room_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:hint="Enter Room title"
+                android:textColor="@android:color/white" />
+
+            <ProgressBar
+                android:id="@+id/prg_create"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/btn_visibility"
+                android:layout_width="70dp"
+                android:layout_height="34dp"
+                android:text="Visibility"
+                android:textSize="9sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/btn_join"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Join"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/ed_chat_room_id"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:hint="Enter Room Id "
+                android:textColor="@android:color/white" />
+
+            <ProgressBar
+                android:id="@+id/prg_join"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/white" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_add"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Add"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/ed_chat_room_id_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:hint="Enter Room Id "
+                    android:textColor="@android:color/white" />
+
+                <EditText
+                    android:id="@+id/ed_user_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:hint="Enter User Id "
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/prg_add"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_invite"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Invite"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/ed_chat_room_id_invite_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:hint="Enter Room Id "
+                    android:textColor="@android:color/white" />
+
+                <EditText
+                    android:id="@+id/ed_user_invite_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:hint="Enter User Id "
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/prg_add_invite"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/btn_block"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:text="block"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_block_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:text="Block List"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Spinner
+                    android:id="@+id/spinner_block_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@android:color/white" />
+
+                <EditText
+                    android:id="@+id/ed_block_profile_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:hint="Enter profile Id "
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+
+            <ProgressBar
+                android:id="@+id/prg_block"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/white" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/btn_mute_status"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Mute status "
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/prg_mute"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/btn_change"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Change ChatRoom"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Refresh ChatRoom List"
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/prg_refresh"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/btn_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Remove User From ChatRoom"
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/prg_delete"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/btn_invite_by_list"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Get By Current User Invite list"
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/prg_invite_by_list"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/btn_invite_list"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Get For Current User Invite list"
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/prg_invite_list"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_invite_list_first"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="First"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_invite_list_next"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Next"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_invite_list_previous"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Previous"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcyl_invite"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_block_list_first"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="First"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_block_list_next"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Next"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_block_list_previous"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="Previous"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcyl_block"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+
+    </LinearLayout>
+
+</ScrollView>

@@ -21,6 +21,8 @@ data class LiveLikeUser(
     var url: String,
     var chat_room_memberships_url: String,
     var custom_data: String? = null,
+    @SerializedName("block_profile_url")
+    var blockProfileUrl: String? = null,
     @SerializedName("badges_url")
     internal var badgesUrl: String?,
     @SerializedName("badge_progress_url")
@@ -33,4 +35,5 @@ data class LiveLikeUser(
     internal var subscribeChannel: String?,
     @SerializedName("reported_count") val reportedCount: Int,
     @SerializedName("created_at") val createdAt : String,
+    @SerializedName("block_profile_list_template") val blockProfileListTemplate : String,
 )
