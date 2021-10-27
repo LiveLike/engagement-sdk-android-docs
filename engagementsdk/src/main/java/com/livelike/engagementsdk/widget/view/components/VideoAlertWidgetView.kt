@@ -365,9 +365,9 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
         if (videoUrl.isNotEmpty()) {
             requestOptions = if (viewModel?.data?.latest()?.title.isNullOrEmpty()) {
-                requestOptions.transforms(CenterCrop(), GranularRoundedCorners(16f, 16f, 16f, 16f))
+                requestOptions.transform(CenterCrop(), GranularRoundedCorners(16f, 16f, 16f, 16f))
             } else {
-                requestOptions.transforms(CenterCrop(), GranularRoundedCorners(0f, 0f, 16f, 16f))
+                requestOptions.transform(CenterCrop(), GranularRoundedCorners(0f, 0f, 16f, 16f))
             }
             Glide.with(context.applicationContext)
                 .asBitmap()
