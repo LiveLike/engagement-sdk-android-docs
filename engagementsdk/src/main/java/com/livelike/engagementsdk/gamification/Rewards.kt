@@ -27,7 +27,8 @@ internal class Rewards(
 
     private var lastRewardItemsPage: LLPaginatedResult<RewardItem>? = null
 
-    private var lastRewardTransfersPage: LLPaginatedResult<TransferRewardItem>? = null
+    /*map of rewardITemRequestOptions and last response*/
+    private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestOptions,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
 
     override fun getApplicationRewardItems(
         liveLikePagination: LiveLikePagination,
@@ -144,23 +145,41 @@ internal class Rewards(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>
     ) {
+        return getRewardItemTransfers(
+            liveLikePagination,
+            RewardItemTransferRequestOptions(null), liveLikeCallback
+        )
+    }
+
+    override fun getRewardItemTransfers(
+        liveLikePagination: LiveLikePagination,
+        requestOptions: RewardItemTransferRequestOptions,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>
+    ) {
+
         var fetchUrl: String? = null
 
         sdkScope.launch {
-            if (lastRewardTransfersPage == null || liveLikePagination == LiveLikePagination.FIRST) {
+            if (lastRewardTransfersPageMap[requestOptions] == null || liveLikePagination == LiveLikePagination.FIRST) {
                 configurationUserPairFlow.collect { pair ->
                     pair.first?.let {
                         fetchUrl = it.rewardItemTransferUrl
                     }
                 }
             } else {
-                fetchUrl = lastRewardTransfersPage?.getPaginationUrl(liveLikePagination)
+                fetchUrl =
+                    lastRewardTransfersPageMap[requestOptions]?.getPaginationUrl(liveLikePagination)
             }
 
             if (fetchUrl == null) {
                 liveLikeCallback.onResponse(null, "No more data")
             } else {
                 configurationUserPairFlow.collect { pair ->
+                    requestOptions.transferType?.let {
+                        fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
+                            addQueryParameter("transfer_type", requestOptions.transferType.key)
+                        }?.build()?.toUrl()?.toString()
+                    }
                     dataClient.remoteCall<LLPaginatedResult<TransferRewardItem>>(
                         fetchUrl ?: "",
                         RequestType.GET,
@@ -168,15 +187,15 @@ internal class Rewards(
                         pair.first.accessToken
                     ).run {
                         if (this is Result.Success) {
-                            lastRewardTransfersPage = this.data
+                            lastRewardTransfersPageMap[requestOptions] = this.data
                         }
                         liveLikeCallback.processResult(this)
                     }
                 }
             }
         }
-    }
 
+    }
 
 }
 
@@ -224,6 +243,17 @@ interface IRewardsClient {
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>
     )
 
+    /**
+     * Retrieve all reward item transfers associated
+     * with the current user profile
+     * @param requestOptions allows to filter transfer based on transferType i.e debit or credit
+     **/
+    fun getRewardItemTransfers(
+        liveLikePagination: LiveLikePagination,
+        requestOptions : RewardItemTransferRequestOptions,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>
+    )
+
 }
 
 @Deprecated("use paginates result class")
@@ -231,6 +261,24 @@ internal data class RewardItemBalancesApiResponse(
     @SerializedName("reward_item_balances")
     val rewardItemBalanceList: List<RewardItemBalance>
 )
+
+class RewardItemTransferRequestOptions(internal val transferType: RewardItemTransferType?){
+
+    override fun hashCode(): Int {
+        return transferType?.key?.hashCode() ?: 0
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return transferType?.equals(other) ?: true
+    }
+}
+
+
+enum class RewardItemTransferType(val key: String) {
+    DEBIT("debit"),
+    CREDIT("credit")
+}
+
 
 data class RewardItemBalance(
     @SerializedName("reward_item_balance")
