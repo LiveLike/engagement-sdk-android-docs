@@ -24,6 +24,7 @@ definitions:
             variables:
               SONAR_SCANNER_OPTS: -Xmx512m
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.5
+          - ./gradlew lintProductionRelease
         artifacts:
           - build/libs/**
 
