@@ -7,6 +7,11 @@ definitions:
   caches:
     sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
     gradlewrapper: ~/.gradle/wrapper
+
+  services:
+    docker:
+      memory: 2048
+
   steps:
     - step: &build-test-sonarcloud
         name: Build, test and analyze on SonarCloud
@@ -16,8 +21,8 @@ definitions:
           - gradlewrapper
         script:
           - pipe: sonarsource/sonarcloud-scan:1.3.0
-            - variables:
-                SONAR_SCANNER_OPTS: -Xmx512m
+            variables:
+              SONAR_SCANNER_OPTS: -Xmx512m
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.5
         artifacts:
           - build/libs/**
