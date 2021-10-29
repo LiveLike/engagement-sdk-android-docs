@@ -145,6 +145,7 @@ class WidgetsTimeLineView(
                 // lockInteracatedWidgetsWithoutPatchUrl(pair.second) // will remove this logic when backend adds patch_url
                 lockAlreadyInteractedQuizAndEmojiSlider(pair.second)
                 wouldLockPredictionWidgets(pair.second) // if follow up is received lock prediction interaction
+
                 // changing timeout value for widgets when widgetTimerController is configured
                 widgetTimerController?.run {
                     it.second.forEach { widget ->
@@ -209,10 +210,13 @@ class WidgetsTimeLineView(
         }
     }
 
+    /**
+     * this locks the prediction widgets, when followup is received
+     **/
     private fun wouldLockPredictionWidgets(widgets: List<TimelineWidgetResource>) {
         var followUpWidgetPredictionIds = widgets.filter {
             it.liveLikeWidget.kind?.contains("follow-up") ?: false
-        }.map { it.liveLikeWidget.textPredictionId ?: it.liveLikeWidget.imagePredictionId }
+        }.map { it.liveLikeWidget.textPredictionId ?: it.liveLikeWidget.imagePredictionId ?: it.liveLikeWidget.textNumberPredictionId ?: it.liveLikeWidget.imageNumberPredictionId}
 
         widgets.forEach { widget ->
             if (followUpWidgetPredictionIds.contains(widget.liveLikeWidget.id)) {
@@ -226,6 +230,8 @@ class WidgetsTimeLineView(
             }
         }
     }
+
+
 
     /**
      *this will check for visible position, if it is 0 then it will scroll to top

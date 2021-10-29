@@ -6,38 +6,39 @@ clone:
 definitions:
   caches:
     sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
-    gradlewrapper: ~/.gradle/wrapper
+
   steps:
     - step: &build-test-sonarcloud
         name: Build, test and analyze on SonarCloud
         caches:
           - gradle
           - sonar
-          - gradlewrapper
         script:
-          - pipe: sonarsource/sonarcloud-scan:1.2.0
-          - pipe: sonarsource/sonarcloud-quality-gate:0.1.4
-          - ./gradlew lintProductionRelease
+          - pipe: sonarsource/sonarcloud-scan:1.3.0
+            variables:
+              SONAR_SCANNER_OPTS: -Xmx512m
+          - pipe: sonarsource/sonarcloud-quality-gate:0.1.5
         artifacts:
           - build/libs/**
+    - step: &android-lint
+        name: Android lint pass check
+        caches:
+          - gradle
+        script:
+          - ./gradlew lintProductionRelease
+        artifacts:
+          - app/build/reports/**
 
 pipelines:                 # More info here: https://confluence.atlassian.com/bitbucket/configure-bitbucket-pipelines-yml-792298910.html
   branches:
     master:
       - step: *build-test-sonarcloud
-      - step:
-          script:
-            - pipe: bugsnag-integrations/bugsnag-build-report:0.2.2
-              variables:
-                API_KEY: 'abb12b7b7d7868c07733e3e3808656c8'
+      - step: *android-lint
     develop:
       - step: *build-test-sonarcloud
-      - step:
-          script:
-            - pipe: bugsnag-integrations/bugsnag-build-report:0.2.2
-              variables:
-                API_KEY: 'abb12b7b7d7868c07733e3e3808656c8'
+      - step: *android-lint
 
   pull-requests:
     '**':
       - step: *build-test-sonarcloud
+      - step: *android-lint

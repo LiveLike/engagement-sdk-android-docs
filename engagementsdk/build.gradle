@@ -20,11 +20,13 @@ android {
         minSdkVersion rootProject.minSdkVersion
         compileSdkVersion rootProject.targetSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
+        versionCode 1
+        versionName "2.27"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'proguard-rules.pro'
 
-        buildConfigField "String", "SDK_VERSION", '"2.25"'
+        buildConfigField "String", "SDK_VERSION", '"2.27"'
     }
 
     buildFeatures {
@@ -39,7 +41,7 @@ android {
                     from components.productionRelease
                     groupId =  'com.livelike.android-engagement-sdk'
                     artifactId = 'engagementsdk'
-                    version = '2.25'
+                    version = '2.27'
                 }
             }
         }
