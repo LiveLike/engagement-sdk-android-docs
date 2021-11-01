@@ -10,6 +10,7 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
 import com.livelike.engagementsdk.gamification.models.Badge
 import com.livelike.engagementsdk.gamification.models.BadgeProgress
+import com.livelike.engagementsdk.gamification.models.ProfileBadge
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import okhttp3.mockwebserver.MockResponse
@@ -125,6 +126,36 @@ class BadgesClientUnitTest {
         assert(resultCaptor.firstValue[0]?.badge.name == "TestFree")
         mockWebServer.shutdown()
     }
+
+    @Test
+    fun profile_badges_success_with_data() {
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<LLPaginatedResult<ProfileBadge>>
+        Thread.sleep(1000)
+        mockWebServer.enqueue(MockResponse().apply {
+            setResponseCode(200)
+            setBody(
+                javaClass.classLoader.getResourceAsStream("user_profile_resource.json").readAll()
+            )
+        })
+        mockWebServer.enqueue(MockResponse().apply {
+            setResponseCode(200)
+            setBody(
+                javaClass.classLoader.getResourceAsStream("profile_badges.json").readAll()
+            )
+        })
+        sdk.badges().getProfileBadges("e58b8f5c-01b9-4423-bc2d-80a62ce28891", LiveLikePagination.FIRST, callback)
+        val resultCaptor =
+            argumentCaptor<LLPaginatedResult<ProfileBadge>>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(5000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue.results?.isNotEmpty()?:false)
+        assert(resultCaptor.firstValue.results?.get(0)?.badge?.name.equals("My Badge"))
+        mockWebServer.shutdown()
+    }
+
 
 
 }
