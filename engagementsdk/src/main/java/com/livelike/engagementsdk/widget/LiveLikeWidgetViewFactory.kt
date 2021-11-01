@@ -1,17 +1,7 @@
 package com.livelike.engagementsdk.widget
 
 import android.view.View
-import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
-import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
-import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
-import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.TextAskWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.*
 
 /**
  * WidgetView Factory is responsible for providing the instance of custom widget ui.
@@ -67,5 +57,9 @@ interface LiveLikeWidgetViewFactory {
     fun createNumberPredictionFollowupWidgetView(
         followUpWidgetViewModel: NumberPredictionFollowUpWidgetModel,
         isImage: Boolean
+    ): View?
+
+    fun createSocialEmbedWidgetView(
+        socialEmbedWidgetModel: SocialEmbedWidgetModel
     ): View?
 }

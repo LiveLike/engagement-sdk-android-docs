@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
+import com.livelike.engagementsdk.widget.widgetModel.SocialEmbedWidgetModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -18,7 +19,7 @@ internal class SocialEmbedViewModel(
     val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     private val onDismiss: () -> Unit
-) : BaseViewModel(analyticsService) {
+) : BaseViewModel(analyticsService),SocialEmbedWidgetModel {
 
     private var timeoutStarted = false
 
@@ -26,6 +27,8 @@ internal class SocialEmbedViewModel(
         SubscriptionManager()
 
     private var currentWidgetType: WidgetType? = null
+    private var currentWidgetId: String = ""
+    private var programId: String = ""
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
     init {
@@ -33,6 +36,8 @@ internal class SocialEmbedViewModel(
         widgetState.onNext(WidgetStates.READY)
         interactionData.widgetDisplayed()
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
+        currentWidgetId = widgetInfos.widgetId
+        programId = data.latest()?.programId ?: ""
     }
 
     internal fun dismissWidget(action: DismissAction) {
@@ -75,5 +80,17 @@ internal class SocialEmbedViewModel(
 
     override fun onClear() {
         cleanup()
+    }
+
+    override val widgetData: LiveLikeWidget
+        get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
+
+
+    override fun finish() {
+        onDismiss()
+    }
+
+    override fun markAsInteractive() {
+        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
     }
 }
