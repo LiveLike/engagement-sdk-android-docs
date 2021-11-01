@@ -175,7 +175,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
             val requestOptions = if (transfer_type_selection.checkedRadioButtonId == R.id.sent) {
                 RewardItemTransferRequestOptions(RewardItemTransferType.SENT)
             } else {
-                RewardItemTransferRequestOptions(RewardItemTransferType.Received)
+                RewardItemTransferRequestOptions(RewardItemTransferType.RECEIVED)
             }
             rewardsClient.getRewardItemTransfers(
                 LiveLikePagination.FIRST,

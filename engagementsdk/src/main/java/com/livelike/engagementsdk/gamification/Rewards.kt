@@ -276,7 +276,7 @@ class RewardItemTransferRequestOptions(internal val transferType: RewardItemTran
 
 enum class RewardItemTransferType(val key: String) {
     SENT("debit"),
-    Received("credit")
+    RECEIVED("credit")
 }
 
 
