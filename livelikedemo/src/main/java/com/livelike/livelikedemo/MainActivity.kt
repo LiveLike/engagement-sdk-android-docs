@@ -11,7 +11,6 @@ import android.content.IntentFilter
 import android.graphics.Typeface
 import android.net.ConnectivityManager
 import android.net.Network
-import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -27,6 +26,7 @@ import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.livelikedemo.channel.ChannelManager
@@ -110,10 +110,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var channelManager: ChannelManager
     private val mConnReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val currentNetworkInfo =
-                intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
-            if (currentNetworkInfo!!.isConnected) {
-//                (application as LiveLikeApplication).initSDK()
+            if (context.isNetworkConnected()) {
                 channelManager.loadClientConfig()
             }
         }
@@ -166,6 +163,7 @@ class MainActivity : AppCompatActivity() {
             }
             cm.registerDefaultNetworkCallback(networkCallback!!)
         } else {
+            @Suppress("DEPRECATION") //kept due to pre M support
             registerReceiver(mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
     }

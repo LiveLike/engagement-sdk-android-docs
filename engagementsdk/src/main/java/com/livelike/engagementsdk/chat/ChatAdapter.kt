@@ -580,8 +580,16 @@ internal class ChatRecyclerAdapter(
             // Using static width for now ,can be replace with dynamic for later
             val width = (AndroidResource.dpToPx(300) * density).toInt()
             val alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL
-            val layout =
+            val layout = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                StaticLayout.Builder.obtain(this,0, this.length, paint, width )
+                    .setAlignment(alignment)
+                    .setLineSpacing(0F,1F )
+                    .setIncludePad(false)
+                    .build()
+            } else {
+                @Suppress("DEPRECATION") //suppressed as needed to support pre M
                 StaticLayout(this, paint, width, alignment, 1F, 0F, false)
+            }
             return layout.lineCount
         }
 

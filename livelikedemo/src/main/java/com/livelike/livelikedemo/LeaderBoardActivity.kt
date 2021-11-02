@@ -1,6 +1,6 @@
 package com.livelike.livelikedemo
 
-import android.app.ProgressDialog
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +15,7 @@ import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.livelikedemo.utils.DialogUtils
 import kotlinx.android.synthetic.main.activity_leader_board.btn_current_user
 import kotlinx.android.synthetic.main.activity_leader_board.btn_fetch
 import kotlinx.android.synthetic.main.activity_leader_board.btn_first
@@ -57,7 +58,7 @@ class LeaderBoardActivity : AppCompatActivity() {
                 }
             }
         })
-    var dialog: ProgressDialog? = null
+    var dialog: Dialog? = null
 
     private fun showData(result: LeaderBoardEntry) {
         if (dialog?.isShowing == true) {
@@ -83,10 +84,13 @@ class LeaderBoardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leader_board)
-        dialog = ProgressDialog.show(
-            this, "",
-            "Loading. Please wait...", true
+        dialog = DialogUtils.createProgressDialog(
+            this,
+            "",
+            "Loading. Please wait...",
+            true
         )
+        dialog?.show()
         rcyl_leader_board.layoutManager =
             LinearLayoutManager(
                 this,
