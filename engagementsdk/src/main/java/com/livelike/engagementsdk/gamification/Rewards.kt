@@ -28,7 +28,7 @@ internal class Rewards(
     private var lastRewardItemsPage: LLPaginatedResult<RewardItem>? = null
 
     /*map of rewardITemRequestOptions and last response*/
-    private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestOptions,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
+    private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
 
     override fun getApplicationRewardItems(
         liveLikePagination: LiveLikePagination,
@@ -147,20 +147,20 @@ internal class Rewards(
     ) {
         return getRewardItemTransfers(
             liveLikePagination,
-            RewardItemTransferRequestOptions(null), liveLikeCallback
+            RewardItemTransferRequestParams(null), liveLikeCallback
         )
     }
 
     override fun getRewardItemTransfers(
         liveLikePagination: LiveLikePagination,
-        requestOptions: RewardItemTransferRequestOptions,
+        requestParams: RewardItemTransferRequestParams,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>
     ) {
 
         var fetchUrl: String? = null
 
         sdkScope.launch {
-            if (lastRewardTransfersPageMap[requestOptions] == null || liveLikePagination == LiveLikePagination.FIRST) {
+            if (lastRewardTransfersPageMap[requestParams] == null || liveLikePagination == LiveLikePagination.FIRST) {
                 configurationUserPairFlow.collect { pair ->
                     pair.first?.let {
                         fetchUrl = it.rewardItemTransferUrl
@@ -168,16 +168,16 @@ internal class Rewards(
                 }
             } else {
                 fetchUrl =
-                    lastRewardTransfersPageMap[requestOptions]?.getPaginationUrl(liveLikePagination)
+                    lastRewardTransfersPageMap[requestParams]?.getPaginationUrl(liveLikePagination)
             }
 
             if (fetchUrl == null) {
                 liveLikeCallback.onResponse(null, "No more data")
             } else {
                 configurationUserPairFlow.collect { pair ->
-                    requestOptions.transferType?.let {
+                    requestParams.transferType?.let {
                         fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
-                            addQueryParameter("transfer_type", requestOptions.transferType.key)
+                            addQueryParameter("transfer_type", requestParams.transferType.key)
                         }?.build()?.toUrl()?.toString()
                     }
                     dataClient.remoteCall<LLPaginatedResult<TransferRewardItem>>(
@@ -187,7 +187,7 @@ internal class Rewards(
                         pair.first.accessToken
                     ).run {
                         if (this is Result.Success) {
-                            lastRewardTransfersPageMap[requestOptions] = this.data
+                            lastRewardTransfersPageMap[requestParams] = this.data
                         }
                         liveLikeCallback.processResult(this)
                     }
@@ -246,11 +246,11 @@ interface IRewardsClient {
     /**
      * Retrieve all reward item transfers associated
      * with the current user profile
-     * @param requestOptions allows to filter transfer based on transferType i.e sent or received
+     * @param requestParams allows to filter transfer based on transferType i.e sent or received
      **/
     fun getRewardItemTransfers(
         liveLikePagination: LiveLikePagination,
-        requestOptions : RewardItemTransferRequestOptions,
+        requestParams : RewardItemTransferRequestParams,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>
     )
 
@@ -262,7 +262,7 @@ internal data class RewardItemBalancesApiResponse(
     val rewardItemBalanceList: List<RewardItemBalance>
 )
 
-class RewardItemTransferRequestOptions(internal val transferType: RewardItemTransferType?){
+class RewardItemTransferRequestParams(internal val transferType: RewardItemTransferType?){
 
     override fun hashCode(): Int {
         return transferType?.key?.hashCode() ?: 0
