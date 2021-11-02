@@ -73,6 +73,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
 
     private fun initUI() {
         progress_bar.visibility = View.GONE
+        receipent_profile_id.setText("26722d0d-c6db-417f-8395-eacb1afb019f")
 
         rewardIems?.let { rewardIems ->
 
