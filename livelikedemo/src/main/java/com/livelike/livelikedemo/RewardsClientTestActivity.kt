@@ -13,6 +13,8 @@ import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.gamification.RewardItemBalance
+import com.livelike.engagementsdk.gamification.RewardItemTransferRequestParams
+import com.livelike.engagementsdk.gamification.RewardItemTransferType
 import com.livelike.engagementsdk.gamification.TransferRewardItem
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.enter_amount_et
@@ -22,6 +24,7 @@ import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_item
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_item_spinnner
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.send_btn
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.show_all_reward_transfers
+import kotlinx.android.synthetic.main.reward_is_client_test_activity.transfer_type_selection
 
 class RewardsClientTestActivity : AppCompatActivity() {
 
@@ -158,29 +161,55 @@ class RewardsClientTestActivity : AppCompatActivity() {
 
     private fun showAllRewardsTransfers() {
         progress_bar.visibility = View.VISIBLE
-        rewardsClient.getRewardItemTransfers(
-            LiveLikePagination.FIRST,
-            object : LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>() {
-                override fun onResponse(
-                    result: LLPaginatedResult<TransferRewardItem>?,
-                    error: String?
-                ) {
-                    runOnUiThread {
-                        progress_bar.visibility = View.GONE
-                        result?.results?.let {
-                            val list = it.map { getRewardTransferString(it)}
-                            AlertDialog.Builder(this@RewardsClientTestActivity).apply {
-                                setTitle("Rewards transfer list")
-                                setItems(list.toTypedArray()) { _, _ ->
-                                }
-                                create()
-                            }.show()
-
-                        }
+        if(transfer_type_selection.checkedRadioButtonId==-1){
+            rewardsClient.getRewardItemTransfers(
+                LiveLikePagination.FIRST,
+                object : LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>() {
+                    override fun onResponse(
+                        result: LLPaginatedResult<TransferRewardItem>?,
+                        error: String?
+                    ) {
+                        onRewardTransferListResponse(result, error)
                     }
-                    showToast(error)
-                }
-            })
+                })
+        }else {
+            val requestParams = if (transfer_type_selection.checkedRadioButtonId == R.id.sent) {
+                RewardItemTransferRequestParams(RewardItemTransferType.SENT)
+            } else {
+                RewardItemTransferRequestParams(RewardItemTransferType.RECEIVED)
+            }
+            rewardsClient.getRewardItemTransfers(
+                LiveLikePagination.FIRST,
+                requestParams,
+                object : LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>() {
+                    override fun onResponse(
+                        result: LLPaginatedResult<TransferRewardItem>?,
+                        error: String?
+                    ) {
+                        onRewardTransferListResponse(result, error)
+                    }
+                })
+        }
+    }
+
+    private fun onRewardTransferListResponse(
+        result: LLPaginatedResult<TransferRewardItem>?,
+        error: String?
+    ) {
+        runOnUiThread {
+            progress_bar.visibility = View.GONE
+            result?.results?.let {
+                val list = it.map { getRewardTransferString(it) }
+                AlertDialog.Builder(this@RewardsClientTestActivity).apply {
+                    setTitle("Rewards transfer list")
+                    setItems(list.toTypedArray()) { _, _ ->
+                    }
+                    create()
+                }.show()
+
+            }
+        }
+        showToast(error)
     }
 
     private fun getRewardTransferString(transferRewardItem: TransferRewardItem): String {
