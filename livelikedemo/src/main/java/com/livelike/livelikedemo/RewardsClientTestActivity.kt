@@ -13,7 +13,7 @@ import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.gamification.RewardItemBalance
-import com.livelike.engagementsdk.gamification.RewardItemTransferRequestOptions
+import com.livelike.engagementsdk.gamification.RewardItemTransferRequestParams
 import com.livelike.engagementsdk.gamification.RewardItemTransferType
 import com.livelike.engagementsdk.gamification.TransferRewardItem
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
@@ -172,14 +172,14 @@ class RewardsClientTestActivity : AppCompatActivity() {
                     }
                 })
         }else {
-            val requestOptions = if (transfer_type_selection.checkedRadioButtonId == R.id.sent) {
-                RewardItemTransferRequestOptions(RewardItemTransferType.SENT)
+            val requestParams = if (transfer_type_selection.checkedRadioButtonId == R.id.sent) {
+                RewardItemTransferRequestParams(RewardItemTransferType.SENT)
             } else {
-                RewardItemTransferRequestOptions(RewardItemTransferType.RECEIVED)
+                RewardItemTransferRequestParams(RewardItemTransferType.RECEIVED)
             }
             rewardsClient.getRewardItemTransfers(
                 LiveLikePagination.FIRST,
-                requestOptions,
+                requestParams,
                 object : LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>() {
                     override fun onResponse(
                         result: LLPaginatedResult<TransferRewardItem>?,
