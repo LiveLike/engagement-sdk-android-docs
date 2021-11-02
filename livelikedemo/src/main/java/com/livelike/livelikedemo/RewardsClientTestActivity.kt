@@ -91,7 +91,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
                     ) {
                         selectedrewardItem = rewardIems[position]
                         reward_item_balance.text =
-                            "Balance : ${(rewardItemBalanceMap?.get(selectedrewardItem?.id ?: "") ?: "0")}"
+                            "Balance : ${(rewardItemBalanceMap.get(selectedrewardItem?.id ?: "") ?: "0")}"
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -112,7 +112,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
                         return@setOnClickListener
                     }
                     if (enter_amount_et.text.isBlank() || enter_amount_et.text.toString()
-                            .toInt() > (rewardItemBalanceMap?.get(
+                            .toInt() > (rewardItemBalanceMap.get(
                             selectedrewardItem?.id ?: ""
                         ) ?: 0)
                     ) {
@@ -133,7 +133,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
                                 runOnUiThread {
                                     enter_amount_et.setText("")
                                     reward_item_balance.text =
-                                        "Balance : ${(rewardItemBalanceMap?.get(selectedrewardItem?.id ?: "") ?: "0")}"
+                                        "Balance : ${(rewardItemBalanceMap.get(selectedrewardItem?.id ?: "") ?: "0")}"
                                     progress_bar.visibility = View.GONE
                                 }
                                 if (error == null) {

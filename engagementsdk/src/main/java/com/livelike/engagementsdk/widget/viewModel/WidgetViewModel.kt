@@ -91,7 +91,7 @@ internal abstract class WidgetViewModel<T : Resource>(
             }
             uiScope.launch {
                 data.currentData?.rewards_url?.let {
-                    userRepository?.getGamificationReward(it, analyticsService)?.let { pts ->
+                    userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
                         programRepository?.programGamificationProfileStream?.onNext(pts)
                         widgetMessagingClient?.let { widgetMessagingClient ->
                             GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)

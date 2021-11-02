@@ -134,10 +134,11 @@ internal open class EngagementDataClientImpl :
         client.newCall(
             Request.Builder().url(profileUrl).addUserAgent()
                 .post(
-                    RequestBody.create(
-                        null,
-                        ByteArray(0)
-                    )
+                    ByteArray(0)
+                        .toRequestBody(
+                            null,
+                            0, 0
+                        )
                 )
                 .build()
         ).enqueue(object : Callback {

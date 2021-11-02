@@ -35,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.util.Locale
 
 internal class ChatViewModel(
     private val applicationContext: Context,
@@ -151,7 +152,7 @@ internal class ChatViewModel(
             logDebug { "user is blocked" }
             return
         }
-        if (deletedMessages.contains(message.id.toLowerCase())) {
+        if (deletedMessages.contains(message.id.lowercase(Locale.getDefault()))) {
             logDebug { "the message is deleted by producer" }
             return
         }
@@ -212,6 +213,7 @@ internal class ChatViewModel(
     ) {
         logDebug { "add Message Reaction OwnReaction:$isOwnReaction" }
         messageList.forEachIndexed { index, chatMessage ->
+            @Suppress("SENSELESS_COMPARISON")
             if (chatMessage != null) { // added null check in reference to ES-1533 (though crash not reproducible at all)
                 chatMessage.apply {
                     if (this.timetoken == messagePubnubToken) {
@@ -239,7 +241,7 @@ internal class ChatViewModel(
         if (chatLoaded) {
             logDebug { "message is deleted from producer so changing its text" }
             messageList.find {
-                it.id.toLowerCase() == messageId
+                it.id.lowercase(Locale.getDefault()) == messageId
             }?.apply {
                 message =
                     applicationContext.getString(R.string.livelike_chat_message_deleted_message)
@@ -297,7 +299,7 @@ internal class ChatViewModel(
     }
 
     internal fun refreshWithDeletedMessage() {
-        messageList.removeAll { deletedMessages.contains(it.id.toLowerCase()) }
+        messageList.removeAll { deletedMessages.contains(it.id.lowercase(Locale.getDefault())) }
         uiScope.launch {
             chatAdapter.submitList(ArrayList(messageList))
         }

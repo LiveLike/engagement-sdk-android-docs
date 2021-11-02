@@ -403,7 +403,7 @@ internal class ChatRecyclerAdapter(
                                     }
                                     isRemoved = false
                                 }
-                                reactionId?.let { reactionId ->
+                                reactionId?.let {
                                     chatRoomId?.let {
                                         analyticsService.trackChatReactionSelected(
                                             it,
@@ -549,24 +549,22 @@ internal class ChatRecyclerAdapter(
         }
 
         private fun getTextWithCustomLinks(spannableString: SpannableString): SpannableString {
-            linksRegex?.let {
-                val result = it.toPattern().matcher(spannableString)
-                while (result.find()) {
-                    val start = result.start()
-                    val end = result.end()
-                    spannableString.setSpan(
-                        InternalURLSpan(
-                            spannableString.subSequence(start, end).toString(),
-                            message?.id,
-                            chatRoomId,
-                            chatRoomName,
-                            analyticsService
-                        ),
-                        start,
-                        end,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                }
+            val result = linksRegex.toPattern().matcher(spannableString)
+            while (result.find()) {
+                val start = result.start()
+                val end = result.end()
+                spannableString.setSpan(
+                    InternalURLSpan(
+                        spannableString.subSequence(start, end).toString(),
+                        message?.id,
+                        chatRoomId,
+                        chatRoomName,
+                        analyticsService
+                    ),
+                    start,
+                    end,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
             }
             return spannableString
         }
@@ -897,7 +895,7 @@ internal class ChatRecyclerAdapter(
                                 if ((emojiCountMap[reactionId] ?: 0) > 0) {
                                     imageView = ImageView(context)
                                     val reaction = chatReactionRepository?.getReaction(reactionId)
-                                    reaction?.let { reaction ->
+                                    reaction?.let {
                                         imageView.contentDescription = reaction.name
                                         imageView.loadImage(reaction.file, chatReactionDisplaySize)
                                         val paramsImage: FrameLayout.LayoutParams =
@@ -928,16 +926,16 @@ internal class ChatRecyclerAdapter(
                             (chatReactionRepository?.reactionList?.size ?: 0) > 0
 
                         if (chatViewThemeAttribute.chatReactionHintEnable && sumCount == 0) {
-                            val imageView = ImageView(context)
-                            imageView.contentDescription =
+                            val innerImageView = ImageView(context)
+                            innerImageView.contentDescription =
                                 context.getString(R.string.you_can_add_reaction_hint)
-                            imageView.setImageResource(chatViewThemeAttribute.chatReactionHintIcon)
+                            innerImageView.setImageResource(chatViewThemeAttribute.chatReactionHintIcon)
                             val params: FrameLayout.LayoutParams =
                                 FrameLayout.LayoutParams(
                                     chatReactionDisplaySize,
                                     chatReactionDisplaySize
                                 )
-                            rel_reactions_lay.addView(imageView, params)
+                            rel_reactions_lay.addView(innerImageView, params)
                         }
 
                         if (emojiCountMap.isNotEmpty() && sumCount > 0 && isReactionsAvaiable) {

@@ -99,7 +99,7 @@ internal class QuizViewModel(
             adapter?.apply {
                 val url = myDataset[selectedPosition].getMergedVoteUrl()
                 url?.let {
-                    val fetchedUrl = dataClient.voteAsync(
+                    dataClient.voteAsync(
                         url,
                         myDataset[selectedPosition].id,
                         userRepository.userAccessToken,

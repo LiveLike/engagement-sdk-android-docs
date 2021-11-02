@@ -395,6 +395,12 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                 removeAllViews()
                 parent?.let { (it as ViewGroup).removeAllViews() }
             }
+            WidgetStates.RESULTS -> {
+
+            }
+            null -> {
+
+            }
         }
     }
 

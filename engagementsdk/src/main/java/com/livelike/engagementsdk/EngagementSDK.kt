@@ -362,7 +362,7 @@ class EngagementSDK(
                                     requestType = RequestType.POST,
                                     fullErrorJson = true,
                                     requestBody = when (userId.isEmpty()) {
-                                        true -> RequestBody.create(null, byteArrayOf())
+                                        true -> byteArrayOf().toRequestBody(null, 0, 0)
                                         else -> """{"profile_id":"$userId"}"""
                                             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
                                     }
@@ -515,7 +515,7 @@ class EngagementSDK(
                             pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
                     uiScope.launch {
-                        val chatRoomResult = chatRepository.deleteCurrentUserFromChatRoom(
+                        chatRepository.deleteCurrentUserFromChatRoom(
                             chatRoomId, pair.second.chatRoomDetailUrlTemplate
                         )
                         liveLikeCallback.onResponse(
@@ -601,7 +601,6 @@ class EngagementSDK(
         leaderBoardId: List<String>,
         liveLikeCallback: LiveLikeCallback<LeaderboardClient>
     ) {
-        val leaderBoardClientList = mutableListOf<LeaderboardClient>()
         configurationStream.subscribe(this) {
             it?.let {
                 userRepository.currentUserStream.subscribe(this) { user ->
@@ -610,7 +609,7 @@ class EngagementSDK(
                     CoroutineScope(Dispatchers.IO).launch {
 
                         val job = ArrayList<Job>()
-                        for (i in 0 until leaderBoardId.size.toInt()) {
+                        for (i in 0 until leaderBoardId.size) {
                             job.add(
                                 launch {
                                     val url = "${

@@ -55,7 +55,7 @@ internal class PubnubMessagingClientReplay(
             .count(count)
             .end(0)
             .includeTimetoken(true)
-            .async { result, status ->
+            .async { result, _ ->
                 result?.let {
                     result.messages.reversed().forEach {
                         val payload = it.entry.asJsonObject.getAsJsonObject("payload")

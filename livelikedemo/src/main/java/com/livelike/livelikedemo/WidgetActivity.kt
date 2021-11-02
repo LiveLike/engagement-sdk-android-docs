@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
 import kotlinx.android.synthetic.main.activity_widget.widget_view
-import widgetViewModel
+import WidgetViewModel
 
 class WidgetActivity : AppCompatActivity() {
 
-    var mainViewModel: widgetViewModel? = null
+    var mainViewModel: WidgetViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,10 +23,10 @@ class WidgetActivity : AppCompatActivity() {
         mainViewModel = ViewModelProvider(
             this,
             EngagementViewModelFactory(this.application)
-        ).get(widgetViewModel::class.java)
+        ).get(WidgetViewModel::class.java)
         // Check whether chat or widget is selected
         println("WidgetActivity.onCreate->$mainViewModel")
-        mainViewModel!!.getSession()?.let { widget_view.setSession(it) }
+        mainViewModel!!.getSession().let { widget_view.setSession(it) } //TODO [CAF] consider the safety of !!
         widget_view.setWidgetListener(object : WidgetListener {
             override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
                 println("WidgetActivity.onNewWidget->${liveLikeWidget.kind}")

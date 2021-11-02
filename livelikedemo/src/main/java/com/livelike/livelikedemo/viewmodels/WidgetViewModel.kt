@@ -5,7 +5,7 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetIntercep
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.channel.ChannelManager
 
-public class widgetViewModel constructor(
+class WidgetViewModel constructor(
     application: LiveLikeApplication
 ) : AndroidViewModel(application) {
 
@@ -18,7 +18,7 @@ public class widgetViewModel constructor(
     private val contentSession =
         createPublicSession(getChannelManager().selectedChannel.llProgram.toString())
 
-    fun getSession(): LiveLikeContentSession? {
+    fun getSession(): LiveLikeContentSession {
         println("widgetViewModel.getSession->$contentSession")
         return contentSession
     }
@@ -32,15 +32,15 @@ public class widgetViewModel constructor(
     }
 
     fun pauseSession() {
-        contentSession?.pause()
+        contentSession.pause()
     }
 
     fun resumeSession() {
-        contentSession?.resume()
+        contentSession.resume()
     }
 
     fun closeSession() {
-        contentSession?.close()
+        contentSession.close()
     }
 
     fun createPublicSession(
