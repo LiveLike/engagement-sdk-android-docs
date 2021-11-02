@@ -23,11 +23,11 @@ class CustomSocialEmbed: ConstraintLayout {
     private lateinit var binding: CustomSocialEmbedBinding
 
     constructor(context: Context) : super(context) {
-        init(null, 0)
+        init()
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
+        init()
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
@@ -35,10 +35,10 @@ class CustomSocialEmbed: ConstraintLayout {
         attrs,
         defStyle
     ) {
-        init(attrs, defStyle)
+        init()
     }
 
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
+    private fun init() {
         binding = CustomSocialEmbedBinding.inflate(LayoutInflater.from(context), this@CustomSocialEmbed, true)
     }
 
