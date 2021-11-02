@@ -218,9 +218,9 @@ class RewardsClientTestActivity : AppCompatActivity() {
         if (transferRewardItem.senderProfileId == ((applicationContext as LiveLikeApplication).sdk.userStream.latest()?.userId
                 ?: "")
         ) {
-            transferRewardItemRow.append("Received ${transferRewardItem.rewardItemAmount} $rewardItem from ${transferRewardItem.senderProfileId}")
+            transferRewardItemRow.append("Sent ${transferRewardItem.rewardItemAmount} $rewardItem to ${transferRewardItem.recipientProfileId}")
         } else {
-            transferRewardItemRow.append("Send ${transferRewardItem.rewardItemAmount} $rewardItem to ${transferRewardItem.recipientProfileId}")
+            transferRewardItemRow.append("Received ${transferRewardItem.rewardItemAmount} $rewardItem from ${transferRewardItem.senderProfileId}")
         }
         return transferRewardItemRow.toString()
     }
