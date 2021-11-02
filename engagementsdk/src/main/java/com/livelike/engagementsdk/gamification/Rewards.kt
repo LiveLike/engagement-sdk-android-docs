@@ -246,7 +246,7 @@ interface IRewardsClient {
     /**
      * Retrieve all reward item transfers associated
      * with the current user profile
-     * @param requestOptions allows to filter transfer based on transferType i.e debit or credit
+     * @param requestOptions allows to filter transfer based on transferType i.e sent or received
      **/
     fun getRewardItemTransfers(
         liveLikePagination: LiveLikePagination,
@@ -275,8 +275,8 @@ class RewardItemTransferRequestOptions(internal val transferType: RewardItemTran
 
 
 enum class RewardItemTransferType(val key: String) {
-    SENT("debit"),
-    RECEIVED("credit")
+    SENT("sent"),
+    RECEIVED("received")
 }
 
 
