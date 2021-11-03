@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +15,6 @@ import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.publicapis.BlockType
 import com.livelike.engagementsdk.publicapis.BlockedData
 import com.livelike.engagementsdk.publicapis.ChatRoomAdd
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
@@ -68,7 +66,6 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_mute
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_refresh
 import kotlinx.android.synthetic.main.fragment_chat_only_home.rcyl_block
 import kotlinx.android.synthetic.main.fragment_chat_only_home.rcyl_invite
-import kotlinx.android.synthetic.main.fragment_chat_only_home.spinner_block_type
 import kotlinx.android.synthetic.main.invite_list_item.view.btn_accept
 import kotlinx.android.synthetic.main.invite_list_item.view.btn_reject
 import kotlinx.android.synthetic.main.invite_list_item.view.txt_invitation
@@ -94,19 +91,13 @@ class ChatOnlyHomeFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        spinner_block_type.adapter = ArrayAdapter<BlockType>(
-            context!!,
-            android.R.layout.simple_spinner_item,
-            BlockType.values()
-        )
         val adapter = BlockedListAdapter(::unblock)
         rcyl_block.adapter = adapter
         btn_block_list.setOnClickListener {
-            val type = BlockType.values()[spinner_block_type.selectedItemPosition]
             val profileId = ed_block_profile_id.text.toString()
             prg_block.visibility = View.VISIBLE
-            (activity?.application as? LiveLikeApplication)?.sdk?.getBlockedProfileList(LiveLikePagination.FIRST,
-                type,
+            (activity?.application as? LiveLikeApplication)?.sdk?.getBlockedProfileList(
+                LiveLikePagination.FIRST,
                 profileId,
                 object : LiveLikeCallback<List<BlockedData>>() {
                     override fun onResponse(result: List<BlockedData>?, error: String?) {
@@ -121,11 +112,10 @@ class ChatOnlyHomeFragment : Fragment() {
                 })
         }
         btn_block.setOnClickListener {
-            val type = BlockType.values()[spinner_block_type.selectedItemPosition]
             val profileId = ed_block_profile_id.text.toString()
             prg_block.visibility = View.VISIBLE
             (activity?.application as? LiveLikeApplication)?.sdk?.blockProfile(
-                type, profileId,
+                profileId,
                 object : LiveLikeCallback<BlockedData>() {
                     override fun onResponse(result: BlockedData?, error: String?) {
                         prg_block.visibility = View.INVISIBLE

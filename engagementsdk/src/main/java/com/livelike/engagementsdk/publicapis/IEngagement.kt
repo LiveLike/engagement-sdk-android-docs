@@ -154,7 +154,6 @@ interface IEngagement {
     )
 
     fun blockProfile(
-        type: BlockType,
         profileId: String,
         liveLikeCallback: LiveLikeCallback<BlockedData>
     )
@@ -166,7 +165,6 @@ interface IEngagement {
 
     fun getBlockedProfileList(
         liveLikePagination: LiveLikePagination,
-        type: BlockType?,
         blockedProfileId: String?,
         liveLikeCallback: LiveLikeCallback<List<BlockedData>>
     )

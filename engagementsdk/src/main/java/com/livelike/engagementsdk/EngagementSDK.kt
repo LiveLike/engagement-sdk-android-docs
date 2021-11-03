@@ -43,7 +43,6 @@ import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.gamification.Badges
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.gamification.Rewards
-import com.livelike.engagementsdk.publicapis.BlockType
 import com.livelike.engagementsdk.publicapis.BlockedData
 import com.livelike.engagementsdk.publicapis.BlockedProfileListResponse
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
@@ -854,7 +853,6 @@ class EngagementSDK(
     }
 
     override fun blockProfile(
-        type: BlockType,
         profileId: String,
         liveLikeCallback: LiveLikeCallback<BlockedData>
     ) {
@@ -864,7 +862,7 @@ class EngagementSDK(
                     val result = dataClient.remoteCall<BlockedData>(
                         url,
                         RequestType.POST,
-                        requestBody = """{"blocked_profile_id":"$profileId","block_type":"${type.key}"}"""
+                        requestBody = """{"blocked_profile_id":"$profileId"}"""
                             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
                         userAccessToken,
                         true
@@ -897,27 +895,21 @@ class EngagementSDK(
 
     override fun getBlockedProfileList(
         liveLikePagination: LiveLikePagination,
-        type: BlockType?,
         blockedProfileId: String?,
         liveLikeCallback: LiveLikeCallback<List<BlockedData>>
     ) {
         userRepository.currentUserStream.subscribe(this) {
             it?.blockProfileListTemplate?.let {
                 uiScope.launch {
-                    val params = "${
-                        when (type != null) {
-                            true -> "block_type=${type.key}"
-                            else -> ""
-                        }
-                    }&${
-                        when (blockedProfileId != null) {
-                            true -> "blocked_profile_id=$blockedProfileId"
-                            else -> ""
-                        }
-                    }"
+                    val params = when (blockedProfileId != null) {
+                        true -> "blocked_profile_id=$blockedProfileId"
+                        else -> ""
+                    }
                     val url = when (liveLikePagination) {
-                        LiveLikePagination.FIRST -> it.replace("{block_type}", type?.key ?: "")
-                            .replace("{blocked_profile_id}", blockedProfileId ?: "")
+                        LiveLikePagination.FIRST -> it.replace(
+                            "{blocked_profile_id}",
+                            blockedProfileId ?: ""
+                        )
                         LiveLikePagination.NEXT -> blockedProfileListResponseMap[params]?.next
                         LiveLikePagination.PREVIOUS -> blockedProfileListResponseMap[params]?.previous
                     }
