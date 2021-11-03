@@ -5,7 +5,12 @@ import com.livelike.engagementsdk.BuildConfig
 internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptionHandler {
 
     var defaultHandler: Thread.UncaughtExceptionHandler =
-        Thread.getDefaultUncaughtExceptionHandler()
+        Thread.getDefaultUncaughtExceptionHandler() ?: Thread.UncaughtExceptionHandler { _, _ ->
+            /**
+             * no op, we can only get here if the original UncaughtExceptionHandler was null
+             * which is impossible. Right?
+             */
+        }
 
     init {
         Thread.setDefaultUncaughtExceptionHandler(this)
@@ -15,8 +20,7 @@ internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptio
 
         var record = false
 
-        throwable?.let { throwable ->
-
+        throwable?.let {
             record = doContainsSDKFootprint(throwable)
         }
 
@@ -26,7 +30,11 @@ internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptio
             }
         }
 
-        defaultHandler.uncaughtException(thread, throwable)
+        thread?.let {
+            throwable?.let {
+                defaultHandler.uncaughtException(thread, throwable)
+            }
+        }
     }
 
     private fun doContainsSDKFootprint(throwable: Throwable): Boolean {

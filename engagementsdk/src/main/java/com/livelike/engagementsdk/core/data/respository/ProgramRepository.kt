@@ -14,6 +14,7 @@ import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.Locale
 
 /**
  * Repository that handles program and program-user data.
@@ -29,7 +30,7 @@ internal class ProgramRepository(
 
     internal val rewardType: RewardsType by lazy {
         RewardsType.valueOf(
-            program?.rewardsType?.toUpperCase() ?: "none"
+            program?.rewardsType?.uppercase(Locale.getDefault()) ?: "none"
         )
     }
     /**
@@ -43,7 +44,7 @@ internal class ProgramRepository(
      * @param programDetailUrlTemplate (received in engagement configuration resource)
      */
     suspend fun getProgramData(programDetailUrlTemplate: String): Result<ProgramModel> {
-        var results: Result<ProgramModel>? = null
+        var results: Result<ProgramModel>?
         results = dataClient.remoteCall<ProgramModel>(
             programDetailUrlTemplate.replace(
                 TEMPLATE_PROGRAM_ID,

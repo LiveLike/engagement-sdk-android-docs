@@ -55,9 +55,7 @@ class BadgesCollectionActivity : AppCompatActivity() {
                         runOnUiThread {
                             result?.let {
                                 if (result.isNotEmpty()) {
-                                    it.get(0)?.let {
-                                        showBadgeProgressDialog(this@BadgesCollectionActivity, it)
-                                    }
+                                    showBadgeProgressDialog(this@BadgesCollectionActivity, it.get(0))
                                 }
                             }
                             progress_bar.visibility = View.GONE

@@ -32,7 +32,7 @@ open class LiveBlogActivity : AppCompatActivity() {
          **/
         initViewModel()
 
-        radio_group.setOnCheckedChangeListener { group, checkedId ->
+        radio_group.setOnCheckedChangeListener { _, checkedId ->
             liveBlogViewModel?.showAlertOnly = (checkedId == R.id.radio2)
             createTimeLineView()
         }

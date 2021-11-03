@@ -103,7 +103,7 @@ class CustomNumberPredictionWidget :
                 if (isFollowUp) {
                     val votedList = followUpWidgetViewModel?.getPredictionVotes()
                     votedList?.forEach { op ->
-                        adapter.predictionMap[op?.optionId!!] = op.number ?: 0
+                        adapter.predictionMap[op.optionId] = op.number
                     }
                     adapter.isFollowUp = true
                     verifyPredictedAnswer()
@@ -166,7 +166,7 @@ class CustomNumberPredictionWidget :
     /**
      * verify if votes submitted are correct
      */
-    private fun verifyPredictedAnswer() {
+    private fun verifyPredictedAnswer() { // TODO: [CAF] evaluate what this actually is doing?
         var isCorrect = false
         followUpWidgetViewModel?.widgetData?.options?.let { option ->
             val votedList = followUpWidgetViewModel?.getPredictionVotes()
