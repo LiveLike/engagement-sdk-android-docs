@@ -201,6 +201,7 @@ class EngagementSDK(
                 }
             }
         }
+        pubnubClient?.fetchBlockProfiles(userRepository.currentUserStream.latest()?.subscribeChannel!!)
     }
 
     override val userStream: Stream<LiveLikeUserApi>
@@ -518,7 +519,7 @@ class EngagementSDK(
                             pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
                     uiScope.launch {
-                        chatRepository.deleteCurrentUserFromChatRoom(
+                       val chatRoomResult= chatRepository.deleteCurrentUserFromChatRoom(
                             chatRoomId, pair.second.chatRoomDetailUrlTemplate
                         )
                         liveLikeCallback.processResult(chatRoomResult)
