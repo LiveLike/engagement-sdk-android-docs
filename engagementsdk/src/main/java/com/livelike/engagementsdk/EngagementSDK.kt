@@ -201,7 +201,6 @@ class EngagementSDK(
                 }
             }
         }
-        pubnubClient?.fetchBlockProfiles(userRepository.currentUserStream.latest()?.subscribeChannel!!)
     }
 
     override val userStream: Stream<LiveLikeUserApi>
