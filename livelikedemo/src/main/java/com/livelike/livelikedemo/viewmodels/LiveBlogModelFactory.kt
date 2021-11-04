@@ -11,6 +11,7 @@ class LiveBlogModelFactory(
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         require(modelClass == LiveBlogViewModel::class.java) { "Unknown ViewModel class" }
+        @Suppress("UNCHECKED_CAST")
         return LiveBlogViewModel(
             application as LiveLikeApplication
         ) as T
