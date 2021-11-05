@@ -27,7 +27,6 @@ import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.data.models.PollWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
@@ -321,8 +320,7 @@ internal class PollViewModel(
 
     override fun getUserInteraction(): PollWidgetUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
-            widgetInfos.widgetId,
-            WidgetKind.fromString(widgetInfos.type)
+            widgetInfos.widgetId
         )
     }
 

@@ -1136,7 +1136,6 @@ class EngagementSDK(
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeContentSession {
         return ContentSession(
-            clientId,
             configurationStream,
             userRepository,
             applicationContext,
@@ -1165,7 +1164,6 @@ class EngagementSDK(
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeContentSession {
         return ContentSession(
-            clientId,
             configurationStream,
             userRepository,
             applicationContext,

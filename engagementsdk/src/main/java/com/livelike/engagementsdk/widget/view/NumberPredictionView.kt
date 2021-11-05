@@ -11,7 +11,6 @@ import android.view.inputmethod.EditorInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
-import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.NumberPredictionOptionsTheme
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetsTheme
@@ -172,8 +171,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 val selectedPredictionVoteList =
                     getWidgetNumberPredictionVotedAnswerList(if (resource.textNumberPredictionId.isNullOrEmpty()) resource.imageNumberPredictionId else resource.textNumberPredictionId)
                     viewModel?.followupState(
-                        selectedPredictionVoteList,
-                        widgetViewThemeAttributes
+                        selectedPredictionVoteList
                     )
             }
             setImeOptionDoneInKeyboard()

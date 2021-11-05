@@ -210,7 +210,7 @@ internal class NumberPredictionOptionAdapter(
             AndroidResource.updateThemeForView(itemView.description, optionDescTheme, fontFamilyProvider)
 
             if (layoutPickerComponent?.option != null){
-               itemView.bkgrd.background = AndroidResource.createDrawable(layoutPickerComponent?.option)
+               itemView.bkgrd.background = AndroidResource.createDrawable(layoutPickerComponent.option)
             }
 
             //input placeholder
@@ -220,7 +220,7 @@ internal class NumberPredictionOptionAdapter(
 
             // user input with state
             if (layoutPickerComponent?.optionInputFieldEnabled?.background != null &&
-                layoutPickerComponent?.optionInputFieldDisabled?.background != null
+                layoutPickerComponent.optionInputFieldDisabled?.background != null
             ) {
                 val userInputEnabledDrawable = AndroidResource.createDrawable(
                     layoutPickerComponent.optionInputFieldEnabled
@@ -240,12 +240,12 @@ internal class NumberPredictionOptionAdapter(
 
                     if(layoutPickerComponent?.optionInputFieldCorrect?.background != null){
                         itemView.correct_answer.background =
-                            AndroidResource.createDrawable(layoutPickerComponent?.optionInputFieldCorrect)
+                            AndroidResource.createDrawable(layoutPickerComponent.optionInputFieldCorrect)
                     }else{
                         itemView.correct_answer.background = (ContextCompat.getDrawable(itemView.context, R.drawable.correct_background))
                     }
                     if (itemView.userInput.visibility == View.VISIBLE && layoutPickerComponent?.optionInputFieldIncorrect?.background != null) itemView.userInput.background =
-                        AndroidResource.createDrawable(layoutPickerComponent?.optionInputFieldIncorrect)
+                        AndroidResource.createDrawable(layoutPickerComponent.optionInputFieldIncorrect)
             }
         }
 
