@@ -13,7 +13,6 @@ import com.livelike.livelikedemo.customwidgets.timeline.TimeLineWidgetFactory
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.viewmodels.IntractableTimelineViewModelFactory
 import com.livelike.livelikedemo.viewmodels.NewIntractableTimelineViewModel
-import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.*
 import kotlinx.android.synthetic.main.activity_live_blog.radio1
 import kotlinx.android.synthetic.main.activity_live_blog.radio2
 import kotlinx.android.synthetic.main.activity_live_blog.timeline_container
@@ -57,8 +56,10 @@ class IntractableTimelineActivity : AppCompatActivity() {
             newTimelineViewModel?.timeLineViewModel!!,
             newTimelineViewModel?.getEngagementSDK()!!
         )
-        val file_name = "themes/test.json"
-        val bufferReader = application.assets.open(file_name).bufferedReader()
+
+        // added test theme
+        val themeFileName = "themes/test.json"
+        val bufferReader = application.assets.open(themeFileName).bufferedReader()
         val data = bufferReader.use {
             it.readText()
         }
