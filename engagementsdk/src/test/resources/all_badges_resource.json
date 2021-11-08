@@ -1,0 +1,24 @@
+{
+  "count": 3,
+  "next": null,
+  "previous": null,
+  "results": [{
+    "id": "7c2a61af-2e88-40de-8df9-027127a6a1e2",
+    "name": "TestFree",
+    "description": "Free",
+    "badge_icon_url": "https://cf-blast-storage-game-changers.livelikecdn.com/assets/82c6f53d-b452-453c-b4f0-102e5f9b83e7.png",
+    "mimetype": "application/octet-stream"
+  }, {
+    "id": "e39af69d-0013-4645-9e0d-dfe81a6b1a85",
+    "name": "Please",
+    "description": "No",
+    "badge_icon_url": "https://cf-blast-storage-game-changers.livelikecdn.com/assets/83aebdcf-5cdf-41b9-b2cb-89f40c1feab3.png",
+    "mimetype": "application/octet-stream"
+  }, {
+    "id": "e69a3899-f13a-406c-82a8-e9f94eb070a6",
+    "name": "test badge",
+    "description": null,
+    "badge_icon_url": "https://cf-blast-storage-game-changers.livelikecdn.com/assets/43adb0c0-ccd0-4624-84d3-89d8252a0dc5.png",
+    "mimetype": "application/octet-stream"
+  }]
+}
