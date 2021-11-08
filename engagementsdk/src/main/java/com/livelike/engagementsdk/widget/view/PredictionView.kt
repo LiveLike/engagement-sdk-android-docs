@@ -249,7 +249,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        lay_textRecyclerView.background = it
+                        lay_textRecyclerView?.background = it
                     }
                 }
             }
@@ -275,7 +275,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
 
             titleView.title = resource.question
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
-            lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
+            lay_textRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
             titleTextView.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(
                 optionList,

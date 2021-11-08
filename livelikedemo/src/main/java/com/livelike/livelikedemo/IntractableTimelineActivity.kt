@@ -5,11 +5,15 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import com.google.gson.JsonParser
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.widget.timeline.WidgetsTimeLineView
 import com.livelike.livelikedemo.customwidgets.timeline.TimeLineWidgetFactory
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.viewmodels.IntractableTimelineViewModelFactory
 import com.livelike.livelikedemo.viewmodels.NewIntractableTimelineViewModel
+import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.*
 import kotlinx.android.synthetic.main.activity_live_blog.radio1
 import kotlinx.android.synthetic.main.activity_live_blog.radio2
 import kotlinx.android.synthetic.main.activity_live_blog.timeline_container
@@ -53,6 +57,15 @@ class IntractableTimelineActivity : AppCompatActivity() {
             newTimelineViewModel?.timeLineViewModel!!,
             newTimelineViewModel?.getEngagementSDK()!!
         )
+        val file_name = "themes/test.json"
+        val bufferReader = application.assets.open(file_name).bufferedReader()
+        val data = bufferReader.use {
+            it.readText()
+        }
+        val element =
+            LiveLikeEngagementTheme.instanceFrom(JsonParser.parseString(data).asJsonObject)
+        if (element is Result.Success)
+            timeLineView.applyTheme(element.data)
 
         // adding custom separator between widgets in timeline
         timeLineView.setSeparator(ContextCompat.getDrawable(this, R.drawable.white_separator))
