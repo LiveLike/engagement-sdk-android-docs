@@ -1,0 +1,13 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [{
+    "awarded_at": "",
+    "badge":{  "id": "7c2a61af-2e88-40de-8df9-027127a6a1e2",
+    "name": "My Badge",
+    "description": "Free",
+    "badge_icon_url": "https://cf-blast-storage-game-changers.livelikecdn.com/assets/82c6f53d-b452-453c-b4f0-102e5f9b83e7.png",
+    "mimetype": "application/octet-stream"
+  }}]
+}

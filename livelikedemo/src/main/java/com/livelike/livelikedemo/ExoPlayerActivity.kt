@@ -182,9 +182,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             showChatAvatar = intent.getBooleanExtra("showAvatar", true)
             if (intent.getBooleanExtra("customCheerMeter", false))
                 widget_view?.widgetViewFactory = object : LiveLikeWidgetViewFactory {
-                    override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
+                    override fun createCheerMeterView(cheerMeterWidgetModel: CheerMeterWidgetmodel): View? {
                         return CustomCheerMeter(this@ExoPlayerActivity).apply {
-                            cheerMeterWidgetModel = viewModel
+                            this.cheerMeterWidgetModel = cheerMeterWidgetModel
                         }
                     }
 
@@ -258,14 +258,14 @@ class ExoPlayerActivity : AppCompatActivity() {
                         if (cm.nextUrl?.isNotEmpty() == true)
                             setPositiveButton(
                                 "Load Next"
-                            ) { dialog, which ->
+                            ) { dialog, _ ->
                                 cm.loadClientConfig(cm.nextUrl)
                                 dialog.dismiss()
                             }
                         if (cm.previousUrl?.isNotEmpty() == true)
                             setNeutralButton(
                                 "Load Previous"
-                            ) { dialog, which ->
+                            ) { dialog, _ ->
                                 cm.loadClientConfig(cm.previousUrl)
                                 dialog.dismiss()
                             }
@@ -324,11 +324,11 @@ class ExoPlayerActivity : AppCompatActivity() {
                                             result: List<LiveLikeWidget>?,
                                             error: String?
                                         ) {
-                                            result?.map { it!! }.let {
+                                            result?.map { it }.let {
                                                 DialogUtils.showMyWidgetsDialog(
                                                     context,
                                                     (application as LiveLikeApplication).sdk,
-                                                    ArrayList(it),
+                                                    ArrayList(it ?: emptyList()),
                                                     object : LiveLikeCallback<LiveLikeWidget>() {
                                                         override fun onResponse(
                                                             result: LiveLikeWidget?,

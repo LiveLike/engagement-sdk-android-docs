@@ -52,14 +52,14 @@ internal open class PubnubMessagingClient(
 
     open fun addPubnubListener() {
         pubnub.addListener(object : PubnubSubscribeCallbackAdapter() {
-            override fun status(pubnub: PubNub, status: PNStatus) {
-                when (status.operation) {
+            override fun status(pubnub: PubNub, pnStatus: PNStatus) {
+                when (pnStatus.operation) {
                     // let's combine unsubscribe and subscribe handling for ease of use
                     PNOperationType.PNSubscribeOperation, PNOperationType.PNUnsubscribeOperation -> {
                         // note: subscribe statuses never have traditional
                         // errors, they just have categories to represent the
                         // different issues or successes that occur as part of subscribe
-                        when (status.category) {
+                        when (pnStatus.category) {
                             PNStatusCategory.PNConnectedCategory -> {
                                 // this is expected for a subscribe, this means there is no error or issue whatsoever
                                 listener?.onClientMessageStatus(this@PubnubMessagingClient, ConnectionStatus.CONNECTED)
@@ -106,9 +106,9 @@ internal open class PubnubMessagingClient(
                 }
             }
 
-            override fun message(pubnub: PubNub, message: PNMessageResult) {
-                logMessage(message)
-                val payload = message.message.asJsonObject.getAsJsonObject("payload")
+            override fun message(pubnub: PubNub, pnMessageResult: PNMessageResult) {
+                logMessage(pnMessageResult)
+                val payload = pnMessageResult.message.asJsonObject.getAsJsonObject("payload")
                 val timeoutReceived = payload.extractStringOrEmpty("timeout")
                 val pdtString = payload.extractStringOrEmpty("program_date_time")
                 var epochTimeMs = 0L
@@ -116,11 +116,11 @@ internal open class PubnubMessagingClient(
                     epochTimeMs = it.toInstant().toEpochMilli()
                 }
                 val timeoutMs = AndroidResource.parseDuration(timeoutReceived)
-                message.message.asJsonObject.addProperty("priority", 1)
+                pnMessageResult.message.asJsonObject.addProperty("priority", 1)
 
                 val clientMessage = ClientMessage(
-                    message.message.asJsonObject,
-                    message.channel,
+                    pnMessageResult.message.asJsonObject,
+                    pnMessageResult.channel,
                     EpochTime(epochTimeMs),
                     timeoutMs
                 )
@@ -128,7 +128,7 @@ internal open class PubnubMessagingClient(
                 listener?.onClientMessageEvent(this@PubnubMessagingClient, clientMessage)
             }
 
-            override fun presence(pubnub: PubNub, presence: PNPresenceEventResult) {}
+            override fun presence(pubnub: PubNub, pnPresenceEventResult: PNPresenceEventResult) {}
 
             fun logMessage(message: PNMessageResult) {
                 logVerbose { "Message publisher: " + message.publisher }

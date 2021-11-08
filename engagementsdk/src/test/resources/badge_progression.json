@@ -1,0 +1,15 @@
+[{
+  "badge": {
+    "id": "7c2a61af-2e88-40de-8df9-027127a6a1e2",
+    "name": "TestFree",
+    "description": "Free",
+    "badge_icon_url": "https://cf-blast-storage-game-changers.livelikecdn.com/assets/82c6f53d-b452-453c-b4f0-102e5f9b83e7.png",
+    "mimetype": "application/octet-stream"
+  },
+  "badge_progression": [{
+    "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5",
+    "reward_item_name": "TestFreeItem",
+    "reward_item_threshold": 1000,
+    "current_reward_amount": 494
+  }]
+}]

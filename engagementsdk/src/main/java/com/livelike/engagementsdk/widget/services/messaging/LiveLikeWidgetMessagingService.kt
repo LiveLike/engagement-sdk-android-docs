@@ -58,14 +58,14 @@ internal object LiveLikeWidgetMessagingService {
         initMessagingClient(sdkConfiguration, currentUserStream)
         channelSubscribeCountMap[channelName] = (channelSubscribeCountMap[channelName] ?: 0) + 1
         messagingClient?.subscribe(mutableListOf(channelName))
-        widgetEventStream?.subscribe(key, observer)
+        widgetEventStream.subscribe(key, observer)
     }
 
     internal fun unsubscribeWidgetChannel(
         channelName: String,
         key: Any
     ) {
-        widgetEventStream?.unsubscribe(key)
+        widgetEventStream.unsubscribe(key)
         channelSubscribeCountMap[channelName] = (channelSubscribeCountMap[channelName] ?: 0) - 1
         if ((channelSubscribeCountMap[channelName] ?: 0) <= 0) {
             messagingClient?.unsubscribe(mutableListOf(channelName))

@@ -29,7 +29,7 @@ fun EngagementSDK.createExoplayerSession(
 
 fun getExoplayerPdtTime(playerProvider: PlayerProvider): Long {
     return playerProvider.get()?.let {
-        it.currentTimeline?.run {
+        it.currentTimeline.run {
             if (!isEmpty) {
                 getWindow(
                     it.currentWindowIndex,

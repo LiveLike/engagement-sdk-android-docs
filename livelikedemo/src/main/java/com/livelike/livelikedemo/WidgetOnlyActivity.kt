@@ -81,6 +81,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -215,9 +216,9 @@ class WidgetOnlyActivity : AppCompatActivity() {
         widget_view.setSession(session)
         if (intent.getBooleanExtra("customCheerMeter", false))
             widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
-                override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
+                override fun createCheerMeterView(cheerMeterWidgetModel: CheerMeterWidgetmodel): View? {
                     return CustomCheerMeter(this@WidgetOnlyActivity).apply {
-                        cheerMeterWidgetModel = viewModel
+                        this.cheerMeterWidgetModel = cheerMeterWidgetModel
                     }
                 }
 
@@ -507,7 +508,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                             }
                         }
 
-                        val request = when (type.url) {
+                        val request: Any? = when (type.url) {
                             alerts -> when (type.count) {
                                 1 -> AlertRequest(
                                     title = "Alert",
@@ -634,20 +635,16 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         response?.let {
                             when (it) {
                                 is AlertResponse -> {
-                                    it.schedule_url?.let{it1 -> putAPI(it1)}
+                                    putAPI( it.schedule_url )
                                 }
                                 is PollRequestResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
                                 is QuizResponse -> {
-                                    it.schedule_url?.let{it1 -> putAPI(it1)
-                                    }
-
+                                    putAPI( it.schedule_url )
                                 }
                                 is TextAskResponse -> {
-                                    it.schedule_url?.let{it1 -> putAPI(it1)
-                                    }
-
+                                    putAPI( it.schedule_url )
                                 }
                                 is PredictionResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
@@ -712,7 +709,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             private suspend fun putAPI(url: String): Boolean {
                 val request: Request = Request.Builder()
                     .url(url)
-                    .method("PUT", RequestBody.create(mediaType, ""))
+                    .method("PUT", "".toRequestBody(mediaType))
                     .addHeader(
                         authorization,
                         accessToken
@@ -724,10 +721,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
 
             private suspend fun patchAPI(url: String, data: Any? = null): String? {
-                val body = RequestBody.create(
-                    mediaType,
-                    Gson().toJson(data)
-                )
+                val body = Gson().toJson(data).toRequestBody(mediaType)
                 val request: Request = Request.Builder()
                     .url(url)
                     .method("PATCH", body)
@@ -749,10 +743,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 url: String,
                 post: Any? = null
             ): String? {
-                val body = RequestBody.create(
-                    mediaType,
-                    Gson().toJson(post)
-                )
+                val body = Gson().toJson(post).toRequestBody(mediaType)
                 val request: Request = Request.Builder()
                     .url("${BuildConfig.CONFIG_URL}$url/")
                     .method("POST", body)

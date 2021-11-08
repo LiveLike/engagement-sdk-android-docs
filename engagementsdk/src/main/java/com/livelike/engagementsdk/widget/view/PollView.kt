@@ -240,7 +240,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun resultsObserver(resource: Resource?) {
         (resource ?: viewModel?.data?.currentData?.resource)?.apply {
             val optionResults = this.getMergedOptions() ?: return
-            val totalVotes = optionResults.sumBy { it.getMergedVoteCount().toInt() }
+            val totalVotes = optionResults.sumOf { it.getMergedVoteCount().toInt() }
             val options = viewModel?.data?.currentData?.resource?.getMergedOptions() ?: return
             options.forEach { opt ->
                 optionResults.find {
