@@ -35,5 +35,5 @@ data class LiveLikeUser(
     internal var subscribeChannel: String?,
     @SerializedName("reported_count") val reportedCount: Int,
     @SerializedName("created_at") val createdAt : String,
-    @SerializedName("block_profile_list_template") val blockProfileListTemplate : String,
+    @SerializedName("blocked_profiles_template_url") val blockProfileListTemplate : String,
 )
