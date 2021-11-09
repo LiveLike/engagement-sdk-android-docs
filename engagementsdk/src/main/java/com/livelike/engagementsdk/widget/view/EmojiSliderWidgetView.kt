@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.widget.view
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.StateListDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -82,6 +83,31 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             }
             AndroidResource.createDrawable(sliderTheme.body)?.let {
                 lay_image_slider.background = it
+            }
+
+            // submit button drawables theme
+            val submitButtonEnabledDrawable = AndroidResource.createDrawable(
+                sliderTheme.submitButtonEnabled
+            )
+            val submitButtonDisabledDrawable = AndroidResource.createDrawable(
+                sliderTheme.submitButtonDisabled
+            )
+            val state = StateListDrawable()
+            state.addState(intArrayOf(android.R.attr.state_enabled), submitButtonEnabledDrawable)
+            state.addState(intArrayOf(), submitButtonDisabledDrawable)
+            btn_lock?.background = state
+
+            //confirmation label theme
+            AndroidResource.updateThemeForView(
+                label_lock,
+                sliderTheme.submitConfirmation,
+                fontFamilyProvider
+            )
+            if (sliderTheme.submitConfirmation?.background != null) {
+                label_lock?.background = AndroidResource.createDrawable(sliderTheme.submitConfirmation)
+            }
+            sliderTheme.submitConfirmation?.padding?.let {
+                AndroidResource.setPaddingForView(label_lock, sliderTheme.submitConfirmation.padding)
             }
         }
     }
@@ -178,13 +204,13 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
         }
     }
 
-    fun enableLockButton() {
+    private fun enableLockButton() {
         lay_lock.visibility = VISIBLE
         btn_lock.isEnabled = true
         btn_lock.alpha = 1f
     }
 
-    fun disableLockButton() {
+    private fun disableLockButton() {
         lay_lock.visibility = VISIBLE
         btn_lock.isEnabled = false
         btn_lock.alpha = 0.5f
