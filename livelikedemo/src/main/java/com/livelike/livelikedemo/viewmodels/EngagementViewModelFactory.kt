@@ -9,6 +9,7 @@ class EngagementViewModelFactory(
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         require(modelClass == WidgetViewModel::class.java) { "Unknown ViewModel class" }
+        @Suppress("UNCHECKED_CAST")
         return WidgetViewModel(
             application as LiveLikeApplication
         ) as T

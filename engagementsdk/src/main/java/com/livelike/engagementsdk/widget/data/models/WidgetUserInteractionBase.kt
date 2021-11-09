@@ -18,6 +18,7 @@ abstract class WidgetUserInteractionBase(
 
     companion object {
         internal fun <T : WidgetUserInteractionBase> getWidgetClass(widgetKind: String): Class<T> {
+            @Suppress("UNCHECKED_CAST")
             return (
                 when {
                     widgetKind == "emoji-slider" -> {
