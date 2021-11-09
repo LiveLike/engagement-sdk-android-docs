@@ -1,0 +1,171 @@
+{
+  "url": "http://localhost:8080/api/v1/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/",
+  "widgets_url": "http://localhost:8080/api/v1/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/widgets/",
+  "timeline_url": "https://cf-blast-storage-game-changers.livelikecdn.com/timelines/498591f4-9d6b-4943-9671-f44d3afbb6a4/timeline_1.json",
+  "leaderboard_url": "http://localhost:8080/api/v1/_forbidden/",
+  "rank_url": "http://localhost:8080/api/v1/_forbidden/",
+  "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+  "application_url": "http://localhost:8080/api/v1/applications/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L/",
+  "id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+  "custom_id": null,
+  "title": "Game Changers QA Program",
+  "created_at": "2021-08-05T18:55:02.620479Z",
+  "scheduled_at": "2021-08-05T18:54:58Z",
+  "started_at": "2021-09-28T14:58:47.695880Z",
+  "stopped_at": null,
+  "queue_order_url": "http://localhost:8080/api/v1/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/queue-order/",
+  "delete_widgets_url": "http://localhost:8080/api/v1/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/delete-widgets/",
+  "widgets_enabled": true,
+  "chat_enabled": true,
+  "subscribe_channel": "program.498591f4-9d6b-4943-9671-f44d3afbb6a4",
+  "widget_count": 0,
+  "sendbird_channel": null,
+  "stream_url": "",
+  "status": "live",
+  "sync_sessions_url": "http://localhost:8080/api/v1/_forbidden/",
+  "sync_channel": null,
+  "start_program_url": "http://localhost:8080/api/v1/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/start/",
+  "stop_program_url": "http://localhost:8080/api/v1/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/stop/",
+  "active_sessions_statistics_url": "http://localhost:8080/api/v1/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/statistics/active-sessions/",
+  "statistics_channel": "program.statistics.498591f4-9d6b-4943-9671-f44d3afbb6a4",
+  "current_active_session_count": 1,
+  "sticker_packs_url": "http://localhost:8080/api/v1/sticker-packs/?program_id=498591f4-9d6b-4943-9671-f44d3afbb6a4",
+  "reaction_packs_url": "http://localhost:8080/api/v1/reaction-packs/?program_id=498591f4-9d6b-4943-9671-f44d3afbb6a4",
+  "widget_reaction_packs_url": "http://localhost:8080/api/v1/widget-reaction-packs/?program_id=498591f4-9d6b-4943-9671-f44d3afbb6a4",
+  "update_sticker_packs_url": "http://localhost:8080/api/v1/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/sticker-packs/",
+  "analytics_properties": {
+    "Program ID": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+    "Program Title": "Game Changers QA Program",
+    "Custom Program ID": null
+  },
+  "rewards_type": "none",
+  "report_url": "http://localhost:8080/api/v1/_forbidden/",
+  "ban_url": "http://localhost:8080/api/v1/_forbidden/",
+  "moderation_url": "http://localhost:8080/api/v1/_forbidden/",
+  "banned_chat_users_url": "http://localhost:8080/api/v1/_forbidden/",
+  "oembed_url": "http://localhost:8080/api/v1/oembed-meta/",
+  "chat_rooms": [{
+    "id": "773cdce1-1066-47c7-b6ce-26be31a15dd9",
+    "url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/",
+    "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+    "title": "test",
+    "created_at": "2021-09-03T14:17:19.885098Z",
+    "content_filter": "none",
+    "visibility": "everyone",
+    "channels": {
+      "chat": {
+        "sendbird": null,
+        "pubnub": "chatroom.773cdce1-1066-47c7-b6ce-26be31a15dd9"
+      },
+      "reactions": {
+        "pubnub": "chatroom.reactions.773cdce1-1066-47c7-b6ce-26be31a15dd9"
+      },
+      "control": {
+        "pubnub": "chatroom.control.773cdce1-1066-47c7-b6ce-26be31a15dd9"
+      }
+    },
+    "report_message_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/report-chat-message/",
+    "reported_messages_url": "http://localhost:8080/api/v1/reported-chat-room-messages/?chat_room_id=773cdce1-1066-47c7-b6ce-26be31a15dd9&status=pending",
+    "delete_message_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/delete-chat-message/",
+    "upload_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/upload/",
+    "memberships_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/memberships/",
+    "chat_room_invitations_url_template": "http://localhost:8080/api/v1/chat-room-invitations/?client_id={client_id}&chat_room_id={chat_room_id}",
+    "muted_status_url_template": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/muted-status/{profile_id}/",
+    "custom_messages_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/custom-messages/",
+    "sticker_packs_url": "https://cf-blast-storage-game-changers.livelikecdn.com/sticker-packs/773cdce1-1066-47c7-b6ce-26be31a15dd9/sticker_packs.json",
+    "reaction_packs_url": "https://cf-blast-storage-game-changers.livelikecdn.com/reaction-packs/773cdce1-1066-47c7-b6ce-26be31a15dd9/reaction_packs.json",
+    "custom_data": null,
+    "sponsors_url": "http://localhost:8080/api/v1/sponsors/?chat_room_id=773cdce1-1066-47c7-b6ce-26be31a15dd9"
+  }],
+  "default_chat_room": {
+    "id": "773cdce1-1066-47c7-b6ce-26be31a15dd9",
+    "url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/",
+    "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+    "title": "test",
+    "created_at": "2021-09-03T14:17:19.885098Z",
+    "content_filter": "none",
+    "visibility": "everyone",
+    "channels": {
+      "chat": {
+        "sendbird": null,
+        "pubnub": "chatroom.773cdce1-1066-47c7-b6ce-26be31a15dd9"
+      },
+      "reactions": {
+        "pubnub": "chatroom.reactions.773cdce1-1066-47c7-b6ce-26be31a15dd9"
+      },
+      "control": {
+        "pubnub": "chatroom.control.773cdce1-1066-47c7-b6ce-26be31a15dd9"
+      }
+    },
+    "report_message_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/report-chat-message/",
+    "reported_messages_url": "http://localhost:8080/api/v1/reported-chat-room-messages/?chat_room_id=773cdce1-1066-47c7-b6ce-26be31a15dd9&status=pending",
+    "delete_message_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/delete-chat-message/",
+    "upload_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/upload/",
+    "memberships_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/memberships/",
+    "chat_room_invitations_url_template": "http://localhost:8080/api/v1/chat-room-invitations/?client_id={client_id}&chat_room_id={chat_room_id}",
+    "muted_status_url_template": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/muted-status/{profile_id}/",
+    "custom_messages_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/custom-messages/",
+    "sticker_packs_url": "https://cf-blast-storage-game-changers.livelikecdn.com/sticker-packs/773cdce1-1066-47c7-b6ce-26be31a15dd9/sticker_packs.json",
+    "reaction_packs_url": "https://cf-blast-storage-game-changers.livelikecdn.com/reaction-packs/773cdce1-1066-47c7-b6ce-26be31a15dd9/reaction_packs.json",
+    "custom_data": null,
+    "sponsors_url": "http://localhost:8080/api/v1/sponsors/?chat_room_id=773cdce1-1066-47c7-b6ce-26be31a15dd9"
+  },
+  "leaderboards": [{
+    "id": "424d25bd-7404-417c-bb7c-9558a064cce4",
+    "url": "http://localhost:8080/api/v1/leaderboards/424d25bd-7404-417c-bb7c-9558a064cce4/",
+    "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+    "name": "TestfreeLeaderboard",
+    "reward_item": {
+      "id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5",
+      "url": "http://localhost:8080/api/v1/reward-items/e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5/",
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "name": "TestFreeItem"
+    },
+    "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5",
+    "is_locked": false,
+    "entries_url": "http://localhost:8080/api/v1/leaderboards/424d25bd-7404-417c-bb7c-9558a064cce4/entries/",
+    "entry_detail_url_template": "http://localhost:8080/api/v1/leaderboards/424d25bd-7404-417c-bb7c-9558a064cce4/entries/{profile_id}/"
+  }, {
+    "id": "075acd9c-9551-495d-bf8e-de6c841a075e",
+    "url": "http://localhost:8080/api/v1/leaderboards/075acd9c-9551-495d-bf8e-de6c841a075e/",
+    "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+    "name": "Ben Point Leaderboard",
+    "reward_item": {
+      "id": "2becef61-e16d-4033-a994-f48085a5d79a",
+      "url": "http://localhost:8080/api/v1/reward-items/2becef61-e16d-4033-a994-f48085a5d79a/",
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "name": "Ben Point"
+    },
+    "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a",
+    "is_locked": false,
+    "entries_url": "http://localhost:8080/api/v1/leaderboards/075acd9c-9551-495d-bf8e-de6c841a075e/entries/",
+    "entry_detail_url_template": "http://localhost:8080/api/v1/leaderboards/075acd9c-9551-495d-bf8e-de6c841a075e/entries/{profile_id}/"
+  }],
+  "sponsors": [{
+    "id": "ead40f4c-2ba2-4fab-8374-98609c02d85a",
+    "url": "http://localhost:8080/api/v1/sponsors/ead40f4c-2ba2-4fab-8374-98609c02d85a/",
+    "logo_url": "https://cf-blast-storage-game-changers.livelikecdn.com/assets/92150b1e-61b1-4eff-850c-23bcb486cc61.png",
+    "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+    "name": "Ringside Coffee Company"
+  }, {
+    "id": "5a57fb7a-969a-4efe-8cec-22de3ed3f1ad",
+    "url": "http://localhost:8080/api/v1/sponsors/5a57fb7a-969a-4efe-8cec-22de3ed3f1ad/",
+    "logo_url": "https://cf-blast-storage-game-changers.livelikecdn.com/assets/003743c2-3d78-451a-a4cf-2864c753aa44.png",
+    "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+    "name": "TestSponsor"
+  }],
+  "sponsors_url": "http://localhost:8080/api/v1/sponsors/?program_id=498591f4-9d6b-4943-9671-f44d3afbb6a4",
+  "reward_items": [{
+    "id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5",
+    "url": "http://localhost:8080/api/v1/reward-items/e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5/",
+    "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+    "name": "TestFreeItem"
+  }, {
+    "id": "2becef61-e16d-4033-a994-f48085a5d79a",
+    "url": "http://localhost:8080/api/v1/reward-items/2becef61-e16d-4033-a994-f48085a5d79a/",
+    "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+    "name": "Ben Point"
+  }],
+  "widget_interactions_url_template": "http://localhost:8080/api/v1/profiles/{profile_id}/widget-interactions/",
+  "unclaimed_widget_interactions_url_template": "http://localhost:8080/api/v1/profiles/{profile_id}/unclaimed-widget-interactions/"
+}

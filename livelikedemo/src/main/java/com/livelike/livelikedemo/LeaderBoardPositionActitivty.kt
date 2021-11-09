@@ -1,5 +1,6 @@
 package com.livelike.livelikedemo
 
+import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -63,7 +64,12 @@ class LeaderBoardPositionActitivty : AppCompatActivity() {
                                     runOnUiThread {
                                         // Stuff that updates the UI
                                         val textViewRow = TextView(this@LeaderBoardPositionActitivty)
-                                        textViewRow.setTextColor(resources.getColor(R.color.colorAccent))
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                            textViewRow.setTextColor(resources.getColor(R.color.colorAccent, theme))
+                                        } else {
+                                            @Suppress("DEPRECATION") //kept due to pre M support
+                                            textViewRow.setTextColor(resources.getColor(R.color.colorAccent))
+                                        }
                                         textViewRow.text = "\"LeaderBoardName\" + ${leaderBoard.name} + \"Rank: \"+ ${currentUserPlacementDidChange.rank}+ \"Percentile\"+ ${currentUserPlacementDidChange.rankPercentile} + \"Score \"+ ${currentUserPlacementDidChange.score}"
                                         leaderBoardLayout.addView(textViewRow)
                                     }

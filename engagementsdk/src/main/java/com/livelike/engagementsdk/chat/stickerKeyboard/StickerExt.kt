@@ -214,8 +214,8 @@ fun replaceWithImages(
                             drawable.reset()
                             drawable.start()
                             drawable.callback = callback
-                            val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
-                            s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            val innerSpan = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
+                            s?.setSpan(innerSpan, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onMatch?.invoke()
                         } catch (e: IOException) {
                             e.printStackTrace()
@@ -240,8 +240,8 @@ fun replaceWithImages(
                                 drawable.intrinsicWidth,
                                 drawable.intrinsicHeight
                             )
-                            val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
-                            s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            val innerSpan = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
+                            s?.setSpan(innerSpan, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onMatch?.invoke()
                         } catch (e: IOException) {
                             e.printStackTrace()

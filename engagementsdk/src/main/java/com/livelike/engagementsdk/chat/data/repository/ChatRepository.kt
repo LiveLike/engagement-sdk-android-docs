@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
@@ -113,10 +114,10 @@ internal class ChatRepository(
     suspend fun deleteCurrentUserFromChatRoom(
         chatRoomId: String,
         chatRoomTemplateUrl: String
-    ): Result<Void> {
+    ): Result<LiveLikeEmptyResponse> {
         val chatRoomResult = fetchChatRoom(chatRoomId, chatRoomTemplateUrl)
         return if (chatRoomResult is Result.Success) {
-            dataClient.remoteCall<Void>(
+            dataClient.remoteCall<LiveLikeEmptyResponse>(
                 chatRoomResult.data.membershipsUrl,
                 accessToken = authKey,
                 requestType = RequestType.DELETE

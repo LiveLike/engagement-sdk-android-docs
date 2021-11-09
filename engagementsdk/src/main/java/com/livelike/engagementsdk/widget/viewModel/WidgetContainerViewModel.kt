@@ -102,7 +102,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         }
         currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { pair ->
             if (pair != null)
-                widgetObserver(pair?.second, pair?.first)
+                widgetObserver(pair.second, pair.first)
             else {
                 removeViews()
             }
@@ -118,21 +118,22 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         removeViews()
         var customView: View? = null
 
-        if (WidgetType.fromString(widgetType!!) == WidgetType.TEXT_PREDICTION_FOLLOW_UP ||
-            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_PREDICTION_FOLLOW_UP
+        val fromString = WidgetType.fromString(widgetType!!) //TODO: [CAF] Evaluate use of !! here
+        if (fromString == WidgetType.TEXT_PREDICTION_FOLLOW_UP ||
+            fromString == WidgetType.IMAGE_PREDICTION_FOLLOW_UP
         ) {
             customView =
                 widgetViewViewFactory?.createPredictionFollowupWidgetView(
                     widgetView?.widgetViewModel as FollowUpWidgetViewModel,
-                    WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_PREDICTION_FOLLOW_UP
+                    fromString == WidgetType.IMAGE_PREDICTION_FOLLOW_UP
                 )
-        }else if(WidgetType.fromString(widgetType!!) == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP ||
-            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP)
+        }else if(fromString == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP ||
+            fromString == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP)
             {
             customView =
                 widgetViewViewFactory?.createNumberPredictionFollowupWidgetView(
                     widgetView?.widgetViewModel as NumberPredictionFollowUpWidgetModel,
-                    WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP
+                    fromString == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP
                 )
 
         }
@@ -151,21 +152,21 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     customView =
                         widgetViewViewFactory?.createQuizWidgetView(
                             widgetView.widgetViewModel as QuizWidgetModel,
-                            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
+                            fromString == WidgetType.IMAGE_QUIZ
                         )
                 }
                 is PredictionWidgetViewModel -> {
                     customView =
                         widgetViewViewFactory?.createPredictionWidgetView(
                             widgetView.widgetViewModel as PredictionWidgetViewModel,
-                            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_PREDICTION
+                            fromString == WidgetType.IMAGE_PREDICTION
                         )
                 }
                 is PollWidgetModel -> {
                     customView =
                         widgetViewViewFactory?.createPollWidgetView(
                             widgetView.widgetViewModel as PollWidgetModel,
-                            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_POLL
+                            fromString == WidgetType.IMAGE_POLL
                         )
                 }
                 is ImageSliderWidgetModel -> {
@@ -193,7 +194,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     customView =
                         widgetViewViewFactory?.createNumberPredictionWidgetView(
                             widgetView.widgetViewModel as NumberPredictionWidgetModel,
-                            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_NUMBER_PREDICTION
+                            fromString == WidgetType.IMAGE_NUMBER_PREDICTION
                         )
                 }
             }
@@ -220,7 +221,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 }
 
                 currentWidgetType = WidgetType.fromString(
-                    widgetType ?: ""
+                    widgetType
                 )?.toAnalyticsString() ?: ""
                 currentWidgetId = widgetId
                 analyticsService?.trackWidgetDisplayed(

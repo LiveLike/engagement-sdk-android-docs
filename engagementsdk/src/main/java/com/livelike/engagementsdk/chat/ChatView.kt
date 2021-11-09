@@ -127,7 +127,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     init {
         context.scanForActivity()?.window?.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-                or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                or @Suppress("DEPRECATION") WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE //kept due to pre M support
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
         context.obtainStyledAttributes(
             attrs,
@@ -573,7 +573,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         ) {
             val scrcoords = IntArray(2)
             v.getLocationOnScreen(scrcoords)
-            val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
             var outsideStickerKeyboardBound =
                 (v.bottom - sticker_keyboard.height - button_chat_send.height - button_emoji.height)

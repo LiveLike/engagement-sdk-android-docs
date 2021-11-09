@@ -43,6 +43,8 @@ import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.gamification.Badges
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.gamification.Rewards
+import com.livelike.engagementsdk.publicapis.BlockedData
+import com.livelike.engagementsdk.publicapis.BlockedProfileListResponse
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitationResponse
@@ -51,6 +53,7 @@ import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.sponsorship.Sponsor
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
@@ -164,13 +167,15 @@ class EngagementSDK(
         dataClient.getEngagementSdkConfig(url) {
             if (it is Result.Success) {
                 configurationStream.onNext(it.data)
-                analyticService.onNext(
-                    MixpanelAnalytics(
-                        applicationContext,
-                        it.data.mixpanelToken,
-                        it.data.clientId
+                it.data.mixpanelToken?.let { token ->
+                    analyticService.onNext(
+                        MixpanelAnalytics(
+                            applicationContext,
+                            token,
+                            it.data.clientId
+                        )
                     )
-                )
+                }
                 userRepository.initUser(accessTokenDelegate!!.getAccessToken(), it.data.profileUrl)
             } else {
                 errorDelegate?.onError(
@@ -362,7 +367,7 @@ class EngagementSDK(
                                     requestType = RequestType.POST,
                                     fullErrorJson = true,
                                     requestBody = when (userId.isEmpty()) {
-                                        true -> RequestBody.create(null, byteArrayOf())
+                                        true -> byteArrayOf().toRequestBody(null, 0, 0)
                                         else -> """{"profile_id":"$userId"}"""
                                             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
                                     }
@@ -498,7 +503,7 @@ class EngagementSDK(
 
     override fun deleteCurrentUserFromChatRoom(
         chatRoomId: String,
-        liveLikeCallback: LiveLikeCallback<Boolean>
+        liveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
     ) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
             .subscribe(this) {
@@ -515,12 +520,10 @@ class EngagementSDK(
                             pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
                     uiScope.launch {
-                        val chatRoomResult = chatRepository.deleteCurrentUserFromChatRoom(
+                       val chatRoomResult= chatRepository.deleteCurrentUserFromChatRoom(
                             chatRoomId, pair.second.chatRoomDetailUrlTemplate
                         )
-                        liveLikeCallback.onResponse(
-                            true, null
-                        )
+                        liveLikeCallback.processResult(chatRoomResult)
                     }
                 }
             }
@@ -601,7 +604,6 @@ class EngagementSDK(
         leaderBoardId: List<String>,
         liveLikeCallback: LiveLikeCallback<LeaderboardClient>
     ) {
-        val leaderBoardClientList = mutableListOf<LeaderboardClient>()
         configurationStream.subscribe(this) {
             it?.let {
                 userRepository.currentUserStream.subscribe(this) { user ->
@@ -610,7 +612,7 @@ class EngagementSDK(
                     CoroutineScope(Dispatchers.IO).launch {
 
                         val job = ArrayList<Job>()
-                        for (i in 0 until leaderBoardId.size.toInt()) {
+                        for (i in 0 until leaderBoardId.size) {
                             job.add(
                                 launch {
                                     val url = "${
@@ -851,9 +853,96 @@ class EngagementSDK(
             }
     }
 
+    override fun blockProfile(
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<BlockedData>
+    ) {
+        userRepository.currentUserStream.subscribe(this) {
+            it?.blockProfileUrl?.let { url ->
+                uiScope.launch {
+                    val result = dataClient.remoteCall<BlockedData>(
+                        url,
+                        RequestType.POST,
+                        requestBody = """{"blocked_profile_id":"$profileId"}"""
+                            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
+                        userAccessToken,
+                        true
+                    )
+                    liveLikeCallback.processResult(result)
+                }
+            }
+        }
+    }
+
+    override fun unBlockProfile(
+        blockId: String,
+        liveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
+    ) {
+        userRepository.currentUserStream.subscribe(this) {
+            it?.blockProfileUrl?.let { url ->
+                uiScope.launch {
+                    val result = dataClient.remoteCall<LiveLikeEmptyResponse>(
+                        "$url$blockId/",
+                        RequestType.DELETE,
+                        requestBody = null,
+                        userAccessToken,
+                        true
+                    )
+                    liveLikeCallback.processResult(result)
+                }
+            }
+        }
+    }
+
+    override fun getBlockedProfileList(
+        liveLikePagination: LiveLikePagination,
+        blockedProfileId: String?,
+        liveLikeCallback: LiveLikeCallback<List<BlockedData>>
+    ) {
+        userRepository.currentUserStream.subscribe(this) {
+            it?.blockProfileListTemplate?.let {
+                uiScope.launch {
+                    val params = when (blockedProfileId != null) {
+                        true -> "blocked_profile_id=$blockedProfileId"
+                        else -> ""
+                    }
+                    val url = when (liveLikePagination) {
+                        LiveLikePagination.FIRST -> it.replace(
+                            "{blocked_profile_id}",
+                            blockedProfileId ?: ""
+                        )
+                        LiveLikePagination.NEXT -> blockedProfileListResponseMap[params]?.next
+                        LiveLikePagination.PREVIOUS -> blockedProfileListResponseMap[params]?.previous
+                    }
+                    if (url != null) {
+                        val result = dataClient.remoteCall<BlockedProfileListResponse>(
+                            url,
+                            RequestType.GET,
+                            requestBody = null,
+                            userAccessToken, true
+                        )
+
+                        if (result is Result.Success) {
+                            blockedProfileListResponseMap[params] = result.data
+                            liveLikeCallback.onResponse(result.data.results, null)
+                        } else if (result is Result.Error) {
+                            liveLikeCallback.onResponse(
+                                null,
+                                result.exception.message
+                            )
+                        }
+                    } else {
+                        liveLikeCallback.onResponse(null, "No More data to load")
+                    }
+                }
+            }
+        }
+    }
+
 
     private val invitationForProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
     private val invitationByProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
+    private var blockedProfileListResponseMap = hashMapOf<String, BlockedProfileListResponse>()
 
 
     override fun sponsor(): Sponsor {

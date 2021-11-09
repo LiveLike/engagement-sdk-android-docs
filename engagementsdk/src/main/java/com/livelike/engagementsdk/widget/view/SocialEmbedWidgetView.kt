@@ -81,6 +81,12 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                 removeAllViews()
                 parent?.let { (it as ViewGroup).removeAllViews() }
             }
+            WidgetStates.RESULTS -> {
+
+            }
+            null -> {
+
+            }
         }
     }
 
@@ -139,7 +145,7 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             request?.url?.let { url ->
-                                openLink(context, url?.toString())
+                                openLink(context, url.toString())
                             }
                         }
                         return true

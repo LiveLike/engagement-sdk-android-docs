@@ -88,14 +88,6 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 "}"
         input_widget_json.setText(json)
 
-        val myWidgetsList: ArrayList<LiveLikeWidget> = GsonBuilder().create()
-            .fromJson(
-                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
-                    PREF_MY_WIDGETS,
-                    null
-                ),
-                object : TypeToken<List<LiveLikeWidget>>() {}.type
-            ) ?: arrayListOf()
         val channelManager = (application as LiveLikeApplication).channelManager
         val channel = channelManager.selectedChannel
         val session = (application as LiveLikeApplication).createPublicSession(
@@ -208,22 +200,22 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
             }
         }
 
-        radio_ready.setOnCheckedChangeListener { buttonView, isChecked ->
+        radio_ready.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 widget_view.setState(WidgetStates.READY)
             }
         }
-        radio_interaction.setOnCheckedChangeListener { buttonView, isChecked ->
+        radio_interaction.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 widget_view.setState(WidgetStates.INTERACTING)
             }
         }
-        radio_result.setOnCheckedChangeListener { buttonView, isChecked ->
+        radio_result.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 widget_view.setState(WidgetStates.RESULTS)
             }
         }
-        radio_finished.setOnCheckedChangeListener { buttonView, isChecked ->
+        radio_finished.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 widget_view.setState(WidgetStates.FINISHED)
             }

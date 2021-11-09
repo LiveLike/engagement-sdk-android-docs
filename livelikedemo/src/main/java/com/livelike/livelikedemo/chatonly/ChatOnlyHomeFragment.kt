@@ -15,19 +15,25 @@ import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.publicapis.BlockedData
 import com.livelike.engagementsdk.publicapis.ChatRoomAdd
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitationStatus
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.livelikedemo.ChatOnlyActivity
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.R
+import kotlinx.android.synthetic.main.block_list_item.view.btn_unblock
+import kotlinx.android.synthetic.main.block_list_item.view.txt_title
 import kotlinx.android.synthetic.main.chat_only_check_box.view.chk_avatar
 import kotlinx.android.synthetic.main.chat_only_check_box.view.ed_avatar
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_add
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_block
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_block_list
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_change
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_create
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_delete
@@ -41,6 +47,7 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_mute_status
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_refresh
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_visibility
+import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_block_profile_id
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_id
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_id_1
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_chat_room_id_invite_1
@@ -49,6 +56,7 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_user_id
 import kotlinx.android.synthetic.main.fragment_chat_only_home.ed_user_invite_id
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_add
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_add_invite
+import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_block
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_create
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_delete
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_invite_by_list
@@ -56,11 +64,13 @@ import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_invite_list
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_join
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_mute
 import kotlinx.android.synthetic.main.fragment_chat_only_home.prg_refresh
+import kotlinx.android.synthetic.main.fragment_chat_only_home.rcyl_block
 import kotlinx.android.synthetic.main.fragment_chat_only_home.rcyl_invite
 import kotlinx.android.synthetic.main.invite_list_item.view.btn_accept
 import kotlinx.android.synthetic.main.invite_list_item.view.btn_reject
 import kotlinx.android.synthetic.main.invite_list_item.view.txt_invitation
 import kotlinx.android.synthetic.main.user_list_item.view.txt_name
+import java.util.Locale
 
 class ChatOnlyHomeFragment : Fragment() {
 
@@ -82,10 +92,45 @@ class ChatOnlyHomeFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        val adapter = BlockedListAdapter(::unblock)
+        rcyl_block.adapter = adapter
+        btn_block_list.setOnClickListener {
+            val profileId = ed_block_profile_id.text.toString()
+            prg_block.visibility = View.VISIBLE
+            (activity?.application as? LiveLikeApplication)?.sdk?.getBlockedProfileList(
+                LiveLikePagination.FIRST,
+                profileId,
+                object : LiveLikeCallback<List<BlockedData>>() {
+                    override fun onResponse(result: List<BlockedData>?, error: String?) {
+                        prg_block.visibility = View.INVISIBLE
+                        error?.let { it1 -> showToast(it1) }
+                        result?.let {
+                            adapter.blockedList.clear()
+                            adapter.blockedList.addAll(it)
+                            adapter.notifyDataSetChanged()
+                        }
+                    }
+                })
+        }
+        btn_block.setOnClickListener {
+            val profileId = ed_block_profile_id.text.toString()
+            prg_block.visibility = View.VISIBLE
+            (activity?.application as? LiveLikeApplication)?.sdk?.blockProfile(
+                profileId,
+                object : LiveLikeCallback<BlockedData>() {
+                    override fun onResponse(result: BlockedData?, error: String?) {
+                        prg_block.visibility = View.INVISIBLE
+                        result?.let {
+                            showToast("BLocked User: ${it.blockedProfileID}")
+                        }
+                        error?.let { it1 -> showToast(it1) }
+                    }
+                })
+        }
         btn_create.setOnClickListener {
             val title = ed_chat_room_title.text.toString()
             val visibility =
-                if (btn_visibility.text.toString().toLowerCase().contains("visibility").not())
+                if (btn_visibility.text.toString().lowercase(Locale.getDefault()).contains("visibility").not())
                     Visibility.valueOf(btn_visibility.text.toString())
                 else
                     Visibility.everyone
@@ -255,7 +300,7 @@ class ChatOnlyHomeFragment : Fragment() {
                         builder.setTitle("Avatar")
                             .setView(checkBoxView)
                             .setCancelable(false)
-                            .setPositiveButton("Done") { dialog, id ->
+                            .setPositiveButton("Done") { _, _ ->
                                 val url = checkBoxView.ed_avatar.text.toString()
                                 (activity as? ChatOnlyActivity)?.changeChatRoom(
                                     chatRoomList.elementAt(which).id,
@@ -280,8 +325,8 @@ class ChatOnlyHomeFragment : Fragment() {
                 prg_delete.visibility = View.VISIBLE
                 (activity?.application as? LiveLikeApplication)?.sdk?.deleteCurrentUserFromChatRoom(
                     id,
-                    object : LiveLikeCallback<Boolean>() {
-                        override fun onResponse(result: Boolean?, error: String?) {
+                    object : LiveLikeCallback<LiveLikeEmptyResponse>() {
+                        override fun onResponse(result: LiveLikeEmptyResponse?, error: String?) {
                             result?.let {
                                 showToast("Deleted ChatRoom")
                                 (activity as? ChatOnlyActivity)?.privateGroupChatsession?.close()
@@ -403,6 +448,21 @@ class ChatOnlyHomeFragment : Fragment() {
             })
     }
 
+    private fun unblock(blockID: String) {
+        (activity?.application as? LiveLikeApplication)?.sdk?.unBlockProfile(blockID,
+            object : LiveLikeCallback<LiveLikeEmptyResponse>() {
+                override fun onResponse(result: LiveLikeEmptyResponse?, error: String?) {
+                    error?.let {
+                        showToast(it)
+                    }
+                    result?.let {
+                        showToast("Success Unblock")
+                        btn_block_list.callOnClick()
+                    }
+                }
+            })
+    }
+
     private fun updateInviteStatus(
         chatRoomInvitation: ChatRoomInvitation,
         chatRoomInvitationStatus: ChatRoomInvitationStatus
@@ -481,6 +541,32 @@ class InviteListAdapter(
     }
 
     override fun getItemCount(): Int = inviteList.size
+}
+
+class BlockedListAdapter(
+    private val unBlockProfile: (blockId: String) -> Unit
+) :
+    RecyclerView.Adapter<BlockedListAdapter.BlockListViewHolder>() {
+    inner class BlockListViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    val blockedList = arrayListOf<BlockedData>()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockListViewHolder {
+        return BlockListViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.block_list_item, parent, false)
+        )
+    }
+
+    override fun onBindViewHolder(holder: BlockListViewHolder, position: Int) {
+        val item = blockedList[position]
+        holder.itemView.txt_title.text =
+            "${item.blockedProfile.userId}(${item.blockedProfile.nickname})"
+
+        holder.itemView.btn_unblock.setOnClickListener {
+            unBlockProfile.invoke(item.id)
+        }
+    }
+
+    override fun getItemCount(): Int = blockedList.size
 }
 
 class UserAdapter() : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {

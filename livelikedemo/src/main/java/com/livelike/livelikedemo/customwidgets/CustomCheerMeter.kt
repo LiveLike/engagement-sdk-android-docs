@@ -3,6 +3,7 @@ package com.livelike.livelikedemo.customwidgets
 import android.content.Context
 import android.os.CountDownTimer
 import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -87,7 +88,7 @@ class CustomCheerMeter : ConstraintLayout {
                 mCountDownTimer.cancel()
             }
 
-            val handler = Handler()
+            val handler = Handler(Looper.getMainLooper())
             handler.postDelayed(
                 {
                     cheerMeterWidgetModel?.finish()

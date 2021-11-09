@@ -176,7 +176,7 @@ internal class NumberPredictionViewModel(
      * Returns associated prediction id for followups
      */
     private fun getNumberPredictionId(it: NumberPredictionWidget): String {
-        if (it.resource.textNumberPredictionId.isNullOrEmpty()) {
+        if (it.resource.textNumberPredictionId.isEmpty()) {
             return it.resource.imageNumberPredictionId
         }
         return it.resource.textNumberPredictionId
@@ -200,7 +200,7 @@ internal class NumberPredictionViewModel(
                     widgetKind = widgetInfos.type
                 )
                 var claimToken = EngagementSDK.predictionWidgetVoteRepository.get(
-                    (getNumberPredictionId(resources) ?: "")
+                    getNumberPredictionId(resources)
                 )
                 if (claimToken.isNullOrEmpty()) claimToken = getUserInteraction()?.claimToken ?: ""
                 resources.resource.claim_url?.let { url ->

@@ -56,7 +56,7 @@ class RichContentEditText : AppCompatEditText {
             )
 
             val callback =
-                InputConnectionCompat.OnCommitContentListener { inputContentInfo, flags, opts ->
+                InputConnectionCompat.OnCommitContentListener { inputContentInfo, flags, _ ->
                     val lacksPermission = (
                         flags and
                             InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION

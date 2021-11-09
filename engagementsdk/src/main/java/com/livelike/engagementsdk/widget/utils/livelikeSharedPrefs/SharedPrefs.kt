@@ -53,7 +53,7 @@ internal fun addWidgetNumberPredictionVoted(id: String, widgetVoteList: List<Num
         idsList.add(NumberPredictionSavedWidgetVote(id, item.optionId, item.number))
     }
     editor.putString(
-        PREFERENCE_KEY_WIDGETS_NUMBER_PREDICTIONS_VOTED, gson.toJson(idsList?.toTypedArray()))
+        PREFERENCE_KEY_WIDGETS_NUMBER_PREDICTIONS_VOTED, gson.toJson(idsList.toTypedArray()))
         .apply()
 }
 

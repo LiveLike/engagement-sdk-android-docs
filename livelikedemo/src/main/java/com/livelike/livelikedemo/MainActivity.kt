@@ -11,7 +11,6 @@ import android.content.IntentFilter
 import android.graphics.Typeface
 import android.net.ConnectivityManager
 import android.net.Network
-import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -27,6 +26,7 @@ import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.livelikedemo.channel.ChannelManager
@@ -110,10 +110,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var channelManager: ChannelManager
     private val mConnReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val currentNetworkInfo =
-                intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
-            if (currentNetworkInfo!!.isConnected) {
-//                (application as LiveLikeApplication).initSDK()
+            if (context.isNetworkConnected()) {
                 channelManager.loadClientConfig()
             }
         }
@@ -166,6 +163,7 @@ class MainActivity : AppCompatActivity() {
             }
             cm.registerDefaultNetworkCallback(networkCallback!!)
         } else {
+            @Suppress("DEPRECATION") //kept due to pre M support
             registerReceiver(mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
     }
@@ -207,25 +205,25 @@ class MainActivity : AppCompatActivity() {
 
         // chk_show_dismiss.isChecked = player.showNotification
         chk_show_dismiss.isChecked = false
-        chk_show_dismiss.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_show_dismiss.setOnCheckedChangeListener { _, isChecked ->
             player.showNotification = isChecked
         }
         chk_show_avatar.isChecked = player.showAvatar
-        chk_show_avatar.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_show_avatar.setOnCheckedChangeListener { _, isChecked ->
             player.showAvatar = isChecked
         }
 
-        chk_custom_widgets_ui.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_custom_widgets_ui.setOnCheckedChangeListener { _, isChecked ->
             player.customCheerMeter = isChecked
             onlyWidget.customCheerMeter = isChecked
             LiveLikeApplication.showCustomWidgetsUI = isChecked
         }
 
         chk_enable_debug.isChecked = EngagementSDK.enableDebug
-        chk_enable_debug.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_enable_debug.setOnCheckedChangeListener { _, isChecked ->
             EngagementSDK.enableDebug = isChecked
         }
-        chk_show_links.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_show_links.setOnCheckedChangeListener { _, isChecked ->
             player.showLink = isChecked
         }
 
@@ -244,14 +242,14 @@ class MainActivity : AppCompatActivity() {
                 if (channelManager.nextUrl?.isNotEmpty() == true)
                     setPositiveButton(
                         "Load Next"
-                    ) { dialog, which ->
+                    ) { dialog, _ ->
                         channelManager.loadClientConfig(channelManager.nextUrl)
                         dialog.dismiss()
                     }
                 if (channelManager.previousUrl?.isNotEmpty() == true)
                     setNeutralButton(
                         "Load Previous"
-                    ) { dialog, which ->
+                    ) { dialog, _ ->
                         channelManager.loadClientConfig(channelManager.previousUrl)
                         dialog.dismiss()
                     }
@@ -412,7 +410,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        toggle_auto_keyboard_hide.setOnCheckedChangeListener { buttonView, isChecked ->
+        toggle_auto_keyboard_hide.setOnCheckedChangeListener { _, isChecked ->
             player.keyboardClose = isChecked
         }
         toggle_auto_keyboard_hide.isChecked = player.keyboardClose
