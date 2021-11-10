@@ -168,7 +168,7 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("subscribe_channel"),
                         responseData.extractLong("reported_count").toInt(),
                         responseData.extractStringOrEmpty("created_at"),
-                        responseData.extractStringOrEmpty("block_profile_list_template")
+                        responseData.extractStringOrEmpty("blocked_profiles_template_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -216,7 +216,7 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("subscribe_channel"),
                         responseData.extractLong("reported_count").toInt(),
                         responseData.extractStringOrEmpty("created_at"),
-                        responseData.extractStringOrEmpty("block_profile_list_template")
+                        responseData.extractStringOrEmpty("blocked_profiles_template_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }

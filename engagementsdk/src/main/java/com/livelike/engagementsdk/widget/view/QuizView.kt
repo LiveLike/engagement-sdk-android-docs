@@ -188,7 +188,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        lay_textRecyclerView.background = it
+                        lay_textRecyclerView?.background = it
                     }
                 }
             }
@@ -207,7 +207,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_quiz_tag))
             titleView.title = resource.question
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_quiz)
-            lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
+            lay_textRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
             titleTextView.gravity = Gravity.START
 
             btn_lock.text = context.resources.getString(R.string.livelike_answer_label)
