@@ -39,6 +39,7 @@ import okhttp3.Response
 import okio.ByteString
 import java.io.IOException
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 @Suppress("USELESS_ELVIS")
@@ -134,10 +135,11 @@ internal open class EngagementDataClientImpl :
         client.newCall(
             Request.Builder().url(profileUrl).addUserAgent()
                 .post(
-                    RequestBody.create(
-                        null,
-                        ByteArray(0)
-                    )
+                    ByteArray(0)
+                        .toRequestBody(
+                            null,
+                            0, 0
+                        )
                 )
                 .build()
         ).enqueue(object : Callback {
@@ -158,13 +160,15 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("url"),
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
                         responseData.extractStringOrEmpty("custom_data"),
+                        responseData.extractStringOrEmpty("block_profile_url"),
                         responseData.extractStringOrEmpty("badges_url"),
                         responseData.extractStringOrEmpty("badge_progress_url"),
                         responseData.extractStringOrEmpty("reward_item_balances_url"),
                         responseData.extractStringOrEmpty("reward_item_transfer_url"),
                         responseData.extractStringOrEmpty("subscribe_channel"),
                         responseData.extractLong("reported_count").toInt(),
-                        responseData.extractStringOrEmpty("created_at")
+                        responseData.extractStringOrEmpty("created_at"),
+                        responseData.extractStringOrEmpty("blocked_profiles_template_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -204,13 +208,15 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("url"),
                         responseData.extractStringOrEmpty("chat_room_memberships_url"),
                         responseData.extractStringOrEmpty("custom_data"),
+                        responseData.extractStringOrEmpty("block_profile_url"),
                         responseData.extractStringOrEmpty("badges_url"),
                         responseData.extractStringOrEmpty("badge_progress_url"),
                         responseData.extractStringOrEmpty("reward_item_balances_url"),
                         responseData.extractStringOrEmpty("reward_item_transfer_url"),
                         responseData.extractStringOrEmpty("subscribe_channel"),
                         responseData.extractLong("reported_count").toInt(),
-                        responseData.extractStringOrEmpty("created_at")
+                        responseData.extractStringOrEmpty("created_at"),
+                        responseData.extractStringOrEmpty("blocked_profiles_template_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -266,7 +272,10 @@ internal open class EngagementDataClientImpl :
                 val execute = call.execute()
 //               TODO add more network handling cases and remove !!, generic exception
                 if (execute.isSuccessful) {
-                    val responseString = execute.body?.string()
+                    var responseString = execute.body?.string()
+                    if (responseString.isNullOrEmpty()) {
+                        responseString = "{}"
+                    }
                     val data: T = gson.fromJson<T>(
                         responseString,
                         object : TypeToken<T>() {}.type
@@ -299,6 +308,36 @@ internal open class EngagementDataClientImpl :
             }
         })
     }
+
+    internal suspend fun deleteAsync(
+        url: String,
+        accessToken: String?
+    ) =
+        suspendCoroutine<JsonObject> {
+            val request = Request.Builder()
+                .url(url)
+                .method(RequestType.DELETE.name, ByteString.EMPTY.toRequestBody(null))
+                .addUserAgent()
+                .addAuthorizationBearer(accessToken)
+                .build()
+            val call = client.newCall(request)
+            call.enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    it.resumeWithException(e)
+                    logError { e }
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    try {
+                        val s = response.body?.string()
+                        it.resume(JsonParser.parseString(s).asJsonObject)
+                    } catch (e: Exception) {
+                        logError { e }
+                        it.resume(JsonObject())
+                    }
+                }
+            })
+        }
 
     // / WIDGET CLIENT BELOW
 

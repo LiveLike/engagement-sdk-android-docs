@@ -87,7 +87,7 @@ interface IEngagement {
 
     fun deleteCurrentUserFromChatRoom(
         chatRoomId: String,
-        liveLikeCallback: LiveLikeCallback<Boolean>
+        liveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
     )
 
     fun getLeaderBoardsForProgram(
@@ -151,6 +151,22 @@ interface IEngagement {
         liveLikePagination: LiveLikePagination,
         invitationStatus: ChatRoomInvitationStatus,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>
+    )
+
+    fun blockProfile(
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<BlockedData>
+    )
+
+    fun unBlockProfile(
+        blockId: String,
+        liveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
+    )
+
+    fun getBlockedProfileList(
+        liveLikePagination: LiveLikePagination,
+        blockedProfileId: String?,
+        liveLikeCallback: LiveLikeCallback<List<BlockedData>>
     )
 
     /**

@@ -35,7 +35,7 @@ internal class AlertWidgetViewModel(
         widgetState.onNext(WidgetStates.READY)
         interactionData.widgetDisplayed()
         currentWidgetId = widgetInfos.widgetId
-        programId = data?.currentData?.program_id.toString()
+        programId = data.currentData?.program_id.toString()
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
     }
 

@@ -63,7 +63,7 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
             sdkConfiguration,
             currentUserStream
         ) { event ->
-            event?.let { event ->
+            event?.let {
                 val widgetType = event.message.get("event").asString ?: ""
                 val payload = event.message["payload"].asJsonObject
                 if (widgetType.contains("results") && payload.get("id").asString == widgetId) {

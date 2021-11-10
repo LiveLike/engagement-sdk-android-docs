@@ -41,7 +41,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
 
     override fun unLockInteraction() {
         image_slider.isUserSeekable = true
-        viewModel?.markAsInteractive()
+        viewModel.markAsInteractive()
     }
 
     override fun subscribeCalls() {
@@ -145,7 +145,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                     viewModel.currentVote.onNext(image_slider.progress.toString())
                     viewModel.currentVote.currentData?.let {
                         lockVote()
-                        viewModel?.saveInteraction(it.toFloat(), entity.voteUrl)
+                        viewModel.saveInteraction(it.toFloat(), entity.voteUrl)
                         textEggTimer.visibility = GONE
                     }
                 }
@@ -160,7 +160,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                         }"
                     )
                 }
-                viewModel?.getUserInteraction()?.run {
+                viewModel.getUserInteraction()?.run {
                     disableLockButton()
                 }
             }
@@ -172,7 +172,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
     private fun lockVote() {
         disableLockButton()
         label_lock.visibility = View.VISIBLE
-        viewModel?.run {
+        viewModel.run {
             timeOutJob?.cancel()
             onInteractionCompletion {}
         }

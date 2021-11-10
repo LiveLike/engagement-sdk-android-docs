@@ -590,7 +590,6 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         interactionInfo: AnalyticsWidgetInteractionInfo
     ) {
         val properties = JSONObject()
-        val timeOfLastInteraction = parser.format(Date(interactionInfo.timeOfLastInteraction))
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
         properties.put(PROGRAM_ID, programId)

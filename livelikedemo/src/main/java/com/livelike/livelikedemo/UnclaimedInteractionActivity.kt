@@ -24,13 +24,12 @@ class UnclaimedInteractionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_unclaimed_interaction)
         session =
-            (application as LiveLikeApplication).createPublicSession((application as LiveLikeApplication)?.channelManager.selectedChannel.llProgram.toString())
+            (application as LiveLikeApplication).createPublicSession((application as LiveLikeApplication).channelManager.selectedChannel.llProgram.toString())
 
         unclaimed_btn.setOnClickListener { fetchUnclaimedInteractions() }
     }
 
     private fun fetchUnclaimedInteractions() {
-        var unclaimedWidgetList: MutableList<LiveLikeWidget>? = ArrayList<LiveLikeWidget>()
         progress_bar.visibility = View.VISIBLE
         session?.getWidgetInteractionsWithUnclaimedRewards(
             LiveLikePagination.FIRST,
@@ -43,15 +42,13 @@ class UnclaimedInteractionActivity : AppCompatActivity() {
                     result?.let {
                         Log.d("unclaimed", "interaction list loaded-> ${result.size}")
                         // set adapter
-                        unclaimedWidgetList?.let {
-                            adapter = UnclaimedInteractionAdapter(
-                                this@UnclaimedInteractionActivity,
-                                (application as LiveLikeApplication).sdk, session, result
-                            )
-                            claim_rv.layoutManager =
-                                LinearLayoutManager(this@UnclaimedInteractionActivity)
-                            claim_rv.adapter = adapter
-                        }
+                        adapter = UnclaimedInteractionAdapter(
+                            this@UnclaimedInteractionActivity,
+                            (application as LiveLikeApplication).sdk, session, result
+                        )
+                        claim_rv.layoutManager =
+                            LinearLayoutManager(this@UnclaimedInteractionActivity)
+                        claim_rv.adapter = adapter
                     }
                 }
             }

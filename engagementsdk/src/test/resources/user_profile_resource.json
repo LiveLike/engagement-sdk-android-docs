@@ -1,0 +1,20 @@
+{
+  "badges_url": "http://localhost:8080/api/v1/profiles/e58b8f5c-01b9-4423-bc2d-80a62ce28891/badges/",
+  "badge_progress_url": "http://localhost:8080/api/v1/profiles/e58b8f5c-01b9-4423-bc2d-80a62ce28891/badge-progress/",
+  "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+  "custom_data": null,
+  "url": "http://localhost:8080/api/v1/profiles/e58b8f5c-01b9-4423-bc2d-80a62ce28891/",
+  "nickname": "Intrepid Guard",
+  "badges": [],
+  "reported_count": 0,
+  "subscribe_channel": "profile.e58b8f5c-01b9-4423-bc2d-80a62ce28891",
+  "chat_room_memberships_url": "http://localhost:8080/api/v1/profiles/e58b8f5c-01b9-4423-bc2d-80a62ce28891/chat-room-memberships/",
+  "reward_item_balances_url": "http://localhost:8080/api/v1/profiles/e58b8f5c-01b9-4423-bc2d-80a62ce28891/reward-item-balances/",
+  "reward_item_credit_url": "http://localhost:8080/api/v1/profiles/e58b8f5c-01b9-4423-bc2d-80a62ce28891/reward-item-credits/",
+  "reward_item_debit_url": "http://localhost:8080/api/v1/profiles/e58b8f5c-01b9-4423-bc2d-80a62ce28891/reward-item-debits/",
+  "points": 0,
+  "reward_item_transfer_url": "http://localhost:8080/api/v1/profiles/e58b8f5c-01b9-4423-bc2d-80a62ce28891/reward-item-transfers/",
+  "created_at": "2021-09-20T10:55:19.000+00",
+  "chat_room_invitations_url_template": "http://localhost:8080/api/v1/chat-room-invitations/?client_id={client_id}&invited_profile_id={profile_id}",
+  "id": "e58b8f5c-01b9-4423-bc2d-80a62ce28891"
+}

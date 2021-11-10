@@ -144,8 +144,11 @@ internal class SynchronizedMessagingClient(
         queueMap.keys.forEach {
             val queue = queueMap[it]
             queue?.let {
-                while (queue.peek() != null && shouldPublishEvent(queue.peek())) {
-                    publishEvent(queue.remove())
+                var event = queue.peek()
+                while ( event != null && shouldPublishEvent( event )  ){
+                    publishEvent(event)
+                    queue.remove(event)
+                    event = queue.peek()
                 }
             }
         }
