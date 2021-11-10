@@ -159,7 +159,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.fontFamilyProvider = fontFamilyProvider
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        lay_textRecyclerView.background = it
+                        lay_textRecyclerView?.background = it
                     }
                 }
             }
@@ -181,7 +181,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 wouldInflateSponsorUi()
             }
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
-            lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_poll)
+            lay_textRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_poll)
 
             // added tag as label for identification of widget (by default tag will be empty)
             setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_poll_tag))
@@ -240,7 +240,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun resultsObserver(resource: Resource?) {
         (resource ?: viewModel?.data?.currentData?.resource)?.apply {
             val optionResults = this.getMergedOptions() ?: return
-            val totalVotes = optionResults.sumBy { it.getMergedVoteCount().toInt() }
+            val totalVotes = optionResults.sumOf { it.getMergedVoteCount().toInt() }
             val options = viewModel?.data?.currentData?.resource?.getMergedOptions() ?: return
             options.forEach { opt ->
                 optionResults.find {

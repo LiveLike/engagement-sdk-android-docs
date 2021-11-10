@@ -26,8 +26,7 @@ class IntractableWidgetTimelineViewModel
         liveLikeWidget: LiveLikeWidget,
         timeLineWidgetApiSource: WidgetApiSource
     ): WidgetStates {
-        var isInteractive = false
-        isInteractive = if (decideWidgetInteractivity != null) {
+        val isInteractive = if (decideWidgetInteractivity != null) {
             decideWidgetInteractivity?.wouldAllowWidgetInteraction(liveLikeWidget) ?: true
         } else {
             true

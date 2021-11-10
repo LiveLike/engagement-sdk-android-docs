@@ -11,6 +11,7 @@ class IntractableTimelineViewModelFactory(
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         require(modelClass == NewIntractableTimelineViewModel::class.java) { "Unknown ViewModel class" }
+        @Suppress("UNCHECKED_CAST")
         return NewIntractableTimelineViewModel(
             application as LiveLikeApplication
         ) as T

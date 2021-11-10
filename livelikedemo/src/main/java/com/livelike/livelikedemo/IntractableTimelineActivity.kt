@@ -5,6 +5,9 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import com.google.gson.JsonParser
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.widget.timeline.WidgetsTimeLineView
 import com.livelike.livelikedemo.customwidgets.timeline.TimeLineWidgetFactory
 import com.livelike.livelikedemo.utils.ThemeRandomizer
@@ -53,6 +56,17 @@ class IntractableTimelineActivity : AppCompatActivity() {
             newTimelineViewModel?.timeLineViewModel!!,
             newTimelineViewModel?.getEngagementSDK()!!
         )
+
+        // added test theme
+        val themeFileName = "themes/test.json"
+        val bufferReader = application.assets.open(themeFileName).bufferedReader()
+        val data = bufferReader.use {
+            it.readText()
+        }
+        val element =
+            LiveLikeEngagementTheme.instanceFrom(JsonParser.parseString(data).asJsonObject)
+        if (element is Result.Success)
+            timeLineView.applyTheme(element.data)
 
         // adding custom separator between widgets in timeline
         timeLineView.setSeparator(ContextCompat.getDrawable(this, R.drawable.white_separator))

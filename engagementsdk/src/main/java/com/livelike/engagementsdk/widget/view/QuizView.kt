@@ -190,7 +190,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        lay_textRecyclerView.background = it
+                        lay_textRecyclerView?.background = it
                     }
 
                     // submit button drawables theme
@@ -234,7 +234,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_quiz_tag))
             titleView.title = resource.question
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_quiz)
-            lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
+            lay_textRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
             titleTextView.gravity = Gravity.START
 
             btn_lock.text = context.resources.getString(R.string.livelike_answer_label)
@@ -372,7 +372,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun resultsObserver(resource: Resource?) {
         (resource ?: viewModel?.data?.currentData?.resource)?.apply {
             val optionResults = this.getMergedOptions() ?: return
-            val totalVotes = optionResults.sumBy { it.getMergedVoteCount().toInt() }
+            val totalVotes = optionResults.sumOf { it.getMergedVoteCount().toInt() }
             val options = viewModel?.data?.currentData?.resource?.getMergedOptions() ?: return
             options.forEach { opt ->
                 optionResults.find {

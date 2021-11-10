@@ -151,7 +151,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                     }
                 )
 
-                val listener = object : TabLayout.BaseOnTabSelectedListener<TabLayout.Tab> {
+                val listener = object : TabLayout.OnTabSelectedListener {
                     override fun onTabReselected(p0: TabLayout.Tab?) {
                     }
 

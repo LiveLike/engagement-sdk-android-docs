@@ -86,14 +86,14 @@ internal fun String.parseISODateTime(): ZonedDateTime? {
         timezoneShift = 0
     } else {
         timezoneShift =
-            Integer.parseInt(matcher.group(12)) * 60 + Integer.parseInt(matcher.group(13))
+            Integer.parseInt( matcher.group(12) ?: "" ) * 60 + Integer.parseInt(matcher.group(13) ?: "")
         if ("-" == matcher.group(11)) {
             timezoneShift *= -1
         }
     }
 
     var nanoSeconds = 0
-    if (matcher.group(8) != null && matcher.group(8).isNotEmpty()) {
+    if (matcher.group(8) != null && (matcher.group(8)?.isNotEmpty() == true)) {
         val bd = BigDecimal("0." + matcher.group(8))
         // we care only for milliseconds, so movePointRight(3)
         nanoSeconds = bd.movePointRight(9).toInt()
@@ -101,12 +101,12 @@ internal fun String.parseISODateTime(): ZonedDateTime? {
 
     return try {
         ZonedDateTime.of(
-            Integer.parseInt(matcher.group(1)),
-            Integer.parseInt(matcher.group(2)),
-            Integer.parseInt(matcher.group(3)),
-            Integer.parseInt(matcher.group(4)),
-            Integer.parseInt(matcher.group(5)),
-            Integer.parseInt(matcher.group(6)),
+            Integer.parseInt(matcher.group(1) ?: ""),
+            Integer.parseInt(matcher.group(2) ?: ""),
+            Integer.parseInt(matcher.group(3) ?: ""),
+            Integer.parseInt(matcher.group(4) ?: ""),
+            Integer.parseInt(matcher.group(5) ?: ""),
+            Integer.parseInt(matcher.group(6) ?: ""),
             nanoSeconds,
             ZoneId.ofOffset("GMT", ZoneOffset.ofTotalSeconds(timezoneShift * 60))
         )
