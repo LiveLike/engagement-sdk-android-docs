@@ -22,6 +22,7 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.TextAskViewModel
 import com.livelike.engagementsdk.widget.viewModel.TextAskWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.*
 
 
 class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
@@ -209,6 +210,9 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
                 themeComponent.confirmation,
                 fontFamilyProvider
             )
+            if (themeComponent.confirmation?.background != null) {
+                binding.confirmationMessageTv.background = AndroidResource.createDrawable(themeComponent.confirmation)
+            }
 
             // widget container background
             AndroidResource.createDrawable(themeComponent.body)?.let {

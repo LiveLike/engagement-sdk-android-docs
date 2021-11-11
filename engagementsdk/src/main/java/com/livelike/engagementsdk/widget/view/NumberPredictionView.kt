@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.widget.view
 
 
 import android.content.Context
+import android.graphics.drawable.StateListDrawable
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.Gravity
@@ -11,7 +12,6 @@ import android.view.inputmethod.EditorInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
-import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.NumberPredictionOptionsTheme
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetsTheme
@@ -21,16 +21,12 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.NumberPredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.NumberPredictionWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
-import kotlinx.android.synthetic.main.livelike_user_input.view.userInput
+import kotlinx.android.synthetic.main.atom_widget_title.view.*
+import kotlinx.android.synthetic.main.common_lock_btn_lay.view.*
+import kotlinx.android.synthetic.main.livelike_user_input.view.*
+import kotlinx.android.synthetic.main.widget_number_prediction.view.*
 import kotlinx.android.synthetic.main.widget_number_prediction.view.label_lock
 import kotlinx.android.synthetic.main.widget_number_prediction.view.lay_lock
-import kotlinx.android.synthetic.main.widget_number_prediction.view.lay_textRecyclerView
-import kotlinx.android.synthetic.main.widget_number_prediction.view.predictBtn
-import kotlinx.android.synthetic.main.widget_number_prediction.view.textEggTimer
-import kotlinx.android.synthetic.main.widget_number_prediction.view.textRecyclerView
-import kotlinx.android.synthetic.main.widget_number_prediction.view.titleView
-import kotlinx.android.synthetic.main.widget_number_prediction.view.txtTitleBackground
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -308,8 +304,19 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                     }
                    viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
-                }
 
+                    // submit button drawables with state
+                    val submitButtonEnabledDrawable = AndroidResource.createDrawable(
+                        themeComponent.submitButtonEnabled
+                    )
+                    val submitButtonDisabledDrawable = AndroidResource.createDrawable(
+                        themeComponent.submitButtonDisabled
+                    )
+                    val state = StateListDrawable()
+                    state.addState(intArrayOf(android.R.attr.state_enabled), submitButtonEnabledDrawable)
+                    state.addState(intArrayOf(), submitButtonDisabledDrawable)
+                    predictBtn?.background = state
+                }
             }
         }
     }

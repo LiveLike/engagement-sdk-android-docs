@@ -24,12 +24,16 @@ abstract class WidgetBaseThemeComponent() : BaseTheme() {
 
 data class ImageSliderTheme(
     val marker: ViewStyleProps? = null,
-    val track: ViewStyleProps? = null
+    val track: ViewStyleProps? = null,
+    val submitButtonEnabled: ViewStyleProps? = null,
+    val submitButtonDisabled: ViewStyleProps? =null,
+    val submitConfirmation: ViewStyleProps? = null
 ) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
             ?: header?.validate() ?: marker?.validate() ?: timer?.validate() ?: title?.validate()
-            ?: track?.validate()
+            ?: track?.validate() ?: submitButtonEnabled?.validate() ?: submitButtonDisabled?.validate()
+            ?: submitConfirmation?.validate()
     }
 }
 
@@ -83,7 +87,9 @@ data class NumberPredictionOptionsTheme(
     val optionInputFieldDisabled: ViewStyleProps? = null,
     val optionInputFieldPlaceholder: ViewStyleProps? = null,
     val optionInputFieldCorrect: ViewStyleProps? = null,
-    val optionInputFieldIncorrect: ViewStyleProps? = null
+    val optionInputFieldIncorrect: ViewStyleProps? = null,
+    val submitButtonEnabled: ViewStyleProps? = null,
+    val submitButtonDisabled: ViewStyleProps? = null
 
 ) : WidgetBaseThemeComponent(){
     override fun validate(): String? {
@@ -95,6 +101,8 @@ data class NumberPredictionOptionsTheme(
         ?: optionInputFieldPlaceholder?.validate()
         ?: optionInputFieldCorrect?.validate()
         ?: optionInputFieldIncorrect?.validate()
+        ?: submitButtonEnabled?.validate()
+        ?: submitButtonDisabled?.validate()
         ?: title?.validate()
     }
 }
@@ -186,7 +194,10 @@ data class OptionsWidgetThemeComponent(
     val unselectedOptionBar: ViewStyleProps? = null,
     val unselectedOptionDescription: ViewStyleProps? = null,
     val unselectedOptionImage: ViewStyleProps? = null,
-    val unselectedOptionPercentage: ViewStyleProps? = null
+    val unselectedOptionPercentage: ViewStyleProps? = null,
+    val submitButtonEnabled: ViewStyleProps? = null,
+    val submitButtonDisabled: ViewStyleProps? = null,
+    val submitConfirmation: ViewStyleProps? = null
 ) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
         return super.validate() ?: correctOption?.validate() ?: correctOptionBar?.validate()
@@ -200,6 +211,8 @@ data class OptionsWidgetThemeComponent(
             ?: unselectedOption?.validate()
             ?: unselectedOptionBar?.validate() ?: unselectedOptionDescription?.validate()
             ?: unselectedOptionImage?.validate() ?: unselectedOptionPercentage?.validate()
+            ?: submitButtonEnabled?.validate() ?: submitButtonDisabled?.validate()
+            ?: submitConfirmation?.validate()
     }
 }
 

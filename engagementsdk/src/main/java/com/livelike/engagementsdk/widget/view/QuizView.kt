@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.widget.view
 
 import android.animation.Animator
 import android.content.Context
+import android.graphics.drawable.StateListDrawable
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -26,6 +27,7 @@ import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
 import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
+import kotlinx.android.synthetic.main.video_widget.view.*
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
@@ -190,6 +192,31 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     AndroidResource.createDrawable(themeComponent.body)?.let {
                         lay_textRecyclerView?.background = it
                     }
+
+                    // submit button drawables theme
+                    val submitButtonEnabledDrawable = AndroidResource.createDrawable(
+                        themeComponent.submitButtonEnabled
+                    )
+                    val submitButtonDisabledDrawable = AndroidResource.createDrawable(
+                        themeComponent.submitButtonDisabled
+                    )
+                    val state = StateListDrawable()
+                    state.addState(intArrayOf(android.R.attr.state_enabled), submitButtonEnabledDrawable)
+                    state.addState(intArrayOf(), submitButtonDisabledDrawable)
+                    btn_lock?.background = state
+
+                    //confirmation label theme
+                    AndroidResource.updateThemeForView(
+                        label_lock,
+                        themeComponent.submitConfirmation,
+                        fontFamilyProvider
+                    )
+                    if (themeComponent.submitConfirmation?.background != null) {
+                        label_lock?.background = AndroidResource.createDrawable(themeComponent.submitConfirmation)
+                    }
+                      themeComponent.submitConfirmation?.padding?.let {
+                        AndroidResource.setPaddingForView(label_lock, themeComponent.submitConfirmation.padding)
+                    }
                 }
             }
         }
@@ -275,12 +302,12 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         }
     }
 
-    fun enableLockButton() {
+    private fun enableLockButton() {
         btn_lock.isEnabled = true
         btn_lock.alpha = 1f
     }
 
-    fun disableLockButton() {
+    private fun disableLockButton() {
         lay_lock.visibility = VISIBLE
         btn_lock.isEnabled = false
         btn_lock.alpha = 0.5f
@@ -316,6 +343,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 followupAnimation.apply {
                     addAnimatorListener(object : Animator.AnimatorListener {
                         override fun onAnimationRepeat(animation: Animator?) {
+                            // nothing needed here
                         }
 
                         override fun onAnimationEnd(animation: Animator?) {
@@ -326,9 +354,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                         }
 
                         override fun onAnimationCancel(animation: Animator?) {
+                            // nothing needed here
                         }
 
                         override fun onAnimationStart(animation: Animator?) {
+                            // nothing needed here
                         }
                     })
                 }
