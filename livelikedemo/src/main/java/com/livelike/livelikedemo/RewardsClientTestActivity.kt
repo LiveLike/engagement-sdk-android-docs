@@ -7,11 +7,13 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.util.Log
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.gamification.IRewardsClient
+import com.livelike.engagementsdk.gamification.RewardEventsListener
 import com.livelike.engagementsdk.gamification.RewardItemBalance
 import com.livelike.engagementsdk.gamification.RewardItemTransferRequestParams
 import com.livelike.engagementsdk.gamification.RewardItemTransferType
@@ -52,6 +54,12 @@ class RewardsClientTestActivity : AppCompatActivity() {
                     showToast(error)
                 }
             })
+
+        rewardsClient.rewardEventsListener = object : RewardEventsListener{
+            override fun onReceiveNewRewardItemTransfer(rewardItemTransfer: TransferRewardItem) {
+                runOnUiThread {  showAllRewardsTransfers() }
+            }
+        }
 
     }
 
