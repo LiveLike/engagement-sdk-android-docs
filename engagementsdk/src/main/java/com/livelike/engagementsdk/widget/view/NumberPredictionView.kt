@@ -316,6 +316,19 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                     state.addState(intArrayOf(android.R.attr.state_enabled), submitButtonEnabledDrawable)
                     state.addState(intArrayOf(), submitButtonDisabledDrawable)
                     predictBtn?.background = state
+
+                    //confirmation label theme
+                    AndroidResource.updateThemeForView(
+                        label_lock,
+                        themeComponent.submitConfirmation,
+                        fontFamilyProvider
+                    )
+                    if (themeComponent.submitConfirmation?.background != null) {
+                        label_lock?.background = AndroidResource.createDrawable(themeComponent.submitConfirmation)
+                    }
+                    themeComponent.submitConfirmation?.padding?.let {
+                        AndroidResource.setPaddingForView(label_lock, themeComponent.submitConfirmation.padding)
+                    }
                 }
             }
         }
