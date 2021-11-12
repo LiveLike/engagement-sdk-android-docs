@@ -89,7 +89,8 @@ data class NumberPredictionOptionsTheme(
     val optionInputFieldCorrect: ViewStyleProps? = null,
     val optionInputFieldIncorrect: ViewStyleProps? = null,
     val submitButtonEnabled: ViewStyleProps? = null,
-    val submitButtonDisabled: ViewStyleProps? = null
+    val submitButtonDisabled: ViewStyleProps? = null,
+    val submitConfirmation: ViewStyleProps? = null
 
 ) : WidgetBaseThemeComponent(){
     override fun validate(): String? {
@@ -103,6 +104,7 @@ data class NumberPredictionOptionsTheme(
         ?: optionInputFieldIncorrect?.validate()
         ?: submitButtonEnabled?.validate()
         ?: submitButtonDisabled?.validate()
+        ?: submitConfirmation?.validate()
         ?: title?.validate()
     }
 }
