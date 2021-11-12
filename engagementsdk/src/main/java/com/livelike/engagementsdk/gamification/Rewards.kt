@@ -6,6 +6,7 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
 import com.livelike.engagementsdk.core.data.models.RewardItem
+import com.livelike.engagementsdk.core.exceptionhelpers.safeCodeBlockCall
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
@@ -52,16 +53,20 @@ internal class Rewards(
                         it.first
                     ) { event ->
                         event?.let {
-                            val eventType = event.message.get("event").asString ?: ""
-                            val payload = event.message["payload"].asJsonObject
-                            if (eventType.equals(RewardEvent.REWARD_ITEM_TRANSFER_RECEIVED.key)) {
-                                rewardEventsListener?.onReceiveNewRewardItemTransfer(
-                                    gson.fromJson(
-                                        payload.toString(),
-                                        TransferRewardItem::class.java
+                            safeCodeBlockCall({
+                                val eventType = event.message.get("event").asString ?: ""
+                                val payload = event.message["payload"].asJsonObject
+                                if (eventType == RewardEvent.REWARD_ITEM_TRANSFER_RECEIVED.key) {
+
+                                    rewardEventsListener?.onReceiveNewRewardItemTransfer(
+                                        gson.fromJson(
+                                            payload.toString(),
+                                            TransferRewardItem::class.java
+                                        )
                                     )
-                                )
-                            }
+
+                                }
+                            }, "")
                         }
                     }
                 }
