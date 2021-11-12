@@ -34,7 +34,11 @@ internal class Rewards(
     override var rewardEventsListener: RewardEventsListener? = null
         set(value) {
             field = value
-            subscribeToRewardEvents()
+            if (field == null) {
+                unsubscribeToRewardEvents()
+            } else {
+                subscribeToRewardEvents()
+            }
         }
 
     private fun subscribeToRewardEvents() {
