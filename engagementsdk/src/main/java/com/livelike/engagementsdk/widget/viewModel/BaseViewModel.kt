@@ -11,7 +11,7 @@ import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.widget.WidgetType
-import com.livelike.engagementsdk.widget.services.messaging.LiveLikeWidgetMessagingService
+import com.livelike.engagementsdk.widget.services.messaging.LiveLikeEventMessagingService
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
@@ -57,7 +57,7 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
         results: Stream<T>
     ) {
         subscribedWidgetChannelName = channelName
-        LiveLikeWidgetMessagingService.subscribeWidgetChannel(
+        LiveLikeEventMessagingService.subscribeWidgetChannel(
             channelName,
             this,
             sdkConfiguration,
@@ -79,7 +79,7 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
 
     fun unsubscribeWidgetResults() {
         subscribedWidgetChannelName?.let {
-            LiveLikeWidgetMessagingService.unsubscribeWidgetChannel(it, this)
+            LiveLikeEventMessagingService.unsubscribeWidgetChannel(it, this)
         }
     }
 

@@ -11,10 +11,10 @@ import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 
-internal object LiveLikeWidgetMessagingService {
+internal object LiveLikeEventMessagingService {
 
     private var messagingClient: MessagingClient? = null
-    private var widgetEventStream: Stream<ClientMessage> = SubscriptionManager()
+    private var eventStream: Stream<ClientMessage> = SubscriptionManager()
     private val channelSubscribeCountMap = mutableMapOf<String, Int>()
 
     private fun initMessagingClient(
@@ -37,7 +37,7 @@ internal object LiveLikeWidgetMessagingService {
             )
             messagingClient?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-                    widgetEventStream.onNext(event)
+                    eventStream.onNext(event)
                 }
 
                 override fun onClientMessageEvents(
@@ -68,7 +68,7 @@ internal object LiveLikeWidgetMessagingService {
         initMessagingClient(sdkConfiguration, currentUserStream)
         channelSubscribeCountMap[channelName] = (channelSubscribeCountMap[channelName] ?: 0) + 1
         messagingClient?.subscribe(mutableListOf(channelName))
-        widgetEventStream.subscribe(key, observer)
+        eventStream.subscribe(key, observer)
     }
 
     internal fun subscribeWidgetChannel(
@@ -81,14 +81,14 @@ internal object LiveLikeWidgetMessagingService {
         initMessagingClient(sdkConfiguration, currentUser.id)
         channelSubscribeCountMap[channelName] = (channelSubscribeCountMap[channelName] ?: 0) + 1
         messagingClient?.subscribe(mutableListOf(channelName))
-        widgetEventStream.subscribe(key, observer)
+        eventStream.subscribe(key, observer)
     }
 
     internal fun unsubscribeWidgetChannel(
         channelName: String,
         key: Any
     ) {
-        widgetEventStream.unsubscribe(key)
+        eventStream.unsubscribe(key)
         channelSubscribeCountMap[channelName] = (channelSubscribeCountMap[channelName] ?: 0) - 1
         if ((channelSubscribeCountMap[channelName] ?: 0) <= 0) {
             messagingClient?.unsubscribe(mutableListOf(channelName))

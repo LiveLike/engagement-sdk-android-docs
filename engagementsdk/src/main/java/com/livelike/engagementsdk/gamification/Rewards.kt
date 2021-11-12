@@ -11,7 +11,7 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.widget.services.messaging.LiveLikeWidgetMessagingService
+import com.livelike.engagementsdk.widget.services.messaging.LiveLikeEventMessagingService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -41,7 +41,7 @@ internal class Rewards(
         sdkScope.launch {
             configurationUserPairFlow.collect {
                 it?.let {
-                    LiveLikeWidgetMessagingService.subscribeWidgetChannel(
+                    LiveLikeEventMessagingService.subscribeWidgetChannel(
                         it.first.subscribeChannel ?: "",
                         this@Rewards,
                         it.second,
@@ -68,7 +68,7 @@ internal class Rewards(
     private fun unsubscribeToRewardEvents() {
         sdkScope.launch {
             configurationUserPairFlow.collect {
-                LiveLikeWidgetMessagingService.unsubscribeWidgetChannel(
+                LiveLikeEventMessagingService.unsubscribeWidgetChannel(
                     it.first.subscribeChannel ?: "", this@Rewards
                 )
             }
