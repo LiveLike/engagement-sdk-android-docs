@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.lang.ref.WeakReference
 
 internal class Rewards(
     private val configurationUserPairFlow: Flow<Pair<LiveLikeUser, EngagementSDK.SdkConfiguration>>,
@@ -32,42 +33,50 @@ internal class Rewards(
     /*map of rewardITemRequestOptions and last response*/
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
 
+    private var _rewardEventsListener: WeakReference<RewardEventsListener>? = null
     override var rewardEventsListener: RewardEventsListener? = null
         set(value) {
-            field = value
-            if (field == null) {
+            value?.let {
                 unsubscribeToRewardEvents()
-            } else {
+                _rewardEventsListener = null
+            } ?: run {
+                _rewardEventsListener = WeakReference(value)
                 subscribeToRewardEvents()
             }
+            field = null //we never want to actually store this value to prevent a memory leak
+        }
+        get() {
+            return _rewardEventsListener?.get()
         }
 
     private fun subscribeToRewardEvents() {
         sdkScope.launch {
             configurationUserPairFlow.collect {
-                it?.let {
-                    LiveLikeEventMessagingService.subscribeWidgetChannel(
-                        it.first.subscribeChannel ?: "",
-                        this@Rewards,
-                        it.second,
-                        it.first
-                    ) { event ->
+                LiveLikeEventMessagingService.subscribeWidgetChannel(
+                    it.first.subscribeChannel ?: "",
+                    this@Rewards,
+                    it.second,
+                    it.first
+                ) { event ->
+                    _rewardEventsListener?.get()?.let { listener ->
                         event?.let {
                             safeCodeBlockCall({
                                 val eventType = event.message.get("event").asString ?: ""
                                 val payload = event.message["payload"].asJsonObject
                                 if (eventType == RewardEvent.REWARD_ITEM_TRANSFER_RECEIVED.key) {
-
-                                    rewardEventsListener?.onReceiveNewRewardItemTransfer(
+                                    listener.onReceiveNewRewardItemTransfer(
                                         gson.fromJson(
                                             payload.toString(),
                                             TransferRewardItem::class.java
                                         )
                                     )
-
                                 }
-                            }, "")
+                            })
                         }
+                    } ?: run {
+                        //weak ref to listener has returned null we need auto unsubscribed
+                        unsubscribeToRewardEvents()
+                        _rewardEventsListener = null
                     }
                 }
             }
