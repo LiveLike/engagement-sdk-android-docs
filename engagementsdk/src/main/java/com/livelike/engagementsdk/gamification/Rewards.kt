@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.services.messaging.LiveLikeWidgetMessagingService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -29,6 +30,50 @@ internal class Rewards(
 
     /*map of rewardITemRequestOptions and last response*/
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
+
+    override var rewardEventsListener: RewardEventsListener? = null
+        set(value) {
+            field = value
+            subscribeToRewardEvents()
+        }
+
+    private fun subscribeToRewardEvents() {
+        sdkScope.launch {
+            configurationUserPairFlow.collect {
+                it?.let {
+                    LiveLikeWidgetMessagingService.subscribeWidgetChannel(
+                        it.first.subscribeChannel ?: "",
+                        this@Rewards,
+                        it.second,
+                        it.first
+                    ) { event ->
+                        event?.let {
+                            val eventType = event.message.get("event").asString ?: ""
+                            val payload = event.message["payload"].asJsonObject
+                            if (eventType.equals(RewardEvent.REWARD_ITEM_TRANSFER_RECEIVED.key)) {
+                                rewardEventsListener?.onReceiveNewRewardItemTransfer(
+                                    gson.fromJson(
+                                        payload.toString(),
+                                        TransferRewardItem::class.java
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun unsubscribeToRewardEvents() {
+        sdkScope.launch {
+            configurationUserPairFlow.collect {
+                LiveLikeWidgetMessagingService.unsubscribeWidgetChannel(
+                    it.first.subscribeChannel ?: "", this@Rewards
+                )
+            }
+        }
+    }
 
     override fun getApplicationRewardItems(
         liveLikePagination: LiveLikePagination,
@@ -195,6 +240,8 @@ internal class Rewards(
 All the apis related to rewards item discovery, balance and transfer exposed here
  */
 interface IRewardsClient {
+
+    var rewardEventsListener: RewardEventsListener?
 
     /**
      * fetch all the rewards item associated to the client id passed at initialization of sdk

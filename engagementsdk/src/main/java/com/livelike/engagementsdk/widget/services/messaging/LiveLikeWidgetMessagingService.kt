@@ -21,10 +21,17 @@ internal object LiveLikeWidgetMessagingService {
         sdkConfiguration: EngagementSDK.SdkConfiguration,
         currentUserStream: Stream<LiveLikeUser>
     ) {
+        initMessagingClient(sdkConfiguration, currentUserStream.latest()?.id)
+    }
+
+    private fun initMessagingClient(
+        sdkConfiguration: EngagementSDK.SdkConfiguration,
+        currentUserId: String?
+    ) {
         if (messagingClient == null) {
             messagingClient = PubnubMessagingClient.getInstance(
                 sdkConfiguration.pubNubKey,
-                currentUserStream.latest()?.id,
+                currentUserId,
                 sdkConfiguration.pubnubHeartbeatInterval,
                 sdkConfiguration.pubnubPresenceTimeout
             )
@@ -42,7 +49,10 @@ internal object LiveLikeWidgetMessagingService {
                 override fun onClientMessageError(client: MessagingClient, error: Error) {
                 }
 
-                override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
+                override fun onClientMessageStatus(
+                    client: MessagingClient,
+                    status: ConnectionStatus
+                ) {
                 }
             })
         }
@@ -56,6 +66,19 @@ internal object LiveLikeWidgetMessagingService {
         observer: (ClientMessage?) -> Unit
     ) {
         initMessagingClient(sdkConfiguration, currentUserStream)
+        channelSubscribeCountMap[channelName] = (channelSubscribeCountMap[channelName] ?: 0) + 1
+        messagingClient?.subscribe(mutableListOf(channelName))
+        widgetEventStream.subscribe(key, observer)
+    }
+
+    internal fun subscribeWidgetChannel(
+        channelName: String,
+        key: Any,
+        sdkConfiguration: EngagementSDK.SdkConfiguration,
+        currentUser: LiveLikeUser,
+        observer: (ClientMessage?) -> Unit
+    ) {
+        initMessagingClient(sdkConfiguration, currentUser.id)
         channelSubscribeCountMap[channelName] = (channelSubscribeCountMap[channelName] ?: 0) + 1
         messagingClient?.subscribe(mutableListOf(channelName))
         widgetEventStream.subscribe(key, observer)
