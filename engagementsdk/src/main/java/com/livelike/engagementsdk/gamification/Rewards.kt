@@ -34,16 +34,15 @@ internal class Rewards(
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
 
     private var _rewardEventsListener: WeakReference<RewardEventsListener>? = null
-    override var rewardEventsListener: RewardEventsListener? = null
+    override var rewardEventsListener: RewardEventsListener?
         set(value) {
             value?.let {
                 _rewardEventsListener = WeakReference(value)
                 subscribeToRewardEvents()
-            }?: run {
+            } ?: run {
                 unsubscribeToRewardEvents()
                 _rewardEventsListener = null
             }
-            field = null //we never want to actually store this value to prevent a memory leak
         }
         get() {
             return _rewardEventsListener?.get()
@@ -73,7 +72,8 @@ internal class Rewards(
                                 }
                             })
                         }
-                    } ?: run {
+                        listener
+                    }?: run {
                         //weak ref to listener has returned null we need auto unsubscribed
                         unsubscribeToRewardEvents()
                         _rewardEventsListener = null
