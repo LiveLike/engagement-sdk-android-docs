@@ -37,11 +37,11 @@ internal class Rewards(
     override var rewardEventsListener: RewardEventsListener? = null
         set(value) {
             value?.let {
-                unsubscribeToRewardEvents()
-                _rewardEventsListener = null
-            } ?: run {
                 _rewardEventsListener = WeakReference(value)
                 subscribeToRewardEvents()
+            }?: run {
+                unsubscribeToRewardEvents()
+                _rewardEventsListener = null
             }
             field = null //we never want to actually store this value to prevent a memory leak
         }
