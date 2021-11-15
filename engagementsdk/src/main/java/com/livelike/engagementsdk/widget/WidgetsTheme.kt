@@ -27,13 +27,13 @@ data class ImageSliderTheme(
     val track: ViewStyleProps? = null,
     val submitButtonEnabled: ViewStyleProps? = null,
     val submitButtonDisabled: ViewStyleProps? =null,
-    val submitConfirmation: ViewStyleProps? = null
+    val confirmation: ViewStyleProps? = null
 ) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
             ?: header?.validate() ?: marker?.validate() ?: timer?.validate() ?: title?.validate()
             ?: track?.validate() ?: submitButtonEnabled?.validate() ?: submitButtonDisabled?.validate()
-            ?: submitConfirmation?.validate()
+            ?: confirmation?.validate()
     }
 }
 
@@ -90,7 +90,7 @@ data class NumberPredictionOptionsTheme(
     val optionInputFieldIncorrect: ViewStyleProps? = null,
     val submitButtonEnabled: ViewStyleProps? = null,
     val submitButtonDisabled: ViewStyleProps? = null,
-    val submitConfirmation: ViewStyleProps? = null
+    val confirmation: ViewStyleProps? = null
 
 ) : WidgetBaseThemeComponent(){
     override fun validate(): String? {
@@ -104,7 +104,7 @@ data class NumberPredictionOptionsTheme(
         ?: optionInputFieldIncorrect?.validate()
         ?: submitButtonEnabled?.validate()
         ?: submitButtonDisabled?.validate()
-        ?: submitConfirmation?.validate()
+        ?: confirmation?.validate()
         ?: title?.validate()
     }
 }
@@ -199,7 +199,7 @@ data class OptionsWidgetThemeComponent(
     val unselectedOptionPercentage: ViewStyleProps? = null,
     val submitButtonEnabled: ViewStyleProps? = null,
     val submitButtonDisabled: ViewStyleProps? = null,
-    val submitConfirmation: ViewStyleProps? = null
+    val confirmation: ViewStyleProps? = null
 ) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
         return super.validate() ?: correctOption?.validate() ?: correctOptionBar?.validate()
@@ -214,7 +214,7 @@ data class OptionsWidgetThemeComponent(
             ?: unselectedOptionBar?.validate() ?: unselectedOptionDescription?.validate()
             ?: unselectedOptionImage?.validate() ?: unselectedOptionPercentage?.validate()
             ?: submitButtonEnabled?.validate() ?: submitButtonDisabled?.validate()
-            ?: submitConfirmation?.validate()
+            ?: confirmation?.validate()
     }
 }
 

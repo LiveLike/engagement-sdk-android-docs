@@ -100,14 +100,14 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             //confirmation label theme
             AndroidResource.updateThemeForView(
                 label_lock,
-                sliderTheme.submitConfirmation,
+                sliderTheme.confirmation,
                 fontFamilyProvider
             )
-            if (sliderTheme.submitConfirmation?.background != null) {
-                label_lock?.background = AndroidResource.createDrawable(sliderTheme.submitConfirmation)
+            if (sliderTheme.confirmation?.background != null) {
+                label_lock?.background = AndroidResource.createDrawable(sliderTheme.confirmation)
             }
-            sliderTheme.submitConfirmation?.padding?.let {
-                AndroidResource.setPaddingForView(label_lock, sliderTheme.submitConfirmation.padding)
+            sliderTheme.confirmation?.padding?.let {
+                AndroidResource.setPaddingForView(label_lock, sliderTheme.confirmation.padding)
             }
         }
     }
