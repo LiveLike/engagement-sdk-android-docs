@@ -10,7 +10,7 @@ abstract class RewardEventsListener {
      * This is executed whenever the user receives a reward transfer
      * @param rewardItemTransfer this is the Reward Item transfer payload representing the transfer received by user
      **/
-    fun onReceiveNewRewardItemTransfer(
+    open fun onReceiveNewRewardItemTransfer(
         rewardItemTransfer: TransferRewardItem
     ){
         return
