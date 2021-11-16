@@ -6,11 +6,13 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
 import com.livelike.engagementsdk.core.data.models.RewardItem
+import com.livelike.engagementsdk.core.exceptionhelpers.safeCodeBlockCall
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.services.messaging.LiveLikeEventMessagingService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -18,6 +20,7 @@ import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.lang.ref.WeakReference
 
 internal class Rewards(
     private val configurationUserPairFlow: Flow<Pair<LiveLikeUser, EngagementSDK.SdkConfiguration>>,
@@ -29,6 +32,66 @@ internal class Rewards(
 
     /*map of rewardITemRequestOptions and last response*/
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
+
+    private var _rewardEventsListener: WeakReference<RewardEventsListener>? = null
+    override var rewardEventsListener: RewardEventsListener?
+        set(value) {
+            value?.let {
+                _rewardEventsListener = WeakReference(value)
+                subscribeToRewardEvents()
+            } ?: run {
+                unsubscribeToRewardEvents()
+                _rewardEventsListener = null
+            }
+        }
+        get() {
+            return _rewardEventsListener?.get()
+        }
+
+    private fun subscribeToRewardEvents() {
+        sdkScope.launch {
+            configurationUserPairFlow.collect {
+                LiveLikeEventMessagingService.subscribeWidgetChannel(
+                    it.first.subscribeChannel ?: "",
+                    this@Rewards,
+                    it.second,
+                    it.first
+                ) { event ->
+                    _rewardEventsListener?.get()?.let { listener ->
+                        event?.let {
+                            safeCodeBlockCall({
+                                val eventType = event.message.get("event").asString ?: ""
+                                val payload = event.message["payload"].asJsonObject
+                                if (eventType == RewardEvent.REWARD_ITEM_TRANSFER_RECEIVED.key) {
+                                    listener.onReceiveNewRewardItemTransfer(
+                                        gson.fromJson(
+                                            payload.toString(),
+                                            TransferRewardItem::class.java
+                                        )
+                                    )
+                                }
+                            })
+                        }
+                        listener
+                    }?: run {
+                        //weak ref to listener has returned null we need auto unsubscribed
+                        unsubscribeToRewardEvents()
+                        _rewardEventsListener = null
+                    }
+                }
+            }
+        }
+    }
+
+    private fun unsubscribeToRewardEvents() {
+        sdkScope.launch {
+            configurationUserPairFlow.collect {
+                LiveLikeEventMessagingService.unsubscribeWidgetChannel(
+                    it.first.subscribeChannel ?: "", this@Rewards
+                )
+            }
+        }
+    }
 
     override fun getApplicationRewardItems(
         liveLikePagination: LiveLikePagination,
@@ -195,6 +258,8 @@ internal class Rewards(
 All the apis related to rewards item discovery, balance and transfer exposed here
  */
 interface IRewardsClient {
+
+    var rewardEventsListener: RewardEventsListener?
 
     /**
      * fetch all the rewards item associated to the client id passed at initialization of sdk

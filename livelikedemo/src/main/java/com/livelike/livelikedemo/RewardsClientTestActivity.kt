@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.gamification.IRewardsClient
+import com.livelike.engagementsdk.gamification.RewardEventsListener
 import com.livelike.engagementsdk.gamification.RewardItemBalance
 import com.livelike.engagementsdk.gamification.RewardItemTransferRequestParams
 import com.livelike.engagementsdk.gamification.RewardItemTransferType
@@ -52,6 +53,12 @@ class RewardsClientTestActivity : AppCompatActivity() {
                     showToast(error)
                 }
             })
+
+        rewardsClient.rewardEventsListener = object : RewardEventsListener() {
+            override fun onReceiveNewRewardItemTransfer(rewardItemTransfer: TransferRewardItem) {
+                runOnUiThread {  showAllRewardsTransfers() }
+            }
+        }
 
     }
 
