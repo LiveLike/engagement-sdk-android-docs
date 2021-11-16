@@ -6,14 +6,12 @@ import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.ChatSession
+import com.livelike.engagementsdk.chat.InternalLiveLikeChatClient
+import com.livelike.engagementsdk.chat.LiveLikeChatClient
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.Visibility
-import com.livelike.engagementsdk.chat.data.remote.ChatRoom
-import com.livelike.engagementsdk.chat.data.remote.ChatRoomMemberListResponse
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
-import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.data.repository.ChatRoomRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatRoomMessagingClient
 import com.livelike.engagementsdk.core.AccessTokenDelegate
@@ -25,7 +23,6 @@ import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
 import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
 import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
-import com.livelike.engagementsdk.core.data.models.UserSearchApiResponse
 import com.livelike.engagementsdk.core.data.models.toLeadBoard
 import com.livelike.engagementsdk.core.data.models.toReward
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -44,10 +41,8 @@ import com.livelike.engagementsdk.gamification.Badges
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.gamification.Rewards
 import com.livelike.engagementsdk.publicapis.BlockedData
-import com.livelike.engagementsdk.publicapis.BlockedProfileListResponse
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
-import com.livelike.engagementsdk.publicapis.ChatRoomInvitationResponse
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitationStatus
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
@@ -66,13 +61,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 /**
@@ -89,10 +80,6 @@ class EngagementSDK(
     private var accessTokenDelegate: AccessTokenDelegate? = null
 ) : IEngagement {
 
-    private var userChatRoomListResponse: UserChatRoomListResponse? = null
-    private var chatRoomMemberListMap: MutableMap<String, ChatRoomMemberListResponse> =
-        mutableMapOf()
-    private var userSearchApiResponse: UserSearchApiResponse? = null
     internal var configurationStream: Stream<SdkConfiguration> =
         SubscriptionManager(true)
     private val dataClient =
@@ -238,47 +225,12 @@ class EngagementSDK(
         title: String?,
         liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
     ) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) {
-                it?.let { pair ->
-                    val chatRepository =
-                        ChatRepository(
-                            pair.second.pubNubKey,
-                            pair.first.accessToken,
-                            pair.first.id,
-                            MockAnalyticsService(),
-                            pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin,
-                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
-                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
-                        )
-
-                    uiScope.launch {
-                        val chatRoomResult = when (chatRoomId == null) {
-                            true -> chatRepository.createChatRoom(
-                                title, visibility, pair.second.createChatRoomUrl
-                            )
-                            else -> chatRepository.updateChatRoom(
-                                title, visibility, chatRoomId, pair.second.chatRoomDetailUrlTemplate
-                            )
-                        }
-                        if (chatRoomResult is Result.Success) {
-                            liveLikeCallback.onResponse(
-                                ChatRoomInfo(
-                                    chatRoomResult.data.id,
-                                    chatRoomResult.data.title,
-                                    chatRoomResult.data.visibility,
-                                    chatRoomResult.data.contentFilter,
-                                    chatRoomResult.data.customData
-                                ),
-                                null
-                            )
-                        } else if (chatRoomResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
-                        }
-                    }
-                }
-            }
+        (chat() as InternalLiveLikeChatClient).createUpdateChatRoom(
+            chatRoomId,
+            visibility,
+            title,
+            liveLikeCallback
+        )
     }
 
     override fun updateChatRoom(
@@ -291,42 +243,7 @@ class EngagementSDK(
     }
 
     override fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) {
-                it?.let { pair ->
-                    val chatRepository =
-                        ChatRepository(
-                            pair.second.pubNubKey,
-                            pair.first.accessToken,
-                            pair.first.id,
-                            MockAnalyticsService(),
-                            pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin,
-                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
-                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
-                        )
-
-                    uiScope.launch {
-                        val chatRoomResult = chatRepository.fetchChatRoom(
-                            id, pair.second.chatRoomDetailUrlTemplate
-                        )
-                        if (chatRoomResult is Result.Success) {
-                            liveLikeCallback.onResponse(
-                                ChatRoomInfo(
-                                    chatRoomResult.data.id,
-                                    chatRoomResult.data.title,
-                                    chatRoomResult.data.visibility,
-                                    chatRoomResult.data.contentFilter,
-                                    chatRoomResult.data.customData
-                                ),
-                                null
-                            )
-                        } else if (chatRoomResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
-                        }
-                    }
-                }
-            }
+        chat().getChatRoom(id, liveLikeCallback)
     }
 
     override fun addCurrentUserToChatRoom(
@@ -341,104 +258,14 @@ class EngagementSDK(
         userId: String,
         liveLikeCallback: LiveLikeCallback<ChatRoomMembership>
     ) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) {
-                it?.let { pair ->
-                    val chatRepository =
-                        ChatRepository(
-                            pair.second.pubNubKey,
-                            pair.first.accessToken,
-                            pair.first.id,
-                            MockAnalyticsService(),
-                            pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin,
-                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
-                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
-                        )
-                    uiScope.launch {
-                        val chatRoomResult = chatRepository.fetchChatRoom(
-                            chatRoomId, pair.second.chatRoomDetailUrlTemplate
-                        )
-                        if (chatRoomResult is Result.Success) {
-                            val currentUserChatRoomResult =
-                                dataClient.remoteCall<ChatRoomMembership>(
-                                    chatRoomResult.data.membershipsUrl,
-                                    accessToken = pair.first.accessToken,
-                                    requestType = RequestType.POST,
-                                    fullErrorJson = true,
-                                    requestBody = when (userId.isEmpty()) {
-                                        true -> byteArrayOf().toRequestBody(null, 0, 0)
-                                        else -> """{"profile_id":"$userId"}"""
-                                            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-                                    }
-                                )
-                            if (currentUserChatRoomResult is Result.Success) {
-                                liveLikeCallback.onResponse(
-                                    currentUserChatRoomResult.data, null
-                                )
-                            } else if (currentUserChatRoomResult is Result.Error) {
-                                liveLikeCallback.onResponse(
-                                    null,
-                                    currentUserChatRoomResult.exception.message
-                                )
-                            }
-                        } else if (chatRoomResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
-                        }
-                    }
-                }
-            }
+        chat().addUserToChatRoom(chatRoomId, userId, liveLikeCallback)
     }
 
     override fun getCurrentUserChatRoomList(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInfo>>
     ) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) { it ->
-                it?.let { pair ->
-                    val chatRepository =
-                        ChatRepository(
-                            pair.second.pubNubKey,
-                            pair.first.accessToken,
-                            pair.first.id,
-                            MockAnalyticsService(),
-                            pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin,
-                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
-                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
-                        )
-                    uiScope.launch {
-                        val url = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> pair.first.chat_room_memberships_url
-                            LiveLikePagination.NEXT -> userChatRoomListResponse?.next
-                            LiveLikePagination.PREVIOUS -> userChatRoomListResponse?.previous
-                        }
-                        if (url != null) {
-                            val chatRoomResult = chatRepository.getCurrentUserChatRoomList(
-                                url
-                            )
-                            if (chatRoomResult is Result.Success) {
-                                userChatRoomListResponse = chatRoomResult.data
-                                val list = userChatRoomListResponse!!.results?.map {
-                                    ChatRoomInfo(
-                                        it?.chatRoom?.id!!,
-                                        it.chatRoom.title,
-                                        it.chatRoom.visibility,
-                                        it.chatRoom.contentFilter,
-                                        it.chatRoom.customData
-                                    )
-                                }
-                                liveLikeCallback.onResponse(list, null)
-                            } else if (chatRoomResult is Result.Error) {
-                                liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
-                            }
-                        } else {
-                            liveLikeCallback.onResponse(null, "No More data to load")
-                        }
-                    }
-                }
-            }
+        chat().getCurrentUserChatRoomList(liveLikePagination, liveLikeCallback)
     }
 
     override fun getMembersOfChatRoom(
@@ -446,87 +273,14 @@ class EngagementSDK(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeUser>>
     ) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) { it ->
-                it?.let { pair ->
-                    val chatRepository =
-                        ChatRepository(
-                            pair.second.pubNubKey,
-                            pair.first.accessToken,
-                            pair.first.id,
-                            MockAnalyticsService(),
-                            pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin,
-                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
-                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
-                        )
-
-                    uiScope.launch {
-                        val chatRoomResult = chatRepository.fetchChatRoom(
-                            chatRoomId, pair.second.chatRoomDetailUrlTemplate
-                        )
-                        if (chatRoomResult is Result.Success) {
-                            val url = when (liveLikePagination) {
-                                LiveLikePagination.FIRST -> chatRoomResult.data.membershipsUrl
-                                LiveLikePagination.NEXT -> chatRoomMemberListMap[chatRoomId]?.next
-                                LiveLikePagination.PREVIOUS -> chatRoomMemberListMap[chatRoomId]?.previous
-                            }
-                            if (url != null) {
-                                val chatRoomMemberResult =
-                                    dataClient.remoteCall<ChatRoomMemberListResponse>(
-                                        url,
-                                        accessToken = pair.first.accessToken,
-                                        requestType = RequestType.GET
-                                    )
-                                if (chatRoomMemberResult is Result.Success) {
-                                    chatRoomMemberListMap[chatRoomId] = chatRoomMemberResult.data
-                                    val list = chatRoomMemberResult.data.results?.map {
-                                        it?.profile!!
-                                    }
-                                    liveLikeCallback.onResponse(list, null)
-                                } else if (chatRoomMemberResult is Result.Error) {
-                                    liveLikeCallback.onResponse(
-                                        null,
-                                        chatRoomMemberResult.exception.message
-                                    )
-                                }
-                            } else {
-                                liveLikeCallback.onResponse(null, "No More data to load")
-                            }
-                        } else if (chatRoomResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
-                        }
-                    }
-                }
-            }
+        chat().getMembersOfChatRoom(chatRoomId, liveLikePagination, liveLikeCallback)
     }
 
     override fun deleteCurrentUserFromChatRoom(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
     ) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) {
-                it?.let { pair ->
-                    val chatRepository =
-                        ChatRepository(
-                            pair.second.pubNubKey,
-                            pair.first.accessToken,
-                            pair.first.id,
-                            MockAnalyticsService(),
-                            pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin,
-                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
-                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
-                        )
-                    uiScope.launch {
-                       val chatRoomResult= chatRepository.deleteCurrentUserFromChatRoom(
-                            chatRoomId, pair.second.chatRoomDetailUrlTemplate
-                        )
-                        liveLikeCallback.processResult(chatRoomResult)
-                    }
-                }
-            }
+        chat().deleteCurrentUserFromChatRoom(chatRoomId, liveLikeCallback)
     }
 
     override fun getLeaderBoardsForProgram(
@@ -688,7 +442,10 @@ class EngagementSDK(
         liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>
     ) {
         sdkScope.launch {
-            getChatRoom(chatRoomId).collect {
+            (chat() as InternalLiveLikeChatClient).getChatRoom(
+                configurationUserPairFlow,
+                chatRoomId
+            ).collect {
                 if (it is Result.Success) {
                     configurationUserPairFlow.collect { pair ->
                         val url = it.data.mutedStatusUrlTemplate ?: ""
@@ -736,21 +493,7 @@ class EngagementSDK(
         profileId: String,
         liveLikeCallback: LiveLikeCallback<ChatRoomInvitation>
     ) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) {
-                it?.let {
-                    uiScope.launch {
-                        val result = dataClient.remoteCall<ChatRoomInvitation>(
-                            it.second.createChatRoomInvitationUrl,
-                            RequestType.POST,
-                            requestBody = """{"chat_room_id":"$chatRoomId","invited_profile_id":"$profileId"}"""
-                                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
-                            userAccessToken, true
-                        )
-                        liveLikeCallback.processResult(result)
-                    }
-                }
-            }
+        chat().sendChatRoomInviteToUser(chatRoomId, profileId, liveLikeCallback)
     }
 
     override fun updateChatRoomInviteStatus(
@@ -758,17 +501,11 @@ class EngagementSDK(
         invitationStatus: ChatRoomInvitationStatus,
         liveLikeCallback: LiveLikeCallback<ChatRoomInvitation>
     ) {
-        uiScope.launch {
-            val result = dataClient.remoteCall<ChatRoomInvitation>(
-                chatRoomInvitation.url,
-                RequestType.PATCH,
-                requestBody = """{"status":"${invitationStatus.key}"}"""
-                    .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
-                userAccessToken,
-                true
-            )
-            liveLikeCallback.processResult(result)
-        }
+        chat().updateChatRoomInviteStatus(
+            chatRoomInvitation,
+            invitationStatus,
+            liveLikeCallback
+        )
     }
 
     override fun getInvitationsForCurrentProfileWithInvitationStatus(
@@ -776,40 +513,11 @@ class EngagementSDK(
         invitationStatus: ChatRoomInvitationStatus,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>
     ) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) {
-                it?.let {
-                    uiScope.launch {
-                        val url = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> it.second.profileChatRoomReceivedInvitationsUrlTemplate.replace(
-                                "{profile_id}",
-                                it.first.id
-                            ).replace("{status}", invitationStatus.key)
-                            LiveLikePagination.NEXT -> invitationForProfileMap[it.first.id]?.next
-                            LiveLikePagination.PREVIOUS -> invitationForProfileMap[it.first.id]?.previous
-                        }
-                        if (url != null) {
-                            val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
-                                url,
-                                RequestType.GET,
-                                requestBody = null,
-                                userAccessToken, true
-                            )
-                            if (result is Result.Success) {
-                                invitationForProfileMap[it.first.id] = result.data
-                                liveLikeCallback.onResponse(result.data.results, null)
-                            } else if (result is Result.Error) {
-                                liveLikeCallback.onResponse(
-                                    null,
-                                    result.exception.message
-                                )
-                            }
-                        } else {
-                            liveLikeCallback.onResponse(null, "No More data to load")
-                        }
-                    }
-                }
-            }
+        chat().getInvitationsReceivedByCurrentProfileWithInvitationStatus(
+            liveLikePagination,
+            invitationStatus,
+            liveLikeCallback
+        )
     }
 
     override fun getInvitationsByCurrentProfileWithInvitationStatus(
@@ -817,81 +525,25 @@ class EngagementSDK(
         invitationStatus: ChatRoomInvitationStatus,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInvitation>>
     ) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) {
-                it?.let {
-                    uiScope.launch {
-                        val url = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> it.second.profileChatRoomSentInvitationsUrlTemplate.replace(
-                                "{invited_by_id}",
-                                it.first.id
-                            ).replace("{status}", invitationStatus.key)
-                            LiveLikePagination.NEXT -> invitationByProfileMap[it.first.id]?.next
-                            LiveLikePagination.PREVIOUS -> invitationByProfileMap[it.first.id]?.previous
-                        }
-                        if (url != null) {
-                            val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
-                                url,
-                                RequestType.GET,
-                                requestBody = null,
-                                userAccessToken, true
-                            )
-                            if (result is Result.Success) {
-                                invitationByProfileMap[it.first.id] = result.data
-                                liveLikeCallback.onResponse(result.data.results, null)
-                            } else if (result is Result.Error) {
-                                liveLikeCallback.onResponse(
-                                    null,
-                                    result.exception.message
-                                )
-                            }
-                        } else {
-                            liveLikeCallback.onResponse(null, "No More data to load")
-                        }
-                    }
-                }
-            }
+        chat().getInvitationsSentByCurrentProfileWithInvitationStatus(
+            liveLikePagination,
+            invitationStatus,
+            liveLikeCallback
+        )
     }
 
     override fun blockProfile(
         profileId: String,
         liveLikeCallback: LiveLikeCallback<BlockedData>
     ) {
-        userRepository.currentUserStream.subscribe(this) {
-            it?.blockProfileUrl?.let { url ->
-                uiScope.launch {
-                    val result = dataClient.remoteCall<BlockedData>(
-                        url,
-                        RequestType.POST,
-                        requestBody = """{"blocked_profile_id":"$profileId"}"""
-                            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
-                        userAccessToken,
-                        true
-                    )
-                    liveLikeCallback.processResult(result)
-                }
-            }
-        }
+        chat().blockProfile(profileId, liveLikeCallback)
     }
 
     override fun unBlockProfile(
         blockId: String,
         liveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
     ) {
-        userRepository.currentUserStream.subscribe(this) {
-            it?.blockProfileUrl?.let { url ->
-                uiScope.launch {
-                    val result = dataClient.remoteCall<LiveLikeEmptyResponse>(
-                        "$url$blockId/",
-                        RequestType.DELETE,
-                        requestBody = null,
-                        userAccessToken,
-                        true
-                    )
-                    liveLikeCallback.processResult(result)
-                }
-            }
-        }
+        chat().unBlockProfile(blockId, liveLikeCallback)
     }
 
     override fun getBlockedProfileList(
@@ -899,51 +551,8 @@ class EngagementSDK(
         blockedProfileId: String?,
         liveLikeCallback: LiveLikeCallback<List<BlockedData>>
     ) {
-        userRepository.currentUserStream.subscribe(this) {
-            it?.blockProfileListTemplate?.let {
-                uiScope.launch {
-                    val params = when (blockedProfileId != null) {
-                        true -> "blocked_profile_id=$blockedProfileId"
-                        else -> ""
-                    }
-                    val url = when (liveLikePagination) {
-                        LiveLikePagination.FIRST -> it.replace(
-                            "{blocked_profile_id}",
-                            blockedProfileId ?: ""
-                        )
-                        LiveLikePagination.NEXT -> blockedProfileListResponseMap[params]?.next
-                        LiveLikePagination.PREVIOUS -> blockedProfileListResponseMap[params]?.previous
-                    }
-                    if (url != null) {
-                        val result = dataClient.remoteCall<BlockedProfileListResponse>(
-                            url,
-                            RequestType.GET,
-                            requestBody = null,
-                            userAccessToken, true
-                        )
-
-                        if (result is Result.Success) {
-                            blockedProfileListResponseMap[params] = result.data
-                            liveLikeCallback.onResponse(result.data.results, null)
-                        } else if (result is Result.Error) {
-                            liveLikeCallback.onResponse(
-                                null,
-                                result.exception.message
-                            )
-                        }
-                    } else {
-                        liveLikeCallback.onResponse(null, "No More data to load")
-                    }
-                }
-            }
-        }
+        chat().getBlockedProfileList(liveLikePagination, blockedProfileId, liveLikeCallback)
     }
-
-
-    private val invitationForProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
-    private val invitationByProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
-    private var blockedProfileListResponseMap = hashMapOf<String, BlockedProfileListResponse>()
-
 
     override fun sponsor(): Sponsor {
         return Sponsor(this)
@@ -967,30 +576,10 @@ class EngagementSDK(
         analyticService.clear()
     }
 
-    internal suspend fun getChatRoom(chatRoomId: String): Flow<Result<ChatRoom>> {
-        return flow {
-            configurationUserPairFlow.collect {
-                it.let { pair ->
-                    val chatRepository =
-                        ChatRepository(
-                            pair.second.pubNubKey,
-                            pair.first.accessToken,
-                            pair.first.id,
-                            MockAnalyticsService(),
-                            pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin,
-                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
-                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
-                        )
+    private val internalChatClient =
+        InternalLiveLikeChatClient(configurationStream, userRepository, uiScope, dataClient)
 
-                    val chatRoomResult = chatRepository.fetchChatRoom(
-                        chatRoomId, pair.second.chatRoomDetailUrlTemplate
-                    )
-                    emit(chatRoomResult)
-                }
-            }
-        }
-    }
+    override fun chat(): LiveLikeChatClient = internalChatClient
 
     private var leaderBoardEntryResult: HashMap<String, LeaderBoardEntryResult> = hashMapOf()
     private val leaderBoardEntryPaginationQueue =
