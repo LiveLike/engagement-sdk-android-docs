@@ -320,14 +320,14 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                     //confirmation label theme
                     AndroidResource.updateThemeForView(
                         label_lock,
-                        themeComponent.submitConfirmation,
+                        themeComponent.confirmation,
                         fontFamilyProvider
                     )
-                    if (themeComponent.submitConfirmation?.background != null) {
-                        label_lock?.background = AndroidResource.createDrawable(themeComponent.submitConfirmation)
+                    if (themeComponent.confirmation?.background != null) {
+                        label_lock?.background = AndroidResource.createDrawable(themeComponent.confirmation)
                     }
-                    themeComponent.submitConfirmation?.padding?.let {
-                        AndroidResource.setPaddingForView(label_lock, themeComponent.submitConfirmation.padding)
+                    themeComponent.confirmation?.padding?.let {
+                        AndroidResource.setPaddingForView(label_lock, themeComponent.confirmation.padding)
                     }
                 }
             }
