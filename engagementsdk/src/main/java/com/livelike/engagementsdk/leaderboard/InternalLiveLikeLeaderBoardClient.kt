@@ -1,4 +1,4 @@
-package com.livelike.engagementsdk.widget
+package com.livelike.engagementsdk.leaderboard
 
 import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.TEMPLATE_LEADER_BOARD_ID
@@ -25,7 +25,7 @@ internal class InternalLiveLikeLeaderBoardClient(
     private val configurationStream: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val uiScope: CoroutineScope,
-    private val dataClient: EngagementDataClientImpl,):LiveLikeLeaderBoardClient {
+    private val dataClient: EngagementDataClientImpl,): LiveLikeLeaderBoardClient {
 
     private var leaderBoardEntryResult: HashMap<String, LeaderBoardEntryResult> = hashMapOf()
     private val leaderBoardEntryPaginationQueue =

@@ -14,7 +14,7 @@ import com.livelike.engagementsdk.core.data.models.LeaderboardClient
 import com.livelike.engagementsdk.gamification.Badges
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.sponsorship.Sponsor
-import com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient
+import com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 
@@ -94,9 +94,9 @@ interface IEngagement {
     /**
      *@deprecated  reason this method is deprecated <br/>
      *              {will be removed in next version} <br/>
-     *              use {@link com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getLeaderBoardsForProgram} instead like this:
+     *              use {@link com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getLeaderBoardsForProgram} instead like this:
      */
-    @Deprecated("use {@link com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getLeaderBoardsForProgram} instead like this")
+    @Deprecated("use {@link com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getLeaderBoardsForProgram} instead like this")
     fun getLeaderBoardsForProgram(
         programId: String,
         liveLikeCallback: LiveLikeCallback<List<LeaderBoard>>
@@ -105,10 +105,10 @@ interface IEngagement {
     /**
      *@deprecated  reason this method is deprecated <br/>
      *              {will be removed in next version} <br/>
-     *              use {@link com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getLeaderBoardDetails} instead like this:
+     *              use {@link com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getLeaderBoardDetails} instead like this:
      *
      */
-    @Deprecated("use {@link com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getLeaderBoardDetails} instead like this")
+    @Deprecated("use {@link com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getLeaderBoardDetails} instead like this")
     fun getLeaderBoardDetails(
         leaderBoardId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoard>
@@ -117,10 +117,10 @@ interface IEngagement {
     /**
      *@deprecated  reason this method is deprecated <br/>
      *              {will be removed in next version} <br/>
-     *              use {@link com.com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getEntriesForLeaderBoard} instead like this:
+     *              use {@link com.com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getEntriesForLeaderBoard} instead like this:
      *
      */
-    @Deprecated("use {@link com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getEntriesForLeaderBoard} instead like this")
+    @Deprecated("use {@link com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getEntriesForLeaderBoard} instead like this")
     fun getEntriesForLeaderBoard(
         leaderBoardId: String,
         liveLikePagination: LiveLikePagination,
@@ -130,10 +130,10 @@ interface IEngagement {
     /**
      *@deprecated  reason this method is deprecated <br/>
      *              {will be removed in next version} <br/>
-     *              use {@link com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getLeaderBoardEntryForProfile} instead like this:
+     *              use {@link com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getLeaderBoardEntryForProfile} instead like this:
      *
      */
-    @Deprecated("use {@link com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getLeaderBoardEntryForProfile} instead like this")
+    @Deprecated("use {@link com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getLeaderBoardEntryForProfile} instead like this")
     fun getLeaderBoardEntryForProfile(
         leaderBoardId: String,
         profileId: String,
@@ -143,10 +143,10 @@ interface IEngagement {
     /**
      *@deprecated  reason this method is deprecated <br/>
      *              {will be removed in next version} <br/>
-     *              use {@link com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getLeaderBoardEntryForCurrentUserProfile} instead like this:
+     *              use {@link com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getLeaderBoardEntryForCurrentUserProfile} instead like this:
      *
      */
-    @Deprecated("use {@link com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getLeaderBoardEntryForCurrentUserProfile} instead like this")
+    @Deprecated("use {@link com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getLeaderBoardEntryForCurrentUserProfile} instead like this")
     fun getLeaderBoardEntryForCurrentUserProfile(
         leaderBoardId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
@@ -155,10 +155,10 @@ interface IEngagement {
     /**
      *@deprecated  reason this method is deprecated <br/>
      *              {will be removed in next version} <br/>
-     *              use {@link com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getLeaderboardClients} instead like this:
+     *              use {@link com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getLeaderboardClients} instead like this:
      *
      */
-    @Deprecated("use {@link com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient#getLeaderboardClients} instead like this")
+    @Deprecated("use {@link com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient#getLeaderboardClients} instead like this")
     fun getLeaderboardClients(
         leaderBoardId: List<String>,
         liveLikeCallback: LiveLikeCallback<LeaderboardClient>

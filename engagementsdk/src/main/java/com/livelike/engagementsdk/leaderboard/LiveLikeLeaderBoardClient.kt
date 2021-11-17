@@ -1,4 +1,4 @@
-package com.livelike.engagementsdk.widget
+package com.livelike.engagementsdk.leaderboard
 
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard

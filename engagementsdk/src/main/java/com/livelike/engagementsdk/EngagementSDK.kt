@@ -27,8 +27,8 @@ import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.gamification.Rewards
 import com.livelike.engagementsdk.publicapis.*
 import com.livelike.engagementsdk.sponsorship.Sponsor
-import com.livelike.engagementsdk.widget.InternalLiveLikeLeaderBoardClient
-import com.livelike.engagementsdk.widget.LiveLikeLeaderBoardClient
+import com.livelike.engagementsdk.leaderboard.InternalLiveLikeLeaderBoardClient
+import com.livelike.engagementsdk.leaderboard.LiveLikeLeaderBoardClient
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
@@ -838,7 +838,7 @@ class EngagementSDK(
     private val internalLeaderBoardClient =
         InternalLiveLikeLeaderBoardClient(configurationStream, userRepository, uiScope, dataClient)
 
-    override fun leaderboard(): LiveLikeLeaderBoardClient  = internalLeaderBoardClient
+    override fun leaderboard(): LiveLikeLeaderBoardClient = internalLeaderBoardClient
 
 
     override fun getEntriesForLeaderBoard(
