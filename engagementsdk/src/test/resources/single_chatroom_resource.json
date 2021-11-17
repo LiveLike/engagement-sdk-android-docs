@@ -1,0 +1,33 @@
+{
+  "reported_messages_url": "https://cf-blast.livelikecdn.com/api/v1/reported-chat-room-messages/?status=pending&chat_room_id=e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
+  "custom_data": null,
+  "created_at": "2021-11-10T09:02:33.504+00",
+  "content_filter": "filtered",
+  "sticker_packs_url": "https://cf-blast-storage.livelikecdn.com/sticker-packs/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/sticker_packs.json",
+  "reaction_packs_url": "https://cf-blast-storage.livelikecdn.com/reaction-packs/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/reaction_packs.json",
+  "sponsors_url": "https://cf-blast-storage.livelikecdn.com/sponsors/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/sponsors.json",
+  "id": "e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
+  "url": "https://cf-blast.livelikecdn.com/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/",
+  "messages_url": "https://cf-blast.livelikecdn.com/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/messages/",
+  "channels": {
+    "control": {
+      "pubnub": "chatroom.control.e8f3b5d2-3353-4c8e-b54e-32ecca6b7482"
+    },
+    "chat": {
+      "pubnub": "chatroom.e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
+      "sendbird": null
+    },
+    "reactions": {
+      "pubnub": "chatroom.reactions.e8f3b5d2-3353-4c8e-b54e-32ecca6b7482"
+    }
+  },
+  "custom_messages_url": "https://cf-blast.livelikecdn.com/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/custom-messages/",
+  "muted_status_url_template": "https://cf-blast.livelikecdn.com/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/muted-status/{profile_id}/",
+  "memberships_url": "https://cf-blast.livelikecdn.com/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/memberships/",
+  "title": "Live_Test2(1)(1)",
+  "upload_url": "https://cf-blast.livelikecdn.com/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/upload/",
+  "visibility": "everyone",
+  "delete_message_url": "https://cf-blast.livelikecdn.com/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/delete-chat-message/",
+  "client_id": "8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS",
+  "report_message_url": "https://cf-blast.livelikecdn.com/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/report-chat-message/"
+}
