@@ -1,4 +1,4 @@
-package com.livelike.engagementsdk.leaderboard
+package com.livelike.engagementsdk.gamification.leaderboard
 
 import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.TEMPLATE_LEADER_BOARD_ID
