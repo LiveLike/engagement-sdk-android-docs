@@ -1,4 +1,4 @@
-package com.livelike.engagementsdk.gamification.leaderboard
+package com.livelike.engagementsdk.gamification
 
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard

@@ -27,8 +27,8 @@ import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.gamification.Rewards
 import com.livelike.engagementsdk.publicapis.*
 import com.livelike.engagementsdk.sponsorship.Sponsor
-import com.livelike.engagementsdk.gamification.leaderboard.InternalLiveLikeLeaderBoardClient
-import com.livelike.engagementsdk.gamification.leaderboard.LiveLikeLeaderBoardClient
+import com.livelike.engagementsdk.gamification.InternalLiveLikeLeaderBoardClient
+import com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
