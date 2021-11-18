@@ -367,5 +367,11 @@ data class TransferRewardItem(
     @SerializedName("reward_item_id")
     val rewardItemId: String,
     @SerializedName("sender_profile_id")
-    val senderProfileId: String
+    val senderProfileId: String,
+    @SerializedName("recipient_profile_name")
+    val recipientProfileName: String,
+    @SerializedName("reward_item_name")
+    val rewardItemName: String,
+    @SerializedName("sender_profile_name")
+    val senderProfileName: String
 )
