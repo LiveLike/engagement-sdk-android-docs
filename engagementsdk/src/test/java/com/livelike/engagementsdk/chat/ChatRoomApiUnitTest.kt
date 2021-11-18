@@ -7,8 +7,10 @@ import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import mockingAndroidServicesUsedByMixpanel
+import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -36,26 +38,49 @@ class ChatRoomApiUnitTest {
     @Before
     fun setup() {
         mockWebServer.start(8080)
-        mockWebServer.enqueue(MockResponse().apply {
-            setResponseCode(200)
-            setBody(
-                javaClass.classLoader.getResourceAsStream(APPLICATION_RESOURCE).readAll()
-            )
-        })
-        mockWebServer.enqueue(MockResponse().apply {
-            setResponseCode(200)
-            setBody(
-                javaClass.classLoader.getResourceAsStream(USER_PROFILE_RESOURCE).readAll()
-            )
-        })
-
         mockingAndroidServicesUsedByMixpanel()
-
+        mockWebServer.dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                return when (request.path) {
+                    "/api/v1/applications/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream(APPLICATION_RESOURCE)
+                                .readAll()
+                        )
+                    }
+                    "/api/v1/applications/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L/profile/" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream(USER_PROFILE_RESOURCE)
+                                .readAll()
+                        )
+                    }
+                    "/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream(SINGLE_CHATROOM_DETAIL_SUCCESS)
+                                .readAll()
+                        )
+                    }
+                    "/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7411/" -> MockResponse().apply {
+                        setResponseCode(404)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream(SINGLE_CHATROOM_DETAIL_ERROR)
+                                .readAll()
+                        )
+                    }
+                    else -> MockResponse().apply {
+                        setResponseCode(500)
+                    }
+                }
+            }
+        }
         sdk = EngagementSDK(
             "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
             context,
             null,
-            "http://localhost:8080/",
+            "http://localhost:8080",
             null
         )
     }
@@ -67,49 +92,41 @@ class ChatRoomApiUnitTest {
 
     @Test
     fun test_chat_room_details_success() {
-        mockWebServer.enqueue(MockResponse().apply {
-            setResponseCode(200)
-            setBody(
-                javaClass.classLoader.getResourceAsStream(SINGLE_CHATROOM_DETAIL_SUCCESS).readAll()
-            )
-        })
         val callback = Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<ChatRoomInfo>
         Thread.sleep(5000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
-        println("ChatRoomApiUnitTest.test_chat_room_details_success111")
         sdk.chat().getChatRoom("e8f3b5d2-3353-4c8e-b54e-32ecca6b7482", callback)
         val resultCaptor =
             argumentCaptor<ChatRoomInfo>()
         val errorCaptor =
             argumentCaptor<String>()
         Shadows.shadowOf(Looper.getMainLooper()).idle()
-        Thread.sleep(5000)
+        Thread.sleep(2000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
-        verify(callback, timeout(5000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        println("ChatRoomApiUnitTest.test_chat_room_details_success111>${resultCaptor.firstValue.id}")
         assert(resultCaptor.firstValue.id == "e8f3b5d2-3353-4c8e-b54e-32ecca6b7482")
     }
 
     @Test
     fun test_chat_room_details_error() {
-        mockWebServer.enqueue(MockResponse().apply {
-            setResponseCode(404)
-            setBody(
-                javaClass.classLoader.getResourceAsStream(SINGLE_CHATROOM_DETAIL_ERROR).readAll()
-            )
-        })
-        val callback = Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<ChatRoomInfo>
-        Thread.sleep(5000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        val callback = Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<ChatRoomInfo>
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
         sdk.chat().getChatRoom("e8f3b5d2-3353-4c8e-b54e-32ecca6b7411", callback)
         val resultCaptor =
             argumentCaptor<ChatRoomInfo>()
         val errorCaptor =
             argumentCaptor<String>()
         Shadows.shadowOf(Looper.getMainLooper()).idle()
-        Thread.sleep(5000)
+        Thread.sleep(2000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
-        verify(callback, timeout(5000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
         println("eRror>${errorCaptor.firstValue}")
-        assert(errorCaptor.firstValue == "No chat room found.")
+        assert(errorCaptor.firstValue == "response code : 404 - Client Error")
     }
 }
