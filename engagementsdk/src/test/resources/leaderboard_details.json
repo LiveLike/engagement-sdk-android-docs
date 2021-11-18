@@ -1,0 +1,16 @@
+{
+  "id": "424d25bd-7404-417c-bb7c-9558a064cce4",
+  "url": "https://cf-blast-game-changers.livelikecdn.com/api/v1/leaderboards/424d25bd-7404-417c-bb7c-9558a064cce4/",
+  "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+  "name": "TestfreeLeaderboard",
+  "reward_item": {
+    "id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5",
+    "url": "https://cf-blast-game-changers.livelikecdn.com/api/v1/reward-items/e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5/",
+    "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+    "name": "TestFreeItem"
+  },
+  "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5",
+  "is_locked": false,
+  "entries_url": "https://cf-blast-game-changers.livelikecdn.com/api/v1/leaderboards/424d25bd-7404-417c-bb7c-9558a064cce4/entries/",
+  "entry_detail_url_template": "https://cf-blast-game-changers.livelikecdn.com/api/v1/leaderboards/424d25bd-7404-417c-bb7c-9558a064cce4/entries/{profile_id}/"
+}

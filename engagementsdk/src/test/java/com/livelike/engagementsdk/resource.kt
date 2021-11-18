@@ -6,3 +6,5 @@ const val PROGRAM_RESOURCE = "program_resource.json"
 const val ALL_BADGES_RESOURCE = "all_badges_resource.json"
 const val BADGES_PROGRESSION_RESOURCE = "badge_progression.json"
 const val PROFILE_BADGES_RESOURCE = "profile_badges.json"
+const val LEADERBOARD_DETAILS_RESOURCE = "leaderboard_details.json"
+
