@@ -28,8 +28,8 @@ internal data class Program(
     val sponsors: List<SponsorModel>,
     val widgetInteractionUrl: String,
     val unclaimedWidgetInteractionsUrlTemplate: String,
-
-)
+    val widgetsUrl: String,
+    )
 
 internal data class LeaderBoardResource(
     @SerializedName("id") val id: String,
@@ -163,6 +163,8 @@ internal data class ProgramModel(
     val widgetInteractionUrl: String?,
     @SerializedName("unclaimed_widget_interactions_url_template")
     val unclaimedWidgetInteractionsUrlTemplate: String?,
+    @SerializedName("widgets_url")
+    val widgetsUrl: String?
 
 )
 
@@ -190,6 +192,7 @@ internal fun ProgramModel.toProgram(): Program {
         sponsors,
         widgetInteractionUrl ?: "",
         unclaimedWidgetInteractionsUrlTemplate ?: "",
+        widgetsUrl ?: ""
     )
 }
 

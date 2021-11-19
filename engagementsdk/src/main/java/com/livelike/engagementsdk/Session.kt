@@ -10,6 +10,7 @@ import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
@@ -98,6 +99,12 @@ interface LiveLikeContentSession {
      */
     fun getWidgetModelFromJson(widgetResourceJson: JsonObject): BaseViewModel?
     fun getWidgetModelFromLiveLikeWidget(liveLikeWidget: LiveLikeWidget): BaseViewModel?
+
+    fun getWidgets(
+        liveLikePagination: LiveLikePagination,
+        requestParams: WidgetsRequestParameters,
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
+    )
 }
 
 /**
@@ -153,4 +160,8 @@ class WidgetInfos(
     val payload: JsonObject,
     /** The id of the widget */
     var widgetId: String
+)
+
+data class WidgetsRequestParameters (
+    val widgetTypeFilter: Set<WidgetType>
 )

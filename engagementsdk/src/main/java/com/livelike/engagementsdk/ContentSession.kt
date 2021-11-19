@@ -59,6 +59,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.threeten.bp.ZonedDateTime
 import java.io.IOException
 
@@ -110,6 +111,44 @@ internal class ContentSession(
 
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         widgetThemeAttributes = widgetViewThemeAttributes
+    }
+
+
+    override fun getWidgets(
+        liveLikePagination: LiveLikePagination,
+        requestParams: WidgetsRequestParameters,
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
+    ){
+        uiScope.launch {
+            programFlow.collect { program ->
+                    program?.widgetsUrl?.let{ url ->
+                    val innerUrl = when (liveLikePagination) {
+                        LiveLikePagination.FIRST -> url
+                        LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
+                        LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
+                    }?.toHttpUrlOrNull()?.newBuilder()?.apply {
+                        requestParams.widgetTypeFilter.forEach {
+                            addQueryParameter("widget_type", it.getType())
+                        }
+                    }?.build()?.toUrl().toString()
+                    try {
+                        val jsonObject = widgetDataClient.getAllPublishedWidgets(innerUrl)
+                        publishedWidgetListResponse =
+                            gson.fromJson(
+                                jsonObject.toString(),
+                                PublishedWidgetListResponse::class.java
+                            )
+
+                    } catch (e: JsonParseException) {
+                        e.printStackTrace()
+                        liveLikeCallback.onResponse(null, e.message)
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        liveLikeCallback.onResponse(null, e.message)
+                    }
+                }
+            }
+        }
     }
 
     override fun getPublishedWidgets(
