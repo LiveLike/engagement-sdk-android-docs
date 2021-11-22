@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.livelike.engagementsdk.APPLICATION_RESOURCE
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LEADERBOARD_DETAILS_RESOURCE
+import com.livelike.engagementsdk.PROGRAM_RESOURCE
 import com.livelike.engagementsdk.USER_PROFILE_RESOURCE
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.publicapis.IEngagement
@@ -70,6 +71,14 @@ class LeaderBoardClientUnitTest {
                         )
                     }
 
+                    "/api/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/program.json" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream(PROGRAM_RESOURCE)
+                                .readAll()
+                        )
+                    }
+
                     else -> MockResponse().apply {
                         setResponseCode(500)
                     }
@@ -108,6 +117,28 @@ class LeaderBoardClientUnitTest {
         verify(callback, timeout(5000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
         assert(resultCaptor.firstValue.name.isNotEmpty())
         assert(resultCaptor.firstValue.name == "TestfreeLeaderboard")
+        mockWebServer.shutdown()
+    }
+
+
+    @Test
+    fun getLeaderBoardForPrograms_success_with_data() {
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<LeaderBoard>>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.leaderboard().getLeaderBoardsForProgram("498591f4-9d6b-4943-9671-f44d3afbb6a4", callback)
+        val resultCaptor =
+            argumentCaptor<List<LeaderBoard>>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue.isNotEmpty())
+        assert(resultCaptor.firstValue[0].id == "424d25bd-7404-417c-bb7c-9558a064cce4")
+        assert(resultCaptor.firstValue[0].name == "TestfreeLeaderboard")
         mockWebServer.shutdown()
     }
 }
