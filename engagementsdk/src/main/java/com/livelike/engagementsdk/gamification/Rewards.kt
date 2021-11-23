@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.lang.ref.WeakReference
 
 internal class Rewards(
     private val configurationUserPairFlow: Flow<Pair<LiveLikeUser, EngagementSDK.SdkConfiguration>>,
@@ -33,19 +32,15 @@ internal class Rewards(
     /*map of rewardITemRequestOptions and last response*/
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
 
-    private var _rewardEventsListener: WeakReference<RewardEventsListener>? = null
-    override var rewardEventsListener: RewardEventsListener?
+    override var rewardEventsListener: RewardEventsListener? = null
         set(value) {
             value?.let {
-                _rewardEventsListener = WeakReference(value)
+                field = value
                 subscribeToRewardEvents()
             } ?: run {
                 unsubscribeToRewardEvents()
-                _rewardEventsListener = null
+                field = null
             }
-        }
-        get() {
-            return _rewardEventsListener?.get()
         }
 
     private fun subscribeToRewardEvents() {
@@ -57,7 +52,7 @@ internal class Rewards(
                     it.second,
                     it.first
                 ) { event ->
-                    _rewardEventsListener?.get()?.let { listener ->
+                    rewardEventsListener?.let { listener ->
                         event?.let {
                             safeCodeBlockCall({
                                 val eventType = event.message.get("event").asString ?: ""
@@ -72,11 +67,6 @@ internal class Rewards(
                                 }
                             })
                         }
-                        listener
-                    }?: run {
-                        //weak ref to listener has returned null we need auto unsubscribed
-                        unsubscribeToRewardEvents()
-                        _rewardEventsListener = null
                     }
                 }
             }
