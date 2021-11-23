@@ -26,27 +26,9 @@ import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRe
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
-import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
-import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
-import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
-import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.TextAskWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.*
 import com.livelike.livelikedemo.channel.ChannelManager
-import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
-import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
-import com.livelike.livelikedemo.customwidgets.CustomImageSlider
-import com.livelike.livelikedemo.customwidgets.CustomNumberPredictionWidget
-import com.livelike.livelikedemo.customwidgets.CustomPollWidget
-import com.livelike.livelikedemo.customwidgets.CustomPredictionWidget
-import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
-import com.livelike.livelikedemo.customwidgets.CustomTextAskWidget
-import com.livelike.livelikedemo.customwidgets.SponsoredWidgetView
+import com.livelike.livelikedemo.customwidgets.*
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
 import com.livelike.livelikedemo.models.CheerMeterRequestResponse
@@ -86,6 +68,7 @@ import okhttp3.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import kotlin.random.Random
+
 
 class WidgetOnlyActivity : AppCompatActivity() {
     private lateinit var session: LiveLikeContentSession
@@ -305,6 +288,12 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         this.followUpWidgetViewModel = followUpWidgetViewModel
                         this.isImage = isImage
                         this.isFollowUp = true
+                    }
+                }
+
+                override fun createSocialEmbedWidgetView(socialEmbedWidgetModel: SocialEmbedWidgetModel): View? {
+                    return CustomSocialEmbed(this@WidgetOnlyActivity).apply {
+                        this.socialEmbedWidgetModel = socialEmbedWidgetModel
                     }
                 }
             }
