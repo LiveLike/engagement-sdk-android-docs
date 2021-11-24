@@ -12,8 +12,6 @@ import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.chat.data.repository.ChatRoomRepository
-import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatRoomMessagingClient
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
@@ -23,7 +21,7 @@ import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
 import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
 import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
-import com.livelike.engagementsdk.core.data.models.toLeadBoard
+import com.livelike.engagementsdk.core.data.models.toLeaderBoard
 import com.livelike.engagementsdk.core.data.models.toReward
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
@@ -31,7 +29,6 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.Queue
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
-import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedAccessToken
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
@@ -41,9 +38,9 @@ import com.livelike.engagementsdk.gamification.Badges
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.gamification.Rewards
 import com.livelike.engagementsdk.publicapis.BlockedData
-import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitationStatus
+import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
@@ -103,7 +100,7 @@ class EngagementSDK(
     override var chatRoomDelegate: ChatRoomDelegate? = null
         set(value) {
             field = value
-            setUpPubNubClient()
+            chat().chatRoomDelegate = value
         }
 
     override var analyticService: Stream<AnalyticsService> =
@@ -147,7 +144,7 @@ class EngagementSDK(
                 userRepository.currentUserStream.unsubscribe(this.javaClass.simpleName)
                 accessTokenDelegate!!.storeAccessToken(token)
             }
-            setUpPubNubClient()
+            (chat() as InternalLiveLikeChatClient).setUpPubNubClientForChatRoom()
         }
         val url = originURL?.plus("/api/v1/applications/$clientId")
             ?: BuildConfig.CONFIG_URL.plus("applications/$clientId")
@@ -169,25 +166,6 @@ class EngagementSDK(
                     (it as Result.Error).exception.message
                         ?: "Some Error occurred, used sdk logger for more details"
                 )
-            }
-        }
-    }
-
-    private var pubnubClient: PubnubChatRoomMessagingClient? = null
-
-    private fun setUpPubNubClient() {
-        if (pubnubClient == null && chatRoomDelegate != null) {
-            configurationStream.latest()?.let { config ->
-                userRepository.currentUserStream.latest()?.let {
-                    pubnubClient = PubnubChatRoomMessagingClient(
-                        config.pubNubKey,
-                        config.pubnubHeartbeatInterval,
-                        it.id,
-                        config.pubnubPresenceTimeout
-                    )
-                    pubnubClient?.chatRoomDelegate = chatRoomDelegate
-                    pubnubClient?.subscribe(arrayListOf(it.subscribeChannel!!))
-                }
             }
         }
     }
@@ -342,7 +320,7 @@ class EngagementSDK(
                     )
                     if (result is Result.Success) {
                         liveLikeCallback.onResponse(
-                            result.data.toLeadBoard(),
+                            result.data.toLeaderBoard(),
                             null
                         )
                         // leaderBoardDelegate?.leaderBoard(result.data.toLeadBoard(),result.data)
@@ -441,51 +419,32 @@ class EngagementSDK(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>
     ) {
-        sdkScope.launch {
-            (chat() as InternalLiveLikeChatClient).getChatRoom(
-                configurationUserPairFlow,
-                chatRoomId
-            ).collect {
-                if (it is Result.Success) {
-                    configurationUserPairFlow.collect { pair ->
-                        val url = it.data.mutedStatusUrlTemplate ?: ""
-                        liveLikeCallback.processResult(
-                            ChatRoomRepository.getUserRoomMuteStatus(
-                                url.replace(TEMPLATE_PROFILE_ID, pair.first.id)
-                            )
-                        )
-                    }
-                } else if (it is Result.Error) {
-                    liveLikeCallback.processResult(it)
-                }
-            }
-        }
+        chat().getProfileMutedStatus(chatRoomId, liveLikeCallback)
     }
 
     override fun getCurrentUserDetails(liveLikeCallback: LiveLikeCallback<LiveLikeUserApi>) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) { pair ->
-                pair?.let { _ ->
-                    dataClient.getUserData(pair.second.profileUrl, pair.first.accessToken) {
-                        if (it == null) {
-                            liveLikeCallback.onResponse(
-                                null,
-                                "Network error or invalid access token"
-                            )
-                        } else {
-                            liveLikeCallback.onResponse(
-                                LiveLikeUserApi(
-                                    it.nickname,
-                                    it.accessToken,
-                                    it.id,
-                                    it.custom_data
-                                ),
-                                null
-                            )
-                        }
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                dataClient.getUserData(pair.second.profileUrl, pair.first.accessToken) {
+                    if (it == null) {
+                        liveLikeCallback.onResponse(
+                            null,
+                            "Network error or invalid access token"
+                        )
+                    } else {
+                        liveLikeCallback.onResponse(
+                            LiveLikeUserApi(
+                                it.nickname,
+                                it.accessToken,
+                                it.id,
+                                it.custom_data
+                            ),
+                            null
+                        )
                     }
                 }
             }
+        }
     }
 
     override fun sendChatRoomInviteToUser(
@@ -571,13 +530,13 @@ class EngagementSDK(
      * TODO: all stream close,instance clear
      */
     override fun close() {
-        pubnubClient?.destroy()
+        (chat() as InternalLiveLikeChatClient).pubnubClient?.destroy()
         analyticService.latest()?.destroy()
         analyticService.clear()
     }
 
     private val internalChatClient =
-        InternalLiveLikeChatClient(configurationStream, userRepository, uiScope, dataClient)
+        InternalLiveLikeChatClient(configurationUserPairFlow, uiScope, sdkScope, dataClient)
 
     override fun chat(): LiveLikeChatClient = internalChatClient
 
