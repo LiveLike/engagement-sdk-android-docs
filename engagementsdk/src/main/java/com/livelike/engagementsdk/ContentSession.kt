@@ -131,7 +131,7 @@ internal class ContentSession(
                             addQueryParameter("status", it.parameterValue)
                         }
                         requestParams.widgetTypeFilter.forEach {
-                            addQueryParameter("kind", it.getType())
+                            addQueryParameter("kind", it.getKindName())
                         }
                     }?.build()?.toUrl().toString()
                     try {

@@ -163,8 +163,8 @@ class WidgetInfos(
 )
 
 data class WidgetsRequestParameters (
-    val widgetTypeFilter: Set<WidgetType>,
-    val widgetStatus: Set<WidgetStatus>,
+    val widgetTypeFilter: Set<WidgetType> = emptySet(),
+    val widgetStatus: Set<WidgetStatus> = emptySet(),
 )
 
 enum class WidgetStatus(val parameterValue: String) {
