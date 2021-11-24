@@ -3,12 +3,9 @@ package com.livelike.engagementsdk.gamification
 import android.content.Context
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
-import com.livelike.engagementsdk.APPLICATION_RESOURCE
-import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.LEADERBOARD_DETAILS_RESOURCE
-import com.livelike.engagementsdk.PROGRAM_RESOURCE
-import com.livelike.engagementsdk.USER_PROFILE_RESOURCE
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
+import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import mockingAndroidServicesUsedByMixpanel
@@ -52,30 +49,38 @@ class LeaderBoardClientUnitTest {
                     "/api/v1/applications/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L" -> MockResponse().apply {
                         setResponseCode(200)
                         setBody(
-                            javaClass.classLoader.getResourceAsStream(APPLICATION_RESOURCE)
-                                .readAll()
+                                javaClass.classLoader.getResourceAsStream(APPLICATION_RESOURCE)
+                                        .readAll()
                         )
                     }
                     "/api/v1/applications/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L/profile/" -> MockResponse().apply {
                         setResponseCode(200)
                         setBody(
-                            javaClass.classLoader.getResourceAsStream(USER_PROFILE_RESOURCE)
-                                .readAll()
+                                javaClass.classLoader.getResourceAsStream(USER_PROFILE_RESOURCE)
+                                        .readAll()
                         )
                     }
                     "/api/v1/leaderboards/424d25bd-7404-417c-bb7c-9558a064cce4/" -> MockResponse().apply {
                         setResponseCode(200)
                         setBody(
-                            javaClass.classLoader.getResourceAsStream(LEADERBOARD_DETAILS_RESOURCE)
-                                .readAll()
+                                javaClass.classLoader.getResourceAsStream(LEADERBOARD_DETAILS_RESOURCE)
+                                        .readAll()
                         )
                     }
 
                     "/api/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/program.json" -> MockResponse().apply {
                         setResponseCode(200)
                         setBody(
-                            javaClass.classLoader.getResourceAsStream(PROGRAM_RESOURCE)
-                                .readAll()
+                                javaClass.classLoader.getResourceAsStream(PROGRAM_RESOURCE)
+                                        .readAll()
+                        )
+                    }
+
+                    "/api/v1/leaderboards/424d25bd-7404-417c-bb7c-9558a064cce4/entries/59b69336-4569-4102-afac-18f1ad56cc13/" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                                javaClass.classLoader.getResourceAsStream(LEADERBOARD_PROFILE_ENTRY_RESOURCE)
+                                        .readAll()
                         )
                     }
 
@@ -86,11 +91,11 @@ class LeaderBoardClientUnitTest {
             }
         }
         sdk = EngagementSDK(
-            "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
-            context,
-            null,
-            "http://localhost:8080",
-            null
+                "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+                context,
+                null,
+                "http://localhost:8080",
+                null
         )
     }
 
@@ -103,14 +108,14 @@ class LeaderBoardClientUnitTest {
     @Test
     fun getLeaderBoardDetails_success_with_data() {
         val callback =
-            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<LeaderBoard>
+                Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<LeaderBoard>
         Thread.sleep(5000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
         sdk.leaderboard().getLeaderBoardDetails("424d25bd-7404-417c-bb7c-9558a064cce4", callback)
         val resultCaptor =
-            argumentCaptor<LeaderBoard>()
+                argumentCaptor<LeaderBoard>()
         val errorCaptor =
-            argumentCaptor<String>()
+                argumentCaptor<String>()
         Shadows.shadowOf(Looper.getMainLooper()).idle()
         Thread.sleep(2000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
@@ -124,14 +129,14 @@ class LeaderBoardClientUnitTest {
     @Test
     fun getLeaderBoardForPrograms_success_with_data() {
         val callback =
-            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<LeaderBoard>>
+                Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<LeaderBoard>>
         Thread.sleep(5000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
         sdk.leaderboard().getLeaderBoardsForProgram("498591f4-9d6b-4943-9671-f44d3afbb6a4", callback)
         val resultCaptor =
-            argumentCaptor<List<LeaderBoard>>()
+                argumentCaptor<List<LeaderBoard>>()
         val errorCaptor =
-            argumentCaptor<String>()
+                argumentCaptor<String>()
         Shadows.shadowOf(Looper.getMainLooper()).idle()
         Thread.sleep(2000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
@@ -139,6 +144,29 @@ class LeaderBoardClientUnitTest {
         assert(resultCaptor.firstValue.isNotEmpty())
         assert(resultCaptor.firstValue[0].id == "424d25bd-7404-417c-bb7c-9558a064cce4")
         assert(resultCaptor.firstValue[0].name == "TestfreeLeaderboard")
+        mockWebServer.shutdown()
+    }
+
+
+    @Test
+    fun getLeaderBoardEntry_for_profile_success_with_data() {
+        val callback =
+                Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<LeaderBoardEntry>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.leaderboard().getLeaderBoardEntryForProfile("424d25bd-7404-417c-bb7c-9558a064cce4", "59b69336-4569-4102-afac-18f1ad56cc13", callback)
+        val resultCaptor =
+                argumentCaptor<LeaderBoardEntry>()
+        val errorCaptor =
+                argumentCaptor<String>()
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue.profile_nickname.isNotEmpty())
+        assert(resultCaptor.firstValue.profile_nickname == "Intrepid Dino")
         mockWebServer.shutdown()
     }
 }
