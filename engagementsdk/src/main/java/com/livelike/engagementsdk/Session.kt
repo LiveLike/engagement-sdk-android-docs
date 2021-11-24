@@ -165,15 +165,10 @@ class WidgetInfos(
 data class WidgetsRequestParameters (
     val widgetTypeFilter: Set<WidgetType>,
     val widgetStatus: WidgetStatus?,
-    val widgetOrdering: WidgetOrdering?
 )
 
 enum class WidgetStatus(val parameterValue: String) {
     PUBLISHED("published"),
     PENDING("pending"),
     SCHEDULED("scheduled")
-}
-
-enum class WidgetOrdering(val parameterValue: String){
-    RECENT( "recent")
 }
