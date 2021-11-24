@@ -155,7 +155,7 @@ interface IEngagement {
 
     fun blockProfile(
         profileId: String,
-        liveLikeCallback: LiveLikeCallback<BlockedData>
+        liveLikeCallback: LiveLikeCallback<BlockedInfo>
     )
 
     fun unBlockProfile(
@@ -165,9 +165,10 @@ interface IEngagement {
 
     fun getBlockedProfileList(
         liveLikePagination: LiveLikePagination,
-        blockedProfileId: String?,
-        liveLikeCallback: LiveLikeCallback<List<BlockedData>>
+        liveLikeCallback: LiveLikeCallback<List<BlockedInfo>>
     )
+
+    fun getProfileBlockInfo(profileId: String, liveLikeCallback: LiveLikeCallback<BlockedInfo>)
 
     /**
      * Returns the sponsor client

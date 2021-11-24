@@ -8,70 +8,35 @@ import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.Visibility
-import com.livelike.engagementsdk.chat.data.remote.ChatRoom
-import com.livelike.engagementsdk.chat.data.remote.ChatRoomMemberListResponse
-import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
-import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
+import com.livelike.engagementsdk.chat.data.remote.*
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.data.repository.ChatRoomRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatRoomMessagingClient
 import com.livelike.engagementsdk.core.AccessTokenDelegate
-import com.livelike.engagementsdk.core.data.models.LeaderBoard
-import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
-import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
-import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryResult
-import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
-import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
-import com.livelike.engagementsdk.core.data.models.LeaderboardClient
-import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
-import com.livelike.engagementsdk.core.data.models.UserSearchApiResponse
-import com.livelike.engagementsdk.core.data.models.toLeadBoard
-import com.livelike.engagementsdk.core.data.models.toReward
+import com.livelike.engagementsdk.core.data.models.*
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
-import com.livelike.engagementsdk.core.utils.Queue
-import com.livelike.engagementsdk.core.utils.SubscriptionManager
-import com.livelike.engagementsdk.core.utils.combineLatestOnce
-import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.core.utils.*
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedAccessToken
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
-import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.gamification.Badges
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.gamification.Rewards
-import com.livelike.engagementsdk.publicapis.BlockedData
-import com.livelike.engagementsdk.publicapis.BlockedProfileListResponse
-import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
-import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
-import com.livelike.engagementsdk.publicapis.ChatRoomInvitationResponse
-import com.livelike.engagementsdk.publicapis.ChatRoomInvitationStatus
-import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
-import com.livelike.engagementsdk.publicapis.IEngagement
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
-import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
+import com.livelike.engagementsdk.publicapis.*
 import com.livelike.engagementsdk.sponsorship.Sponsor
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
@@ -520,7 +485,7 @@ class EngagementSDK(
                             pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
                     uiScope.launch {
-                       val chatRoomResult= chatRepository.deleteCurrentUserFromChatRoom(
+                        val chatRoomResult = chatRepository.deleteCurrentUserFromChatRoom(
                             chatRoomId, pair.second.chatRoomDetailUrlTemplate
                         )
                         liveLikeCallback.processResult(chatRoomResult)
@@ -855,12 +820,12 @@ class EngagementSDK(
 
     override fun blockProfile(
         profileId: String,
-        liveLikeCallback: LiveLikeCallback<BlockedData>
+        liveLikeCallback: LiveLikeCallback<BlockedInfo>
     ) {
         userRepository.currentUserStream.subscribe(this) {
             it?.blockProfileUrl?.let { url ->
                 uiScope.launch {
-                    val result = dataClient.remoteCall<BlockedData>(
+                    val result = dataClient.remoteCall<BlockedInfo>(
                         url,
                         RequestType.POST,
                         requestBody = """{"blocked_profile_id":"$profileId"}"""
@@ -896,23 +861,18 @@ class EngagementSDK(
 
     override fun getBlockedProfileList(
         liveLikePagination: LiveLikePagination,
-        blockedProfileId: String?,
-        liveLikeCallback: LiveLikeCallback<List<BlockedData>>
+        liveLikeCallback: LiveLikeCallback<List<BlockedInfo>>
     ) {
         userRepository.currentUserStream.subscribe(this) {
             it?.blockProfileListTemplate?.let {
                 uiScope.launch {
-                    val params = when (blockedProfileId != null) {
-                        true -> "blocked_profile_id=$blockedProfileId"
-                        else -> ""
-                    }
                     val url = when (liveLikePagination) {
                         LiveLikePagination.FIRST -> it.replace(
                             "{blocked_profile_id}",
-                            blockedProfileId ?: ""
+                            ""
                         )
-                        LiveLikePagination.NEXT -> blockedProfileListResponseMap[params]?.next
-                        LiveLikePagination.PREVIOUS -> blockedProfileListResponseMap[params]?.previous
+                        LiveLikePagination.NEXT -> blockedProfileResponse?.next
+                        LiveLikePagination.PREVIOUS -> blockedProfileResponse?.previous
                     }
                     if (url != null) {
                         val result = dataClient.remoteCall<BlockedProfileListResponse>(
@@ -923,7 +883,7 @@ class EngagementSDK(
                         )
 
                         if (result is Result.Success) {
-                            blockedProfileListResponseMap[params] = result.data
+                            blockedProfileResponse = result.data
                             liveLikeCallback.onResponse(result.data.results, null)
                         } else if (result is Result.Error) {
                             liveLikeCallback.onResponse(
@@ -939,11 +899,41 @@ class EngagementSDK(
         }
     }
 
+    override fun getProfileBlockInfo(
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<BlockedInfo>
+    ) {
+        userRepository.currentUserStream.subscribe(this) {
+            it?.blockProfileListTemplate?.let {
+                uiScope.launch {
+                    val url = it.replace(
+                        "{blocked_profile_id}",
+                        profileId
+                    )
+                    val result = dataClient.remoteCall<BlockedProfileListResponse>(
+                        url,
+                        RequestType.GET,
+                        requestBody = null,
+                        userAccessToken, true
+                    )
+
+                    if (result is Result.Success) {
+                        liveLikeCallback.onResponse(result.data.results.firstOrNull(), null)
+                    } else if (result is Result.Error) {
+                        liveLikeCallback.onResponse(
+                            null,
+                            result.exception.message
+                        )
+                    }
+                }
+            }
+        }
+    }
+
 
     private val invitationForProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
     private val invitationByProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
-    private var blockedProfileListResponseMap = hashMapOf<String, BlockedProfileListResponse>()
-
+    private var blockedProfileResponse: BlockedProfileListResponse? = null
 
     override fun sponsor(): Sponsor {
         return Sponsor(this)
