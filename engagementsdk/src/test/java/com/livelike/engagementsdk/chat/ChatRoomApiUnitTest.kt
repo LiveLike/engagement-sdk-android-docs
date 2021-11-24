@@ -4,8 +4,10 @@ import android.content.Context
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
 import com.livelike.engagementsdk.*
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 import mockingAndroidServicesUsedByMixpanel
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -41,6 +43,7 @@ class ChatRoomApiUnitTest {
         mockingAndroidServicesUsedByMixpanel()
         mockWebServer.dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
+                println("ChatRoomApiUnitTest.dispatch>${request.path}>>${request.method}")
                 return when (request.path) {
                     "/api/v1/applications/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L" -> MockResponse().apply {
                         setResponseCode(200)
@@ -70,6 +73,33 @@ class ChatRoomApiUnitTest {
                                 .readAll()
                         )
                     }
+                    "/api/v1/chat-rooms/" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream("create_chatroom_resource.json")
+                                .readAll()
+                        )
+                    }
+                    "/api/v1/profiles/e58b8f5c-01b9-4423-bc2d-80a62ce28891/chat-room-memberships/" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream("chat_room_list.json")
+                                .readAll()
+                        )
+                    }
+                    "/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/memberships/" -> when (request.method) {
+                        "DELETE" -> MockResponse().apply {
+                            setResponseCode(200)
+                        }
+                        else -> MockResponse().apply {
+                            setResponseCode(200)
+                            setBody(
+                                javaClass.classLoader.getResourceAsStream("chat_room_members_list.json")
+                                    .readAll()
+                            )
+                        }
+                    }
+
                     else -> MockResponse().apply {
                         setResponseCode(500)
                     }
@@ -129,4 +159,87 @@ class ChatRoomApiUnitTest {
         println("eRror>${errorCaptor.firstValue}")
         assert(errorCaptor.firstValue == "response code : 404 - Client Error")
     }
+
+    @Test
+    fun test_create_chat_room_success() {
+        val callback = Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<ChatRoomInfo>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.chat().createChatRoom("abc", Visibility.everyone, callback)
+        val resultCaptor =
+            argumentCaptor<ChatRoomInfo>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue.title == "abc")
+    }
+
+    @Test
+    fun test_user_chat_room_list() {
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<ChatRoomInfo>>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.chat().getCurrentUserChatRoomList(LiveLikePagination.FIRST, callback)
+        val resultCaptor =
+            argumentCaptor<List<ChatRoomInfo>>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue.isNotEmpty() && resultCaptor.firstValue.size == 5 && resultCaptor.firstValue.first().title == "ChatRoom1623335984")
+    }
+
+    @Test
+    fun test_chat_room_member_list() {
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<LiveLikeUser>>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.chat().getMembersOfChatRoom(
+            "e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
+            LiveLikePagination.FIRST,
+            callback
+        )
+        val resultCaptor =
+            argumentCaptor<List<LiveLikeUser>>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue.isNotEmpty() && resultCaptor.firstValue.size == 1 && resultCaptor.firstValue.first().id == "7f70af22-3f32-4525-bb3b-6277b7775536")
+    }
+
+    @Test
+    fun test_delete_chat_room_membership() {
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<LiveLikeEmptyResponse>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.chat().deleteCurrentUserFromChatRoom(
+            "e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
+            callback
+        )
+        val resultCaptor =
+            argumentCaptor<LiveLikeEmptyResponse>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue != null && resultCaptor.firstValue::class.java == LiveLikeEmptyResponse::class.java)
+    }
+
 }

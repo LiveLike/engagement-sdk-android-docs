@@ -24,7 +24,7 @@
   "custom_messages_url": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/custom-messages/",
   "muted_status_url_template": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/muted-status/{profile_id}/",
   "memberships_url": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/memberships/",
-  "title": "Live_Test2(1)(1)",
+  "title": "abc",
   "upload_url": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/upload/",
   "visibility": "everyone",
   "delete_message_url": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/delete-chat-message/",
