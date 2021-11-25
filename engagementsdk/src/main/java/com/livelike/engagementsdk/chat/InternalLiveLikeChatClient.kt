@@ -82,19 +82,22 @@ internal class InternalLiveLikeChatClient(
                                 title, visibility, chatRoomId, pair.second.chatRoomDetailUrlTemplate
                             )
                         }
-                        if (chatRoomResult is Result.Success) {
-                            liveLikeCallback.onResponse(
-                                ChatRoomInfo(
-                                    chatRoomResult.data.id,
-                                    chatRoomResult.data.title,
-                                    chatRoomResult.data.visibility,
-                                    chatRoomResult.data.contentFilter,
-                                    chatRoomResult.data.customData
-                                ),
-                                null
-                            )
-                        } else if (chatRoomResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                        when (chatRoomResult) {
+                            is Result.Success -> {
+                                liveLikeCallback.onResponse(
+                                    ChatRoomInfo(
+                                        chatRoomResult.data.id,
+                                        chatRoomResult.data.title,
+                                        chatRoomResult.data.visibility,
+                                        chatRoomResult.data.contentFilter,
+                                        chatRoomResult.data.customData
+                                    ),
+                                    null
+                                )
+                            }
+                            is Result.Error -> {
+                                liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                            }
                         }
                     }
                 }
@@ -130,19 +133,22 @@ internal class InternalLiveLikeChatClient(
                         val chatRoomResult = chatRepository.fetchChatRoom(
                             id, pair.second.chatRoomDetailUrlTemplate
                         )
-                        if (chatRoomResult is Result.Success) {
-                            liveLikeCallback.onResponse(
-                                ChatRoomInfo(
-                                    chatRoomResult.data.id,
-                                    chatRoomResult.data.title,
-                                    chatRoomResult.data.visibility,
-                                    chatRoomResult.data.contentFilter,
-                                    chatRoomResult.data.customData
-                                ),
-                                null
-                            )
-                        } else if (chatRoomResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                        when (chatRoomResult) {
+                            is Result.Success -> {
+                                liveLikeCallback.onResponse(
+                                    ChatRoomInfo(
+                                        chatRoomResult.data.id,
+                                        chatRoomResult.data.title,
+                                        chatRoomResult.data.visibility,
+                                        chatRoomResult.data.contentFilter,
+                                        chatRoomResult.data.customData
+                                    ),
+                                    null
+                                )
+                            }
+                            is Result.Error -> {
+                                liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                            }
                         }
                     }
                 }
@@ -179,31 +185,37 @@ internal class InternalLiveLikeChatClient(
                         val chatRoomResult = chatRepository.fetchChatRoom(
                             chatRoomId, pair.second.chatRoomDetailUrlTemplate
                         )
-                        if (chatRoomResult is Result.Success) {
-                            val currentUserChatRoomResult =
-                                dataClient.remoteCall<ChatRoomMembership>(
-                                    chatRoomResult.data.membershipsUrl,
-                                    accessToken = pair.first.accessToken,
-                                    requestType = RequestType.POST,
-                                    fullErrorJson = true,
-                                    requestBody = when (userId.isEmpty()) {
-                                        true -> byteArrayOf().toRequestBody(null, 0, 0)
-                                        else -> """{"profile_id":"$userId"}"""
-                                            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+                        when (chatRoomResult) {
+                            is Result.Success -> {
+                                val currentUserChatRoomResult =
+                                    dataClient.remoteCall<ChatRoomMembership>(
+                                        chatRoomResult.data.membershipsUrl,
+                                        accessToken = pair.first.accessToken,
+                                        requestType = RequestType.POST,
+                                        fullErrorJson = true,
+                                        requestBody = when (userId.isEmpty()) {
+                                            true -> byteArrayOf().toRequestBody(null, 0, 0)
+                                            else -> """{"profile_id":"$userId"}"""
+                                                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+                                        }
+                                    )
+                                when (currentUserChatRoomResult) {
+                                    is Result.Success -> {
+                                        liveLikeCallback.onResponse(
+                                            currentUserChatRoomResult.data, null
+                                        )
                                     }
-                                )
-                            if (currentUserChatRoomResult is Result.Success) {
-                                liveLikeCallback.onResponse(
-                                    currentUserChatRoomResult.data, null
-                                )
-                            } else if (currentUserChatRoomResult is Result.Error) {
-                                liveLikeCallback.onResponse(
-                                    null,
-                                    currentUserChatRoomResult.exception.message
-                                )
+                                    is Result.Error -> {
+                                        liveLikeCallback.onResponse(
+                                            null,
+                                            currentUserChatRoomResult.exception.message
+                                        )
+                                    }
+                                }
                             }
-                        } else if (chatRoomResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                            is Result.Error -> {
+                                liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                            }
                         }
                     }
                 }
@@ -234,27 +246,33 @@ internal class InternalLiveLikeChatClient(
                             LiveLikePagination.NEXT -> userChatRoomListResponse?.next
                             LiveLikePagination.PREVIOUS -> userChatRoomListResponse?.previous
                         }
-                        if (url != null) {
-                            val chatRoomResult = chatRepository.getCurrentUserChatRoomList(
-                                url
-                            )
-                            if (chatRoomResult is Result.Success) {
-                                userChatRoomListResponse = chatRoomResult.data
-                                val list = userChatRoomListResponse!!.results?.map {
-                                    ChatRoomInfo(
-                                        it?.chatRoom?.id!!,
-                                        it.chatRoom.title,
-                                        it.chatRoom.visibility,
-                                        it.chatRoom.contentFilter,
-                                        it.chatRoom.customData
-                                    )
+                        when {
+                            url != null -> {
+                                val chatRoomResult = chatRepository.getCurrentUserChatRoomList(
+                                    url
+                                )
+                                when (chatRoomResult) {
+                                    is Result.Success -> {
+                                        userChatRoomListResponse = chatRoomResult.data
+                                        val list = userChatRoomListResponse!!.results?.map {
+                                            ChatRoomInfo(
+                                                it?.chatRoom?.id!!,
+                                                it.chatRoom.title,
+                                                it.chatRoom.visibility,
+                                                it.chatRoom.contentFilter,
+                                                it.chatRoom.customData
+                                            )
+                                        }
+                                        liveLikeCallback.onResponse(list, null)
+                                    }
+                                    is Result.Error -> {
+                                        liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                                    }
                                 }
-                                liveLikeCallback.onResponse(list, null)
-                            } else if (chatRoomResult is Result.Error) {
-                                liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
                             }
-                        } else {
-                            liveLikeCallback.onResponse(null, "No More data to load")
+                            else -> {
+                                liveLikeCallback.onResponse(null, "No More data to load")
+                            }
                         }
                     }
                 }
@@ -285,36 +303,45 @@ internal class InternalLiveLikeChatClient(
                         val chatRoomResult = chatRepository.fetchChatRoom(
                             chatRoomId, pair.second.chatRoomDetailUrlTemplate
                         )
-                        if (chatRoomResult is Result.Success) {
-                            val url = when (liveLikePagination) {
-                                LiveLikePagination.FIRST -> chatRoomResult.data.membershipsUrl
-                                LiveLikePagination.NEXT -> chatRoomMemberListMap[chatRoomId]?.next
-                                LiveLikePagination.PREVIOUS -> chatRoomMemberListMap[chatRoomId]?.previous
-                            }
-                            if (url != null) {
-                                val chatRoomMemberResult =
-                                    dataClient.remoteCall<ChatRoomMemberListResponse>(
-                                        url,
-                                        accessToken = pair.first.accessToken,
-                                        requestType = RequestType.GET
-                                    )
-                                if (chatRoomMemberResult is Result.Success) {
-                                    chatRoomMemberListMap[chatRoomId] = chatRoomMemberResult.data
-                                    val list = chatRoomMemberResult.data.results?.map {
-                                        it?.profile!!
-                                    }
-                                    liveLikeCallback.onResponse(list, null)
-                                } else if (chatRoomMemberResult is Result.Error) {
-                                    liveLikeCallback.onResponse(
-                                        null,
-                                        chatRoomMemberResult.exception.message
-                                    )
+                        when (chatRoomResult) {
+                            is Result.Success -> {
+                                val url = when (liveLikePagination) {
+                                    LiveLikePagination.FIRST -> chatRoomResult.data.membershipsUrl
+                                    LiveLikePagination.NEXT -> chatRoomMemberListMap[chatRoomId]?.next
+                                    LiveLikePagination.PREVIOUS -> chatRoomMemberListMap[chatRoomId]?.previous
                                 }
-                            } else {
-                                liveLikeCallback.onResponse(null, "No More data to load")
+                                when {
+                                    url != null -> {
+                                        val chatRoomMemberResult =
+                                            dataClient.remoteCall<ChatRoomMemberListResponse>(
+                                                url,
+                                                accessToken = pair.first.accessToken,
+                                                requestType = RequestType.GET
+                                            )
+                                        when (chatRoomMemberResult) {
+                                            is Result.Success -> {
+                                                chatRoomMemberListMap[chatRoomId] = chatRoomMemberResult.data
+                                                val list = chatRoomMemberResult.data.results?.map {
+                                                    it?.profile!!
+                                                }
+                                                liveLikeCallback.onResponse(list, null)
+                                            }
+                                            is Result.Error -> {
+                                                liveLikeCallback.onResponse(
+                                                    null,
+                                                    chatRoomMemberResult.exception.message
+                                                )
+                                            }
+                                        }
+                                    }
+                                    else -> {
+                                        liveLikeCallback.onResponse(null, "No More data to load")
+                                    }
+                                }
                             }
-                        } else if (chatRoomResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                            is Result.Error -> {
+                                liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                            }
                         }
                     }
                 }
@@ -406,24 +433,30 @@ internal class InternalLiveLikeChatClient(
                             LiveLikePagination.NEXT -> invitationForProfileMap[it.first.id]?.next
                             LiveLikePagination.PREVIOUS -> invitationForProfileMap[it.first.id]?.previous
                         }
-                        if (url != null) {
-                            val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
-                                url,
-                                RequestType.GET,
-                                requestBody = null,
-                                userRepository.userAccessToken, true
-                            )
-                            if (result is Result.Success) {
-                                invitationForProfileMap[it.first.id] = result.data
-                                liveLikeCallback.onResponse(result.data.results, null)
-                            } else if (result is Result.Error) {
-                                liveLikeCallback.onResponse(
-                                    null,
-                                    result.exception.message
+                        when {
+                            url != null -> {
+                                val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
+                                    url,
+                                    RequestType.GET,
+                                    requestBody = null,
+                                    userRepository.userAccessToken, true
                                 )
+                                when (result) {
+                                    is Result.Success -> {
+                                        invitationForProfileMap[it.first.id] = result.data
+                                        liveLikeCallback.onResponse(result.data.results, null)
+                                    }
+                                    is Result.Error -> {
+                                        liveLikeCallback.onResponse(
+                                            null,
+                                            result.exception.message
+                                        )
+                                    }
+                                }
                             }
-                        } else {
-                            liveLikeCallback.onResponse(null, "No More data to load")
+                            else -> {
+                                liveLikeCallback.onResponse(null, "No More data to load")
+                            }
                         }
                     }
                 }
@@ -447,24 +480,30 @@ internal class InternalLiveLikeChatClient(
                             LiveLikePagination.NEXT -> invitationByProfileMap[it.first.id]?.next
                             LiveLikePagination.PREVIOUS -> invitationByProfileMap[it.first.id]?.previous
                         }
-                        if (url != null) {
-                            val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
-                                url,
-                                RequestType.GET,
-                                requestBody = null,
-                                userRepository.userAccessToken, true
-                            )
-                            if (result is Result.Success) {
-                                invitationByProfileMap[it.first.id] = result.data
-                                liveLikeCallback.onResponse(result.data.results, null)
-                            } else if (result is Result.Error) {
-                                liveLikeCallback.onResponse(
-                                    null,
-                                    result.exception.message
+                        when {
+                            url != null -> {
+                                val result = dataClient.remoteCall<ChatRoomInvitationResponse>(
+                                    url,
+                                    RequestType.GET,
+                                    requestBody = null,
+                                    userRepository.userAccessToken, true
                                 )
+                                when (result) {
+                                    is Result.Success -> {
+                                        invitationByProfileMap[it.first.id] = result.data
+                                        liveLikeCallback.onResponse(result.data.results, null)
+                                    }
+                                    is Result.Error -> {
+                                        liveLikeCallback.onResponse(
+                                            null,
+                                            result.exception.message
+                                        )
+                                    }
+                                }
                             }
-                        } else {
-                            liveLikeCallback.onResponse(null, "No More data to load")
+                            else -> {
+                                liveLikeCallback.onResponse(null, "No More data to load")
+                            }
                         }
                     }
                 }
@@ -532,25 +571,31 @@ internal class InternalLiveLikeChatClient(
                         LiveLikePagination.NEXT -> blockedProfileListResponseMap[params]?.next
                         LiveLikePagination.PREVIOUS -> blockedProfileListResponseMap[params]?.previous
                     }
-                    if (url != null) {
-                        val result = dataClient.remoteCall<BlockedProfileListResponse>(
-                            url,
-                            RequestType.GET,
-                            requestBody = null,
-                            userRepository.userAccessToken, true
-                        )
-
-                        if (result is Result.Success) {
-                            blockedProfileListResponseMap[params] = result.data
-                            liveLikeCallback.onResponse(result.data.results, null)
-                        } else if (result is Result.Error) {
-                            liveLikeCallback.onResponse(
-                                null,
-                                result.exception.message
+                    when {
+                        url != null -> {
+                            val result = dataClient.remoteCall<BlockedProfileListResponse>(
+                                url,
+                                RequestType.GET,
+                                requestBody = null,
+                                userRepository.userAccessToken, true
                             )
+
+                            when (result) {
+                                is Result.Success -> {
+                                    blockedProfileListResponseMap[params] = result.data
+                                    liveLikeCallback.onResponse(result.data.results, null)
+                                }
+                                is Result.Error -> {
+                                    liveLikeCallback.onResponse(
+                                        null,
+                                        result.exception.message
+                                    )
+                                }
+                            }
                         }
-                    } else {
-                        liveLikeCallback.onResponse(null, "No More data to load")
+                        else -> {
+                            liveLikeCallback.onResponse(null, "No More data to load")
+                        }
                     }
                 }
             }
