@@ -36,8 +36,7 @@ internal class WidgetInteractionRepository(
     }
 
     inline fun <reified T : WidgetUserInteractionBase> getWidgetInteraction(
-        widgetId: String,
-        widgetKind: WidgetKind
+        widgetId: String
     ): T? {
         return widgetInteractionMap[widgetId] as T?
     }

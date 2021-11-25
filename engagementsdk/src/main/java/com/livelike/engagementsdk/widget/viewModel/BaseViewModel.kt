@@ -101,7 +101,6 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
         widgetType: WidgetType?,
         widgetId: String,
         programId: String,
-        alertLink: String? = null
     ) {
         if (!isMarkedInteractive) {
             isMarkedInteractive = true

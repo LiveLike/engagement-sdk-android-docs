@@ -167,15 +167,15 @@ class EngagementSDK(
         dataClient.getEngagementSdkConfig(url) {
             if (it is Result.Success) {
                 configurationStream.onNext(it.data)
-                it.data.mixpanelToken?.let { token ->
-                    analyticService.onNext(
-                        MixpanelAnalytics(
-                            applicationContext,
-                            token,
-                            it.data.clientId
-                        )
+                val token = it.data.mixpanelToken
+                analyticService.onNext(
+                    MixpanelAnalytics(
+                        applicationContext,
+                        token,
+                        it.data.clientId
                     )
-                }
+                )
+
                 userRepository.initUser(accessTokenDelegate!!.getAccessToken(), it.data.profileUrl)
             } else {
                 errorDelegate?.onError(
@@ -1224,7 +1224,6 @@ class EngagementSDK(
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeContentSession {
         return ContentSession(
-            clientId,
             configurationStream,
             userRepository,
             applicationContext,
@@ -1253,7 +1252,6 @@ class EngagementSDK(
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeContentSession {
         return ContentSession(
-            clientId,
             configurationStream,
             userRepository,
             applicationContext,

@@ -168,8 +168,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 val selectedPredictionVoteList =
                     getWidgetNumberPredictionVotedAnswerList(if (resource.textNumberPredictionId.isNullOrEmpty()) resource.imageNumberPredictionId else resource.textNumberPredictionId)
                     viewModel?.followupState(
-                        selectedPredictionVoteList,
-                        widgetViewThemeAttributes
+                        selectedPredictionVoteList
                     )
             }
             setImeOptionDoneInKeyboard()
