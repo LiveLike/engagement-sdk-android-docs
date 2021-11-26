@@ -22,41 +22,42 @@ import com.livelike.engagementsdk.core.services.network.Result
  */
 
 internal class InternalLiveLikeLeaderBoardClient(
-    private val configurationStream: Stream<EngagementSDK.SdkConfiguration>,
-    private val userRepository: UserRepository,
-    private val uiScope: CoroutineScope,
-    private val dataClient: EngagementDataClientImpl,): LiveLikeLeaderBoardClient {
+        private val configurationStream: Stream<EngagementSDK.SdkConfiguration>,
+        private val userRepository: UserRepository,
+        private val uiScope: CoroutineScope,
+        private val dataClient: EngagementDataClientImpl,
+) : LiveLikeLeaderBoardClient {
 
     private var leaderBoardEntryResult: HashMap<String, LeaderBoardEntryResult> = hashMapOf()
     private val leaderBoardEntryPaginationQueue =
-        Queue<Pair<LiveLikePagination, Pair<String, LiveLikeCallback<LeaderBoardEntryPaginationResult>>>>()
+            Queue<Pair<LiveLikePagination, Pair<String, LiveLikeCallback<LeaderBoardEntryPaginationResult>>>>()
     private var isQueueProcess = false
 
 
     override fun getLeaderBoardsForProgram(
-        programId: String,
-        liveLikeCallback: LiveLikeCallback<List<LeaderBoard>>
+            programId: String,
+            liveLikeCallback: LiveLikeCallback<List<LeaderBoard>>
     ) {
         configurationStream.subscribe(this) { configuration ->
             configuration?.let {
                 configurationStream.unsubscribe(this)
                 dataClient.getProgramData(
-                    configuration.programDetailUrlTemplate.replace(
-                        TEMPLATE_PROGRAM_ID,
-                        programId
-                    )
+                        configuration.programDetailUrlTemplate.replace(
+                                TEMPLATE_PROGRAM_ID,
+                                programId
+                        )
                 ) { program, error ->
                     when {
                         program?.leaderboards != null -> {
                             liveLikeCallback.onResponse(
-                                program.leaderboards.map {
-                                    LeaderBoard(
-                                        it.id,
-                                        it.name,
-                                        it.rewardItem.toReward()
-                                    )
-                                },
-                                null
+                                    program.leaderboards.map {
+                                        LeaderBoard(
+                                                it.id,
+                                                it.name,
+                                                it.rewardItem.toReward()
+                                        )
+                                    },
+                                    null
                             )
                         }
                         error != null -> {
@@ -72,8 +73,8 @@ internal class InternalLiveLikeLeaderBoardClient(
     }
 
     override fun getLeaderBoardDetails(
-        leaderBoardId: String,
-        liveLikeCallback: LiveLikeCallback<LeaderBoard>
+            leaderBoardId: String,
+            liveLikeCallback: LiveLikeCallback<LeaderBoard>
     ) {
         configurationStream.subscribe(this) {
             it?.let {
@@ -81,23 +82,27 @@ internal class InternalLiveLikeLeaderBoardClient(
                 uiScope.launch {
                     val url = "${
                         it.leaderboardDetailUrlTemplate?.replace(
-                            TEMPLATE_LEADER_BOARD_ID,
-                            leaderBoardId
+                                TEMPLATE_LEADER_BOARD_ID,
+                                leaderBoardId
                         )
                     }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
-                        url,
-                        requestType = RequestType.GET,
-                        accessToken = null
+                            url,
+                            requestType = RequestType.GET,
+                            accessToken = null
                     )
-                    if (result is Result.Success) {
-                        liveLikeCallback.onResponse(
-                            result.data.toLeadBoard(),
-                            null
-                        )
-                        // leaderBoardDelegate?.leaderBoard(result.data.toLeadBoard(),result.data)
-                    } else if (result is Result.Error) {
-                        liveLikeCallback.onResponse(null, result.exception.message)
+
+                    when (result) {
+                        is Result.Success -> {
+                            liveLikeCallback.onResponse(
+                                    result.data.toLeadBoard(),
+                                    null
+                            )
+                        }
+                        is Result.Error -> {
+                            liveLikeCallback.onResponse(
+                                    null, result.exception.message)
+                        }
                     }
                 }
             }
@@ -105,15 +110,15 @@ internal class InternalLiveLikeLeaderBoardClient(
     }
 
     override fun getEntriesForLeaderBoard(
-        leaderBoardId: String,
-        liveLikePagination: LiveLikePagination,
-        liveLikeCallback: LiveLikeCallback<LeaderBoardEntryPaginationResult>
+            leaderBoardId: String,
+            liveLikePagination: LiveLikePagination,
+            liveLikeCallback: LiveLikeCallback<LeaderBoardEntryPaginationResult>
     ) {
         leaderBoardEntryPaginationQueue.enqueue(
-            Pair(
-                liveLikePagination,
-                Pair(leaderBoardId, liveLikeCallback)
-            )
+                Pair(
+                        liveLikePagination,
+                        Pair(leaderBoardId, liveLikeCallback)
+                )
         )
         if (!isQueueProcess) {
             val pair = leaderBoardEntryPaginationQueue.dequeue()
@@ -134,14 +139,14 @@ internal class InternalLiveLikeLeaderBoardClient(
                         LiveLikePagination.FIRST -> {
                             val url = "${
                                 it.leaderboardDetailUrlTemplate?.replace(
-                                    TEMPLATE_LEADER_BOARD_ID,
-                                    leaderBoardId
+                                        TEMPLATE_LEADER_BOARD_ID,
+                                        leaderBoardId
                                 )
                             }"
                             val result = dataClient.remoteCall<LeaderBoardResource>(
-                                url,
-                                requestType = RequestType.GET,
-                                accessToken = null
+                                    url,
+                                    requestType = RequestType.GET,
+                                    accessToken = null
                             )
                             var defaultUrl = ""
                             if (result is Result.Success) {
@@ -157,27 +162,27 @@ internal class InternalLiveLikeLeaderBoardClient(
                     }
                     if (entriesUrl != null && entriesUrl.isNotEmpty()) {
                         val listResult = dataClient.remoteCall<LeaderBoardEntryResult>(
-                            entriesUrl,
-                            requestType = RequestType.GET,
-                            accessToken = null
+                                entriesUrl,
+                                requestType = RequestType.GET,
+                                accessToken = null
                         )
                         if (listResult is Result.Success) {
                             leaderBoardEntryResult[leaderBoardId] = listResult.data
                             liveLikeCallback.onResponse(
-                                leaderBoardEntryResult[leaderBoardId]?.let {
-                                    LeaderBoardEntryPaginationResult(
-                                        it.count ?: 0,
-                                        it.previous != null,
-                                        it.next != null,
-                                        it.results
-                                    )
-                                },
-                                null
+                                    leaderBoardEntryResult[leaderBoardId]?.let {
+                                        LeaderBoardEntryPaginationResult(
+                                                it.count ?: 0,
+                                                it.previous != null,
+                                                it.next != null,
+                                                it.results
+                                        )
+                                    },
+                                    null
                             )
                         } else if (listResult is Result.Error) {
                             liveLikeCallback.onResponse(
-                                null,
-                                listResult.exception.message
+                                    null,
+                                    listResult.exception.message
                             )
                         }
                         isQueueProcess = false
@@ -198,9 +203,9 @@ internal class InternalLiveLikeLeaderBoardClient(
 
 
     override fun getLeaderBoardEntryForProfile(
-        leaderBoardId: String,
-        profileId: String,
-        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
+            leaderBoardId: String,
+            profileId: String,
+            liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     ) {
         configurationStream.subscribe(this) {
             it?.let {
@@ -208,32 +213,40 @@ internal class InternalLiveLikeLeaderBoardClient(
                 uiScope.launch {
                     val url = "${
                         it.leaderboardDetailUrlTemplate?.replace(
-                            TEMPLATE_LEADER_BOARD_ID,
-                            leaderBoardId
+                                TEMPLATE_LEADER_BOARD_ID,
+                                leaderBoardId
                         )
                     }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
-                        url,
-                        requestType = RequestType.GET,
-                        accessToken = null
-                    )
-                    if (result is Result.Success) {
-                        val profileResult = dataClient.remoteCall<LeaderBoardEntry>(
-                            result.data.entry_detail_url_template.replace(
-                                TEMPLATE_PROFILE_ID,
-                                profileId
-                            ),
+                            url,
                             requestType = RequestType.GET,
                             accessToken = null
-                        )
-                        if (profileResult is Result.Success) {
-                            liveLikeCallback.onResponse(profileResult.data, null)
-                            // leaderBoardDelegate?.leaderBoard(profileResul)
-                        } else if (profileResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, profileResult.exception.message)
+                    )
+
+                    when (result) {
+                        is Result.Success -> {
+                            val profileResult = dataClient.remoteCall<LeaderBoardEntry>(
+                                    result.data.entry_detail_url_template.replace(
+                                            TEMPLATE_PROFILE_ID,
+                                            profileId
+                                    ),
+                                    requestType = RequestType.GET,
+                                    accessToken = null
+                            )
+
+                            when (profileResult) {
+                                is Result.Success -> {
+                                    liveLikeCallback.onResponse(profileResult.data, null)
+                                }
+
+                                is Result.Error -> {
+                                    liveLikeCallback.onResponse(null, profileResult.exception.message)
+                                }
+                            }
                         }
-                    } else if (result is Result.Error) {
-                        liveLikeCallback.onResponse(null, result.exception.message)
+                        is Result.Error -> {
+                            liveLikeCallback.onResponse(null, result.exception.message)
+                        }
                     }
                 }
             }
@@ -241,8 +254,8 @@ internal class InternalLiveLikeLeaderBoardClient(
     }
 
     override fun getLeaderBoardEntryForCurrentUserProfile(
-        leaderBoardId: String,
-        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
+            leaderBoardId: String,
+            liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     ) {
         userRepository.currentUserStream.subscribe(this) {
             it?.let { user ->
@@ -253,8 +266,8 @@ internal class InternalLiveLikeLeaderBoardClient(
     }
 
     override fun getLeaderboardClients(
-        leaderBoardId: List<String>,
-        liveLikeCallback: LiveLikeCallback<LeaderboardClient>
+            leaderBoardId: List<String>,
+            liveLikeCallback: LiveLikeCallback<LeaderboardClient>
     ) {
         configurationStream.subscribe(this) {
             it?.let {
@@ -266,31 +279,36 @@ internal class InternalLiveLikeLeaderBoardClient(
                         val job = ArrayList<Job>()
                         for (i in leaderBoardId.indices) {
                             job.add(
-                                launch {
-                                    val url = "${
-                                        it.leaderboardDetailUrlTemplate?.replace(
-                                            TEMPLATE_LEADER_BOARD_ID,
-                                            leaderBoardId[i]
-                                        )
-                                    }"
-                                    val result = dataClient.remoteCall<LeaderBoardResource>(
-                                        url,
-                                        requestType = RequestType.GET,
-                                        accessToken = null
-                                    )
-                                    if (result is Result.Success) {
-                                        user?.let { user ->
-                                            getLeaderBoardEntryOnSuccess(
-                                                it,
-                                                result,
-                                                user,
-                                                liveLikeCallback
+                                    launch {
+                                        val url = "${
+                                            it.leaderboardDetailUrlTemplate?.replace(
+                                                    TEMPLATE_LEADER_BOARD_ID,
+                                                    leaderBoardId[i]
                                             )
+                                        }"
+                                        val result = dataClient.remoteCall<LeaderBoardResource>(
+                                                url,
+                                                requestType = RequestType.GET,
+                                                accessToken = null
+                                        )
+
+                                        when (result) {
+                                            is Result.Success -> {
+                                                user?.let { user ->
+                                                    getLeaderBoardEntryOnSuccess(
+                                                            it,
+                                                            result,
+                                                            user,
+                                                            liveLikeCallback
+                                                    )
+                                                }
+                                            }
+
+                                            is Result.Error -> {
+                                                liveLikeCallback.onResponse(null, result.exception.message)
+                                            }
                                         }
-                                    } else if (result is Result.Error) {
-                                        liveLikeCallback.onResponse(null, result.exception.message)
                                     }
-                                }
                             )
                         }
                     }
@@ -300,78 +318,83 @@ internal class InternalLiveLikeLeaderBoardClient(
     }
 
     private suspend fun getLeaderBoardEntryOnSuccess(
-        it: EngagementSDK.SdkConfiguration,
-        result: Result.Success<LeaderBoardResource>,
-        user: LiveLikeUser,
-        liveLikeCallback: LiveLikeCallback<LeaderboardClient>
+            it: EngagementSDK.SdkConfiguration,
+            result: Result.Success<LeaderBoardResource>,
+            user: LiveLikeUser,
+            liveLikeCallback: LiveLikeCallback<LeaderboardClient>
     ) {
-        val result2 =
-            getLeaderBoardEntry(it, result.data.id, user.id)
-        if (result2 is Result.Success) {
-            userRepository.leaderBoardDelegate?.leaderBoard(
-                LeaderBoardForClient(
-                    result.data.id,
-                    result.data.name,
-                    result.data.rewardItem
-                ),
-                LeaderboardPlacement(
-                    result2.data.rank,
-                    result2.data.percentile_rank.toString(),
-                    result2.data.score
+        val leaderboardEntryResult =
+                getLeaderBoardEntry(it, result.data.id, user.id)
+
+        when (leaderboardEntryResult) {
+            is Result.Success -> {
+                userRepository.leaderBoardDelegate?.leaderBoard(
+                        LeaderBoardForClient(
+                                result.data.id,
+                                result.data.name,
+                                result.data.rewardItem
+                        ),
+                        LeaderboardPlacement(
+                                leaderboardEntryResult.data.rank,
+                                leaderboardEntryResult.data.percentile_rank.toString(),
+                                leaderboardEntryResult.data.score
+                        )
                 )
-            )
-            liveLikeCallback.onResponse(
-                LeaderboardClient(
-                    result.data.id,
-                    result.data.name,
-                    result.data.rewardItem,
-                    LeaderboardPlacement(
-                        result2.data.rank,
-                        result2.data.percentile_rank.toString(),
-                        result2.data.score
-                    ),
-                    userRepository.leaderBoardDelegate!!
-                ),
-                null
-            )
-        } else if (result2 is Result.Error) {
-            userRepository.leaderBoardDelegate?.leaderBoard(
-                LeaderBoardForClient(
-                    result.data.id,
-                    result.data.name,
-                    result.data.rewardItem
-                ),
-                LeaderboardPlacement(0, " ", 0)
-            )
+                liveLikeCallback.onResponse(
+                        LeaderboardClient(
+                                result.data.id,
+                                result.data.name,
+                                result.data.rewardItem,
+                                LeaderboardPlacement(
+                                        leaderboardEntryResult.data.rank,
+                                        leaderboardEntryResult.data.percentile_rank.toString(),
+                                        leaderboardEntryResult.data.score
+                                ),
+                                userRepository.leaderBoardDelegate!!
+                        ),
+                        null
+                )
+            }
+
+            is Result.Error -> {
+                userRepository.leaderBoardDelegate?.leaderBoard(
+                        LeaderBoardForClient(
+                                result.data.id,
+                                result.data.name,
+                                result.data.rewardItem
+                        ),
+                        LeaderboardPlacement(0, " ", 0)
+                )
+            }
         }
     }
 
 
     private suspend fun getLeaderBoardEntry(
-        sdkConfig: EngagementSDK.SdkConfiguration,
-        leaderBoardId: String,
-        profileId: String
+            sdkConfig: EngagementSDK.SdkConfiguration,
+            leaderBoardId: String,
+            profileId: String
     ): Result<LeaderBoardEntry> {
         val url = "${
             sdkConfig.leaderboardDetailUrlTemplate?.replace(
-                TEMPLATE_LEADER_BOARD_ID,
-                leaderBoardId
+                    TEMPLATE_LEADER_BOARD_ID,
+                    leaderBoardId
             )
         }"
         val result = dataClient.remoteCall<LeaderBoardResource>(
-            url,
-            requestType = RequestType.GET,
-            accessToken = null
+                url,
+                requestType = RequestType.GET,
+                accessToken = null
         )
         return when (result) {
             is Result.Success -> {
                 dataClient.remoteCall(
-                    result.data.entry_detail_url_template.replace(
-                        TEMPLATE_PROFILE_ID,
-                        profileId
-                    ),
-                    requestType = RequestType.GET,
-                    accessToken = null
+                        result.data.entry_detail_url_template.replace(
+                                TEMPLATE_PROFILE_ID,
+                                profileId
+                        ),
+                        requestType = RequestType.GET,
+                        accessToken = null
                 )
             }
             is Result.Error -> {
