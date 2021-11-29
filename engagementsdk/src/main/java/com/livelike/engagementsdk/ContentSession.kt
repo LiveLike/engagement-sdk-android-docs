@@ -127,7 +127,7 @@ internal class ContentSession(
                         LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
                         LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
                     }?.toHttpUrlOrNull()?.newBuilder()?.apply {
-                        requestParams.widgetStatus.forEach {
+                        requestParams.widgetStatus?.let {
                             addQueryParameter("status", it.parameterValue)
                         }
                         requestParams.widgetTypeFilter.forEach {

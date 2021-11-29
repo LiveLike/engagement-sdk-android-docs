@@ -3,6 +3,7 @@ package com.livelike.livelikedemo
 import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.RadioButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SwitchCompat
 import com.livelike.engagementsdk.LiveLikeWidget
@@ -18,7 +19,7 @@ import kotlinx.android.synthetic.main.activity_get_widget_test.run_filter_button
 
 class GetWidgetTestActivity : AppCompatActivity() {
 
-    val stateToViewLookup: MutableMap<WidgetStatus, SwitchCompat> = mutableMapOf()
+    val stateToViewLookup: MutableMap<WidgetStatus?, RadioButton> = mutableMapOf()
     val typeToViewLookup: MutableMap<WidgetType, SwitchCompat> = mutableMapOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,11 +31,16 @@ class GetWidgetTestActivity : AppCompatActivity() {
             channelManager.selectedChannel.llProgram.toString(), allowTimeCodeGetter = false
         )
 
+        stateToViewLookup[null] = RadioButton(this).apply {
+            text = "Any"
+        }
+        get_widget_status_filters.addView( stateToViewLookup[null] )
+
         WidgetStatus.values().forEach {
-            val switch = SwitchCompat(this)
-            switch.text = it.parameterValue
-            get_widget_status_filters.addView( switch )
-            stateToViewLookup[it] = switch
+            val radioButton = RadioButton(this)
+            radioButton.text = it.parameterValue
+            get_widget_status_filters.addView( radioButton )
+            stateToViewLookup[it] = radioButton
         }
 
         WidgetType.values().filter {
@@ -55,7 +61,13 @@ class GetWidgetTestActivity : AppCompatActivity() {
                 LiveLikePagination.FIRST,
                 WidgetsRequestParameters(
                     typeToViewLookup.filterValues { it.isChecked }.keys,
-                    stateToViewLookup.filterValues { it.isChecked }.keys
+                    stateToViewLookup.filterValues { it.isChecked }.keys.let {
+                        if ( it.isEmpty() ){
+                            null
+                        } else {
+                            it.first()
+                        }
+                    }
                 ),
                 object : LiveLikeCallback<List<LiveLikeWidget>>() {
                     override fun onResponse(result: List<LiveLikeWidget>?, error: String?) {
