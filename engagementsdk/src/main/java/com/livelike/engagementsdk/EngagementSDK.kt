@@ -1008,7 +1008,12 @@ class EngagementSDK(
                     }
                     if (url != null) {
                         val result = dataClient.remoteCall<PinMessageInfoListResponse>(
-                            url,
+                            "$url${
+                                when (order) {
+                                    PinMessageOrder.DESC -> "&ordering=-pinned_at"
+                                    else -> "&ordering=pinned_at"
+                                }
+                            }",
                             RequestType.GET,
                             accessToken = userAccessToken,
                             fullErrorJson = true
