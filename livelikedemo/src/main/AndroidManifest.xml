@@ -22,9 +22,6 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
         <activity
-            android:name=".PinMessageActivity"
-            android:exported="false" />
-        <activity
             android:name=".RewardsClientTestActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".WidgetJsonActivity" />
