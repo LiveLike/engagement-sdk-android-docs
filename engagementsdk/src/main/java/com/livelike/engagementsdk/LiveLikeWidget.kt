@@ -200,7 +200,17 @@ data class OptionsItem(
     val correctNumber: Int? = null,
 
     @field:SerializedName("number")
-    var number: Int? = null
+    var number: Int? = null,
+
+    @field:SerializedName("reward_item_id")
+    var rewardItemId: String? = null,
+
+    @field:SerializedName("reward_item_name")
+    var rewardItemName: String? = null,
+
+    @field:SerializedName("reward_item_amount")
+    var rewardItemAmount: Int? = null,
+
 )
 
 data class ReactionsItem(
