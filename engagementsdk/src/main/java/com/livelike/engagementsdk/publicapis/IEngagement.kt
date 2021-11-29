@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.publicapis
 
+import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
@@ -7,6 +8,7 @@ import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
@@ -167,6 +169,25 @@ interface IEngagement {
         liveLikePagination: LiveLikePagination,
         blockedProfileId: String?,
         liveLikeCallback: LiveLikeCallback<List<BlockedData>>
+    )
+
+    fun pinMessage(
+        messageId: String,
+        chatRoomId: String,
+        chatMessagePayload: LiveLikeChatMessage,
+        liveLikeCallback: LiveLikeCallback<PinMessageInfo>
+    )
+
+    fun unPinMessage(
+        pinMessageInfoId: String,
+        liveLiveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
+    )
+
+    fun getPinMessageInfoList(
+        chatRoomId: String,
+        order: PinMessageOrder,
+        pagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<PinMessageInfo>>
     )
 
     /**

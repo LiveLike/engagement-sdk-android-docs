@@ -176,8 +176,8 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:orientation="vertical"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <Button
                     android:id="@+id/btn_block"
@@ -216,6 +216,11 @@
                 android:layout_height="20dp"
                 android:visibility="invisible" />
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/white" />
 
         <View
             android:layout_width="match_parent"

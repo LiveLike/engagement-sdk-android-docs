@@ -13,11 +13,16 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.example.PinMessageInfo
 import com.google.gson.JsonParser
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
@@ -44,9 +49,6 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -113,6 +115,7 @@ class ChatFragment : Fragment() {
                  custom.visibility = View.GONE
              }
          }*/
+        adapter.sdk = (activity as CustomChatActivity).sdk
 
         ed_msg.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -131,6 +134,8 @@ class ChatFragment : Fragment() {
         })
 
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
+            adapter.chatRoomId = homeChat.session.chatSession.getCurrentChatRoom()
+            adapter.loadPinnedMessage(context)
             adapter.chatList.clear()
             adapter.chatList.addAll(homeChat.session.chatSession.getLoadedMessages())
             homeChat.session.chatSession.setMessageListener(object : MessageListener {
@@ -242,19 +247,21 @@ class ChatFragment : Fragment() {
     private fun sendCustomMessage(post: String? = null) {
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             post?.let {
-                homeChat.session.chatSession.sendCustomChatMessage(post, object : LiveLikeCallback<LiveLikeChatMessage>() {
-                    override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                        activity?.runOnUiThread {
-                            result?.let {
-                                Log.d("responseCode", result.id!!)
-                            }
-                            error?.let {
-                                println("ChatFragment.onResponse>> $error")
-                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                homeChat.session.chatSession.sendCustomChatMessage(
+                    post,
+                    object : LiveLikeCallback<LiveLikeChatMessage>() {
+                        override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                            activity?.runOnUiThread {
+                                result?.let {
+                                    Log.d("responseCode", result.id!!)
+                                }
+                                error?.let {
+                                    println("ChatFragment.onResponse>> $error")
+                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
-                    }
-                })
+                    })
             }
 
 //            var chatRoomId = homeChat.session.chatSession.getCurrentChatRoom()
@@ -302,7 +309,33 @@ class ChatFragment : Fragment() {
 }
 
 class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
+    var chatRoomId: String? = null
     val chatList = arrayListOf<LiveLikeChatMessage>()
+    var sdk: EngagementSDK? = null
+    var pinnedList = arrayListOf<PinMessageInfo>()
+
+    fun loadPinnedMessage(context: Context?) {
+        sdk?.getPinMessageInfoList(
+            chatRoomId!!,
+            PinMessageOrder.ASC,
+            LiveLikePagination.FIRST,
+            object : LiveLikeCallback<List<PinMessageInfo>>() {
+                override fun onResponse(result: List<PinMessageInfo>?, error: String?) {
+                    result?.let {
+                        pinnedList.addAll(it.toSet())
+                        notifyDataSetChanged()
+                    }
+                    error?.let {
+                        Toast.makeText(
+                            context,
+                            it,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            })
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomChatViewHolder {
         return CustomChatViewHolder(
@@ -367,6 +400,51 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
                     holder.itemView.widget_view.visibility = View.GONE
                 }
             }
+        }
+
+        holder.itemView.setOnClickListener {
+            sdk?.pinMessage(
+                chatMessage.id!!,
+                chatRoomId!!,
+                chatMessage,
+                object : LiveLikeCallback<PinMessageInfo>() {
+                    override fun onResponse(result: PinMessageInfo?, error: String?) {
+                        error?.let {
+                            Toast.makeText(holder.itemView.context, it, Toast.LENGTH_SHORT).show()
+                        }
+                        result?.let { messageInfo ->
+                            Toast.makeText(
+                                holder.itemView.context,
+                                messageInfo.id,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            sdk?.unPinMessage(
+                                messageInfo.id!!,
+                                object : LiveLikeCallback<LiveLikeEmptyResponse>() {
+                                    override fun onResponse(
+                                        result: LiveLikeEmptyResponse?,
+                                        error: String?
+                                    ) {
+                                        error?.let {
+                                            Toast.makeText(
+                                                holder.itemView.context,
+                                                it,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                        result?.let {
+                                            Toast.makeText(
+                                                holder.itemView.context,
+                                                "Message Unpinned",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+                                })
+                        }
+                    }
+                })
         }
 
         holder.itemView.txt_msg_time.text = SimpleDateFormat(

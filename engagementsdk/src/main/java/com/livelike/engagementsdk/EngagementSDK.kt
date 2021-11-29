@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
+import com.example.example.PinMessageInfo
 import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -12,6 +13,9 @@ import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMemberListResponse
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfoListResponse
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfoRequest
+import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
 import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.data.repository.ChatRoomRepository
@@ -53,6 +57,7 @@ import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.sponsorship.Sponsor
@@ -71,7 +76,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
@@ -520,7 +524,7 @@ class EngagementSDK(
                             pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
                     uiScope.launch {
-                       val chatRoomResult= chatRepository.deleteCurrentUserFromChatRoom(
+                        val chatRoomResult = chatRepository.deleteCurrentUserFromChatRoom(
                             chatRoomId, pair.second.chatRoomDetailUrlTemplate
                         )
                         liveLikeCallback.processResult(chatRoomResult)
@@ -939,10 +943,98 @@ class EngagementSDK(
         }
     }
 
+    override fun pinMessage(
+        messageId: String,
+        chatRoomId: String,
+        chatMessagePayload: LiveLikeChatMessage,
+        liveLikeCallback: LiveLikeCallback<PinMessageInfo>
+    ) {
+        configurationStream.subscribe(this) {
+            it?.let {
+                uiScope.launch {
+                    val result = dataClient.remoteCall<PinMessageInfo>(
+                        it.pinMessageUrl,
+                        requestType = RequestType.POST,
+                        requestBody = gson.toJson(
+                            PinMessageInfoRequest(
+                                messageId,
+                                chatMessagePayload,
+                                chatRoomId
+                            )
+                        ).toRequestBody(
+                            "application/json; charset=utf-8".toMediaTypeOrNull()
+                        ),
+                        accessToken = userAccessToken,
+                        true
+                    )
+                    liveLikeCallback.processResult(result)
+                }
+            }
+        }
+    }
+
+    override fun unPinMessage(
+        pinMessageInfoId: String,
+        liveLiveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
+    ) {
+        configurationStream.subscribe(this) {
+            it?.let {
+                uiScope.launch {
+                    val result = dataClient.remoteCall<LiveLikeEmptyResponse>(
+                        "${it.pinMessageUrl}/$pinMessageInfoId",
+                        RequestType.DELETE,
+                        accessToken = userAccessToken,
+                        fullErrorJson = true
+                    )
+                    liveLiveLikeCallback.processResult(result)
+                }
+            }
+        }
+    }
+
+    override fun getPinMessageInfoList(
+        chatRoomId: String,
+        order: PinMessageOrder,
+        pagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<PinMessageInfo>>
+    ) {
+        configurationStream.subscribe(this) {
+            it?.let {
+                uiScope.launch {
+                    val url = when (pagination) {
+                        LiveLikePagination.FIRST -> "${it.pinMessageUrl}?chat_room_id=$chatRoomId"
+                        LiveLikePagination.NEXT -> pinMessageInfoListResponse?.next
+                        LiveLikePagination.PREVIOUS -> pinMessageInfoListResponse?.previous
+                    }
+                    if (url != null) {
+                        val result = dataClient.remoteCall<PinMessageInfoListResponse>(
+                            url,
+                            RequestType.GET,
+                            accessToken = userAccessToken,
+                            fullErrorJson = true
+                        )
+                        if (result is Result.Success) {
+                            pinMessageInfoListResponse = result.data
+                            liveLikeCallback.onResponse(result.data.results, null)
+                        } else if (result is Result.Error) {
+                            liveLikeCallback.onResponse(
+                                null,
+                                result.exception.message
+                            )
+                        }
+                    } else {
+                        liveLikeCallback.onResponse(null, "No More data to load")
+                    }
+                }
+            }
+        }
+    }
+
 
     private val invitationForProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
     private val invitationByProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
     private var blockedProfileListResponseMap = hashMapOf<String, BlockedProfileListResponse>()
+    private var pinMessageInfoListResponse: PinMessageInfoListResponse? = null
 
 
     override fun sponsor(): Sponsor {
@@ -1345,6 +1437,8 @@ class EngagementSDK(
         val profileChatRoomReceivedInvitationsUrlTemplate: String,
         @SerializedName("profile_chat_room_sent_invitations_url_template")
         val profileChatRoomSentInvitationsUrlTemplate: String,
+        @SerializedName("pin_message_url")
+        val pinMessageUrl: String
     )
 
     companion object {
