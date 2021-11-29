@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.services.messaging.LiveLikeEventMessagingService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +33,8 @@ internal class Rewards(
 
     /*map of rewardITemRequestOptions and last response*/
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
+
+    private var rewardTransactionsPageMap: MutableMap<RewardTransactionsRequestParameters,LLPaginatedResult<RewardTransaction>?> = mutableMapOf()
 
     private var _rewardEventsListener: WeakReference<RewardEventsListener>? = null
     override var rewardEventsListener: RewardEventsListener?
@@ -249,9 +252,51 @@ internal class Rewards(
                 }
             }
         }
-
     }
 
+    override fun getRewardTransactions(
+        liveLikePagination: LiveLikePagination,
+        requestParams: RewardTransactionsRequestParameters,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardTransaction>>
+    ) {
+        var fetchUrl: String? = null
+        sdkScope.launch {
+            if (rewardTransactionsPageMap[requestParams] == null || liveLikePagination == LiveLikePagination.FIRST) {
+                configurationUserPairFlow.collect { pair ->
+                    fetchUrl = pair.second.rewardTransactionsUrl
+                }
+            } else {
+                fetchUrl =
+                    rewardTransactionsPageMap[requestParams]?.getPaginationUrl(liveLikePagination)
+            }
+            if (fetchUrl == null) {
+                liveLikeCallback.onResponse(null, "No more data")
+            } else {
+                configurationUserPairFlow.collect { pair ->
+                    fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
+                        requestParams.widgetIds.forEach {
+                            addQueryParameter("widget_uuid", it)
+                        }
+                        requestParams.widgetKindFilter.forEach {
+                            addQueryParameter("widget_kind", it.getType())
+                        }
+                    }?.build()?.toUrl()?.toString()
+
+                    dataClient.remoteCall<LLPaginatedResult<RewardTransaction>>(
+                        fetchUrl ?: "",
+                        RequestType.GET,
+                        null,
+                        pair.first.accessToken
+                    ).run {
+                        if (this is Result.Success) {
+                            rewardTransactionsPageMap[requestParams] = this.data
+                        }
+                        liveLikeCallback.processResult(this)
+                    }
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -311,7 +356,48 @@ interface IRewardsClient {
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>
     )
 
+    
+    fun getRewardTransactions(
+        liveLikePagination: LiveLikePagination,
+        requestParams: RewardTransactionsRequestParameters,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardTransaction>>
+    )
+
 }
+
+data class RewardTransaction (
+    @SerializedName("id")
+    val id: String,
+    @SerializedName("url")
+    val url: String,
+    @SerializedName("created_at")
+    val createdAt: String,
+    @SerializedName("widget_kind")
+    val widgetKind: String,
+    @SerializedName("widget_uuid")
+    val widgetUuid: String,
+    @SerializedName("reward_item_id")
+    val rewardItemId: String,
+    @SerializedName("reward_item_name")
+    val rewardItemName: String,
+    @SerializedName("reward_action_id")
+    val rewardActionId: String,
+    @SerializedName("reward_action_key")
+    val rewardActionKey: String,
+    @SerializedName("reward_action_name")
+    val rewardActionName: String,
+    @SerializedName("profile_id")
+    val profileId: String,
+    @SerializedName("profile_nickname")
+    val profileNickname: String,
+    @SerializedName("reward_item_amount")
+    val rewardItemAmount: String
+)
+
+data class RewardTransactionsRequestParameters(
+    val widgetIds: Set<String> = emptySet(),
+    val widgetKindFilter: Set<WidgetType> = emptySet()
+)
 
 @Deprecated("use paginates result class")
 internal data class RewardItemBalancesApiResponse(
@@ -335,7 +421,6 @@ enum class RewardItemTransferType(val key: String) {
     SENT("sent"),
     RECEIVED("received")
 }
-
 
 data class RewardItemBalance(
     @SerializedName("reward_item_balance")
