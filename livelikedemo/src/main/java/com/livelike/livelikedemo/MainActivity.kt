@@ -54,6 +54,7 @@ import kotlinx.android.synthetic.main.activity_main.ed_avatar
 import kotlinx.android.synthetic.main.activity_main.ed_link_custom
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
+import kotlinx.android.synthetic.main.activity_main.get_widget_filter
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.leaderboard_button
@@ -537,6 +538,10 @@ class MainActivity : AppCompatActivity() {
 
         rewards_client_test.setOnClickListener {
             startActivity(Intent(this, RewardsClientTestActivity::class.java))
+        }
+
+        get_widget_filter.setOnClickListener {
+            startActivity(Intent(this, GetWidgetTestActivity::class.java))
         }
 
         (application as LiveLikeApplication).removePublicSession()
