@@ -356,7 +356,11 @@ interface IRewardsClient {
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<TransferRewardItem>>
     )
 
-    
+    /**
+     * Retrieve all reward transactions associated
+     * with the current user profile
+     * @param requestParams allows to filter reward transactions based on widget id or widget kind
+     **/
     fun getRewardTransactions(
         liveLikePagination: LiveLikePagination,
         requestParams: RewardTransactionsRequestParameters,
