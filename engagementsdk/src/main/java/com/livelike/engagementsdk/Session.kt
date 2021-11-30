@@ -165,7 +165,13 @@ class WidgetInfos(
 data class WidgetsRequestParameters (
     val widgetTypeFilter: Set<WidgetType> = emptySet(),
     val widgetStatus: WidgetStatus? = null,
+    val ordering: WidgetsRequestOrdering? = null
 )
+
+enum class WidgetsRequestOrdering(val parameterValue: String) {
+    RECENT("recent"),
+    OLDEST("")
+}
 
 enum class WidgetStatus(val parameterValue: String) {
     PUBLISHED("published"),

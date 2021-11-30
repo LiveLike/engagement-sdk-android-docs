@@ -8,17 +8,20 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SwitchCompat
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetStatus
+import com.livelike.engagementsdk.WidgetsRequestOrdering
 import com.livelike.engagementsdk.WidgetsRequestParameters
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.UnsupportedWidgetType
 import com.livelike.engagementsdk.widget.WidgetType
+import kotlinx.android.synthetic.main.activity_get_widget_test.get_widget_ordering
 import kotlinx.android.synthetic.main.activity_get_widget_test.get_widget_status_filters
 import kotlinx.android.synthetic.main.activity_get_widget_test.get_widget_type_filters
 import kotlinx.android.synthetic.main.activity_get_widget_test.run_filter_button
 
 class GetWidgetTestActivity : AppCompatActivity() {
 
+    val orderingToViewLookup: MutableMap<WidgetsRequestOrdering, RadioButton> = mutableMapOf()
     val stateToViewLookup: MutableMap<WidgetStatus?, RadioButton> = mutableMapOf()
     val typeToViewLookup: MutableMap<WidgetType, SwitchCompat> = mutableMapOf()
 
@@ -41,6 +44,13 @@ class GetWidgetTestActivity : AppCompatActivity() {
             radioButton.text = it.parameterValue
             get_widget_status_filters.addView( radioButton )
             stateToViewLookup[it] = radioButton
+        }
+
+        WidgetsRequestOrdering.values().forEach {
+            val radioButton = RadioButton(this)
+            radioButton.text = it.name
+            get_widget_ordering.addView(radioButton)
+            orderingToViewLookup[it] = radioButton
         }
 
         WidgetType.values().filter {
@@ -66,6 +76,13 @@ class GetWidgetTestActivity : AppCompatActivity() {
                             null
                         } else {
                             it.first()
+                        }
+                    },
+                    orderingToViewLookup.filterValues { it.isChecked }.keys.let{
+                        if ( !it.isEmpty() ){
+                            it.first()
+                        } else {
+                            null
                         }
                     }
                 ),
