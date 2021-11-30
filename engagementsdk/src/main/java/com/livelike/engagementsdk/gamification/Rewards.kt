@@ -275,7 +275,7 @@ internal class Rewards(
                 configurationUserPairFlow.collect { pair ->
                     fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
                         requestParams.widgetIds.forEach {
-                            addQueryParameter("widget_uuid", it)
+                            addQueryParameter("widget_id", it)
                         }
                         requestParams.widgetKindFilter.forEach {
                             addQueryParameter("widget_kind", it.getType())
@@ -374,8 +374,8 @@ data class RewardTransaction (
     val createdAt: String,
     @SerializedName("widget_kind")
     val widgetKind: String,
-    @SerializedName("widget_uuid")
-    val widgetUuid: String,
+    @SerializedName("widget_id")
+    val widgetId: String,
     @SerializedName("reward_item_id")
     val rewardItemId: String,
     @SerializedName("reward_item_name")
