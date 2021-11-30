@@ -188,6 +188,19 @@ class ChatFragment : Fragment() {
                         }
                     }
                 }
+
+                override fun onPinMessage(message: PinMessageInfo) {
+                    activity?.runOnUiThread {
+                        Toast.makeText(context, "Pinned: ${message.messageId}\n${message.pinnedById}\n${message.messagePayload?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onUnPinMessage(pinMessageId: String) {
+                    activity?.runOnUiThread {
+                        Toast.makeText(context, "UnPinned: $pinMessageId", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
             })
 
             lay_swipe.isRefreshing = true

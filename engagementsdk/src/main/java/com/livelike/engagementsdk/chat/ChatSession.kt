@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
+import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.ChatRoomListener
@@ -189,6 +190,14 @@ internal class ChatSession(
             deletedMsgList.add(messageId)
             msgListener?.onDeleteMessage(messageId)
         }
+
+        override fun onPinMessage(message: PinMessageInfo) {
+            msgListener?.onPinMessage(message)
+        }
+
+        override fun onUnPinMessage(pinMessageId: String) {
+            msgListener?.onUnPinMessage(pinMessageId)
+        }
     }
 
     private var msgListener: MessageListener? = null
@@ -322,11 +331,17 @@ internal class ChatSession(
             object : LiveLikeCallback<ChatRoom>() {
                 override fun onResponse(result: ChatRoom?, error: String?) {
                     result?.let { chatRoom ->
+                        //subscribe to channel for listening for pin message events
+                        val controlChannel = chatRoom.channels.control[CHAT_PROVIDER]
+                        controlChannel?.let {
+                            pubnubMessagingClient.addChannelSubscription(it,0L)
+                        }
                         val channel = chatRoom.channels.chat[CHAT_PROVIDER]
                         channel?.let { ch ->
                             contentSessionScope.launch {
                                 delay(500)
                                 pubnubMessagingClient.addChannelSubscription(ch, 0L)
+
                                 delay(500)
                                 chatViewModel.apply {
                                     flushMessages()

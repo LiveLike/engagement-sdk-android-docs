@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat.services.messaging.pubnub
 
+import com.example.example.PinMessageInfo
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
@@ -19,6 +20,8 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CRE
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_DELETED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_PINNED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_UNPINNED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 import com.livelike.engagementsdk.chat.data.remote.toPubnubChatEventType
 import com.livelike.engagementsdk.chat.data.toChatMessage
@@ -40,6 +43,7 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedPrefer
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.parseISODateTime
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubSubscribeCallbackAdapter
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
@@ -491,6 +495,20 @@ internal class PubnubChatMessagingClient(
                 }
                 PubnubChatEventType.CHATROOM_INVITE -> {
 
+                }
+                MESSAGE_PINNED,MESSAGE_UNPINNED -> {
+                    val pubnubChatRoomEvent: PubnubChatEvent<PinMessageInfo> = gson.fromJson(
+                        jsonObject,
+                        object : TypeToken<PubnubChatEvent<PinMessageInfo>>() {}.type
+                    )
+                    pubnubChatRoomEvent.payload.messagePayload?.senderId = jsonObject.getAsJsonObject("payload").getAsJsonObject("message_payload")?.get("sender_id")?.asString
+                    pubnubChatRoomEvent.payload.messagePayload?.nickname = jsonObject.getAsJsonObject("payload").getAsJsonObject("message_payload")?.get("sender_nickname")?.asString
+                    clientMessage = ClientMessage(
+                        gson.toJsonTree(pubnubChatRoomEvent.payload).asJsonObject.apply {
+                            addProperty("event", event.key)
+                        },
+                        channel
+                    )
                 }
             }
             logDebug { "Received message on $channel from pubnub: ${pubnubChatEvent.payload}" }
