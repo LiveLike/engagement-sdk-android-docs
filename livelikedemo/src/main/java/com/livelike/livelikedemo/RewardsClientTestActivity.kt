@@ -1,7 +1,6 @@
 package com.livelike.livelikedemo
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -210,22 +209,24 @@ class RewardsClientTestActivity : AppCompatActivity() {
         }
 
         button_get_reward.setOnClickListener {
-            if( reward_uuid_text.text.isNullOrBlank() ){
-                buildResultDialog( null, "enter a uuid")
-            } else {
-                rewardsClient.getRewardTransactions(
-                    LiveLikePagination.FIRST,
-                    RewardTransactionsRequestParameters( widgetIds = setOf(reward_uuid_text.text.toString()) ),
-                    object : LiveLikeCallback<LLPaginatedResult<RewardTransaction>>() {
-                        override fun onResponse(
-                            result: LLPaginatedResult<RewardTransaction>?,
-                            error: String?
-                        ) {
-                            runOnUiThread{ buildResultDialog( result, error) }
-                        }
-                    }
-                )
+
+            if( !reward_uuid_text.text.isNullOrBlank() && !validateUuid(reward_uuid_text.text.toString())){
+                buildResultDialog( null, "enter a valid uuid")
+                return@setOnClickListener
             }
+
+            rewardsClient.getRewardTransactions(
+                LiveLikePagination.FIRST,
+                RewardTransactionsRequestParameters( widgetIds = setOf(reward_uuid_text.text.toString()) ),
+                object : LiveLikeCallback<LLPaginatedResult<RewardTransaction>>() {
+                    override fun onResponse(
+                        result: LLPaginatedResult<RewardTransaction>?,
+                        error: String?
+                    ) {
+                        runOnUiThread{ buildResultDialog( result, error) }
+                    }
+                }
+            )
         }
     }
 
