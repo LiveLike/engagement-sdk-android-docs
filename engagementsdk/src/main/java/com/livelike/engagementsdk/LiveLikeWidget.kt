@@ -5,6 +5,7 @@ import com.livelike.engagementsdk.sponsorship.SponsorModel
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.SocialEmbedItem
 import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
+import com.livelike.engagementsdk.widget.domain.Reward
 
 data class LiveLikeWidget(
 
@@ -139,7 +140,9 @@ data class LiveLikeWidget(
     @field:SerializedName("widget_interactions_url_template")
     val widgetInteractionUrl: String?,
     @field:SerializedName("sponsors")
-    val sponsors: List<SponsorModel>?
+    val sponsors: List<SponsorModel>?,
+    @field:SerializedName("rewards")
+    val rewards: List<RewardSummary>?
 ) {
     /**
      * Added this method to get WidgetType for integrator understanding and they can use it for they implementation
@@ -154,6 +157,17 @@ data class LiveLikeWidget(
         return WidgetType.fromString(widgetType)
     }
 }
+
+data class RewardSummary (
+    @field:SerializedName("reward_action_key")
+    var rewardActionKey: String? = null,
+
+    @field:SerializedName("reward_item_name")
+    var rewardItemName: String? = null,
+
+    @field:SerializedName("reward_item_amount")
+    var rewardItemAmount: Int? = null,
+)
 
 data class CreatedBy(
 

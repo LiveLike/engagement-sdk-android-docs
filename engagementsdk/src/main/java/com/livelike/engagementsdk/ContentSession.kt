@@ -130,6 +130,9 @@ internal class ContentSession(
                         requestParams.widgetStatus?.let {
                             addQueryParameter("status", it.parameterValue)
                         }
+                        requestParams.ordering?.let {
+                            addQueryParameter("ordering", it.parameterValue)
+                        }
                         requestParams.widgetTypeFilter.forEach {
                             addQueryParameter("kind", it.getKindName())
                         }
