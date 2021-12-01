@@ -19,7 +19,6 @@ class WidgetViewModel constructor(
         createPublicSession(getChannelManager().selectedChannel.llProgram.toString())
 
     fun getSession(): LiveLikeContentSession {
-        println("widgetViewModel.getSession->$contentSession")
         return contentSession
     }
 
