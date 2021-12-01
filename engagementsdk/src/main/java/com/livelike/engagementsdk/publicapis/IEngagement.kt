@@ -43,6 +43,12 @@ interface IEngagement {
 
     var leaderBoardDelegate: LeaderBoardDelegate?
 
+    /**
+     *@deprecated  reason this method is deprecated <br/>
+     *              {will be removed in next version} <br/>
+     *              use {@link com.livelike.engagementsdk.chat.LiveLikeChatClient#chatRoomListener} instead like this:
+     */
+    @Deprecated("use {@link com.livelike.engagementsdk.chat.LiveLikeChatClient#chatRoomListener} instead like this")
     var chatRoomDelegate: ChatRoomDelegate?
 
     /** Override the default auto-generated chat nickname **/
@@ -169,6 +175,12 @@ interface IEngagement {
         liveLikeCallback: LiveLikeCallback<LeaderboardClient>
     )
 
+    /**
+     *@deprecated  reason this method is deprecated <br/>
+     *              {will be removed in next version} <br/>
+     *              use {@link com.livelike.engagementsdk.chat.LiveLikeChatClient#getProfileMutedStatus} instead like this:
+     */
+    @Deprecated("use {@link com.livelike.engagementsdk.chat.LiveLikeChatClient#getProfileMutedStatus} instead like this")
     fun getChatUserMutedStatus(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>

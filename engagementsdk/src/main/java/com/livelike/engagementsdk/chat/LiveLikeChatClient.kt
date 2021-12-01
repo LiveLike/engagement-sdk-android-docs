@@ -8,6 +8,9 @@ import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
 import com.livelike.engagementsdk.publicapis.*
 
 interface LiveLikeChatClient {
+
+    var chatRoomDelegate: ChatRoomDelegate?
+
     fun createChatRoom(
         title: String? = null,
         visibility: Visibility? = null,
@@ -88,6 +91,11 @@ interface LiveLikeChatClient {
         liveLikePagination: LiveLikePagination,
         blockedProfileId: String?,
         liveLikeCallback: LiveLikeCallback<List<BlockedData>>
+    )
+
+    fun getProfileMutedStatus(
+        chatRoomId: String,
+        liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>
     )
 
     fun pinMessage(
