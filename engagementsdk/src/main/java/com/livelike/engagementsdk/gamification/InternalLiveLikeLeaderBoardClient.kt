@@ -149,11 +149,14 @@ internal class InternalLiveLikeLeaderBoardClient(
                                     accessToken = null
                             )
                             var defaultUrl = ""
-                            if (result is Result.Success) {
-                                defaultUrl = result.data.entries_url
-                            } else if (result is Result.Error) {
-                                defaultUrl = ""
-                                liveLikeCallback.onResponse(null, result.exception.message)
+                            when (result) {
+                                is Result.Success -> {
+                                    defaultUrl = result.data.entries_url
+                                }
+                                is  Result.Error -> {
+                                    defaultUrl = ""
+                                    liveLikeCallback.onResponse(null, result.exception.message)
+                                }
                             }
                             defaultUrl
                         }
@@ -166,24 +169,29 @@ internal class InternalLiveLikeLeaderBoardClient(
                                 requestType = RequestType.GET,
                                 accessToken = null
                         )
-                        if (listResult is Result.Success) {
-                            leaderBoardEntryResult[leaderBoardId] = listResult.data
-                            liveLikeCallback.onResponse(
+
+                        when (listResult){
+                            is Result.Success -> {
+                                leaderBoardEntryResult[leaderBoardId] = listResult.data
+                                liveLikeCallback.onResponse(
                                     leaderBoardEntryResult[leaderBoardId]?.let {
                                         LeaderBoardEntryPaginationResult(
-                                                it.count ?: 0,
-                                                it.previous != null,
-                                                it.next != null,
-                                                it.results
+                                            it.count ?: 0,
+                                            it.previous != null,
+                                            it.next != null,
+                                            it.results
                                         )
                                     },
                                     null
-                            )
-                        } else if (listResult is Result.Error) {
-                            liveLikeCallback.onResponse(
+                                )
+                            }
+
+                            is Result.Error -> {
+                                liveLikeCallback.onResponse(
                                     null,
                                     listResult.exception.message
-                            )
+                                )
+                            }
                         }
                         isQueueProcess = false
                         val dequeuePair = leaderBoardEntryPaginationQueue.dequeue()
