@@ -328,7 +328,7 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
     var pinnedList = arrayListOf<PinMessageInfo>()
 
     fun loadPinnedMessage(context: Context?) {
-        sdk?.getPinMessageInfoList(
+        sdk?.chat()?.getPinMessageInfoList(
             chatRoomId!!,
             PinMessageOrder.ASC,
             LiveLikePagination.FIRST,
@@ -416,7 +416,7 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
         }
 
         holder.itemView.setOnClickListener {
-            sdk?.pinMessage(
+            sdk?.chat()?.pinMessage(
                 chatMessage.id!!,
                 chatRoomId!!,
                 chatMessage,
@@ -432,7 +432,7 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
                                 Toast.LENGTH_SHORT
                             )
                                 .show()
-                            sdk?.unPinMessage(
+                            sdk?.chat()?.unPinMessage(
                                 messageInfo.id!!,
                                 object : LiveLikeCallback<LiveLikeEmptyResponse>() {
                                     override fun onResponse(

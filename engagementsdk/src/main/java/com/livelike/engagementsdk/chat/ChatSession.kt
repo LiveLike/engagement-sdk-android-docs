@@ -334,14 +334,13 @@ internal class ChatSession(
                         //subscribe to channel for listening for pin message events
                         val controlChannel = chatRoom.channels.control[CHAT_PROVIDER]
                         controlChannel?.let {
-                            pubnubMessagingClient.addChannelSubscription(it,0L)
+                            pubnubMessagingClient.addChannelSubscription(it)
                         }
                         val channel = chatRoom.channels.chat[CHAT_PROVIDER]
                         channel?.let { ch ->
                             contentSessionScope.launch {
                                 delay(500)
-                                pubnubMessagingClient.addChannelSubscription(ch, 0L)
-
+                                pubnubMessagingClient.addChannelSubscription(ch)
                                 delay(500)
                                 chatViewModel.apply {
                                     flushMessages()

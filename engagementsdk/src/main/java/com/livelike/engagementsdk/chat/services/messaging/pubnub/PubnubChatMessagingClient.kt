@@ -100,12 +100,11 @@ internal class PubnubChatMessagingClient(
         }
 
     @Synchronized
-    fun addChannelSubscription(channel: String, startTimestamp: Long) {
+    fun addChannelSubscription(channel: String) {
         if (!connectedChannels.contains(channel)) {
             connectedChannels.add(channel)
             flushPublishedMessage(*connectedChannels.toTypedArray())
             pubnub.subscribe().channels(listOf(channel)).execute()
-//            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
         }
     }
 

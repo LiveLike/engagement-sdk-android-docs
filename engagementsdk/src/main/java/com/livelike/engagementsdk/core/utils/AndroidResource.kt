@@ -213,7 +213,8 @@ internal class AndroidResource {
             return shape
         }
 
-        internal fun selectGradientDirection(direction: Int): GradientDrawable.Orientation {
+        // suppressing unused parameter until gradient is implemented
+        internal fun selectGradientDirection(@Suppress("UNUSED_PARAMETER") direction: Int): GradientDrawable.Orientation {
             return GradientDrawable.Orientation.LEFT_RIGHT
             // commenting as direction to be implemented later
 //            return when (direction) {

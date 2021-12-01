@@ -1,0 +1,192 @@
+{
+  "count": 5,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": "f31f247e-fb41-41f9-9d3f-855099c3f861",
+      "url": "https://localhost:8080/api/v1/chat-room-memberships/f31f247e-fb41-41f9-9d3f-855099c3f861/",
+      "created_at": "2021-06-10T14:58:04.361450Z",
+      "chat_room": {
+        "id": "6b8b7650-feb1-4589-8917-7dffb084be69",
+        "url": "https://localhost:8080/api/v1/chat-rooms/6b8b7650-feb1-4589-8917-7dffb084be69/",
+        "client_id": "8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS",
+        "title": "ChatRoom1623335984",
+        "created_at": "2021-06-10T14:39:45.334680Z",
+        "content_filter": "none",
+        "visibility": "members",
+        "channels": {
+          "chat": {
+            "sendbird": null,
+            "pubnub": "chatroom.6b8b7650-feb1-4589-8917-7dffb084be69"
+          },
+          "reactions": {
+            "pubnub": "chatroom.reactions.6b8b7650-feb1-4589-8917-7dffb084be69"
+          },
+          "control": {
+            "pubnub": "chatroom.control.6b8b7650-feb1-4589-8917-7dffb084be69"
+          }
+        },
+        "report_message_url": "https://localhost:8080/api/v1/chat-rooms/6b8b7650-feb1-4589-8917-7dffb084be69/report-chat-message/",
+        "reported_messages_url": "https://localhost:8080/api/v1/reported-chat-room-messages/?chat_room_id=6b8b7650-feb1-4589-8917-7dffb084be69&status=pending",
+        "delete_message_url": "https://localhost:8080/api/v1/chat-rooms/6b8b7650-feb1-4589-8917-7dffb084be69/delete-chat-message/",
+        "upload_url": "https://localhost:8080/api/v1/chat-rooms/6b8b7650-feb1-4589-8917-7dffb084be69/upload/",
+        "memberships_url": "https://localhost:8080/api/v1/chat-rooms/6b8b7650-feb1-4589-8917-7dffb084be69/memberships/",
+        "muted_status_url_template": "https://localhost:8080/api/v1/chat-rooms/6b8b7650-feb1-4589-8917-7dffb084be69/muted-status/{profile_id}/",
+        "custom_messages_url": "https://localhost:8080/api/v1/chat-rooms/6b8b7650-feb1-4589-8917-7dffb084be69/custom-messages/",
+        "sticker_packs_url": "https://cf-blast-storage.livelikecdn.com/sticker-packs/6b8b7650-feb1-4589-8917-7dffb084be69/sticker_packs.json",
+        "reaction_packs_url": "https://cf-blast-storage.livelikecdn.com/reaction-packs/6b8b7650-feb1-4589-8917-7dffb084be69/reaction_packs.json",
+        "custom_data": null,
+        "sponsors_url": "https://cf-blast-storage.livelikecdn.com/sponsors/6b8b7650-feb1-4589-8917-7dffb084be69/sponsors.json"
+      }
+    },
+    {
+      "id": "efcf0493-7736-49b9-9bc4-564d602ee1f8",
+      "url": "https://localhost:8080/api/v1/chat-room-memberships/efcf0493-7736-49b9-9bc4-564d602ee1f8/",
+      "created_at": "2021-07-25T08:34:06.912602Z",
+      "chat_room": {
+        "id": "765891df-dabb-4fde-a9b2-cca0977ca3b5",
+        "url": "https://localhost:8080/api/v1/chat-rooms/765891df-dabb-4fde-a9b2-cca0977ca3b5/",
+        "client_id": "8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS",
+        "title": "qwerty",
+        "created_at": "2021-07-25T08:33:33.897971Z",
+        "content_filter": "none",
+        "visibility": "members",
+        "channels": {
+          "chat": {
+            "sendbird": null,
+            "pubnub": "chatroom.765891df-dabb-4fde-a9b2-cca0977ca3b5"
+          },
+          "reactions": {
+            "pubnub": "chatroom.reactions.765891df-dabb-4fde-a9b2-cca0977ca3b5"
+          },
+          "control": {
+            "pubnub": "chatroom.control.765891df-dabb-4fde-a9b2-cca0977ca3b5"
+          }
+        },
+        "report_message_url": "https://localhost:8080/api/v1/chat-rooms/765891df-dabb-4fde-a9b2-cca0977ca3b5/report-chat-message/",
+        "reported_messages_url": "https://localhost:8080/api/v1/reported-chat-room-messages/?chat_room_id=765891df-dabb-4fde-a9b2-cca0977ca3b5&status=pending",
+        "delete_message_url": "https://localhost:8080/api/v1/chat-rooms/765891df-dabb-4fde-a9b2-cca0977ca3b5/delete-chat-message/",
+        "upload_url": "https://localhost:8080/api/v1/chat-rooms/765891df-dabb-4fde-a9b2-cca0977ca3b5/upload/",
+        "memberships_url": "https://localhost:8080/api/v1/chat-rooms/765891df-dabb-4fde-a9b2-cca0977ca3b5/memberships/",
+        "muted_status_url_template": "https://localhost:8080/api/v1/chat-rooms/765891df-dabb-4fde-a9b2-cca0977ca3b5/muted-status/{profile_id}/",
+        "custom_messages_url": "https://localhost:8080/api/v1/chat-rooms/765891df-dabb-4fde-a9b2-cca0977ca3b5/custom-messages/",
+        "sticker_packs_url": "https://cf-blast-storage.livelikecdn.com/sticker-packs/765891df-dabb-4fde-a9b2-cca0977ca3b5/sticker_packs.json",
+        "reaction_packs_url": "https://cf-blast-storage.livelikecdn.com/reaction-packs/765891df-dabb-4fde-a9b2-cca0977ca3b5/reaction_packs.json",
+        "custom_data": null,
+        "sponsors_url": "https://cf-blast-storage.livelikecdn.com/sponsors/765891df-dabb-4fde-a9b2-cca0977ca3b5/sponsors.json"
+      }
+    },
+    {
+      "id": "ad6684c1-e1aa-4e2a-a959-e514720d3752",
+      "url": "https://localhost:8080/api/v1/chat-room-memberships/ad6684c1-e1aa-4e2a-a959-e514720d3752/",
+      "created_at": "2021-09-01T14:00:08.745482Z",
+      "chat_room": {
+        "id": "91e0216e-e0a0-4f24-9743-8c220d9c318f",
+        "url": "https://localhost:8080/api/v1/chat-rooms/91e0216e-e0a0-4f24-9743-8c220d9c318f/",
+        "client_id": "8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS",
+        "title": "search user",
+        "created_at": "2021-09-01T13:58:53.802130Z",
+        "content_filter": "none",
+        "visibility": "members",
+        "channels": {
+          "chat": {
+            "sendbird": null,
+            "pubnub": "chatroom.91e0216e-e0a0-4f24-9743-8c220d9c318f"
+          },
+          "reactions": {
+            "pubnub": "chatroom.reactions.91e0216e-e0a0-4f24-9743-8c220d9c318f"
+          },
+          "control": {
+            "pubnub": "chatroom.control.91e0216e-e0a0-4f24-9743-8c220d9c318f"
+          }
+        },
+        "report_message_url": "https://localhost:8080/api/v1/chat-rooms/91e0216e-e0a0-4f24-9743-8c220d9c318f/report-chat-message/",
+        "reported_messages_url": "https://localhost:8080/api/v1/reported-chat-room-messages/?chat_room_id=91e0216e-e0a0-4f24-9743-8c220d9c318f&status=pending",
+        "delete_message_url": "https://localhost:8080/api/v1/chat-rooms/91e0216e-e0a0-4f24-9743-8c220d9c318f/delete-chat-message/",
+        "upload_url": "https://localhost:8080/api/v1/chat-rooms/91e0216e-e0a0-4f24-9743-8c220d9c318f/upload/",
+        "memberships_url": "https://localhost:8080/api/v1/chat-rooms/91e0216e-e0a0-4f24-9743-8c220d9c318f/memberships/",
+        "muted_status_url_template": "https://localhost:8080/api/v1/chat-rooms/91e0216e-e0a0-4f24-9743-8c220d9c318f/muted-status/{profile_id}/",
+        "custom_messages_url": "https://localhost:8080/api/v1/chat-rooms/91e0216e-e0a0-4f24-9743-8c220d9c318f/custom-messages/",
+        "sticker_packs_url": "https://cf-blast-storage.livelikecdn.com/sticker-packs/91e0216e-e0a0-4f24-9743-8c220d9c318f/sticker_packs.json",
+        "reaction_packs_url": "https://cf-blast-storage.livelikecdn.com/reaction-packs/91e0216e-e0a0-4f24-9743-8c220d9c318f/reaction_packs.json",
+        "custom_data": null,
+        "sponsors_url": "https://cf-blast-storage.livelikecdn.com/sponsors/91e0216e-e0a0-4f24-9743-8c220d9c318f/sponsors.json"
+      }
+    },
+    {
+      "id": "b7fa0e7c-8bde-489d-8e47-275eb0120959",
+      "url": "https://localhost:8080/api/v1/chat-room-memberships/b7fa0e7c-8bde-489d-8e47-275eb0120959/",
+      "created_at": "2021-09-18T11:10:51.156261Z",
+      "chat_room": {
+        "id": "762b2342-d988-4fcb-9f33-b02e23980904",
+        "url": "https://localhost:8080/api/v1/chat-rooms/762b2342-d988-4fcb-9f33-b02e23980904/",
+        "client_id": "8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS",
+        "title": null,
+        "created_at": "2021-09-18T11:10:31.161972Z",
+        "content_filter": "none",
+        "visibility": "members",
+        "channels": {
+          "chat": {
+            "sendbird": null,
+            "pubnub": "chatroom.762b2342-d988-4fcb-9f33-b02e23980904"
+          },
+          "reactions": {
+            "pubnub": "chatroom.reactions.762b2342-d988-4fcb-9f33-b02e23980904"
+          },
+          "control": {
+            "pubnub": "chatroom.control.762b2342-d988-4fcb-9f33-b02e23980904"
+          }
+        },
+        "report_message_url": "https://localhost:8080/api/v1/chat-rooms/762b2342-d988-4fcb-9f33-b02e23980904/report-chat-message/",
+        "reported_messages_url": "https://localhost:8080/api/v1/reported-chat-room-messages/?chat_room_id=762b2342-d988-4fcb-9f33-b02e23980904&status=pending",
+        "delete_message_url": "https://localhost:8080/api/v1/chat-rooms/762b2342-d988-4fcb-9f33-b02e23980904/delete-chat-message/",
+        "upload_url": "https://localhost:8080/api/v1/chat-rooms/762b2342-d988-4fcb-9f33-b02e23980904/upload/",
+        "memberships_url": "https://localhost:8080/api/v1/chat-rooms/762b2342-d988-4fcb-9f33-b02e23980904/memberships/",
+        "muted_status_url_template": "https://localhost:8080/api/v1/chat-rooms/762b2342-d988-4fcb-9f33-b02e23980904/muted-status/{profile_id}/",
+        "custom_messages_url": "https://localhost:8080/api/v1/chat-rooms/762b2342-d988-4fcb-9f33-b02e23980904/custom-messages/",
+        "sticker_packs_url": "https://cf-blast-storage.livelikecdn.com/sticker-packs/762b2342-d988-4fcb-9f33-b02e23980904/sticker_packs.json",
+        "reaction_packs_url": "https://cf-blast-storage.livelikecdn.com/reaction-packs/762b2342-d988-4fcb-9f33-b02e23980904/reaction_packs.json",
+        "custom_data": null,
+        "sponsors_url": "https://cf-blast-storage.livelikecdn.com/sponsors/762b2342-d988-4fcb-9f33-b02e23980904/sponsors.json"
+      }
+    },
+    {
+      "id": "5b4b23f0-1791-4298-a9c6-8b6c98b66141",
+      "url": "https://localhost:8080/api/v1/chat-room-memberships/5b4b23f0-1791-4298-a9c6-8b6c98b66141/",
+      "created_at": "2021-09-18T11:46:13.008873Z",
+      "chat_room": {
+        "id": "b6720d45-24f9-4dc8-809f-57096b77ff2b",
+        "url": "https://localhost:8080/api/v1/chat-rooms/b6720d45-24f9-4dc8-809f-57096b77ff2b/",
+        "client_id": "8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS",
+        "title": "hello",
+        "created_at": "2021-09-18T11:45:59.676717Z",
+        "content_filter": "none",
+        "visibility": "members",
+        "channels": {
+          "chat": {
+            "sendbird": null,
+            "pubnub": "chatroom.b6720d45-24f9-4dc8-809f-57096b77ff2b"
+          },
+          "reactions": {
+            "pubnub": "chatroom.reactions.b6720d45-24f9-4dc8-809f-57096b77ff2b"
+          },
+          "control": {
+            "pubnub": "chatroom.control.b6720d45-24f9-4dc8-809f-57096b77ff2b"
+          }
+        },
+        "report_message_url": "https://localhost:8080/api/v1/chat-rooms/b6720d45-24f9-4dc8-809f-57096b77ff2b/report-chat-message/",
+        "reported_messages_url": "https://localhost:8080/api/v1/reported-chat-room-messages/?chat_room_id=b6720d45-24f9-4dc8-809f-57096b77ff2b&status=pending",
+        "delete_message_url": "https://localhost:8080/api/v1/chat-rooms/b6720d45-24f9-4dc8-809f-57096b77ff2b/delete-chat-message/",
+        "upload_url": "https://localhost:8080/api/v1/chat-rooms/b6720d45-24f9-4dc8-809f-57096b77ff2b/upload/",
+        "memberships_url": "https://localhost:8080/api/v1/chat-rooms/b6720d45-24f9-4dc8-809f-57096b77ff2b/memberships/",
+        "muted_status_url_template": "https://localhost:8080/api/v1/chat-rooms/b6720d45-24f9-4dc8-809f-57096b77ff2b/muted-status/{profile_id}/",
+        "custom_messages_url": "https://localhost:8080/api/v1/chat-rooms/b6720d45-24f9-4dc8-809f-57096b77ff2b/custom-messages/",
+        "sticker_packs_url": "https://cf-blast-storage.livelikecdn.com/sticker-packs/b6720d45-24f9-4dc8-809f-57096b77ff2b/sticker_packs.json",
+        "reaction_packs_url": "https://cf-blast-storage.livelikecdn.com/reaction-packs/b6720d45-24f9-4dc8-809f-57096b77ff2b/reaction_packs.json",
+        "custom_data": null,
+        "sponsors_url": "https://cf-blast-storage.livelikecdn.com/sponsors/b6720d45-24f9-4dc8-809f-57096b77ff2b/sponsors.json"
+      }
+    }
+  ]
+}
