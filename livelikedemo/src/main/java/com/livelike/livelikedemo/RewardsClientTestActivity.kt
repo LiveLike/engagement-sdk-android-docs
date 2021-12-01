@@ -239,10 +239,10 @@ class RewardsClientTestActivity : AppCompatActivity() {
         }
 
         result?.let{
-            AlertDialog.Builder ( this )
-                .setItems( it.results?.map {
-                    "reward UUID: ${it.id}, Kind: ${it.widgetKind}"
-                }?.toTypedArray() ){ _, _ -> }
+            AlertDialog.Builder(this)
+                .setItems(it.results?.map { rewardTransaction ->
+                    "reward name: ${rewardTransaction.rewardItemName}, amount : ${rewardTransaction.rewardItemAmount}widget Kind: ${rewardTransaction.widgetKind}"
+                }?.toTypedArray()) { _, _ -> }
                 .create()
                 .show()
         }
