@@ -166,7 +166,8 @@ class CustomNumberPredictionWidget :
     /**
      * verify if votes submitted are correct
      */
-    private fun verifyPredictedAnswer() { // TODO: [CAF] evaluate what this actually is doing?
+    private fun verifyPredictedAnswer() {
+        @Suppress("UnusedDeclaration") // TODO: [CAF] evaluate what this actually is doing?
         var isCorrect = false
         followUpWidgetViewModel?.widgetData?.options?.let { option ->
             val votedList = followUpWidgetViewModel?.getPredictionVotes()

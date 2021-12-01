@@ -4,12 +4,17 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.BlockedData
+import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitationStatus
+import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 
 interface LiveLikeChatClient {
+
+    var chatRoomDelegate: ChatRoomDelegate?
+
     fun createChatRoom(
         title: String? = null,
         visibility: Visibility? = null,
@@ -90,5 +95,10 @@ interface LiveLikeChatClient {
         liveLikePagination: LiveLikePagination,
         blockedProfileId: String?,
         liveLikeCallback: LiveLikeCallback<List<BlockedData>>
+    )
+
+    fun getProfileMutedStatus(
+        chatRoomId: String,
+        liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>
     )
 }
