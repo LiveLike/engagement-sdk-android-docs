@@ -126,14 +126,15 @@ class EngagementSDK(
         dataClient.getEngagementSdkConfig(url) {
             if (it is Result.Success) {
                 configurationStream.onNext(it.data)
-                val token = it.data.mixpanelToken
-                analyticService.onNext(
-                    MixpanelAnalytics(
-                        applicationContext,
-                        token,
-                        it.data.clientId
+                it.data.mixpanelToken?.let { token ->
+                    analyticService.onNext(
+                        MixpanelAnalytics(
+                            applicationContext,
+                            token,
+                            it.data.clientId
+                        )
                     )
-                )
+                }
                 userRepository.initUser(accessTokenDelegate!!.getAccessToken(), it.data.profileUrl)
             } else {
                 errorDelegate?.onError(
@@ -463,7 +464,7 @@ class EngagementSDK(
 
     override fun blockProfile(
         profileId: String,
-        liveLikeCallback: LiveLikeCallback<BlockedData>
+        liveLikeCallback: LiveLikeCallback<BlockedInfo>
     ) {
         chat().blockProfile(profileId, liveLikeCallback)
     }
@@ -477,10 +478,9 @@ class EngagementSDK(
 
     override fun getBlockedProfileList(
         liveLikePagination: LiveLikePagination,
-        blockedProfileId: String?,
-        liveLikeCallback: LiveLikeCallback<List<BlockedData>>
+        liveLikeCallback: LiveLikeCallback<List<BlockedInfo>>
     ) {
-        chat().getBlockedProfileList(liveLikePagination, blockedProfileId, liveLikeCallback)
+        chat().getBlockedProfileList(liveLikePagination, liveLikeCallback)
     }
 
     override fun sponsor(): Sponsor {

@@ -6,6 +6,7 @@ import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
 import com.livelike.engagementsdk.publicapis.*
+import com.livelike.engagementsdk.publicapis.*
 
 interface LiveLikeChatClient {
 
@@ -79,7 +80,7 @@ interface LiveLikeChatClient {
 
     fun blockProfile(
         profileId: String,
-        liveLikeCallback: LiveLikeCallback<BlockedData>
+        liveLikeCallback: LiveLikeCallback<BlockedInfo>
     )
 
     fun unBlockProfile(
@@ -89,14 +90,16 @@ interface LiveLikeChatClient {
 
     fun getBlockedProfileList(
         liveLikePagination: LiveLikePagination,
-        blockedProfileId: String?,
-        liveLikeCallback: LiveLikeCallback<List<BlockedData>>
+        liveLikeCallback: LiveLikeCallback<List<BlockedInfo>>
     )
 
     fun getProfileMutedStatus(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>
     )
+
+    fun getProfileBlockInfo(profileId: String, liveLikeCallback: LiveLikeCallback<BlockedInfo>)
+
 
     fun pinMessage(
         messageId: String,
