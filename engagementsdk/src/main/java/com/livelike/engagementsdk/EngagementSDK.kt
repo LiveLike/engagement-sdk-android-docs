@@ -1,36 +1,14 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
-import com.example.example.PinMessageInfo
 import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
-import com.livelike.engagementsdk.chat.ChatRoomInfo
-import com.livelike.engagementsdk.chat.ChatSession
-import com.livelike.engagementsdk.chat.InternalLiveLikeChatClient
-import com.livelike.engagementsdk.chat.LiveLikeChatClient
-import com.livelike.engagementsdk.chat.LiveLikeChatSession
-import com.livelike.engagementsdk.chat.Visibility
+import com.livelike.engagementsdk.chat.*
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.chat.data.remote.PinMessageInfoListResponse
-import com.livelike.engagementsdk.chat.data.remote.PinMessageInfoRequest
-import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
-import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
-import com.livelike.engagementsdk.chat.data.repository.ChatRepository
-import com.livelike.engagementsdk.chat.data.repository.ChatRoomRepository
-import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatRoomMessagingClient
 import com.livelike.engagementsdk.core.AccessTokenDelegate
-import com.livelike.engagementsdk.core.data.models.LeaderBoard
-import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
-import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
-import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryResult
-import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
-import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
-import com.livelike.engagementsdk.core.data.models.LeaderboardClient
-import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
-import com.livelike.engagementsdk.core.data.models.toLeaderBoard
-import com.livelike.engagementsdk.core.data.models.toReward
+import com.livelike.engagementsdk.core.data.models.*
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
@@ -45,33 +23,16 @@ import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.gamification.Badges
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.gamification.Rewards
-import com.livelike.engagementsdk.publicapis.BlockedData
-import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
-import com.livelike.engagementsdk.publicapis.ChatRoomInvitationStatus
-import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
-import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
-import com.livelike.engagementsdk.publicapis.IEngagement
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
-import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
+import com.livelike.engagementsdk.publicapis.*
 import com.livelike.engagementsdk.sponsorship.Sponsor
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 /**
@@ -151,7 +112,8 @@ class EngagementSDK(
                 }
             }
         }
-        internalChatClient = InternalLiveLikeChatClient(configurationUserPairFlow, uiScope, sdkScope, dataClient)
+        internalChatClient =
+            InternalLiveLikeChatClient(configurationUserPairFlow, uiScope, sdkScope, dataClient)
         userRepository.currentUserStream.subscribe(this.javaClass.simpleName) { user ->
             user?.accessToken?.let { token ->
                 userRepository.currentUserStream.unsubscribe(this.javaClass.simpleName)
@@ -206,17 +168,8 @@ class EngagementSDK(
         visibility: Visibility?,
         liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
     ) {
-        createUpdateChatRoom(null, visibility, title, liveLikeCallback)
-    }
-
-    private fun createUpdateChatRoom(
-        chatRoomId: String?,
-        visibility: Visibility?,
-        title: String?,
-        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
-    ) {
         (chat() as InternalLiveLikeChatClient).createUpdateChatRoom(
-            chatRoomId,
+            null,
             visibility,
             title,
             liveLikeCallback
@@ -229,7 +182,12 @@ class EngagementSDK(
         visibility: Visibility?,
         liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
     ) {
-        createUpdateChatRoom(chatRoomId, visibility, title, liveLikeCallback)
+        (chat() as InternalLiveLikeChatClient).createUpdateChatRoom(
+            chatRoomId,
+            visibility,
+            title,
+            liveLikeCallback
+        )
     }
 
     override fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>) {

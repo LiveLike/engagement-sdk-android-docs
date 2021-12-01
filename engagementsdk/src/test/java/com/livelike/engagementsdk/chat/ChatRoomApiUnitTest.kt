@@ -28,14 +28,9 @@ import readAll
 @RunWith(RobolectricTestRunner::class)
 class ChatRoomApiUnitTest {
 
-    val context = ApplicationProvider.getApplicationContext<Context>()
+    private val context = ApplicationProvider.getApplicationContext<Context>()
     private var mockWebServer = MockWebServer()
-
     private lateinit var sdk: IEngagement
-
-    init {
-        mockWebServer = MockWebServer()
-    }
 
     @Before
     fun setup() {
@@ -241,5 +236,4 @@ class ChatRoomApiUnitTest {
         verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
         assert(resultCaptor.firstValue != null && resultCaptor.firstValue::class.java == LiveLikeEmptyResponse::class.java)
     }
-
 }
