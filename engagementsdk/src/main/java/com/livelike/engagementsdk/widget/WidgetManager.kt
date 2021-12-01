@@ -261,9 +261,8 @@ enum class WidgetType(val event: String) {
 
     fun getType(): String {
         return event
-            .replace("created", "")
-            .replace("updated", "")
-            .replace("-", "")
+            .replace("-created", "")
+            .replace("-updated", "")
     }
 
     /*
