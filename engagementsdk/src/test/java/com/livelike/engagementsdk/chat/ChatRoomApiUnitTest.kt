@@ -126,6 +126,8 @@ class ChatRoomApiUnitTest {
         Thread.sleep(5000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
         sdk.chat().getChatRoom("e8f3b5d2-3353-4c8e-b54e-32ecca6b7482", callback)
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
         val resultCaptor =
             argumentCaptor<ChatRoomInfo>()
         val errorCaptor =

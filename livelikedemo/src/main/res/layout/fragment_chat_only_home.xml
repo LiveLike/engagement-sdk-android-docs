@@ -192,6 +192,12 @@
                     android:layout_height="34dp"
                     android:text="Block List"
                     android:textSize="12sp" />
+                <Button
+                    android:id="@+id/btn_block_check"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:text="Check Block"
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout

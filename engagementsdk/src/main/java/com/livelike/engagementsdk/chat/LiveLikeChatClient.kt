@@ -3,13 +3,7 @@ package com.livelike.engagementsdk.chat
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.publicapis.BlockedData
-import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
-import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
-import com.livelike.engagementsdk.publicapis.ChatRoomInvitationStatus
-import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
+import com.livelike.engagementsdk.publicapis.*
 
 interface LiveLikeChatClient {
 
@@ -83,7 +77,7 @@ interface LiveLikeChatClient {
 
     fun blockProfile(
         profileId: String,
-        liveLikeCallback: LiveLikeCallback<BlockedData>
+        liveLikeCallback: LiveLikeCallback<BlockedInfo>
     )
 
     fun unBlockProfile(
@@ -93,12 +87,14 @@ interface LiveLikeChatClient {
 
     fun getBlockedProfileList(
         liveLikePagination: LiveLikePagination,
-        blockedProfileId: String?,
-        liveLikeCallback: LiveLikeCallback<List<BlockedData>>
+        liveLikeCallback: LiveLikeCallback<List<BlockedInfo>>
     )
 
     fun getProfileMutedStatus(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>
     )
+
+    fun getProfileBlockInfo(profileId: String, liveLikeCallback: LiveLikeCallback<BlockedInfo>)
+
 }

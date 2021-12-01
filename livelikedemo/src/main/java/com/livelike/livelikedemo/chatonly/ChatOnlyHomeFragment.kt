@@ -15,7 +15,7 @@ import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.publicapis.BlockedData
+import com.livelike.engagementsdk.publicapis.BlockedInfo
 import com.livelike.engagementsdk.publicapis.ChatRoomAdd
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
@@ -33,6 +33,7 @@ import kotlinx.android.synthetic.main.chat_only_check_box.view.chk_avatar
 import kotlinx.android.synthetic.main.chat_only_check_box.view.ed_avatar
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_add
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_block
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_block_check
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_block_list
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_change
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_create
@@ -95,13 +96,11 @@ class ChatOnlyHomeFragment : Fragment() {
         val adapter = BlockedListAdapter(::unblock)
         rcyl_block.adapter = adapter
         btn_block_list.setOnClickListener {
-            val profileId = ed_block_profile_id.text.toString()
             prg_block.visibility = View.VISIBLE
             (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.getBlockedProfileList(
                 LiveLikePagination.FIRST,
-                profileId,
-                object : LiveLikeCallback<List<BlockedData>>() {
-                    override fun onResponse(result: List<BlockedData>?, error: String?) {
+                object : LiveLikeCallback<List<BlockedInfo>>() {
+                    override fun onResponse(result: List<BlockedInfo>?, error: String?) {
                         prg_block.visibility = View.INVISIBLE
                         error?.let { it1 -> showToast(it1) }
                         result?.let {
@@ -112,13 +111,31 @@ class ChatOnlyHomeFragment : Fragment() {
                     }
                 })
         }
+        btn_block_check.setOnClickListener {
+            val profileId = ed_block_profile_id.text.toString()
+            prg_block.visibility = View.VISIBLE
+            (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.getProfileBlockInfo(profileId,
+                object : LiveLikeCallback<BlockedInfo>() {
+                    override fun onResponse(result: BlockedInfo?, error: String?) {
+                        prg_block.visibility = View.INVISIBLE
+                        error?.let { it1 -> showToast(it1) }
+                        showToast(
+                            when (result != null) {
+                                true -> "Blocked"
+                                else -> "Not Blocked"
+                            }
+                        )
+                    }
+
+                })
+        }
         btn_block.setOnClickListener {
             val profileId = ed_block_profile_id.text.toString()
             prg_block.visibility = View.VISIBLE
             (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.blockProfile(
                 profileId,
-                object : LiveLikeCallback<BlockedData>() {
-                    override fun onResponse(result: BlockedData?, error: String?) {
+                object : LiveLikeCallback<BlockedInfo>() {
+                    override fun onResponse(result: BlockedInfo?, error: String?) {
                         prg_block.visibility = View.INVISIBLE
                         result?.let {
                             showToast("BLocked User: ${it.blockedProfileID}")
@@ -130,7 +147,9 @@ class ChatOnlyHomeFragment : Fragment() {
         btn_create.setOnClickListener {
             val title = ed_chat_room_title.text.toString()
             val visibility =
-                if (btn_visibility.text.toString().lowercase(Locale.getDefault()).contains("visibility").not())
+                if (btn_visibility.text.toString().lowercase(Locale.getDefault())
+                        .contains("visibility").not()
+                )
                     Visibility.valueOf(btn_visibility.text.toString())
                 else
                     Visibility.everyone
@@ -549,7 +568,7 @@ class BlockedListAdapter(
     RecyclerView.Adapter<BlockedListAdapter.BlockListViewHolder>() {
     inner class BlockListViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-    val blockedList = arrayListOf<BlockedData>()
+    val blockedList = arrayListOf<BlockedInfo>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockListViewHolder {
         return BlockListViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.block_list_item, parent, false)

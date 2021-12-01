@@ -241,7 +241,7 @@ interface IEngagement {
     @Deprecated("use {@link com.livelike.engagementsdk.chat.LiveLikeChatClient#blockProfile} instead like this")
     fun blockProfile(
         profileId: String,
-        liveLikeCallback: LiveLikeCallback<BlockedData>
+        liveLikeCallback: LiveLikeCallback<BlockedInfo>
     )
 
     /**
@@ -263,8 +263,7 @@ interface IEngagement {
     @Deprecated("use {@link com.livelike.engagementsdk.chat.LiveLikeChatClient#getBlockedProfileList} instead like this")
     fun getBlockedProfileList(
         liveLikePagination: LiveLikePagination,
-        blockedProfileId: String?,
-        liveLikeCallback: LiveLikeCallback<List<BlockedData>>
+        liveLikeCallback: LiveLikeCallback<List<BlockedInfo>>
     )
 
     /**

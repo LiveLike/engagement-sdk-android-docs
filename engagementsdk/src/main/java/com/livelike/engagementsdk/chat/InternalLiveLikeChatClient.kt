@@ -4,26 +4,14 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.TEMPLATE_PROFILE_ID
-import com.livelike.engagementsdk.chat.data.remote.ChatRoom
-import com.livelike.engagementsdk.chat.data.remote.ChatRoomMemberListResponse
-import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
-import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
+import com.livelike.engagementsdk.chat.data.remote.*
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.data.repository.ChatRoomRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatRoomMessagingClient
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
-import com.livelike.engagementsdk.publicapis.BlockedData
-import com.livelike.engagementsdk.publicapis.BlockedProfileListResponse
-import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
-import com.livelike.engagementsdk.publicapis.ChatRoomInvitationResponse
-import com.livelike.engagementsdk.publicapis.ChatRoomInvitationStatus
-import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
-import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
+import com.livelike.engagementsdk.publicapis.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -43,7 +31,7 @@ internal class InternalLiveLikeChatClient(
         mutableMapOf()
     private val invitationForProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
     private val invitationByProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
-    private var blockedProfileListResponseMap = hashMapOf<String, BlockedProfileListResponse>()
+    private var blockedProfileResponse: BlockedProfileListResponse? = null
 
     override var chatRoomDelegate: ChatRoomDelegate? = null
         set(value) {
@@ -495,13 +483,13 @@ internal class InternalLiveLikeChatClient(
 
     override fun blockProfile(
         profileId: String,
-        liveLikeCallback: LiveLikeCallback<BlockedData>
+        liveLikeCallback: LiveLikeCallback<BlockedInfo>
     ) {
         sdkScope.launch {
             configurationUserPairFlow.collect {
                 it.first.blockProfileUrl?.let { url ->
                     uiScope.launch {
-                        val result = dataClient.remoteCall<BlockedData>(
+                        val result = dataClient.remoteCall<BlockedInfo>(
                             url,
                             RequestType.POST,
                             requestBody = """{"blocked_profile_id":"$profileId"}"""
@@ -540,24 +528,16 @@ internal class InternalLiveLikeChatClient(
 
     override fun getBlockedProfileList(
         liveLikePagination: LiveLikePagination,
-        blockedProfileId: String?,
-        liveLikeCallback: LiveLikeCallback<List<BlockedData>>
+        liveLikeCallback: LiveLikeCallback<List<BlockedInfo>>
     ) {
         sdkScope.launch {
-            configurationUserPairFlow.collect { pair->
+            configurationUserPairFlow.collect { pair ->
                 pair.first.blockProfileListTemplate.let {
                     uiScope.launch {
-                        val params = when (blockedProfileId != null) {
-                            true -> "blocked_profile_id=$blockedProfileId"
-                            else -> ""
-                        }
                         val url = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> it.replace(
-                                "{blocked_profile_id}",
-                                blockedProfileId ?: ""
-                            )
-                            LiveLikePagination.NEXT -> blockedProfileListResponseMap[params]?.next
-                            LiveLikePagination.PREVIOUS -> blockedProfileListResponseMap[params]?.previous
+                            LiveLikePagination.FIRST -> it.replace("{blocked_profile_id}", "")
+                            LiveLikePagination.NEXT -> blockedProfileResponse?.next
+                            LiveLikePagination.PREVIOUS -> blockedProfileResponse?.previous
                         }
                         if (url != null) {
                             val result = dataClient.remoteCall<BlockedProfileListResponse>(
@@ -568,7 +548,7 @@ internal class InternalLiveLikeChatClient(
                             )
 
                             if (result is Result.Success) {
-                                blockedProfileListResponseMap[params] = result.data
+                                blockedProfileResponse = result.data
                                 liveLikeCallback.onResponse(result.data.results, null)
                             } else if (result is Result.Error) {
                                 liveLikeCallback.onResponse(
@@ -604,6 +584,37 @@ internal class InternalLiveLikeChatClient(
                     }
                 } else if (it is Result.Error) {
                     liveLikeCallback.processResult(it)
+                }
+            }
+        }
+    }
+
+    override fun getProfileBlockInfo(
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<BlockedInfo>
+    ) {
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                uiScope.launch {
+                    val url = pair.first.blockProfileListTemplate.replace(
+                        "{blocked_profile_id}",
+                        profileId
+                    )
+                    val result = dataClient.remoteCall<BlockedProfileListResponse>(
+                        url,
+                        RequestType.GET,
+                        requestBody = null,
+                        pair.first.accessToken, true
+                    )
+
+                    if (result is Result.Success) {
+                        liveLikeCallback.onResponse(result.data.results.firstOrNull(), null)
+                    } else if (result is Result.Error) {
+                        liveLikeCallback.onResponse(
+                            null,
+                            result.exception.message
+                        )
+                    }
                 }
             }
         }
