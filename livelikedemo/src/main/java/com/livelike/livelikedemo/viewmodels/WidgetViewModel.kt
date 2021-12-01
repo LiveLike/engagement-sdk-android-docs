@@ -19,7 +19,6 @@ class WidgetViewModel constructor(
         createPublicSession(getChannelManager().selectedChannel.llProgram.toString())
 
     fun getSession(): LiveLikeContentSession {
-        println("widgetViewModel.getSession->$contentSession")
         return contentSession
     }
 
@@ -46,7 +45,6 @@ class WidgetViewModel constructor(
     fun createPublicSession(
         sessionId: String,
         widgetInterceptor: WidgetInterceptor? = null,
-        allowTimeCodeGetter: Boolean = true
     ): LiveLikeContentSession {
         if (publicSession == null || publicSession?.contentSessionId() != sessionId) {
             publicSession?.close()

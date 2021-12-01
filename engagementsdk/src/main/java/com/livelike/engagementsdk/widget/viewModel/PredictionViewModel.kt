@@ -28,7 +28,6 @@ import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
@@ -127,6 +126,7 @@ internal class PredictionViewModel(
     fun startDismissTimout(
         timeout: String,
         isFollowup: Boolean,
+        @Suppress("UNUSED_PARAMETER") //suppressed to keep public interface intact
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
@@ -139,7 +139,7 @@ internal class PredictionViewModel(
             } else {
                 uiScope.launch {
                     delay(AndroidResource.parseDuration(timeout))
-                    confirmationState(widgetViewThemeAttributes)
+                    confirmationState()
                 }
             }
         }
@@ -215,7 +215,7 @@ internal class PredictionViewModel(
         logDebug { "Prediction Widget Follow Up isUserCorrect:$isUserCorrect" }
     }
 
-    private fun confirmationState(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
+    private fun confirmationState() {
         /*if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)
@@ -357,8 +357,7 @@ internal class PredictionViewModel(
 
     override fun getUserInteraction(): PredictionWidgetUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
-            widgetInfos.widgetId,
-            WidgetKind.fromString(widgetInfos.type)
+            widgetInfos.widgetId
         )
     }
 

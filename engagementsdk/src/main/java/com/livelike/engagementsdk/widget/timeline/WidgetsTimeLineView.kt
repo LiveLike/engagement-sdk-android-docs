@@ -184,8 +184,7 @@ class WidgetsTimeLineView(
             val kind = it.liveLikeWidget.kind
             if (kind?.contains(WidgetKind.PREDICTION.event) == true) {
                 if ((timeLineViewModel.contentSession as ContentSession).widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
-                        it.liveLikeWidget.id ?: "",
-                        WidgetKind.fromString(kind)
+                        it.liveLikeWidget.id ?: ""
                     ) != null
                 ) {
                     it.widgetState = WidgetStates.RESULTS
@@ -200,8 +199,7 @@ class WidgetsTimeLineView(
             if (kind == WidgetKind.IMAGE_SLIDER.event || kind?.contains(WidgetKind.QUIZ.event) == true ||
                    kind?.contains(WidgetKind.TEXT_ASK.event) == true || kind?.contains(WidgetKind.NUMBER_PREDICTION.event) == true) {
                 if ((timeLineViewModel.contentSession as ContentSession).widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
-                        it.liveLikeWidget.id ?: "",
-                        WidgetKind.fromString(kind)
+                        it.liveLikeWidget.id ?: ""
                     ) != null
                 ) {
                     it.widgetState = WidgetStates.RESULTS

@@ -47,17 +47,7 @@ import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
-import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
-import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
-import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.TextAskWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.*
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
@@ -246,6 +236,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                         followUpWidgetViewModel: NumberPredictionFollowUpWidgetModel,
                         isImage: Boolean
                     ): View? {
+                        return null
+                    }
+
+                    override fun createSocialEmbedWidgetView(socialEmbedWidgetModel: SocialEmbedWidgetModel): View? {
                         return null
                     }
                 }

@@ -18,17 +18,7 @@ import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
-import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
-import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
-import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
-import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.TextAskWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.*
 
 // TODO remove view references from this view model, also clean content session for same.
 
@@ -195,6 +185,13 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                         widgetViewViewFactory?.createNumberPredictionWidgetView(
                             widgetView.widgetViewModel as NumberPredictionWidgetModel,
                             fromString == WidgetType.IMAGE_NUMBER_PREDICTION
+                        )
+                }
+
+                is SocialEmbedWidgetModel -> {
+                    customView =
+                        widgetViewViewFactory?.createSocialEmbedWidgetView(
+                            widgetView.widgetViewModel as SocialEmbedWidgetModel
                         )
                 }
             }
