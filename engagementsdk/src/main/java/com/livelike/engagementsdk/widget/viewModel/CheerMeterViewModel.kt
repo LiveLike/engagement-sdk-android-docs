@@ -23,7 +23,6 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.CheerMeterUserInteraction
-import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
@@ -274,8 +273,7 @@ internal class CheerMeterViewModel(
 
     override fun getUserInteraction(): CheerMeterUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
-            widgetInfos.widgetId,
-            WidgetKind.fromString(widgetInfos.type)
+            widgetInfos.widgetId
         )
     }
 

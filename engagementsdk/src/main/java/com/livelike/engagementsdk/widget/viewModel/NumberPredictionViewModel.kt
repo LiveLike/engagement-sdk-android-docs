@@ -26,7 +26,6 @@ import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.NumberPredictionOptionAdapter
 import com.livelike.engagementsdk.widget.data.models.NumberPredictionWidgetUserInteraction
-import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.model.Resource
@@ -224,8 +223,7 @@ internal class NumberPredictionViewModel(
      */
     override fun getUserInteraction(): NumberPredictionWidgetUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
-            widgetInfos.widgetId,
-            WidgetKind.fromString(widgetInfos.type)
+            widgetInfos.widgetId
         )
     }
 
@@ -332,6 +330,7 @@ internal class NumberPredictionViewModel(
     fun startDismissTimeout(
         timeout: String,
         isFollowup: Boolean,
+        @Suppress("UNUSED_PARAMETER") //publicly accessible parameter
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
@@ -377,8 +376,7 @@ internal class NumberPredictionViewModel(
 
 
     internal fun followupState(
-        selectedPredictionVotes: List<NumberPredictionVotes>?,
-        widgetViewThemeAttributes: WidgetViewThemeAttributes
+        selectedPredictionVotes: List<NumberPredictionVotes>?
     ) {
         if (numberPredictionFollowUp)
             return

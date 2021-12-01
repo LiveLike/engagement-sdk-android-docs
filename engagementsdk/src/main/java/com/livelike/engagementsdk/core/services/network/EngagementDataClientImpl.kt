@@ -288,7 +288,7 @@ internal open class EngagementDataClientImpl :
                     val errorJson = JsonParser.parseString(error).asJsonObject
                     val msg = execute.message
                     logError { error }
-                    var errorMsg = try {
+                    val errorMsg = try {
                         when (msg.isNotEmpty()) {
                             true -> msg
                             else -> when (fullErrorJson) {
