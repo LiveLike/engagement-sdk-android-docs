@@ -27,7 +27,6 @@ import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.QuizWidgetUserInteraction
-import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
@@ -148,6 +147,7 @@ internal class QuizViewModel(
 
     fun startDismissTimout(
         timeout: String,
+        @Suppress("UNUSED_PARAMETER") //suppressed to keep public interface intact
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
@@ -269,8 +269,7 @@ internal class QuizViewModel(
 
     override fun getUserInteraction(): QuizWidgetUserInteraction? {
         return widgetInteractionRepository?.getWidgetInteraction(
-            widgetInfos.widgetId,
-            WidgetKind.fromString(widgetInfos.type)
+            widgetInfos.widgetId
         )
     }
 
