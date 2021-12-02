@@ -363,7 +363,7 @@ interface IRewardsClient {
      **/
     fun getRewardTransactions(
         liveLikePagination: LiveLikePagination,
-        requestParams: RewardTransactionsRequestParameters,
+        requestParams: RewardTransactionsRequestParameters = RewardTransactionsRequestParameters(),
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardTransaction>>
     )
 
