@@ -34,7 +34,7 @@ internal class Rewards(
     /*map of rewardITemRequestOptions and last response*/
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
 
-    private var rewardTransactionsPageMap: MutableMap<RewardTransactionsRequestParameters,LLPaginatedResult<RewardTransaction>?> = mutableMapOf()
+    private var rewardTransactionsPageMap: MutableMap<RewardTransactionsRequestParameters?,LLPaginatedResult<RewardTransaction>?> = mutableMapOf()
 
     private var _rewardEventsListener: WeakReference<RewardEventsListener>? = null
     override var rewardEventsListener: RewardEventsListener?
@@ -256,7 +256,7 @@ internal class Rewards(
 
     override fun getRewardTransactions(
         liveLikePagination: LiveLikePagination,
-        requestParams: RewardTransactionsRequestParameters,
+        requestParams: RewardTransactionsRequestParameters?,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardTransaction>>
     ) {
         var fetchUrl: String? = null
@@ -274,10 +274,10 @@ internal class Rewards(
             } else {
                 configurationUserPairFlow.collect { pair ->
                     fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
-                        requestParams.widgetIds.forEach {
+                        requestParams?.widgetIds?.forEach {
                             addQueryParameter("widget_id", it)
                         }
-                        requestParams.widgetKindFilter.forEach {
+                        requestParams?.widgetKindFilter?.forEach {
                             addQueryParameter("widget_kind", it.getType())
                         }
                     }?.build()?.toUrl()?.toString()
@@ -363,7 +363,7 @@ interface IRewardsClient {
      **/
     fun getRewardTransactions(
         liveLikePagination: LiveLikePagination,
-        requestParams: RewardTransactionsRequestParameters = RewardTransactionsRequestParameters(),
+        requestParams: RewardTransactionsRequestParameters?,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardTransaction>>
     )
 

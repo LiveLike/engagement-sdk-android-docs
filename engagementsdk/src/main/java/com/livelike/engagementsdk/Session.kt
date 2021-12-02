@@ -102,7 +102,7 @@ interface LiveLikeContentSession {
 
     fun getWidgets(
         liveLikePagination: LiveLikePagination,
-        requestParams: WidgetsRequestParameters = WidgetsRequestParameters(),
+        requestParams: WidgetsRequestParameters?,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
     )
 }

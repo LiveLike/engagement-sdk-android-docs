@@ -116,7 +116,7 @@ internal class ContentSession(
 
     override fun getWidgets(
         liveLikePagination: LiveLikePagination,
-        requestParams: WidgetsRequestParameters,
+        requestParams: WidgetsRequestParameters?,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
     ){
         uiScope.launch {
@@ -127,13 +127,13 @@ internal class ContentSession(
                         LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
                         LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
                     }?.toHttpUrlOrNull()?.newBuilder()?.apply {
-                        requestParams.widgetStatus?.let {
+                        requestParams?.widgetStatus?.let {
                             addQueryParameter("status", it.parameterValue)
                         }
-                        requestParams.ordering?.let {
+                        requestParams?.ordering?.let {
                             addQueryParameter("ordering", it.parameterValue)
                         }
-                        requestParams.widgetTypeFilter.forEach {
+                        requestParams?.widgetTypeFilter?.forEach {
                             addQueryParameter("kind", it.getKindName())
                         }
                     }?.build()?.toUrl().toString()
