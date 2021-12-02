@@ -656,24 +656,26 @@ internal class InternalLiveLikeChatClient(
         chatMessagePayload: LiveLikeChatMessage,
         liveLikeCallback: LiveLikeCallback<PinMessageInfo>
     ) {
-        uiScope.launch {
+        sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-                val result = dataClient.remoteCall<PinMessageInfo>(
-                    pair.second.pinMessageUrl,
-                    requestType = RequestType.POST,
-                    requestBody = gson.toJson(
-                        PinMessageInfoRequest(
-                            messageId,
-                            chatMessagePayload,
-                            chatRoomId
-                        )
-                    ).toRequestBody(
-                        "application/json; charset=utf-8".toMediaTypeOrNull()
-                    ),
-                    accessToken = pair.first.accessToken,
-                    true
-                )
-                liveLikeCallback.processResult(result)
+                uiScope.launch {
+                    val result = dataClient.remoteCall<PinMessageInfo>(
+                        pair.second.pinMessageUrl,
+                        requestType = RequestType.POST,
+                        requestBody = gson.toJson(
+                            PinMessageInfoRequest(
+                                messageId,
+                                chatMessagePayload,
+                                chatRoomId
+                            )
+                        ).toRequestBody(
+                            "application/json; charset=utf-8".toMediaTypeOrNull()
+                        ),
+                        accessToken = pair.first.accessToken,
+                        true
+                    )
+                    liveLikeCallback.processResult(result)
+                }
             }
         }
     }
@@ -682,15 +684,17 @@ internal class InternalLiveLikeChatClient(
         pinMessageInfoId: String,
         liveLiveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
     ) {
-        uiScope.launch {
+        sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-                val result = dataClient.remoteCall<LiveLikeEmptyResponse>(
-                    "${pair.second.pinMessageUrl}/$pinMessageInfoId",
-                    RequestType.DELETE,
-                    accessToken = pair.first.accessToken,
-                    fullErrorJson = true
-                )
-                liveLiveLikeCallback.processResult(result)
+                uiScope.launch {
+                    val result = dataClient.remoteCall<LiveLikeEmptyResponse>(
+                        "${pair.second.pinMessageUrl}/$pinMessageInfoId",
+                        RequestType.DELETE,
+                        accessToken = pair.first.accessToken,
+                        fullErrorJson = true
+                    )
+                    liveLiveLikeCallback.processResult(result)
+                }
             }
         }
     }
@@ -701,36 +705,38 @@ internal class InternalLiveLikeChatClient(
         pagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<PinMessageInfo>>
     ) {
-        uiScope.launch {
+        sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-                val url = when (pagination) {
-                    LiveLikePagination.FIRST -> "${pair.second.pinMessageUrl}?chat_room_id=$chatRoomId"
-                    LiveLikePagination.NEXT -> pinMessageInfoListResponse?.next
-                    LiveLikePagination.PREVIOUS -> pinMessageInfoListResponse?.previous
-                }
-                if (url != null) {
-                    val result = dataClient.remoteCall<PinMessageInfoListResponse>(
-                        "$url${
-                            when (order) {
-                                PinMessageOrder.DESC -> "&ordering=-pinned_at"
-                                else -> "&ordering=pinned_at"
-                            }
-                        }",
-                        RequestType.GET,
-                        accessToken = pair.first.accessToken,
-                        fullErrorJson = true
-                    )
-                    if (result is Result.Success) {
-                        pinMessageInfoListResponse = result.data
-                        liveLikeCallback.onResponse(result.data.results, null)
-                    } else if (result is Result.Error) {
-                        liveLikeCallback.onResponse(
-                            null,
-                            result.exception.message
-                        )
+                uiScope.launch {
+                    val url = when (pagination) {
+                        LiveLikePagination.FIRST -> "${pair.second.pinMessageUrl}?chat_room_id=$chatRoomId"
+                        LiveLikePagination.NEXT -> pinMessageInfoListResponse?.next
+                        LiveLikePagination.PREVIOUS -> pinMessageInfoListResponse?.previous
                     }
-                } else {
-                    liveLikeCallback.onResponse(null, "No More data to load")
+                    if (url != null) {
+                        val result = dataClient.remoteCall<PinMessageInfoListResponse>(
+                            "$url${
+                                when (order) {
+                                    PinMessageOrder.DESC -> "&ordering=-pinned_at"
+                                    else -> "&ordering=pinned_at"
+                                }
+                            }",
+                            RequestType.GET,
+                            accessToken = pair.first.accessToken,
+                            fullErrorJson = true
+                        )
+                        if (result is Result.Success) {
+                            pinMessageInfoListResponse = result.data
+                            liveLikeCallback.onResponse(result.data.results, null)
+                        } else if (result is Result.Error) {
+                            liveLikeCallback.onResponse(
+                                null,
+                                result.exception.message
+                            )
+                        }
+                    } else {
+                        liveLikeCallback.onResponse(null, "No More data to load")
+                    }
                 }
             }
         }

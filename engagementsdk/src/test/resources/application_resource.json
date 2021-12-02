@@ -39,5 +39,6 @@
   "agora_token_url_template": "http://localhost:8080/api/v1/agora-token/{chat_room_id}/",
   "widget_detail_url_template": "http://localhost:8080/api/v1/widgets/{kind}/{id}/",
   "badges_url": "http://localhost:8080/api/v1/applications/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L/badges/",
-  "profile_search_url": "http://localhost:8080/api/v1/profiles/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L&nickname={search_name}"
+  "profile_search_url": "http://localhost:8080/api/v1/profiles/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L&nickname={search_name}",
+  "pin_message_url": "http://localhost:8080/api/v1/pin-message/"
 }
