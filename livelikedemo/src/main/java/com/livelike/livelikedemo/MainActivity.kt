@@ -604,7 +604,7 @@ class MainActivity : AppCompatActivity() {
 fun convertStreamToString(`is`: InputStream?): String? {
     val reader = BufferedReader(InputStreamReader(`is`))
     val sb = java.lang.StringBuilder()
-    var line: String? = null
+    var line: String?
     while (reader.readLine().also { line = it } != null) {
         sb.append(line).append("\n")
     }

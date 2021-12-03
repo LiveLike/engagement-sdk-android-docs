@@ -8,17 +8,7 @@ import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.timeline.TimelineWidgetResource
 import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
-import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
-import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionFollowUpWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.NumberPredictionWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
-import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.TextAskWidgetModel
-import com.livelike.engagementsdk.widget.widgetModel.VideoAlertWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.*
 import com.livelike.livelikedemo.customwidgets.CustomNumberPredictionWidget
 
 class TimeLineWidgetFactory(
@@ -102,6 +92,10 @@ class TimeLineWidgetFactory(
             this.isImage = isImage
             this.isFollowUp = true
         }
+    }
+
+    override fun createSocialEmbedWidgetView(socialEmbedWidgetModel: SocialEmbedWidgetModel): View? {
+        return null
     }
 
 

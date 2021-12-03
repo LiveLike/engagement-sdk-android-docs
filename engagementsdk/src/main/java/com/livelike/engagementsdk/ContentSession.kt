@@ -64,7 +64,6 @@ import org.threeten.bp.ZonedDateTime
 import java.io.IOException
 
 internal class ContentSession(
-    clientId: String,
     private val sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,

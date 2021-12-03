@@ -100,11 +100,9 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                 parent?.let { (it as ViewGroup).removeAllViews() }
             }
             WidgetStates.RESULTS -> {
-
+                // not needed presently
             }
-            null -> {
 
-            }
         }
     }
 
@@ -136,6 +134,10 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                     themeComponent.body,
                     fontFamilyProvider
                 )
+
+                if (themeComponent.footer?.background != null) {
+                    linkBackground?.background = AndroidResource.createDrawable(themeComponent.footer)
+                }
             }
         }
     }
