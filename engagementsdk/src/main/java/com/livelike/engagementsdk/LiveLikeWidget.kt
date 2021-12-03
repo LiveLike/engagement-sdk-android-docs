@@ -182,7 +182,7 @@ data class EarnableRewardSummary (
     var rewardItemAmount: Int? = null,
 
     @field:SerializedName("reward_item_id")
-    var rewardItemId: Int? = null,
+    var rewardItemId: String? = null,
 )
 
 data class CreatedBy(
