@@ -27,21 +27,8 @@ import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
 import com.livelike.livelikedemo.R
-import kotlinx.android.synthetic.main.custom_chat_item.view.custom_messages
-import kotlinx.android.synthetic.main.custom_chat_item.view.custom_tv
-import kotlinx.android.synthetic.main.custom_chat_item.view.img_message
-import kotlinx.android.synthetic.main.custom_chat_item.view.normal_message
-import kotlinx.android.synthetic.main.custom_chat_item.view.txt_message
-import kotlinx.android.synthetic.main.custom_chat_item.view.txt_msg_time
-import kotlinx.android.synthetic.main.custom_chat_item.view.txt_name
-import kotlinx.android.synthetic.main.custom_chat_item.view.widget_view
-import kotlinx.android.synthetic.main.fragment_chat.btn_gif_send
-import kotlinx.android.synthetic.main.fragment_chat.btn_img_send
-import kotlinx.android.synthetic.main.fragment_chat.btn_send
-import kotlinx.android.synthetic.main.fragment_chat.custom
-import kotlinx.android.synthetic.main.fragment_chat.ed_msg
-import kotlinx.android.synthetic.main.fragment_chat.lay_swipe
-import kotlinx.android.synthetic.main.fragment_chat.rcyl_chat
+import kotlinx.android.synthetic.main.custom_chat_item.view.*
+import kotlinx.android.synthetic.main.fragment_chat.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -50,9 +37,7 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 class ChatFragment : Fragment() {
 
@@ -191,14 +176,26 @@ class ChatFragment : Fragment() {
 
                 override fun onPinMessage(message: PinMessageInfo) {
                     activity?.runOnUiThread {
-                        Toast.makeText(context, "Pinned: ${message.messageId}\n${message.pinnedById}\n${message.messagePayload?.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Pinned: ${message.messageId}\n${message.pinnedById}\n${message.messagePayload?.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        adapter.pinnedList.add(message)
+                        adapter.notifyDataSetChanged()
                     }
+
                 }
 
                 override fun onUnPinMessage(pinMessageId: String) {
                     activity?.runOnUiThread {
                         Toast.makeText(context, "UnPinned: $pinMessageId", Toast.LENGTH_SHORT)
                             .show()
+                        val index = adapter.pinnedList.indexOfFirst { it.id == pinMessageId }
+                        if (index != -1) {
+                            adapter.pinnedList.removeAt(index)
+                            adapter.notifyDataSetChanged()
+                        }
                     }
                 }
             })
@@ -367,6 +364,14 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
         chatMessage.timestamp?.let {
             dateTime.time = it.toLong()
         }
+        holder.itemView.img_pin.visibility = when {
+            pinnedList.any { it.messageId == chatMessage.id } -> {
+                View.VISIBLE
+            }
+            else -> {
+                View.INVISIBLE
+            }
+        }
         if (chatMessage.imageUrl != null && chatMessage.image_width != null && chatMessage.image_height != null
         ) {
             holder.itemView.img_message.visibility = View.VISIBLE
@@ -416,48 +421,54 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
         }
 
         holder.itemView.setOnClickListener {
-            sdk?.chat()?.pinMessage(
-                chatMessage.id!!,
-                chatRoomId!!,
-                chatMessage,
-                object : LiveLikeCallback<PinMessageInfo>() {
-                    override fun onResponse(result: PinMessageInfo?, error: String?) {
-                        error?.let {
-                            Toast.makeText(holder.itemView.context, it, Toast.LENGTH_SHORT).show()
+            val index = pinnedList.indexOfFirst { it.messageId == chatMessage.id }
+            if (index != -1) {
+                sdk?.chat()?.unPinMessage(
+                    pinnedList[index].id!!,
+                    object : LiveLikeCallback<LiveLikeEmptyResponse>() {
+                        override fun onResponse(
+                            result: LiveLikeEmptyResponse?,
+                            error: String?
+                        ) {
+                            error?.let {
+                                Toast.makeText(
+                                    holder.itemView.context,
+                                    it,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            result?.let {
+                                Toast.makeText(
+                                    holder.itemView.context,
+                                    "Message Unpinned",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
-                        result?.let { messageInfo ->
-                            Toast.makeText(
-                                holder.itemView.context,
-                                messageInfo.id,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                            sdk?.chat()?.unPinMessage(
-                                messageInfo.id!!,
-                                object : LiveLikeCallback<LiveLikeEmptyResponse>() {
-                                    override fun onResponse(
-                                        result: LiveLikeEmptyResponse?,
-                                        error: String?
-                                    ) {
-                                        error?.let {
-                                            Toast.makeText(
-                                                holder.itemView.context,
-                                                it,
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                        result?.let {
-                                            Toast.makeText(
-                                                holder.itemView.context,
-                                                "Message Unpinned",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    }
-                                })
+                    })
+            } else {
+                sdk?.chat()?.pinMessage(
+                    chatMessage.id!!,
+                    chatRoomId!!,
+                    chatMessage,
+                    object : LiveLikeCallback<PinMessageInfo>() {
+                        override fun onResponse(result: PinMessageInfo?, error: String?) {
+                            error?.let {
+                                Toast.makeText(holder.itemView.context, it, Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                            result?.let { messageInfo ->
+                                Toast.makeText(
+                                    holder.itemView.context,
+                                    "Pin Message ${messageInfo.id}",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+
+                            }
                         }
-                    }
-                })
+                    })
+            }
         }
 
         holder.itemView.txt_msg_time.text = SimpleDateFormat(
