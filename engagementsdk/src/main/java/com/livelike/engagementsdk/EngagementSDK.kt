@@ -1343,6 +1343,8 @@ class EngagementSDK(
         val profileChatRoomReceivedInvitationsUrlTemplate: String,
         @SerializedName("profile_chat_room_sent_invitations_url_template")
         val profileChatRoomSentInvitationsUrlTemplate: String,
+        @SerializedName("reward_transactions_url")
+        val rewardTransactionsUrl: String = ""
     )
 
     companion object {

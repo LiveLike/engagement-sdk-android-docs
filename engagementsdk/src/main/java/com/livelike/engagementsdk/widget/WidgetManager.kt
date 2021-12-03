@@ -246,8 +246,10 @@ enum class WidgetType(val event: String) {
     SOCIAL_EMBED("social-embed-created"),
     VIDEO_ALERT("video-alert-created"),
     TEXT_ASK("text-ask-created"),
+    @UnsupportedWidgetType
     TEXT_NUMBER_PREDICTION("text-number-prediction-created"),
     IMAGE_NUMBER_PREDICTION("image-number-prediction-created"),
+    @UnsupportedWidgetType
     TEXT_NUMBER_PREDICTION_FOLLOW_UP("text-number-prediction-follow-up-updated"),
     IMAGE_NUMBER_PREDICTION_FOLLOW_UP("image-number-prediction-follow-up-updated");
 
@@ -258,10 +260,25 @@ enum class WidgetType(val event: String) {
     }
 
     fun getType(): String {
-        return event.replace("created", "").replace("updated", "")
-            .replace("-", "")
+        return event
+            .replace("-created", "")
+            .replace("-updated", "")
+    }
+
+    /*
+        CAF 2021-11-24
+        the original did not match the server side name
+        and I was adverse to changing the existing function
+        so I made a new one and made it internal.
+     */
+    internal fun getKindName(): String {
+        return event
+            .replace("-created", "")
+            .replace("-updated", "")
     }
 }
+
+annotation class UnsupportedWidgetType
 
 internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
