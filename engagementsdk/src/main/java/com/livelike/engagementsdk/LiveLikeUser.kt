@@ -36,4 +36,5 @@ data class LiveLikeUser(
     @SerializedName("reported_count") val reportedCount: Int,
     @SerializedName("created_at") val createdAt : String,
     @SerializedName("blocked_profiles_template_url") val blockProfileListTemplate : String,
+    @SerializedName("blocked_profile_ids_url") val blockedProfileIdsUrl : String,
 )
