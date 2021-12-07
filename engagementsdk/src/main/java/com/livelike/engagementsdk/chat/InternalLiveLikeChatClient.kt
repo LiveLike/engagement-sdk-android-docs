@@ -688,7 +688,7 @@ internal class InternalLiveLikeChatClient(
             configurationUserPairFlow.collect { pair ->
                 uiScope.launch {
                     val result = dataClient.remoteCall<LiveLikeEmptyResponse>(
-                        "${pair.second.pinMessageUrl}/$pinMessageInfoId",
+                        "${pair.second.pinMessageUrl}$pinMessageInfoId/",
                         RequestType.DELETE,
                         accessToken = pair.first.accessToken,
                         fullErrorJson = true
