@@ -46,7 +46,6 @@ class WidgetViewModel constructor(
     fun createPublicSession(
         sessionId: String,
         widgetInterceptor: WidgetInterceptor? = null,
-        allowTimeCodeGetter: Boolean = true
     ): LiveLikeContentSession {
         if (publicSession == null || publicSession?.contentSessionId() != sessionId) {
             publicSession?.close()

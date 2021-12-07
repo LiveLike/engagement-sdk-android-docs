@@ -326,7 +326,7 @@ internal class ChatSession(
                         channel?.let { ch ->
                             contentSessionScope.launch {
                                 delay(500)
-                                pubnubMessagingClient.addChannelSubscription(ch, 0L)
+                                pubnubMessagingClient.addChannelSubscription(ch)
                                 delay(500)
                                 chatViewModel.apply {
                                     flushMessages()

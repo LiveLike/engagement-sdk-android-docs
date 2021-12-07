@@ -16,13 +16,19 @@ import com.livelike.engagementsdk.gamification.RewardEventsListener
 import com.livelike.engagementsdk.gamification.RewardItemBalance
 import com.livelike.engagementsdk.gamification.RewardItemTransferRequestParams
 import com.livelike.engagementsdk.gamification.RewardItemTransferType
+import com.livelike.engagementsdk.gamification.RewardTransaction
+import com.livelike.engagementsdk.gamification.RewardTransactionsRequestParameters
 import com.livelike.engagementsdk.gamification.TransferRewardItem
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.WidgetType
+import kotlinx.android.synthetic.main.reward_is_client_test_activity.button_get_reward
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.enter_amount_et
+import kotlinx.android.synthetic.main.reward_is_client_test_activity.filter_by_widget_kind
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.progress_bar
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.receipent_profile_id
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_item_balance
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_item_spinnner
+import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_uuid_text
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.send_btn
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.show_all_reward_transfers
 import kotlinx.android.synthetic.main.reward_is_client_test_activity.transfer_type_selection
@@ -169,6 +175,82 @@ class RewardsClientTestActivity : AppCompatActivity() {
             showAllRewardsTransfers()
         }
 
+        filter_by_widget_kind.setOnClickListener {
+
+            val checked = mutableSetOf<WidgetType>()
+
+            AlertDialog.Builder(this)
+                .setTitle("choose kinds")
+                .setMultiChoiceItems(
+                    WidgetType.values().map {
+                        it.event
+                            .replace("-created", "")
+                            .replace("-updated", "")
+                    }.toTypedArray(),
+                    BooleanArray(WidgetType.values().size)
+                ) { _, which, isChecked ->
+                    if (isChecked) {
+                        checked.add(WidgetType.values()[which])
+                    } else {
+                        checked.remove(WidgetType.values()[which])
+                    }
+                }
+                .setPositiveButton("ok") { _,_ ->
+                    rewardsClient.getRewardTransactions(
+                        LiveLikePagination.FIRST,
+                        RewardTransactionsRequestParameters( widgetKindFilter = checked),
+                        object : LiveLikeCallback<LLPaginatedResult<RewardTransaction>>() {
+                            override fun onResponse(
+                                result: LLPaginatedResult<RewardTransaction>?,
+                                error: String?
+                            ) {
+                                runOnUiThread{ buildResultDialog( result, error) }
+                            }
+                        }
+                    )
+                }
+                .create()
+                .show()
+        }
+
+        button_get_reward.setOnClickListener {
+
+            if( !reward_uuid_text.text.isNullOrBlank() && !validateUuid(reward_uuid_text.text.toString())){
+                buildResultDialog( null, "enter a valid uuid")
+                return@setOnClickListener
+            }
+
+            rewardsClient.getRewardTransactions(
+                LiveLikePagination.FIRST,
+                RewardTransactionsRequestParameters( widgetIds = setOf(reward_uuid_text.text.toString()) ),
+                object : LiveLikeCallback<LLPaginatedResult<RewardTransaction>>() {
+                    override fun onResponse(
+                        result: LLPaginatedResult<RewardTransaction>?,
+                        error: String?
+                    ) {
+                        runOnUiThread{ buildResultDialog( result, error) }
+                    }
+                }
+            )
+        }
+    }
+
+    private fun buildResultDialog(result: LLPaginatedResult<RewardTransaction>?, error: String?) {
+        error?.let {
+            AlertDialog.Builder( this)
+                .setMessage(it)
+                .create()
+                .show()
+        }
+
+        result?.let{
+            AlertDialog.Builder(this)
+                .setItems(it.results?.map { rewardTransaction ->
+                    "reward name: ${rewardTransaction.rewardItemName}, amount : ${rewardTransaction.rewardItemAmount}widget Kind: ${rewardTransaction.widgetKind}"
+                }?.toTypedArray()) { _, _ -> }
+                .create()
+                .show()
+        }
     }
 
     private fun showAllRewardsTransfers() {
