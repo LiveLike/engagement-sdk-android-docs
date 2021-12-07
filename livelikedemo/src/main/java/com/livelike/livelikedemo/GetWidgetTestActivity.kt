@@ -1,11 +1,11 @@
 package com.livelike.livelikedemo
 
-import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.RadioButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SwitchCompat
+import com.livelike.engagementsdk.EarnableReward
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetStatus
 import com.livelike.engagementsdk.WidgetsRequestOrdering
@@ -107,9 +107,29 @@ class GetWidgetTestActivity : AppCompatActivity() {
             AlertDialog.Builder ( this )
                 .setItems( it.map { widget ->
                     "type: ${widget.getWidgetType()}, status: ${widget.status}"
-                }.toTypedArray(), DialogInterface.OnClickListener { _, _ ->  })
+                }.toTypedArray()) { dialog, which ->
+                    dialog.dismiss()
+                    showEarnedRewards(result[which])
+                }
                 .create()
                 .show()
         }
+    }
+
+    private fun showEarnedRewards(likeLikeWidget: LiveLikeWidget) {
+        val items: Array<String> = likeLikeWidget.earnableRewards
+            ?.map(EarnableReward::toString)
+            ?.toTypedArray()?.plus(
+                likeLikeWidget.options?.mapNotNull{
+                    it?.let { optionsItem ->
+                        "OptionsItem: reward_item=${optionsItem.rewardItem} reward_item_amount=${optionsItem.rewardItemAmount}"
+                    }
+                }?.toList() ?: emptyList()
+            ) ?: emptyArray()
+
+        AlertDialog.Builder( this)
+            .setItems( items ){ _,_ -> }
+            .create()
+            .show()
     }
 }
