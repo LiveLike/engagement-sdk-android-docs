@@ -10,14 +10,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.CHAT_PROVIDER
-import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.LiveLikeUser
-import com.livelike.engagementsdk.MockAnalyticsService
-import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.ViewAnimationEvents
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
@@ -26,16 +19,17 @@ import com.livelike.engagementsdk.chat.services.network.ChatDataClient
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
-import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.engagementsdk.publicapis.*
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.util.Locale
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.set
 
 internal class ChatViewModel(
     private val applicationContext: Context,
@@ -54,10 +48,44 @@ internal class ChatViewModel(
             chatAdapter.analyticsService = value
         }
     var chatAdapter: ChatRecyclerAdapter =
-        ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
+        ChatRecyclerAdapter(analyticsService, ::reportChatMessage, ::blockProfile)
     var messageList = mutableListOf<ChatMessage>()
     var cacheList = mutableListOf<ChatMessage>()
     var deletedMessages = hashSetOf<String>()
+    var blockedProfileIds = hashSetOf<String>()
+    var liveLikeChatClient: LiveLikeChatClient? = null
+        set(value) {
+            field = value
+            value?.apply {
+                getProfileBlockIds(object : LiveLikeCallback<List<String>>() {
+                    override fun onResponse(result: List<String>?, error: String?) {
+                        error?.let {
+                            errorDelegate?.onError(it)
+                        }
+                        result?.let {
+                            blockedProfileIds.addAll(it)
+                        }
+                    }
+                })
+                chatRoomDelegate = object : ChatRoomDelegate() {
+                    override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
+
+                    }
+
+                    override fun onReceiveInvitation(invitation: ChatRoomInvitation) {
+
+                    }
+
+                    override fun onBlockProfile(blockedInfo: BlockedInfo) {
+                        blockedProfileIds.add(blockedInfo.blockedProfileID)
+                    }
+
+                    override fun onUnBlockProfile(blockInfoId: String, blockProfileId: String) {
+                        blockedProfileIds.remove(blockProfileId)
+                    }
+                }
+            }
+        }
 
     internal val eventStream: Stream<String> =
         SubscriptionManager(true)
@@ -116,7 +144,7 @@ internal class ChatViewModel(
         messageList.addAll(
             0,
             messages.filter {
-                !deletedMessages.contains(it.id) && !getBlockedUsers()
+                !deletedMessages.contains(it.id) && !blockedProfileIds
                     .contains(it.senderId)
             }.filter {
                 chatAdapter.chatViewDelegate != null || (chatAdapter.chatViewDelegate == null && it.messageEvent != PubnubChatEventType.CUSTOM_MESSAGE_CREATED)
@@ -136,7 +164,7 @@ internal class ChatViewModel(
                     CHAT_PROVIDER
                 )
             } check blocked:${
-                getBlockedUsers()
+                blockedProfileIds
                     .contains(message.senderId)
             } check deleted:${deletedMessages.contains(message.id)}"
         }
@@ -146,7 +174,7 @@ internal class ChatViewModel(
         // if integrator provide the chatViewDelegate that means we are allowing to show the custom message
         if (chatAdapter.chatViewDelegate == null && message.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) return
 
-        if (getBlockedUsers()
+        if (blockedProfileIds
                 .contains(message.senderId)
         ) {
             logDebug { "user is blocked" }
@@ -284,6 +312,20 @@ internal class ChatViewModel(
         } else {
             eventStream.onNext(EVENT_LOADING_COMPLETE)
         }
+    }
+
+    private fun blockProfile(profileId: String) {
+        liveLikeChatClient?.blockProfile(profileId,
+            object : LiveLikeCallback<BlockedInfo>() {
+                override fun onResponse(result: BlockedInfo?, error: String?) {
+                    error?.let {
+                        errorDelegate?.onError(it)
+                    }
+                    result?.let {
+                        logDebug { "Block User: ${it.blockedProfileID} ,By User: ${it.blockedByProfileId}" }
+                    }
+                }
+            })
     }
 
     private fun reportChatMessage(message: ChatMessage) {

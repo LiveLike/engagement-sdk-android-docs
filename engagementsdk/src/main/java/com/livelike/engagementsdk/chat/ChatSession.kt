@@ -53,6 +53,7 @@ internal class ChatSession(
     private val isPublicRoom: Boolean = true,
     internal val analyticsServiceStream: Stream<AnalyticsService>,
     private val errorDelegate: ErrorDelegate? = null,
+    private val liveLikeChatClient: LiveLikeChatClient,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeChatSession {
 
@@ -62,7 +63,7 @@ internal class ChatSession(
 
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
-    private val dataClient: ChatDataClient = ChatDataClientImpl()
+    internal val dataClient: ChatDataClient = ChatDataClientImpl()
     private var isClosed = false
     val chatViewModel: ChatViewModel by lazy {
         ChatViewModel(
@@ -98,7 +99,6 @@ internal class ChatSession(
     init {
         contentSessionScope.launch {
             configurationUserPairFlow.collect { pair ->
-
                 chatViewModel.analyticsService = analyticsServiceStream.latest()!!
                 val liveLikeUser = pair.second
                 chatRepository =
@@ -114,6 +114,7 @@ internal class ChatSession(
                     )
                 logDebug { "chatRepository created" }
                 // updating urls value will be added in enterChat Room
+                chatViewModel.liveLikeChatClient = liveLikeChatClient
                 chatViewModel.chatRepository = chatRepository
                 initializeChatMessaging(currentPlayheadTime)
                 chatSessionIdleStream.onNext(true)

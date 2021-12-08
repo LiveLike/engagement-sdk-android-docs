@@ -119,4 +119,6 @@ interface LiveLikeChatClient {
         pagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<PinMessageInfo>>
     )
+    fun getProfileBlockIds(liveLikeCallback: LiveLikeCallback<List<String>>)
+
 }

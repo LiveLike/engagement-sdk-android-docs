@@ -426,6 +426,14 @@ class ChatOnlyHomeFragment : Fragment() {
                 override fun onReceiveInvitation(invitation: ChatRoomInvitation) {
                     showToast("Receive invitation from ${invitation.invited_by.nickname} => ${invitation.invited_by.userId}")
                 }
+
+                override fun onBlockProfile(blockedInfo: BlockedInfo) {
+
+                }
+
+                override fun onUnBlockProfile(blockInfoId: String, blockProfileId: String) {
+
+                }
             }
 
 //        btn_search.setOnClickListener {
