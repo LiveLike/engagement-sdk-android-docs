@@ -97,4 +97,6 @@ interface LiveLikeChatClient {
 
     fun getProfileBlockInfo(profileId: String, liveLikeCallback: LiveLikeCallback<BlockedInfo>)
 
+    fun getProfileBlockIds(liveLikeCallback: LiveLikeCallback<List<String>>)
+
 }

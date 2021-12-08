@@ -749,7 +749,8 @@ class EngagementSDK(
             applicationContext,
             programId,
             analyticService,
-            errorDelegate
+            errorDelegate,
+            chat()
         ) { EpochTime(0) }
     }
 
@@ -777,7 +778,8 @@ class EngagementSDK(
             applicationContext,
             programId,
             analyticService,
-            errorDelegate
+            errorDelegate,
+            chat()
         ) { timecodeGetter.getTimecode() }.apply {
             this.engagementSDK = this@EngagementSDK
         }
@@ -798,7 +800,8 @@ class EngagementSDK(
             applicationContext,
             false,
             analyticService,
-            errorDelegate
+            errorDelegate,
+            chat()
         ) { timecodeGetter.getTimecode() }
     }
 

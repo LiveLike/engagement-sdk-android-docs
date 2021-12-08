@@ -32,6 +32,7 @@ internal class InternalLiveLikeChatClient(
     private val invitationForProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
     private val invitationByProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
     private var blockedProfileResponse: BlockedProfileListResponse? = null
+    private var blockProfileIdsResponse: BlockProfileIdsResponse? = null
 
     override var chatRoomDelegate: ChatRoomDelegate? = null
         set(value) {
@@ -609,6 +610,30 @@ internal class InternalLiveLikeChatClient(
 
                     if (result is Result.Success) {
                         liveLikeCallback.onResponse(result.data.results.firstOrNull(), null)
+                    } else if (result is Result.Error) {
+                        liveLikeCallback.onResponse(
+                            null,
+                            result.exception.message
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    override fun getProfileBlockIds(liveLikeCallback: LiveLikeCallback<List<String>>) {
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                uiScope.launch {
+                    val result = dataClient.remoteCall<BlockProfileIdsResponse>(
+                        pair.first.blockedProfileIdsUrl,
+                        requestType = RequestType.GET,
+                        accessToken = pair.first.accessToken,
+                        fullErrorJson = true
+                    )
+                    if (result is Result.Success) {
+                        blockProfileIdsResponse = result.data
+                        liveLikeCallback.onResponse(result.data.results, null)
                     } else if (result is Result.Error) {
                         liveLikeCallback.onResponse(
                             null,

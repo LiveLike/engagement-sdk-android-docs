@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
+import com.livelike.engagementsdk.publicapis.BlockedInfo
 import com.livelike.engagementsdk.publicapis.ChatRoomAdd
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
@@ -51,6 +52,23 @@ internal open class PubnubChatRoomMessagingClient(
                             object : TypeToken<PubnubChatEvent<ChatRoomInvitation>>() {}.type
                         )
                         chatRoomDelegate?.onReceiveInvitation(pubnubChatRoomEvent.payload)
+                    }
+                    PubnubChatEventType.BLOCK_PROFILE -> {
+                        val pubnubChatRoomEvent: PubnubChatEvent<BlockedInfo> = gson.fromJson(
+                            pnMessageResult.message.asJsonObject,
+                            object : TypeToken<PubnubChatEvent<BlockedInfo>>() {}.type
+                        )
+                        chatRoomDelegate?.onBlockProfile(pubnubChatRoomEvent.payload)
+                    }
+                    PubnubChatEventType.UNBLOCK_PROFILE -> {
+                        val pubnubChatRoomEvent: PubnubChatEvent<BlockedInfo> = gson.fromJson(
+                            pnMessageResult.message.asJsonObject,
+                            object : TypeToken<PubnubChatEvent<BlockedInfo>>() {}.type
+                        )
+                        chatRoomDelegate?.onUnBlockProfile(
+                            pubnubChatRoomEvent.payload.id,
+                            pubnubChatRoomEvent.payload.blockedProfileID
+                        )
                     }
                     else -> {
                         logError { "Event: $event not supported"  }
