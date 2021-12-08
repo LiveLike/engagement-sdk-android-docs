@@ -226,7 +226,8 @@ internal class PredictionViewModel(
         widgetState.onNext(WidgetStates.RESULTS)
         logDebug { "Prediction Widget selected Position:${adapter?.selectedPosition}" }
         uiScope.launch {
-            vote()
+             // commented because of  https://livelike.atlassian.net/browse/ES-2949
+            // vote()
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
                     programRepository?.programGamificationProfileStream?.onNext(pts)
