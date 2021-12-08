@@ -122,7 +122,7 @@ class GetWidgetTestActivity : AppCompatActivity() {
             ?.toTypedArray()?.plus(
                 likeLikeWidget.options?.mapNotNull{
                     it?.let { optionsItem ->
-                        "OptionsItem: reward_item=${optionsItem.earnable_reward?.rewardItem} reward_item_amount=${optionsItem.earnable_reward?.rewardItemAmount}"
+                        optionsItem.earnable_reward?.toString() ?: "null reward?"
                     }
                 }?.toList() ?: emptyList()
             ) ?: emptyArray()
