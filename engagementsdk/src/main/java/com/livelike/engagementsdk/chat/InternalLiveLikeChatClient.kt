@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat
 
+import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.MockAnalyticsService
@@ -11,6 +12,8 @@ import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatRoomM
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.publicapis.*
 import com.livelike.engagementsdk.publicapis.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -671,4 +674,99 @@ internal class InternalLiveLikeChatClient(
             }
         }
     }
+
+    override fun pinMessage(
+        messageId: String,
+        chatRoomId: String,
+        chatMessagePayload: LiveLikeChatMessage,
+        liveLikeCallback: LiveLikeCallback<PinMessageInfo>
+    ) {
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                uiScope.launch {
+                    val result = dataClient.remoteCall<PinMessageInfo>(
+                        pair.second.pinMessageUrl,
+                        requestType = RequestType.POST,
+                        requestBody = gson.toJson(
+                            PinMessageInfoRequest(
+                                messageId,
+                                chatMessagePayload,
+                                chatRoomId
+                            )
+                        ).toRequestBody(
+                            "application/json; charset=utf-8".toMediaTypeOrNull()
+                        ),
+                        accessToken = pair.first.accessToken,
+                        true
+                    )
+                    liveLikeCallback.processResult(result)
+                }
+            }
+        }
+    }
+
+    override fun unPinMessage(
+        pinMessageInfoId: String,
+        liveLiveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
+    ) {
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                uiScope.launch {
+                    val result = dataClient.remoteCall<LiveLikeEmptyResponse>(
+                        "${pair.second.pinMessageUrl}$pinMessageInfoId/",
+                        RequestType.DELETE,
+                        accessToken = pair.first.accessToken,
+                        fullErrorJson = true
+                    )
+                    liveLiveLikeCallback.processResult(result)
+                }
+            }
+        }
+    }
+
+    override fun getPinMessageInfoList(
+        chatRoomId: String,
+        order: PinMessageOrder,
+        pagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<PinMessageInfo>>
+    ) {
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                uiScope.launch {
+                    val url = when (pagination) {
+                        LiveLikePagination.FIRST -> "${pair.second.pinMessageUrl}?chat_room_id=$chatRoomId"
+                        LiveLikePagination.NEXT -> pinMessageInfoListResponse?.next
+                        LiveLikePagination.PREVIOUS -> pinMessageInfoListResponse?.previous
+                    }
+                    if (url != null) {
+                        val result = dataClient.remoteCall<PinMessageInfoListResponse>(
+                            "$url${
+                                when (order) {
+                                    PinMessageOrder.DESC -> "&ordering=-pinned_at"
+                                    else -> "&ordering=pinned_at"
+                                }
+                            }",
+                            RequestType.GET,
+                            accessToken = pair.first.accessToken,
+                            fullErrorJson = true
+                        )
+                        if (result is Result.Success) {
+                            pinMessageInfoListResponse = result.data
+                            liveLikeCallback.onResponse(result.data.results, null)
+                        } else if (result is Result.Error) {
+                            liveLikeCallback.onResponse(
+                                null,
+                                result.exception.message
+                            )
+                        }
+                    } else {
+                        liveLikeCallback.onResponse(null, "No More data to load")
+                    }
+                }
+            }
+        }
+    }
+
+    private var pinMessageInfoListResponse: PinMessageInfoListResponse? = null
+
 }

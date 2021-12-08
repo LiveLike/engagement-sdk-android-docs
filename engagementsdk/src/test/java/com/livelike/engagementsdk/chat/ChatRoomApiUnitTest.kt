@@ -3,10 +3,14 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
+import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
+import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 import mockingAndroidServicesUsedByMixpanel
 import okhttp3.mockwebserver.Dispatcher
@@ -24,21 +28,18 @@ import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
 import readAll
+import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 class ChatRoomApiUnitTest {
 
-    val context = ApplicationProvider.getApplicationContext<Context>()
+    private val context = ApplicationProvider.getApplicationContext<Context>()
     private var mockWebServer = MockWebServer()
-
     private lateinit var sdk: IEngagement
-
-    init {
-        mockWebServer = MockWebServer()
-    }
 
     @Before
     fun setup() {
+        mockWebServer.takeRequest(1, TimeUnit.SECONDS)
         mockWebServer.start(8080)
         mockingAndroidServicesUsedByMixpanel()
         mockWebServer.dispatcher = object : Dispatcher() {
@@ -99,7 +100,33 @@ class ChatRoomApiUnitTest {
                             )
                         }
                     }
-
+                    "/api/v1/pin-message/" -> when (request.method) {
+                        "POST" -> MockResponse().apply {
+                            setResponseCode(200)
+                            setBody(
+                                javaClass.classLoader.getResourceAsStream("pin_message_success.json")
+                                    .readAll()
+                            )
+                        }
+                        else -> MockResponse().apply {
+                            setResponseCode(500)
+                        }
+                    }
+                    "/api/v1/pin-message/777e8267-2992-4e76-9001-faec2f552b57" -> when (request.method) {
+                        "DELETE" -> MockResponse().apply {
+                            setResponseCode(200)
+                        }
+                        else -> MockResponse().apply {
+                            setResponseCode(500)
+                        }
+                    }
+                    "/api/v1/pin-message/?chat_room_id=fc5feb36-6272-4e4b-8daa-5fe987bec9fc&ordering=pinned_at" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream("pin_message_list.json")
+                                .readAll()
+                        )
+                    }
                     else -> MockResponse().apply {
                         setResponseCode(500)
                     }
@@ -142,14 +169,12 @@ class ChatRoomApiUnitTest {
 
     @Test
     fun test_chat_room_details_error() {
-        Shadows.shadowOf(Looper.getMainLooper()).idle()
-        Thread.sleep(2000)
-        Shadows.shadowOf(Looper.getMainLooper()).idle()
         val callback = Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<ChatRoomInfo>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.chat().getChatRoom("e8f3b5d2-3353-4c8e-b54e-32ecca6b7411", callback)
         Thread.sleep(2000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
-        Thread.sleep(2000)
-        sdk.chat().getChatRoom("e8f3b5d2-3353-4c8e-b54e-32ecca6b7411", callback)
         val resultCaptor =
             argumentCaptor<ChatRoomInfo>()
         val errorCaptor =
@@ -168,6 +193,8 @@ class ChatRoomApiUnitTest {
         Thread.sleep(5000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
         sdk.chat().createChatRoom("abc", Visibility.everyone, callback)
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
         val resultCaptor =
             argumentCaptor<ChatRoomInfo>()
         val errorCaptor =
@@ -186,6 +213,8 @@ class ChatRoomApiUnitTest {
         Thread.sleep(5000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
         sdk.chat().getCurrentUserChatRoomList(LiveLikePagination.FIRST, callback)
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
         val resultCaptor =
             argumentCaptor<List<ChatRoomInfo>>()
         val errorCaptor =
@@ -208,6 +237,8 @@ class ChatRoomApiUnitTest {
             LiveLikePagination.FIRST,
             callback
         )
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
         val resultCaptor =
             argumentCaptor<List<LiveLikeUser>>()
         val errorCaptor =
@@ -231,6 +262,8 @@ class ChatRoomApiUnitTest {
             "e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
             callback
         )
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
         val resultCaptor =
             argumentCaptor<LiveLikeEmptyResponse>()
         val errorCaptor =
@@ -243,5 +276,85 @@ class ChatRoomApiUnitTest {
         verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
         assert(resultCaptor.firstValue != null && resultCaptor.firstValue::class.java == LiveLikeEmptyResponse::class.java)
     }
+
+    @Test
+    fun pin_message_in_chat_room() {
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<PinMessageInfo>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.chat().pinMessage(
+            "777e8267-2992-4e76-9001-faec2f552b57",
+            "fc5feb36-6272-4e4b-8daa-5fe987bec9fc",
+            gson.fromJson(
+                "{\"custom_data\":\"\",\"created_at\":\"2021-12-01T07:10:33+0000\",\"filtered_sender_nickname\":null,\"image_height\":150,\"image_width\":150,\"content_filter\":[],\"sender_id\":\"1c285e1a-aa93-4135-8361-ecd27317c66a\",\"sender_profile_url\":\"https://cf-blast-dig.livelikecdn.com/api/v1/profiles/1c285e1a-aa93-4135-8361-ecd27317c66a/\",\"sender_image_url\":null,\"badge_image_url\":null,\"program_date_time\":null,\"filtered_message\":null,\"id\":\"777e8267-2992-4e76-9001-faec2f552b57\",\"sender_nickname\":\"Virtual Champion\",\"message\":\"hfhckxul\"}",
+                LiveLikeChatMessage::class.java
+            ),
+            callback
+        )
+        Thread.sleep(3000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        val resultCaptor =
+            argumentCaptor<PinMessageInfo>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue.messageId == "777e8267-2992-4e76-9001-faec2f552b57" && resultCaptor.firstValue.chatRoomId == "fc5feb36-6272-4e4b-8daa-5fe987bec9fc")
+    }
+
+    @Test
+    fun unpin_message_in_chat_room() {
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<LiveLikeEmptyResponse>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.chat().unPinMessage(
+            "777e8267-2992-4e76-9001-faec2f552b57",
+            callback
+        )
+        Thread.sleep(3000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        val resultCaptor =
+            argumentCaptor<LiveLikeEmptyResponse>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue != null && resultCaptor.firstValue::class.java == LiveLikeEmptyResponse::class.java)
+    }
+
+    @Test
+    fun get_list_of_pin_message_in_chat_room() {
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<PinMessageInfo>>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.chat().getPinMessageInfoList(
+            "fc5feb36-6272-4e4b-8daa-5fe987bec9fc",
+            PinMessageOrder.ASC,
+            LiveLikePagination.FIRST,
+            callback
+        )
+        Thread.sleep(3000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        val resultCaptor =
+            argumentCaptor<List<PinMessageInfo>>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue != null && resultCaptor.firstValue.isNotEmpty() && resultCaptor.firstValue.first().id == "37e1720a-fc7b-4962-b216-6be9ed69dc96")
+    }
+
 
 }

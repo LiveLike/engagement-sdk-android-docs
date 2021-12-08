@@ -47,5 +47,7 @@ internal data class Channels(
     @SerializedName("chat")
     val chat: Map<String, String>,
     @SerializedName("reactions")
-    val reactions: Map<String, String>
+    val reactions: Map<String, String>,
+    @SerializedName("control")
+    val control: Map<String, String>
 )

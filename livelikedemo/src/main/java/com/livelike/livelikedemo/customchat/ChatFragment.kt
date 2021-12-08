@@ -13,30 +13,22 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.example.PinMessageInfo
 import com.google.gson.JsonParser
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
 import com.livelike.livelikedemo.R
-import kotlinx.android.synthetic.main.custom_chat_item.view.custom_messages
-import kotlinx.android.synthetic.main.custom_chat_item.view.custom_tv
-import kotlinx.android.synthetic.main.custom_chat_item.view.img_message
-import kotlinx.android.synthetic.main.custom_chat_item.view.normal_message
-import kotlinx.android.synthetic.main.custom_chat_item.view.txt_message
-import kotlinx.android.synthetic.main.custom_chat_item.view.txt_msg_time
-import kotlinx.android.synthetic.main.custom_chat_item.view.txt_name
-import kotlinx.android.synthetic.main.custom_chat_item.view.widget_view
-import kotlinx.android.synthetic.main.fragment_chat.btn_gif_send
-import kotlinx.android.synthetic.main.fragment_chat.btn_img_send
-import kotlinx.android.synthetic.main.fragment_chat.btn_send
-import kotlinx.android.synthetic.main.fragment_chat.custom
-import kotlinx.android.synthetic.main.fragment_chat.ed_msg
-import kotlinx.android.synthetic.main.fragment_chat.lay_swipe
-import kotlinx.android.synthetic.main.fragment_chat.rcyl_chat
+import kotlinx.android.synthetic.main.custom_chat_item.view.*
+import kotlinx.android.synthetic.main.fragment_chat.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -44,13 +36,8 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 class ChatFragment : Fragment() {
 
@@ -113,6 +100,7 @@ class ChatFragment : Fragment() {
                  custom.visibility = View.GONE
              }
          }*/
+        adapter.sdk = (activity as CustomChatActivity).sdk
 
         ed_msg.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -131,6 +119,8 @@ class ChatFragment : Fragment() {
         })
 
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
+            adapter.chatRoomId = homeChat.session.chatSession.getCurrentChatRoom()
+            adapter.loadPinnedMessage(context)
             adapter.chatList.clear()
             adapter.chatList.addAll(homeChat.session.chatSession.getLoadedMessages())
             homeChat.session.chatSession.setMessageListener(object : MessageListener {
@@ -180,6 +170,31 @@ class ChatFragment : Fragment() {
                         adapter.chatList.removeAt(index)
                         activity?.runOnUiThread {
                             adapter.notifyItemRemoved(index)
+                        }
+                    }
+                }
+
+                override fun onPinMessage(message: PinMessageInfo) {
+                    activity?.runOnUiThread {
+                        Toast.makeText(
+                            context,
+                            "Pinned: ${message.messageId}\n${message.pinnedById}\n${message.messagePayload?.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        adapter.pinnedList.add(message)
+                        adapter.notifyDataSetChanged()
+                    }
+
+                }
+
+                override fun onUnPinMessage(pinMessageId: String) {
+                    activity?.runOnUiThread {
+                        Toast.makeText(context, "UnPinned: $pinMessageId", Toast.LENGTH_SHORT)
+                            .show()
+                        val index = adapter.pinnedList.indexOfFirst { it.id == pinMessageId }
+                        if (index != -1) {
+                            adapter.pinnedList.removeAt(index)
+                            adapter.notifyDataSetChanged()
                         }
                     }
                 }
@@ -242,19 +257,21 @@ class ChatFragment : Fragment() {
     private fun sendCustomMessage(post: String? = null) {
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             post?.let {
-                homeChat.session.chatSession.sendCustomChatMessage(post, object : LiveLikeCallback<LiveLikeChatMessage>() {
-                    override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                        activity?.runOnUiThread {
-                            result?.let {
-                                Log.d("responseCode", result.id!!)
-                            }
-                            error?.let {
-                                println("ChatFragment.onResponse>> $error")
-                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                homeChat.session.chatSession.sendCustomChatMessage(
+                    post,
+                    object : LiveLikeCallback<LiveLikeChatMessage>() {
+                        override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                            activity?.runOnUiThread {
+                                result?.let {
+                                    Log.d("responseCode", result.id!!)
+                                }
+                                error?.let {
+                                    println("ChatFragment.onResponse>> $error")
+                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
-                    }
-                })
+                    })
             }
 
 //            var chatRoomId = homeChat.session.chatSession.getCurrentChatRoom()
@@ -302,7 +319,33 @@ class ChatFragment : Fragment() {
 }
 
 class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
+    var chatRoomId: String? = null
     val chatList = arrayListOf<LiveLikeChatMessage>()
+    var sdk: EngagementSDK? = null
+    var pinnedList = arrayListOf<PinMessageInfo>()
+
+    fun loadPinnedMessage(context: Context?) {
+        sdk?.chat()?.getPinMessageInfoList(
+            chatRoomId!!,
+            PinMessageOrder.ASC,
+            LiveLikePagination.FIRST,
+            object : LiveLikeCallback<List<PinMessageInfo>>() {
+                override fun onResponse(result: List<PinMessageInfo>?, error: String?) {
+                    result?.let {
+                        pinnedList.addAll(it.toSet())
+                        notifyDataSetChanged()
+                    }
+                    error?.let {
+                        Toast.makeText(
+                            context,
+                            it,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            })
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomChatViewHolder {
         return CustomChatViewHolder(
@@ -320,6 +363,14 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
         val dateTime = Date()
         chatMessage.timestamp?.let {
             dateTime.time = it.toLong()
+        }
+        holder.itemView.img_pin.visibility = when {
+            pinnedList.any { it.messageId == chatMessage.id } -> {
+                View.VISIBLE
+            }
+            else -> {
+                View.INVISIBLE
+            }
         }
         if (chatMessage.imageUrl != null && chatMessage.image_width != null && chatMessage.image_height != null
         ) {
@@ -366,6 +417,57 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
                     holder.itemView.custom_tv.visibility = View.VISIBLE
                     holder.itemView.widget_view.visibility = View.GONE
                 }
+            }
+        }
+
+        holder.itemView.setOnClickListener {
+            val index = pinnedList.indexOfFirst { it.messageId == chatMessage.id }
+            if (index != -1) {
+                sdk?.chat()?.unPinMessage(
+                    pinnedList[index].id!!,
+                    object : LiveLikeCallback<LiveLikeEmptyResponse>() {
+                        override fun onResponse(
+                            result: LiveLikeEmptyResponse?,
+                            error: String?
+                        ) {
+                            error?.let {
+                                Toast.makeText(
+                                    holder.itemView.context,
+                                    it,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            result?.let {
+                                Toast.makeText(
+                                    holder.itemView.context,
+                                    "Message Unpinned",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    })
+            } else {
+                sdk?.chat()?.pinMessage(
+                    chatMessage.id!!,
+                    chatRoomId!!,
+                    chatMessage,
+                    object : LiveLikeCallback<PinMessageInfo>() {
+                        override fun onResponse(result: PinMessageInfo?, error: String?) {
+                            error?.let {
+                                Toast.makeText(holder.itemView.context, it, Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                            result?.let { messageInfo ->
+                                Toast.makeText(
+                                    holder.itemView.context,
+                                    "Pin Message ${messageInfo.id}",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+
+                            }
+                        }
+                    })
             }
         }
 

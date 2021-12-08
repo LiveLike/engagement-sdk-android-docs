@@ -1,8 +1,11 @@
 package com.livelike.engagementsdk.chat
 
+import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
+import com.livelike.engagementsdk.publicapis.*
 import com.livelike.engagementsdk.publicapis.*
 
 interface LiveLikeChatClient {
@@ -97,6 +100,25 @@ interface LiveLikeChatClient {
 
     fun getProfileBlockInfo(profileId: String, liveLikeCallback: LiveLikeCallback<BlockedInfo>)
 
+
+    fun pinMessage(
+        messageId: String,
+        chatRoomId: String,
+        chatMessagePayload: LiveLikeChatMessage,
+        liveLikeCallback: LiveLikeCallback<PinMessageInfo>
+    )
+
+    fun unPinMessage(
+        pinMessageInfoId: String,
+        liveLiveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
+    )
+
+    fun getPinMessageInfoList(
+        chatRoomId: String,
+        order: PinMessageOrder,
+        pagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<PinMessageInfo>>
+    )
     fun getProfileBlockIds(liveLikeCallback: LiveLikeCallback<List<String>>)
 
 }

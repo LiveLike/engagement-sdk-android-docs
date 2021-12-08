@@ -114,7 +114,6 @@ class EngagementSDK(
         }
         internalChatClient =
             InternalLiveLikeChatClient(configurationUserPairFlow, uiScope, sdkScope, dataClient)
-
         userRepository.currentUserStream.subscribe(this.javaClass.simpleName) { user ->
             user?.accessToken?.let { token ->
                 userRepository.currentUserStream.unsubscribe(this.javaClass.simpleName)
@@ -170,17 +169,8 @@ class EngagementSDK(
         visibility: Visibility?,
         liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
     ) {
-        createUpdateChatRoom(null, visibility, title, liveLikeCallback)
-    }
-
-    private fun createUpdateChatRoom(
-        chatRoomId: String?,
-        visibility: Visibility?,
-        title: String?,
-        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
-    ) {
         (chat() as InternalLiveLikeChatClient).createUpdateChatRoom(
-            chatRoomId,
+            null,
             visibility,
             title,
             liveLikeCallback
@@ -193,7 +183,12 @@ class EngagementSDK(
         visibility: Visibility?,
         liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
     ) {
-        createUpdateChatRoom(chatRoomId, visibility, title, liveLikeCallback)
+        (chat() as InternalLiveLikeChatClient).createUpdateChatRoom(
+            chatRoomId,
+            visibility,
+            title,
+            liveLikeCallback
+        )
     }
 
     override fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>) {
@@ -866,6 +861,8 @@ class EngagementSDK(
         val profileChatRoomReceivedInvitationsUrlTemplate: String,
         @SerializedName("profile_chat_room_sent_invitations_url_template")
         val profileChatRoomSentInvitationsUrlTemplate: String,
+        @SerializedName("pin_message_url")
+        val pinMessageUrl: String
     )
 
     companion object {

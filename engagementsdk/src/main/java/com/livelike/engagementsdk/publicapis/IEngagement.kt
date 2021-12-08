@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.publicapis
 
+import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
@@ -8,6 +9,7 @@ import com.livelike.engagementsdk.chat.LiveLikeChatClient
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
