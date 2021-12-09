@@ -67,23 +67,24 @@ internal class ChatViewModel(
                         }
                     }
                 })
-                chatRoomDelegate = object : ChatRoomDelegate() {
-                    override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
+                (this as InternalLiveLikeChatClient).subscribeToChatRoomInternalDelegate(
+                    this.hashCode().toString(), object : ChatRoomDelegate() {
+                        override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
 
-                    }
+                        }
 
-                    override fun onReceiveInvitation(invitation: ChatRoomInvitation) {
+                        override fun onReceiveInvitation(invitation: ChatRoomInvitation) {
 
-                    }
+                        }
 
-                    override fun onBlockProfile(blockedInfo: BlockedInfo) {
-                        blockedProfileIds.add(blockedInfo.blockedProfileID)
-                    }
+                        override fun onBlockProfile(blockedInfo: BlockedInfo) {
+                            blockedProfileIds.add(blockedInfo.blockedProfileID)
+                        }
 
-                    override fun onUnBlockProfile(blockInfoId: String, blockProfileId: String) {
-                        blockedProfileIds.remove(blockProfileId)
-                    }
-                }
+                        override fun onUnBlockProfile(blockInfoId: String, blockProfileId: String) {
+                            blockedProfileIds.remove(blockProfileId)
+                        }
+                    })
             }
         }
 

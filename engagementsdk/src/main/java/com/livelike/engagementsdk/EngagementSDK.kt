@@ -796,7 +796,7 @@ class EngagementSDK(
             false,
             analyticService,
             errorDelegate,
-            chat()
+            chat(),
         ) { timecodeGetter.getTimecode() }
     }
 
