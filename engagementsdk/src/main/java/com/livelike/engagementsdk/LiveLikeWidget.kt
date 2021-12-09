@@ -231,7 +231,7 @@ data class OptionsItem(
     var number: Int? = null,
 
     @field:SerializedName("earnable_reward")
-    var earnable_reward: OptionReward?
+    var earnableReward: OptionReward?
 )
 
 data class OptionReward(
