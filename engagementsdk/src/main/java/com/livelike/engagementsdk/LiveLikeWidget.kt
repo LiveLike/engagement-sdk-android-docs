@@ -230,6 +230,11 @@ data class OptionsItem(
     @field:SerializedName("number")
     var number: Int? = null,
 
+    @field:SerializedName("earnable_reward")
+    var earnableReward: OptionReward?
+)
+
+data class OptionReward(
     @field:SerializedName("reward_item_id")
     var rewardItemId: String? = null,
 
@@ -241,7 +246,6 @@ data class OptionsItem(
 
     @field:SerializedName("reward_item")
     var rewardItem: String? = null,
-
 )
 
 data class ReactionsItem(
