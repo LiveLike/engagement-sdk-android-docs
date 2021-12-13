@@ -281,9 +281,9 @@ internal class NumberPredictionViewModel(
         widgetInteractionRepository?.saveWidgetInteraction(
             NumberPredictionWidgetUserInteraction(
                 "",
-                "",
                 ZonedDateTime.now().formatIsoZoned8601(),
                 getUserInteraction()?.url,
+                "",
                 option,
                 widgetInfos.widgetId,
                 widgetInfos.type
