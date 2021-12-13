@@ -685,7 +685,7 @@ internal class InternalLiveLikeChatClient(
             configurationUserPairFlow.collect { pair ->
                 uiScope.launch {
                     val result = dataClient.remoteCall<PinMessageInfo>(
-                        pair.second.pinMessageUrl,
+                        pair.second.pinnedMessageUrl,
                         requestType = RequestType.POST,
                         requestBody = gson.toJson(
                             PinMessageInfoRequest(
@@ -713,7 +713,7 @@ internal class InternalLiveLikeChatClient(
             configurationUserPairFlow.collect { pair ->
                 uiScope.launch {
                     val result = dataClient.remoteCall<LiveLikeEmptyResponse>(
-                        "${pair.second.pinMessageUrl}$pinMessageInfoId/",
+                        "${pair.second.pinnedMessageUrl}$pinMessageInfoId/",
                         RequestType.DELETE,
                         accessToken = pair.first.accessToken,
                         fullErrorJson = true
@@ -734,7 +734,7 @@ internal class InternalLiveLikeChatClient(
             configurationUserPairFlow.collect { pair ->
                 uiScope.launch {
                     val url = when (pagination) {
-                        LiveLikePagination.FIRST -> "${pair.second.pinMessageUrl}?chat_room_id=$chatRoomId"
+                        LiveLikePagination.FIRST -> "${pair.second.pinnedMessageUrl}?chat_room_id=$chatRoomId"
                         LiveLikePagination.NEXT -> pinMessageInfoListResponse?.next
                         LiveLikePagination.PREVIOUS -> pinMessageInfoListResponse?.previous
                     }
