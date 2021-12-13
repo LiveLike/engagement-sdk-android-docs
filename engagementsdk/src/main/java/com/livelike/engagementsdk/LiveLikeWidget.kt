@@ -4,8 +4,6 @@ import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.sponsorship.SponsorModel
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.SocialEmbedItem
-import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
-import com.livelike.engagementsdk.widget.domain.Reward
 
 data class LiveLikeWidget(
 
@@ -92,6 +90,9 @@ data class LiveLikeWidget(
 
     @field:SerializedName("status")
     val status: String? = null,
+
+    @field:SerializedName("interactive_until")
+    val interactiveUntil: String? = null,
 
     @field:SerializedName("text")
     val text: String? = null,
