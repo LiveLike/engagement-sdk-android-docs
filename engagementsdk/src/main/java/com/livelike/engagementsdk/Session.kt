@@ -165,7 +165,8 @@ class WidgetInfos(
 data class WidgetsRequestParameters (
     val widgetTypeFilter: Set<WidgetType> = emptySet(),
     val widgetStatus: WidgetStatus? = null,
-    val ordering: WidgetsRequestOrdering? = null
+    val ordering: WidgetsRequestOrdering? = null,
+    val interactiveUntil:String? = null
 )
 
 enum class WidgetsRequestOrdering(val parameterValue: String) {
