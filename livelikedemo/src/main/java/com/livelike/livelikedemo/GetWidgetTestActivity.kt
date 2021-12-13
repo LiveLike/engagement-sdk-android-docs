@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SwitchCompat
 import com.livelike.engagementsdk.EarnableReward
 import com.livelike.engagementsdk.LiveLikeWidget
+import com.livelike.engagementsdk.OptionReward
 import com.livelike.engagementsdk.WidgetStatus
 import com.livelike.engagementsdk.WidgetsRequestOrdering
 import com.livelike.engagementsdk.WidgetsRequestParameters
@@ -119,12 +120,11 @@ class GetWidgetTestActivity : AppCompatActivity() {
     private fun showEarnedRewards(likeLikeWidget: LiveLikeWidget) {
         val items: Array<String> = likeLikeWidget.earnableRewards
             ?.map(EarnableReward::toString)
-            ?.toTypedArray()?.plus(
-                likeLikeWidget.options?.mapNotNull{
-                    it?.let { optionsItem ->
-                        optionsItem.earnableReward?.toString() ?: "null reward?"
-                    }
-                }?.toList() ?: emptyList()
+            ?.toTypedArray()
+            ?.plus(
+                likeLikeWidget.options?.flatMap { option ->
+                    option?.earnableRewards?.map(OptionReward::toString) ?: emptyList()
+                } ?: emptyList()
             ) ?: emptyArray()
 
         AlertDialog.Builder( this)
