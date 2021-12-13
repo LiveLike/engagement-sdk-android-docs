@@ -14,7 +14,6 @@ import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.*
-import com.livelike.engagementsdk.publicapis.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -36,6 +35,15 @@ internal class InternalLiveLikeChatClient(
     private val invitationByProfileMap = hashMapOf<String, ChatRoomInvitationResponse>()
     private var blockedProfileResponse: BlockedProfileListResponse? = null
     private var blockProfileIdsResponse: BlockProfileIdsResponse? = null
+    private var internalChatRoomDelegate = hashMapOf<String, ChatRoomDelegate>()
+
+    internal fun subscribeToChatRoomInternalDelegate(key: String, delegate: ChatRoomDelegate) {
+        internalChatRoomDelegate[key] = delegate
+    }
+
+    internal fun unsubscribeToChatRoomDelegate(key: String) {
+        internalChatRoomDelegate.remove(key)
+    }
 
     override var chatRoomDelegate: ChatRoomDelegate? = null
         set(value) {
@@ -46,7 +54,7 @@ internal class InternalLiveLikeChatClient(
     internal var pubnubClient: PubnubChatRoomMessagingClient? = null
 
     internal fun setUpPubNubClientForChatRoom() {
-        if (pubnubClient == null && chatRoomDelegate != null) {
+        if (pubnubClient == null) {
             sdkScope.launch {
                 configurationUserPairFlow.collect { pair ->
                     pubnubClient = PubnubChatRoomMessagingClient(
@@ -55,7 +63,35 @@ internal class InternalLiveLikeChatClient(
                         pair.first.id,
                         pair.second.pubnubPresenceTimeout
                     )
-                    pubnubClient?.chatRoomDelegate = chatRoomDelegate
+                    pubnubClient?.chatRoomDelegate = object : ChatRoomDelegate() {
+                        override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
+                            chatRoomDelegate?.onNewChatRoomAdded(chatRoomAdd)
+                            internalChatRoomDelegate.values.forEach {
+                                it.onNewChatRoomAdded(chatRoomAdd)
+                            }
+                        }
+
+                        override fun onReceiveInvitation(invitation: ChatRoomInvitation) {
+                            chatRoomDelegate?.onReceiveInvitation(invitation)
+                            internalChatRoomDelegate.values.forEach {
+                                it.onReceiveInvitation(invitation)
+                            }
+                        }
+
+                        override fun onBlockProfile(blockedInfo: BlockedInfo) {
+                            chatRoomDelegate?.onBlockProfile(blockedInfo)
+                            internalChatRoomDelegate.values.forEach {
+                                it.onBlockProfile(blockedInfo)
+                            }
+                        }
+
+                        override fun onUnBlockProfile(blockInfoId: String, blockProfileId: String) {
+                            chatRoomDelegate?.onUnBlockProfile(blockInfoId, blockProfileId)
+                            internalChatRoomDelegate.values.forEach {
+                                it.onUnBlockProfile(blockInfoId, blockProfileId)
+                            }
+                        }
+                    }
                     pubnubClient?.subscribe(arrayListOf(pair.first.subscribeChannel!!))
                 }
             }

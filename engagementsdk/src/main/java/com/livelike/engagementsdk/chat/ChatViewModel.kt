@@ -50,7 +50,7 @@ internal class ChatViewModel(
     var chatAdapter: ChatRecyclerAdapter =
         ChatRecyclerAdapter(analyticsService, ::reportChatMessage, ::blockProfile)
     var messageList = mutableListOf<ChatMessage>()
-    var cacheList = mutableListOf<ChatMessage>()
+    var cacheList = hashSetOf<ChatMessage>()
     var deletedMessages = hashSetOf<String>()
     var blockedProfileIds = hashSetOf<String>()
     var liveLikeChatClient: LiveLikeChatClient? = null
@@ -67,23 +67,28 @@ internal class ChatViewModel(
                         }
                     }
                 })
-                chatRoomDelegate = object : ChatRoomDelegate() {
-                    override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
+                (this as InternalLiveLikeChatClient).subscribeToChatRoomInternalDelegate(
+                    this.hashCode().toString(), object : ChatRoomDelegate() {
+                        override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
 
-                    }
+                        }
 
-                    override fun onReceiveInvitation(invitation: ChatRoomInvitation) {
+                        override fun onReceiveInvitation(invitation: ChatRoomInvitation) {
 
-                    }
+                        }
 
-                    override fun onBlockProfile(blockedInfo: BlockedInfo) {
-                        blockedProfileIds.add(blockedInfo.blockedProfileID)
-                    }
+                        override fun onBlockProfile(blockedInfo: BlockedInfo) {
+                            blockedProfileIds.add(blockedInfo.blockedProfileID)
+                            messageList.clear()
+                            displayChatMessages(cacheList.toList())
+                        }
 
-                    override fun onUnBlockProfile(blockInfoId: String, blockProfileId: String) {
-                        blockedProfileIds.remove(blockProfileId)
-                    }
-                }
+                        override fun onUnBlockProfile(blockInfoId: String, blockProfileId: String) {
+                            blockedProfileIds.remove(blockProfileId)
+                            messageList.clear()
+                            displayChatMessages(cacheList.toList())
+                        }
+                    })
             }
         }
 
@@ -136,7 +141,7 @@ internal class ChatViewModel(
 
     override fun displayChatMessages(messages: List<ChatMessage>) {
         Log.d("custom", "messages")
-
+        cacheList.addAll(messages)
         messages.forEach {
             replaceImageMessageContentWithImageUrl(it)
         }
@@ -158,6 +163,7 @@ internal class ChatViewModel(
     }
 
     override fun displayChatMessage(message: ChatMessage) {
+        cacheList.add(message)
         logDebug {
             "Chat display message: ${message.message} check1:${
                 message.channel != currentChatRoom?.channels?.chat?.get(
@@ -304,10 +310,6 @@ internal class ChatViewModel(
         logDebug { "Chat loading Completed : $chatLoaded" }
         if (!chatLoaded) {
             chatLoaded = true
-            logDebug { "Chat retrieving message from local cache ${cacheList.size} , MessageList :${messageList.size}" }
-            if (messageList.isEmpty() && cacheList.isNotEmpty()) {
-                messageList.addAll(cacheList)
-            }
             chatAdapter.submitList(ArrayList(messageList.toSet()))
         } else {
             eventStream.onNext(EVENT_LOADING_COMPLETE)
@@ -323,6 +325,7 @@ internal class ChatViewModel(
                     }
                     result?.let {
                         logDebug { "Block User: ${it.blockedProfileID} ,By User: ${it.blockedByProfileId}" }
+
                     }
                 }
             })
@@ -348,7 +351,7 @@ internal class ChatViewModel(
     }
 
     fun flushMessages() {
-        cacheList = mutableListOf()
+        cacheList = hashSetOf()
         deletedMessages = hashSetOf()
         messageList = mutableListOf()
         chatAdapter.submitList(messageList)

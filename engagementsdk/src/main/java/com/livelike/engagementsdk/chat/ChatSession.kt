@@ -167,6 +167,7 @@ internal class ChatSession(
         chatClient?.run {
             destroy()
         }
+        (liveLikeChatClient as InternalLiveLikeChatClient).unsubscribeToChatRoomDelegate(chatViewModel.hashCode().toString())
         contentSessionScope.cancel()
         isClosed = true
         chatViewModel.chatAdapter.mRecyclerView = null
