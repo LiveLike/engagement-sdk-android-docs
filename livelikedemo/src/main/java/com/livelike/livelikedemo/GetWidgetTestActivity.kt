@@ -84,7 +84,8 @@ class GetWidgetTestActivity : AppCompatActivity() {
                         } else {
                             null
                         }
-                    }
+                    },
+                    interactiveUntil = ""
                 ),
                 object : LiveLikeCallback<List<LiveLikeWidget>>() {
                     override fun onResponse(result: List<LiveLikeWidget>?, error: String?) {
