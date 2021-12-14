@@ -1,5 +1,5 @@
 package com.livelike.engagementsdk.chat.data.remote
 
-enum class PinMessageOrder {
+enum class LiveLikeOrdering {
     ASC, DESC
 }

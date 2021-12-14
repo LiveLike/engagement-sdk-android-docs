@@ -4,8 +4,7 @@ import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
-import com.livelike.engagementsdk.publicapis.*
+import com.livelike.engagementsdk.chat.data.remote.LiveLikeOrdering
 import com.livelike.engagementsdk.publicapis.*
 
 interface LiveLikeChatClient {
@@ -115,7 +114,7 @@ interface LiveLikeChatClient {
 
     fun getPinMessageInfoList(
         chatRoomId: String,
-        order: PinMessageOrder,
+        order: LiveLikeOrdering,
         pagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<PinMessageInfo>>
     )

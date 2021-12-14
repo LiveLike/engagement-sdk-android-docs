@@ -762,7 +762,7 @@ internal class InternalLiveLikeChatClient(
 
     override fun getPinMessageInfoList(
         chatRoomId: String,
-        order: PinMessageOrder,
+        order: LiveLikeOrdering,
         pagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<PinMessageInfo>>
     ) {
@@ -778,7 +778,7 @@ internal class InternalLiveLikeChatClient(
                         val result = dataClient.remoteCall<PinMessageInfoListResponse>(
                             "$url${
                                 when (order) {
-                                    PinMessageOrder.DESC -> "&ordering=-pinned_at"
+                                    LiveLikeOrdering.DESC -> "&ordering=-pinned_at"
                                     else -> "&ordering=pinned_at"
                                 }
                             }",

@@ -6,7 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
+import com.livelike.engagementsdk.chat.data.remote.LiveLikeOrdering
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
@@ -338,7 +338,7 @@ class ChatRoomApiUnitTest {
         Shadows.shadowOf(Looper.getMainLooper()).idle()
         sdk.chat().getPinMessageInfoList(
             "fc5feb36-6272-4e4b-8daa-5fe987bec9fc",
-            PinMessageOrder.ASC,
+            LiveLikeOrdering.ASC,
             LiveLikePagination.FIRST,
             callback
         )

@@ -18,7 +18,7 @@ import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.chat.data.remote.PinMessageOrder
+import com.livelike.engagementsdk.chat.data.remote.LiveLikeOrdering
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
@@ -327,7 +327,7 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
     fun loadPinnedMessage(context: Context?) {
         sdk?.chat()?.getPinMessageInfoList(
             chatRoomId!!,
-            PinMessageOrder.ASC,
+            LiveLikeOrdering.ASC,
             LiveLikePagination.FIRST,
             object : LiveLikeCallback<List<PinMessageInfo>>() {
                 override fun onResponse(result: List<PinMessageInfo>?, error: String?) {
