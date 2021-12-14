@@ -862,7 +862,9 @@ class EngagementSDK(
         @SerializedName("profile_chat_room_sent_invitations_url_template")
         val profileChatRoomSentInvitationsUrlTemplate: String,
         @SerializedName("pinned_messages_url")
-        val pinnedMessageUrl: String
+        val pinnedMessageUrl: String,
+        @SerializedName("reward_transactions_url")
+        val rewardTransactionsUrl: String = ""
     )
 
     companion object {
