@@ -100,6 +100,9 @@ interface LiveLikeContentSession {
     fun getWidgetModelFromJson(widgetResourceJson: JsonObject): BaseViewModel?
     fun getWidgetModelFromLiveLikeWidget(liveLikeWidget: LiveLikeWidget): BaseViewModel?
 
+     /**
+      * Returns widget models based on the options parameter provided
+      */
     fun getWidgets(
         liveLikePagination: LiveLikePagination,
         requestParams: WidgetsRequestParameters?,

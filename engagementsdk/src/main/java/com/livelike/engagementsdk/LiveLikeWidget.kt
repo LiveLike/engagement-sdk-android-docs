@@ -91,6 +91,7 @@ data class LiveLikeWidget(
     @field:SerializedName("status")
     val status: String? = null,
 
+    // The Date/time, until which the Widget will accept interactions
     @field:SerializedName("interactive_until")
     val interactiveUntil: String? = null,
 
