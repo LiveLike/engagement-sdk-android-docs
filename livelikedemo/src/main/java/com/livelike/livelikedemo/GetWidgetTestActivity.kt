@@ -14,6 +14,7 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.UnsupportedWidgetType
 import com.livelike.engagementsdk.widget.WidgetType
+import kotlinx.android.synthetic.main.activity_get_widget_test.edt_interactive_until
 import kotlinx.android.synthetic.main.activity_get_widget_test.get_widget_ordering
 import kotlinx.android.synthetic.main.activity_get_widget_test.get_widget_status_filters
 import kotlinx.android.synthetic.main.activity_get_widget_test.get_widget_type_filters
@@ -85,7 +86,7 @@ class GetWidgetTestActivity : AppCompatActivity() {
                             null
                         }
                     },
-                    interactiveUntil = ""
+                    interactiveUntil = edt_interactive_until.text.toString()
                 ),
                 object : LiveLikeCallback<List<LiveLikeWidget>>() {
                     override fun onResponse(result: List<LiveLikeWidget>?, error: String?) {

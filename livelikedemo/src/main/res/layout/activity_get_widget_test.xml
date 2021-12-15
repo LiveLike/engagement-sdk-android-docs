@@ -66,6 +66,13 @@
                 android:paddingBottom="16dp"
                 android:orientation="vertical" />
 
+            <EditText
+                android:id="@+id/edt_interactive_until"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="enter interactive until"
+                android:paddingBottom="16dp"/>
+
         </LinearLayout>
     </ScrollView>
 
