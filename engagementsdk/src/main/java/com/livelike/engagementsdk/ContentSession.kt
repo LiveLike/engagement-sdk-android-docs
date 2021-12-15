@@ -192,7 +192,6 @@ internal class ContentSession(
         innerUrl: String,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
     ) {
-        Log.d("widget-url",innerUrl)
         val jsonObject = widgetDataClient.getAllPublishedWidgets(innerUrl)
         publishedWidgetListResponse =
             gson.fromJson(
