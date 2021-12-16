@@ -15,7 +15,7 @@ import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.publicapis.BlockedData
+import com.livelike.engagementsdk.publicapis.BlockedInfo
 import com.livelike.engagementsdk.publicapis.ChatRoomAdd
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
@@ -33,6 +33,7 @@ import kotlinx.android.synthetic.main.chat_only_check_box.view.chk_avatar
 import kotlinx.android.synthetic.main.chat_only_check_box.view.ed_avatar
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_add
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_block
+import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_block_check
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_block_list
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_change
 import kotlinx.android.synthetic.main.fragment_chat_only_home.btn_create
@@ -95,13 +96,11 @@ class ChatOnlyHomeFragment : Fragment() {
         val adapter = BlockedListAdapter(::unblock)
         rcyl_block.adapter = adapter
         btn_block_list.setOnClickListener {
-            val profileId = ed_block_profile_id.text.toString()
             prg_block.visibility = View.VISIBLE
-            (activity?.application as? LiveLikeApplication)?.sdk?.getBlockedProfileList(
+            (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.getBlockedProfileList(
                 LiveLikePagination.FIRST,
-                profileId,
-                object : LiveLikeCallback<List<BlockedData>>() {
-                    override fun onResponse(result: List<BlockedData>?, error: String?) {
+                object : LiveLikeCallback<List<BlockedInfo>>() {
+                    override fun onResponse(result: List<BlockedInfo>?, error: String?) {
                         prg_block.visibility = View.INVISIBLE
                         error?.let { it1 -> showToast(it1) }
                         result?.let {
@@ -112,13 +111,31 @@ class ChatOnlyHomeFragment : Fragment() {
                     }
                 })
         }
+        btn_block_check.setOnClickListener {
+            val profileId = ed_block_profile_id.text.toString()
+            prg_block.visibility = View.VISIBLE
+            (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.getProfileBlockInfo(profileId,
+                object : LiveLikeCallback<BlockedInfo>() {
+                    override fun onResponse(result: BlockedInfo?, error: String?) {
+                        prg_block.visibility = View.INVISIBLE
+                        error?.let { it1 -> showToast(it1) }
+                        showToast(
+                            when (result != null) {
+                                true -> "Blocked"
+                                else -> "Not Blocked"
+                            }
+                        )
+                    }
+
+                })
+        }
         btn_block.setOnClickListener {
             val profileId = ed_block_profile_id.text.toString()
             prg_block.visibility = View.VISIBLE
-            (activity?.application as? LiveLikeApplication)?.sdk?.blockProfile(
+            (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.blockProfile(
                 profileId,
-                object : LiveLikeCallback<BlockedData>() {
-                    override fun onResponse(result: BlockedData?, error: String?) {
+                object : LiveLikeCallback<BlockedInfo>() {
+                    override fun onResponse(result: BlockedInfo?, error: String?) {
                         prg_block.visibility = View.INVISIBLE
                         result?.let {
                             showToast("BLocked User: ${it.blockedProfileID}")
@@ -130,12 +147,14 @@ class ChatOnlyHomeFragment : Fragment() {
         btn_create.setOnClickListener {
             val title = ed_chat_room_title.text.toString()
             val visibility =
-                if (btn_visibility.text.toString().lowercase(Locale.getDefault()).contains("visibility").not())
+                if (btn_visibility.text.toString().lowercase(Locale.getDefault())
+                        .contains("visibility").not()
+                )
                     Visibility.valueOf(btn_visibility.text.toString())
                 else
                     Visibility.everyone
             prg_create.visibility = View.VISIBLE
-            (activity?.application as? LiveLikeApplication)?.sdk?.createChatRoom(
+            (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.createChatRoom(
                 title,
                 visibility,
                 object : LiveLikeCallback<ChatRoomInfo>() {
@@ -168,7 +187,7 @@ class ChatOnlyHomeFragment : Fragment() {
                 return@setOnClickListener
             }
             prg_join.visibility = View.VISIBLE
-            (activity?.application as? LiveLikeApplication)?.sdk?.addCurrentUserToChatRoom(
+            (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.addCurrentUserToChatRoom(
                 id,
                 object : LiveLikeCallback<ChatRoomMembership>() {
                     override fun onResponse(result: ChatRoomMembership?, error: String?) {
@@ -194,7 +213,7 @@ class ChatOnlyHomeFragment : Fragment() {
                 return@setOnClickListener
             }
             prg_add.visibility = View.VISIBLE
-            (activity?.application as? LiveLikeApplication)?.sdk?.addUserToChatRoom(chatRoomId,
+            (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.addUserToChatRoom(chatRoomId,
                 userId,
                 object : LiveLikeCallback<ChatRoomMembership>() {
                     override fun onResponse(result: ChatRoomMembership?, error: String?) {
@@ -220,7 +239,7 @@ class ChatOnlyHomeFragment : Fragment() {
                 return@setOnClickListener
             }
             prg_add_invite.visibility = View.VISIBLE
-            (activity?.application as? LiveLikeApplication)?.sdk?.sendChatRoomInviteToUser(
+            (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.sendChatRoomInviteToUser(
                 chatRoomId,
                 userId,
                 object : LiveLikeCallback<ChatRoomInvitation>() {
@@ -267,7 +286,7 @@ class ChatOnlyHomeFragment : Fragment() {
         }
         btn_refresh.setOnClickListener {
             prg_refresh.visibility = View.VISIBLE
-            (activity?.application as? LiveLikeApplication)?.sdk?.getCurrentUserChatRoomList(
+            (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.getCurrentUserChatRoomList(
                 LiveLikePagination.FIRST,
                 object : LiveLikeCallback<List<ChatRoomInfo>>() {
                     override fun onResponse(result: List<ChatRoomInfo>?, error: String?) {
@@ -323,7 +342,7 @@ class ChatOnlyHomeFragment : Fragment() {
             val id = ed_chat_room_id.text.toString()
             if (id.isNotEmpty()) {
                 prg_delete.visibility = View.VISIBLE
-                (activity?.application as? LiveLikeApplication)?.sdk?.deleteCurrentUserFromChatRoom(
+                (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.deleteCurrentUserFromChatRoom(
                     id,
                     object : LiveLikeCallback<LiveLikeEmptyResponse>() {
                         override fun onResponse(result: LiveLikeEmptyResponse?, error: String?) {
@@ -370,7 +389,7 @@ class ChatOnlyHomeFragment : Fragment() {
 
         btn_invite_by_list.setOnClickListener {
             prg_invite_by_list.visibility = View.VISIBLE
-            (activity?.application as? LiveLikeApplication)?.sdk?.getInvitationsByCurrentProfileWithInvitationStatus(
+            (activity?.application as? LiveLikeApplication)?.sdk?.chat()?.getInvitationsSentByCurrentProfileWithInvitationStatus(
                 LiveLikePagination.FIRST,
                 ChatRoomInvitationStatus.PENDING,
                 object : LiveLikeCallback<List<ChatRoomInvitation>>() {
@@ -406,6 +425,14 @@ class ChatOnlyHomeFragment : Fragment() {
 
                 override fun onReceiveInvitation(invitation: ChatRoomInvitation) {
                     showToast("Receive invitation from ${invitation.invited_by.nickname} => ${invitation.invited_by.userId}")
+                }
+
+                override fun onBlockProfile(blockedInfo: BlockedInfo) {
+
+                }
+
+                override fun onUnBlockProfile(blockInfoId: String, blockProfileId: String) {
+
                 }
             }
 
@@ -549,7 +576,7 @@ class BlockedListAdapter(
     RecyclerView.Adapter<BlockedListAdapter.BlockListViewHolder>() {
     inner class BlockListViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-    val blockedList = arrayListOf<BlockedData>()
+    val blockedList = arrayListOf<BlockedInfo>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockListViewHolder {
         return BlockListViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.block_list_item, parent, false)

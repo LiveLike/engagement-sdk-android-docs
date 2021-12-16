@@ -2,7 +2,7 @@ package com.livelike.engagementsdk.publicapis
 
 import com.google.gson.annotations.SerializedName
 
-data class BlockedData(
+data class BlockedInfo(
     val id: String,
     val url: String,
     @SerializedName("created_at")
@@ -21,5 +21,5 @@ internal data class BlockedProfileListResponse(
     val count: Int,
     val next: String? = null,
     val previous: String? = null,
-    val results: List<BlockedData>
+    val results: List<BlockedInfo>
 )

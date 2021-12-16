@@ -1,0 +1,25 @@
+{
+  "id": "4da3a0b6-7387-4088-8246-68e7fe33d337",
+  "url": "https://cf-blast-dig.livelikecdn.com/api/v1/pin-message/4da3a0b6-7387-4088-8246-68e7fe33d337/",
+  "message_id": "777e8267-2992-4e76-9001-faec2f552b57",
+  "message_payload": {
+    "custom_data": "",
+    "created_at": "2021-12-01T07:10:33+0000",
+    "filtered_sender_nickname": null,
+    "image_height": 150,
+    "image_width": 150,
+    "content_filter": [],
+    "sender_id": "1c285e1a-aa93-4135-8361-ecd27317c66a",
+    "sender_profile_url": "https://cf-blast-dig.livelikecdn.com/api/v1/profiles/1c285e1a-aa93-4135-8361-ecd27317c66a/",
+    "sender_image_url": null,
+    "badge_image_url": null,
+    "program_date_time": null,
+    "filtered_message": null,
+    "id": "777e8267-2992-4e76-9001-faec2f552b57",
+    "sender_nickname": "Virtual Champion",
+    "message": "hfhckxul"
+  },
+  "chat_room_id": "fc5feb36-6272-4e4b-8daa-5fe987bec9fc",
+  "pinned_by_id": "fda34446-a603-433f-9261-169628f46a87",
+  "pinned_at": "2021-12-01T07:11:05.773801Z"
+}
