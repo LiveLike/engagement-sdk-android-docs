@@ -111,7 +111,7 @@ class LeaderBoardActivity : AppCompatActivity() {
             val programId = ed_txt_program_id.text.toString()
             if (programId.isNotEmpty()) {
                 prg_fetch_leader_boards.visibility = View.VISIBLE
-                (application as LiveLikeApplication).sdk.getLeaderBoardsForProgram(
+                (application as LiveLikeApplication).sdk.leaderboard().getLeaderBoardsForProgram(
                     programId,
                     object : LiveLikeCallback<List<LeaderBoard>>() {
                         override fun onResponse(result: List<LeaderBoard>?, error: String?) {

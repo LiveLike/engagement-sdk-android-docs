@@ -14,6 +14,7 @@ import com.livelike.engagementsdk.core.data.models.LeaderboardClient
 import com.livelike.engagementsdk.gamification.Badges
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.sponsorship.Sponsor
+import com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 
@@ -90,33 +91,74 @@ interface IEngagement {
         liveLikeCallback: LiveLikeCallback<LiveLikeEmptyResponse>
     )
 
+    /**
+     *@deprecated  reason this method is deprecated <br/>
+     *              {will be removed in next version} <br/>
+     *              use {@link com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getLeaderBoardsForProgram} instead like this:
+     */
+    @Deprecated("use {@link com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getLeaderBoardsForProgram} instead like this")
     fun getLeaderBoardsForProgram(
         programId: String,
         liveLikeCallback: LiveLikeCallback<List<LeaderBoard>>
     )
 
+    /**
+     *@deprecated  reason this method is deprecated <br/>
+     *              {will be removed in next version} <br/>
+     *              use {@link com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getLeaderBoardDetails} instead like this:
+     *
+     */
+    @Deprecated("use {@link com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getLeaderBoardDetails} instead like this")
     fun getLeaderBoardDetails(
         leaderBoardId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoard>
     )
 
+    /**
+     *@deprecated  reason this method is deprecated <br/>
+     *              {will be removed in next version} <br/>
+     *              use {@link com.com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getEntriesForLeaderBoard} instead like this:
+     *
+     */
+    @Deprecated("use {@link com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getEntriesForLeaderBoard} instead like this")
     fun getEntriesForLeaderBoard(
         leaderBoardId: String,
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntryPaginationResult>
     )
 
+    /**
+     *@deprecated  reason this method is deprecated <br/>
+     *              {will be removed in next version} <br/>
+     *              use {@link com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getLeaderBoardEntryForProfile} instead like this:
+     *
+     */
+    @Deprecated("use {@link com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getLeaderBoardEntryForProfile} instead like this")
     fun getLeaderBoardEntryForProfile(
         leaderBoardId: String,
         profileId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     )
 
+    /**
+     *@deprecated  reason this method is deprecated <br/>
+     *              {will be removed in next version} <br/>
+     *              use {@link com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getLeaderBoardEntryForCurrentUserProfile} instead like this:
+     *
+     */
+    @Deprecated("use {@link com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getLeaderBoardEntryForCurrentUserProfile} instead like this")
     fun getLeaderBoardEntryForCurrentUserProfile(
         leaderBoardId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     )
 
+    /**
+     *@deprecated  reason this method is deprecated <br/>
+     *              {will be removed in next version} <br/>
+     *              use {@link com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getLeaderboardClients} instead like this:
+     *
+     */
+    @Deprecated("use {@link com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient#getLeaderboardClients} instead like this")
     fun getLeaderboardClients(
         leaderBoardId: List<String>,
         liveLikeCallback: LiveLikeCallback<LeaderboardClient>
@@ -185,4 +227,9 @@ interface IEngagement {
     fun rewards(): IRewardsClient
 
     fun close()
+
+    /**
+     * Returns the LeaderBoard client
+     */
+    fun leaderboard(): LiveLikeLeaderBoardClient
 }
