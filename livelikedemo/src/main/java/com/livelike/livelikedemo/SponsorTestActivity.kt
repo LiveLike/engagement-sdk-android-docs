@@ -21,7 +21,7 @@ class SponsorTestActivity : AppCompatActivity() {
         sponsor = (application as LiveLikeApplication).sdk.sponsor()
 
         setContentView(R.layout.activity_sponsor_test)
-
+        program_id_et.setText("0fddc166-b8c3-4ce9-990e-848bde12188b")
         fetch_sponsor.setOnClickListener {
 
             if (program_id_et.text.toString().isNotEmpty()) {
