@@ -21,17 +21,7 @@ import com.livelike.engagementsdk.gamification.RewardTransactionsRequestParamete
 import com.livelike.engagementsdk.gamification.TransferRewardItem
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetType
-import kotlinx.android.synthetic.main.reward_is_client_test_activity.button_get_reward
-import kotlinx.android.synthetic.main.reward_is_client_test_activity.enter_amount_et
-import kotlinx.android.synthetic.main.reward_is_client_test_activity.filter_by_widget_kind
-import kotlinx.android.synthetic.main.reward_is_client_test_activity.progress_bar
-import kotlinx.android.synthetic.main.reward_is_client_test_activity.receipent_profile_id
-import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_item_balance
-import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_item_spinnner
-import kotlinx.android.synthetic.main.reward_is_client_test_activity.reward_uuid_text
-import kotlinx.android.synthetic.main.reward_is_client_test_activity.send_btn
-import kotlinx.android.synthetic.main.reward_is_client_test_activity.show_all_reward_transfers
-import kotlinx.android.synthetic.main.reward_is_client_test_activity.transfer_type_selection
+import kotlinx.android.synthetic.main.reward_is_client_test_activity.*
 
 class RewardsClientTestActivity : AppCompatActivity() {
 
@@ -63,6 +53,18 @@ class RewardsClientTestActivity : AppCompatActivity() {
         rewardsClient.rewardEventsListener = object : RewardEventsListener() {
             override fun onReceiveNewRewardItemTransfer(rewardItemTransfer: TransferRewardItem) {
                 runOnUiThread {  showAllRewardsTransfers() }
+            }
+        }
+
+        show_reward.setOnClickListener {
+            selectedrewardItem?.let {
+                AlertDialog.Builder(this)
+                    .setTitle("${it.name}: attributes")
+                    .setItems(it.attributes.entries.map { entry ->
+                        "key: ${entry.key}, value : ${entry.value}"
+                    }.toTypedArray()) { _, _ -> }
+                    .create()
+                    .show()
             }
         }
 

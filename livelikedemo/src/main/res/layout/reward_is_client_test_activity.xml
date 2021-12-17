@@ -27,12 +27,11 @@
         android:id="@+id/enter_amount_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:hint="enter amount"
         android:inputType="number"
         android:maxLength="6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/reward_item_spinnner" />
+        app:layout_constraintTop_toBottomOf="@+id/button5" />
 
     <EditText
         android:id="@+id/receipent_profile_id"
@@ -49,10 +48,9 @@
         android:id="@+id/send_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:text="Send"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/reward_item_spinnner" />
+        app:layout_constraintTop_toBottomOf="@+id/button5" />
 
     <RadioGroup
         android:id="@+id/transfer_type_selection"
@@ -120,6 +118,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/reward_uuid_text" />
+
+    <Button
+        android:id="@+id/show_reward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show reward attributes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/reward_item_spinnner" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
