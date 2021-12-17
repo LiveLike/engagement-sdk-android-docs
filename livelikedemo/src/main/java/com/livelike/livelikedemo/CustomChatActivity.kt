@@ -3,6 +3,7 @@ package com.livelike.livelikedemo
 import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.livelikedemo.customchat.ChatFragment
 import com.livelike.livelikedemo.customchat.HomeChat
 import com.livelike.livelikedemo.customchat.HomeFragment
@@ -11,6 +12,7 @@ import java.util.Calendar
 class CustomChatActivity : AppCompatActivity() {
 
     var selectedHomeChat: HomeChat? = null
+    var sdk: EngagementSDK? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,6 +20,7 @@ class CustomChatActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, HomeFragment.newInstance())
             .commit()
+        sdk = (application as LiveLikeApplication).sdk
     }
 
     fun showChatScreen(homeChat: HomeChat) {
