@@ -43,7 +43,7 @@ internal data class LeaderBoardResource(
     @SerializedName("reward_item") val rewardItem: RewardItem
 )
 
-internal fun LeaderBoardResource.toLeaderBoard(): LeaderBoard {
+internal fun LeaderBoardResource.toLeadBoard(): LeaderBoard {
     return LeaderBoard(id, name, rewardItem.toReward())
 }
 
