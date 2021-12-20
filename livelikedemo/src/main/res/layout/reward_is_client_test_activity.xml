@@ -31,17 +31,16 @@
         android:inputType="number"
         android:maxLength="6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button5" />
+        app:layout_constraintTop_toBottomOf="@+id/show_reward" />
 
     <EditText
         android:id="@+id/receipent_profile_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:hint="Recipeint profile id "
         android:inputType="text"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/enter_amount_et" />
+        app:layout_constraintTop_toBottomOf="@+id/enter_amount_et" />
 
 
     <Button
@@ -50,7 +49,7 @@
         android:layout_height="wrap_content"
         android:text="Send"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button5" />
+        app:layout_constraintTop_toTopOf="@+id/receipent_profile_id" />
 
     <RadioGroup
         android:id="@+id/transfer_type_selection"
