@@ -590,7 +590,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         return super.dispatchTouchEvent(ev)
     }
 
-    private fun hidePopUpReactionPanel() {
+    public fun hidePopUpReactionPanel() {
         viewModel?.chatAdapter?.currentChatReactionPopUpViewPos?.let {
             (chatdisplay.findViewHolderForAdapterPosition(it) as? ChatRecyclerAdapter.ViewHolder)?.hideFloatingUI()
         }

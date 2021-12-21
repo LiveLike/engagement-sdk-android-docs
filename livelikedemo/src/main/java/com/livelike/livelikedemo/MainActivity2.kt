@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.ui.main.MMLChatView
 import com.livelike.livelikedemo.ui.main.SectionsPagerAdapter
 
 class MainActivity2 : AppCompatActivity() {
@@ -24,6 +25,24 @@ class MainActivity2 : AppCompatActivity() {
             val viewPager: ViewPager = findViewById(R.id.view_pager)
             viewPager.offscreenPageLimit = 1
             viewPager.adapter = sectionsPagerAdapter
+            viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+                override fun onPageScrolled(
+                    position: Int,
+                    positionOffset: Float,
+                    positionOffsetPixels: Int
+                ) {
+
+                }
+
+                override fun onPageSelected(position: Int) {
+                    (sectionsPagerAdapter.views[2] as? MMLChatView)?.dismissReactionPanel()
+                }
+
+                override fun onPageScrollStateChanged(state: Int) {
+
+                }
+
+            })
             val tabs: TabLayout = findViewById(R.id.tabs)
             tabs.setupWithViewPager(viewPager)
         }
