@@ -19,7 +19,9 @@ class MMLChatView(
 //        val contextThemeWrapper: Context =
 //            ContextThemeWrapper(context, R.style.MMLChatTheme)
         val view = inflate(context, R.layout.mml_chat_view, this)
-        view.findViewById<ViewGroup>(R.id.chat_view).layoutTransition.setAnimateParentHierarchy(false)
+        view.findViewById<ViewGroup>(R.id.chat_view).layoutTransition.setAnimateParentHierarchy(
+            false
+        )
         chatSession.let {
             custom_chat_view.setSession(it)
             custom_chat_view.isChatInputVisible = false
@@ -30,11 +32,25 @@ class MMLChatView(
         }
     }
 
+    override fun onStartTemporaryDetach() {
+        super.onStartTemporaryDetach()
+        custom_chat_view.hidePopUpReactionPanel()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        custom_chat_view.hidePopUpReactionPanel()
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         widgetSession.let {
             widget_view.setSession(it)
         }
+    }
+
+    fun dismissReactionPanel() {
+        custom_chat_view.hidePopUpReactionPanel()
     }
 
 //    override fun onDetachedFromWindow() {
