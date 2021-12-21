@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat
 
+import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.ChatRoomListener
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
@@ -118,6 +119,14 @@ internal class ChatQueue(upstream: MessagingClient) :
             PubnubChatEventType.CHATROOM_UPDATED.key -> {
                 val chatRoom = gson.fromJson(event.message, ChatRoom::class.java)
                 chatRoomListener?.onChatRoomUpdate(chatRoom.toLiveLikeChatRoom())
+            }
+            PubnubChatEventType.MESSAGE_PINNED.key -> {
+                val pinMessageInfo = gson.fromJson(event.message, PinMessageInfo::class.java)
+                msgListener?.onPinMessage(pinMessageInfo)
+            }
+            PubnubChatEventType.MESSAGE_UNPINNED.key -> {
+                val pinMessageInfoId = event.message.get("id").asString
+                msgListener?.onUnPinMessage(pinMessageInfoId)
             }
         }
     }

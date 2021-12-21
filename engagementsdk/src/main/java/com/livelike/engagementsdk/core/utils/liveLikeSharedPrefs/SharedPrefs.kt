@@ -44,19 +44,3 @@ internal fun getNickename(): String {
     return getSharedPreferences()
         .getString(PREFERENCE_KEY_NICKNAME, "") ?: ""
 }
-
-internal fun blockUser(userId: String) {
-    val editor = getSharedPreferences()
-        .edit()
-    val currentList = getSharedPreferences()
-        .getString(BLOCKED_USERS, "") ?: ""
-    if (!currentList.contains(userId)) {
-        editor.putString(BLOCKED_USERS, "$currentList,$userId").apply()
-    }
-}
-
-internal fun getBlockedUsers(): List<String> {
-    val currentList = getSharedPreferences()
-        .getString(BLOCKED_USERS, "") ?: ""
-    return currentList.split(",")
-}

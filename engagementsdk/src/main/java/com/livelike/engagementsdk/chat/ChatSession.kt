@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
+import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.ChatRoomListener
@@ -52,6 +53,7 @@ internal class ChatSession(
     private val isPublicRoom: Boolean = true,
     internal val analyticsServiceStream: Stream<AnalyticsService>,
     private val errorDelegate: ErrorDelegate? = null,
+    private val liveLikeChatClient: LiveLikeChatClient,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeChatSession {
 
@@ -61,7 +63,7 @@ internal class ChatSession(
 
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
-    private val dataClient: ChatDataClient = ChatDataClientImpl()
+    internal val dataClient: ChatDataClient = ChatDataClientImpl()
     private var isClosed = false
     val chatViewModel: ChatViewModel by lazy {
         ChatViewModel(
@@ -97,7 +99,6 @@ internal class ChatSession(
     init {
         contentSessionScope.launch {
             configurationUserPairFlow.collect { pair ->
-
                 chatViewModel.analyticsService = analyticsServiceStream.latest()!!
                 val liveLikeUser = pair.second
                 chatRepository =
@@ -113,6 +114,7 @@ internal class ChatSession(
                     )
                 logDebug { "chatRepository created" }
                 // updating urls value will be added in enterChat Room
+                chatViewModel.liveLikeChatClient = liveLikeChatClient
                 chatViewModel.chatRepository = chatRepository
                 initializeChatMessaging(currentPlayheadTime)
                 chatSessionIdleStream.onNext(true)
@@ -165,6 +167,7 @@ internal class ChatSession(
         chatClient?.run {
             destroy()
         }
+        (liveLikeChatClient as InternalLiveLikeChatClient).unsubscribeToChatRoomDelegate(chatViewModel.hashCode().toString())
         contentSessionScope.cancel()
         isClosed = true
         chatViewModel.chatAdapter.mRecyclerView = null
@@ -188,6 +191,14 @@ internal class ChatSession(
         override fun onDeleteMessage(messageId: String) {
             deletedMsgList.add(messageId)
             msgListener?.onDeleteMessage(messageId)
+        }
+
+        override fun onPinMessage(message: PinMessageInfo) {
+            msgListener?.onPinMessage(message)
+        }
+
+        override fun onUnPinMessage(pinMessageId: String) {
+            msgListener?.onUnPinMessage(pinMessageId)
         }
     }
 
@@ -322,6 +333,11 @@ internal class ChatSession(
             object : LiveLikeCallback<ChatRoom>() {
                 override fun onResponse(result: ChatRoom?, error: String?) {
                     result?.let { chatRoom ->
+                        //subscribe to channel for listening for pin message events
+                        val controlChannel = chatRoom.channels.control[CHAT_PROVIDER]
+                        controlChannel?.let {
+                            pubnubMessagingClient.addChannelSubscription(it)
+                        }
                         val channel = chatRoom.channels.chat[CHAT_PROVIDER]
                         channel?.let { ch ->
                             contentSessionScope.launch {

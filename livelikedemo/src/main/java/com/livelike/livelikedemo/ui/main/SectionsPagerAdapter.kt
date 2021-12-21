@@ -18,7 +18,7 @@ class SectionsPagerAdapter(
     session: LiveLikeContentSession
 ) :
     PagerAdapter() {
-    private val views =
+    val views =
         arrayListOf<View>(
             LayoutInflater.from(context).inflate(R.layout.empty_chat_data_view, null),
             LayoutInflater.from(context).inflate(R.layout.empty_chat_data_view, null),
@@ -42,9 +42,12 @@ class SectionsPagerAdapter(
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         container.removeView(`object` as View)
+        println("SectionsPagerAdapter.destroyItem>?$position")
     }
 
     override fun getCount(): Int {
         return 4
     }
+
+
 }

@@ -2,13 +2,16 @@ package com.livelike.engagementsdk.chat.data.remote
 
 import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_ADDED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_INVITE
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_UPDATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CUSTOM_MESSAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_DELETED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_UPDATED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_INVITE
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_PINNED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_UNPINNED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.*
 
 internal data class PubnubChatEvent<T>(
     @SerializedName("event")
@@ -28,7 +31,11 @@ internal enum class PubnubChatEventType(val key: String) {
     CUSTOM_MESSAGE_CREATED("custom-message-created"),
     CHATROOM_UPDATED("chatroom-updated"),
     CHATROOM_ADDED("chat-room-add"),
-    CHATROOM_INVITE("chat-room-invite")
+    BLOCK_PROFILE("block-profile"),
+    UNBLOCK_PROFILE("unblock-profile"),
+    CHATROOM_INVITE("chat-room-invite"),
+    MESSAGE_PINNED("message-pinned"),
+    MESSAGE_UNPINNED("message-unpinned")
 }
 
 internal fun String.toPubnubChatEventType(): PubnubChatEventType? =
@@ -41,5 +48,9 @@ internal fun String.toPubnubChatEventType(): PubnubChatEventType? =
         CHATROOM_UPDATED.key -> CHATROOM_UPDATED
         CHATROOM_ADDED.key -> CHATROOM_ADDED
         CHATROOM_INVITE.key -> CHATROOM_INVITE
+        MESSAGE_PINNED.key -> MESSAGE_PINNED
+        MESSAGE_UNPINNED.key -> MESSAGE_UNPINNED
+        BLOCK_PROFILE.key -> BLOCK_PROFILE
+        UNBLOCK_PROFILE.key -> UNBLOCK_PROFILE
         else -> null
     }
