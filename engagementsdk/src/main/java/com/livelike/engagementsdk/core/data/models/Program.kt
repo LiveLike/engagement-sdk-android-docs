@@ -72,6 +72,12 @@ data class RewardItem(
 ) {
     val attributes: Map<String, String>
         get() = _attributes?.associate { Pair(it.key, it.value) } ?: emptyMap()
+
+    override fun toString(): String {
+        return "RewardItem(id='$id', url='$url', client_id='$client_id', name='$name', attributes=$attributes)"
+    }
+
+
 }
 
 data class RewardAttribute (
