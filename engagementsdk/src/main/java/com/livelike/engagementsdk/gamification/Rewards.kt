@@ -121,7 +121,7 @@ internal class Rewards(
                 requestParams.attributes?.let { attributes ->
                     fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
                         attributes.entries.forEach { entry ->
-                            addQueryParameter(entry.key, entry.value)
+                            addQueryParameter("attributes", "${entry.key},${entry.value}")
                         }
                     }?.build()?.toUrl()?.toString()
                 }
