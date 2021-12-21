@@ -40,7 +40,14 @@ class SectionsPagerAdapter(
         return view
     }
 
+    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
+        container.removeView(`object` as View)
+        println("SectionsPagerAdapter.destroyItem>?$position")
+    }
+
     override fun getCount(): Int {
         return 4
     }
+
+
 }
