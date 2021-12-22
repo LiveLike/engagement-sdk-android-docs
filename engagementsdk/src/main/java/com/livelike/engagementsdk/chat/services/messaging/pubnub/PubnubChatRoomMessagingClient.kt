@@ -8,13 +8,13 @@ import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
+import com.livelike.engagementsdk.publicapis.BlockedInfo
 import com.livelike.engagementsdk.publicapis.ChatRoomAdd
 import com.livelike.engagementsdk.publicapis.ChatRoomDelegate
 import com.livelike.engagementsdk.publicapis.ChatRoomInvitation
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubSubscribeCallbackAdapter
 import com.pubnub.api.PubNub
-import com.pubnub.api.callbacks.PNCallback
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
@@ -52,6 +52,23 @@ internal open class PubnubChatRoomMessagingClient(
                             object : TypeToken<PubnubChatEvent<ChatRoomInvitation>>() {}.type
                         )
                         chatRoomDelegate?.onReceiveInvitation(pubnubChatRoomEvent.payload)
+                    }
+                    PubnubChatEventType.BLOCK_PROFILE -> {
+                        val pubnubChatRoomEvent: PubnubChatEvent<BlockedInfo> = gson.fromJson(
+                            pnMessageResult.message.asJsonObject,
+                            object : TypeToken<PubnubChatEvent<BlockedInfo>>() {}.type
+                        )
+                        chatRoomDelegate?.onBlockProfile(pubnubChatRoomEvent.payload)
+                    }
+                    PubnubChatEventType.UNBLOCK_PROFILE -> {
+                        val pubnubChatRoomEvent: PubnubChatEvent<BlockedInfo> = gson.fromJson(
+                            pnMessageResult.message.asJsonObject,
+                            object : TypeToken<PubnubChatEvent<BlockedInfo>>() {}.type
+                        )
+                        chatRoomDelegate?.onUnBlockProfile(
+                            pubnubChatRoomEvent.payload.id,
+                            pubnubChatRoomEvent.payload.blockedProfileID
+                        )
                     }
                     else -> {
                         logError { "Event: $event not supported"  }

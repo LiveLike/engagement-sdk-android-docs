@@ -168,7 +168,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("subscribe_channel"),
                         responseData.extractLong("reported_count").toInt(),
                         responseData.extractStringOrEmpty("created_at"),
-                        responseData.extractStringOrEmpty("blocked_profiles_template_url")
+                        responseData.extractStringOrEmpty("blocked_profiles_template_url"),
+                        responseData.extractStringOrEmpty("blocked_profile_ids_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -216,7 +217,8 @@ internal open class EngagementDataClientImpl :
                         responseData.extractStringOrEmpty("subscribe_channel"),
                         responseData.extractLong("reported_count").toInt(),
                         responseData.extractStringOrEmpty("created_at"),
-                        responseData.extractStringOrEmpty("blocked_profiles_template_url")
+                        responseData.extractStringOrEmpty("blocked_profiles_template_url"),
+                        responseData.extractStringOrEmpty("blocked_profile_ids_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -288,7 +290,7 @@ internal open class EngagementDataClientImpl :
                     val errorJson = JsonParser.parseString(error).asJsonObject
                     val msg = execute.message
                     logError { error }
-                    var errorMsg = try {
+                    val errorMsg = try {
                         when (msg.isNotEmpty()) {
                             true -> msg
                             else -> when (fullErrorJson) {

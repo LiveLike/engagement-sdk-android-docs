@@ -6,21 +6,22 @@ import android.os.Looper
 import android.util.Log
 import androidx.annotation.NonNull
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
+import java.util.concurrent.TimeUnit
 
 class ChannelManager(private val channelConfigUrl: String, val appContext: Context) {
 
     var nextUrl: String? = null
     var previousUrl: String? = null
-    private val client: OkHttpClient = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build()
     private val mainHandler = Handler(Looper.getMainLooper())
     private val channelSelectListeners = mutableListOf<(Channel) -> Unit>()
     val channelList: MutableList<Channel> = mutableListOf()

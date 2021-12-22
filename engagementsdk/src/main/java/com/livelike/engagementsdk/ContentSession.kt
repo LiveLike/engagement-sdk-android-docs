@@ -7,6 +7,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.chat.ChatSession
+import com.livelike.engagementsdk.chat.LiveLikeChatClient
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
@@ -70,6 +71,7 @@ internal class ContentSession(
     private val programId: String,
     internal val analyticServiceStream: Stream<AnalyticsService>,
     private val errorDelegate: ErrorDelegate? = null,
+    private val liveLikeChatClient: LiveLikeChatClient,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
@@ -84,6 +86,7 @@ internal class ContentSession(
         true,
         analyticServiceStream,
         errorDelegate,
+        liveLikeChatClient,
         currentPlayheadTime
     )
 

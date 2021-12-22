@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
+import com.example.example.PinMessageInfo
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
@@ -118,6 +119,8 @@ interface MessageListener {
     fun onNewMessage(message: LiveLikeChatMessage)
     fun onHistoryMessage(messages: List<LiveLikeChatMessage>)
     fun onDeleteMessage(messageId: String)
+    fun onPinMessage(message: PinMessageInfo)
+    fun onUnPinMessage(pinMessageId: String)
 }
 
 /**

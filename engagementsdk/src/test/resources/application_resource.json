@@ -5,7 +5,7 @@
   "media_url": "http://localhost:8080/api/v1/media/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
   "pubnub_subscribe_key": "sub-c-037c905e-f6e4-11eb-a919-a2ddbe22cd06",
   "pubnub_publish_key": "pub-c-712f686d-6a16-42a7-b0a4-4c4720a21963",
-  "pubnub_origin": "livelike.pubnubapi.com",
+  "pubnub_origin": "localhost:8080",
   "pubnub_heartbeat_interval": 279,
   "pubnub_presence_timeout": 279,
   "sendbird_app_id": null,
@@ -39,5 +39,6 @@
   "agora_token_url_template": "http://localhost:8080/api/v1/agora-token/{chat_room_id}/",
   "widget_detail_url_template": "http://localhost:8080/api/v1/widgets/{kind}/{id}/",
   "badges_url": "http://localhost:8080/api/v1/applications/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L/badges/",
-  "profile_search_url": "http://localhost:8080/api/v1/profiles/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L&nickname={search_name}"
+  "profile_search_url": "http://localhost:8080/api/v1/profiles/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L&nickname={search_name}",
+  "pin_message_url": "http://localhost:8080/api/v1/pin-message/"
 }

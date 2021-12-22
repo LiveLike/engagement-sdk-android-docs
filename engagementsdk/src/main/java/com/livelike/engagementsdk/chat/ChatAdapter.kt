@@ -9,11 +9,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
-import android.text.Layout
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.StaticLayout
-import android.text.TextPaint
+import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Patterns
@@ -47,39 +43,16 @@ import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
-import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
-import com.livelike.engagementsdk.chat.stickerKeyboard.allMatches
-import com.livelike.engagementsdk.chat.stickerKeyboard.clearTarget
-import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
-import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
-import com.livelike.engagementsdk.chat.stickerKeyboard.findIsOnlyStickers
-import com.livelike.engagementsdk.chat.stickerKeyboard.findStickerCodes
-import com.livelike.engagementsdk.chat.stickerKeyboard.findStickers
-import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
-import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
+import com.livelike.engagementsdk.chat.stickerKeyboard.*
 import com.livelike.engagementsdk.core.utils.AndroidResource
-import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.publicapis.ChatMessageType
-import com.livelike.engagementsdk.publicapis.toChatMessageType
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.*
 import com.livelike.engagementsdk.widget.view.loadImage
-import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
-import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
-import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
-import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
-import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
-import kotlinx.android.synthetic.main.default_chat_cell.view.chat_constraint_box
-import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
-import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
-import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
-import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
-import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
+import kotlinx.android.synthetic.main.default_chat_cell.view.*
 import pl.droidsonroids.gif.MultiCallback
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -97,6 +70,7 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
 internal class ChatRecyclerAdapter(
     internal var analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit,
+    private val blockProfile: (String) -> Unit
 ) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(diffChatMessage) {
     var isKeyboardOpen: Boolean = false
     internal var chatRoomId: String? = null
@@ -199,9 +173,7 @@ internal class ChatRecyclerAdapter(
                     )
                     setPositiveButton(context.getString(R.string.livelike_chat_alert_blocked_confirm)) { _, _ ->
                         analyticsService.trackBlockingUser()
-                        blockUser(
-                            msg.senderId
-                        )
+                        blockProfile(msg.senderId)
                         reporter(msg)
                     }
                     create()
@@ -581,9 +553,9 @@ internal class ChatRecyclerAdapter(
             val width = (AndroidResource.dpToPx(300) * density).toInt()
             val alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL
             val layout = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                StaticLayout.Builder.obtain(this,0, this.length, paint, width )
+                StaticLayout.Builder.obtain(this, 0, this.length, paint, width)
                     .setAlignment(alignment)
-                    .setLineSpacing(0F,1F )
+                    .setLineSpacing(0F, 1F)
                     .setIncludePad(false)
                     .build()
             } else {

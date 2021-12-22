@@ -144,7 +144,9 @@ data class LiveLikeWidget(
     @field:SerializedName("sponsors")
     val sponsors: List<SponsorModel>?,
     @field:SerializedName("rewards")
-    val rewards: List<RewardSummary>?
+    val rewards: List<RewardSummary>?,
+    @field:SerializedName("earnable_rewards")
+    val earnableRewards: List<EarnableReward>?
 ) {
     /**
      * Added this method to get WidgetType for integrator understanding and they can use it for they implementation
@@ -169,6 +171,20 @@ data class RewardSummary (
 
     @field:SerializedName("reward_item_amount")
     var rewardItemAmount: Int? = null,
+)
+
+data class EarnableReward (
+    @field:SerializedName("reward_action_key")
+    var rewardActionKey: String? = null,
+
+    @field:SerializedName("reward_item_name")
+    var rewardItemName: String? = null,
+
+    @field:SerializedName("reward_item_amount")
+    var rewardItemAmount: Int? = null,
+
+    @field:SerializedName("reward_item_id")
+    var rewardItemId: String? = null,
 )
 
 data class CreatedBy(
@@ -218,6 +234,11 @@ data class OptionsItem(
     @field:SerializedName("number")
     var number: Int? = null,
 
+    @field:SerializedName("earnable_rewards")
+    var earnableRewards: List<OptionReward>
+)
+
+data class OptionReward(
     @field:SerializedName("reward_item_id")
     var rewardItemId: String? = null,
 
@@ -227,6 +248,8 @@ data class OptionsItem(
     @field:SerializedName("reward_item_amount")
     var rewardItemAmount: Int? = null,
 
+    @field:SerializedName("reward_item")
+    var rewardItem: String? = null,
 )
 
 data class ReactionsItem(
