@@ -64,7 +64,12 @@ class GetWidgetTestActivity : AppCompatActivity() {
         }
 
         run_filter_button.setOnClickListener {
-
+          var interactiveStatus:Boolean? = null
+            if(radio_btn_true.isChecked){
+                interactiveStatus = true
+            }else if(radio_btn_false.isChecked){
+                interactiveStatus = false
+            }
             session.getWidgets(
                 LiveLikePagination.FIRST,
                 WidgetsRequestParameters(
@@ -83,7 +88,7 @@ class GetWidgetTestActivity : AppCompatActivity() {
                             null
                         }
                     },
-                    interactive = radio_btn_true.isChecked
+                    interactive = interactiveStatus
                 ),
                 object : LiveLikeCallback<List<LiveLikeWidget>>() {
                     override fun onResponse(result: List<LiveLikeWidget>?, error: String?) {
