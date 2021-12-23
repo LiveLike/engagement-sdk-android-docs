@@ -139,6 +139,9 @@ internal class ContentSession(
                             requestParams?.widgetTypeFilter?.forEach {
                                 addQueryParameter("kind", it.getKindName())
                             }
+                            requestParams?.interactive?.let {
+                                addQueryParameter("interactive", it.toString())
+                            }
                         }?.build()?.toUrl().toString()
                         try {
                             buildWidgetList(innerUrl, liveLikeCallback)
