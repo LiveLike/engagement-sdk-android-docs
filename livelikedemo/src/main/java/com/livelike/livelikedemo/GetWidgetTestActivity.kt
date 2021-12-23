@@ -107,7 +107,7 @@ class GetWidgetTestActivity : AppCompatActivity() {
         result?.let{
             AlertDialog.Builder ( this )
                 .setItems( it.map { widget ->
-                    "type: ${widget.getWidgetType()}, status: ${widget.status}"
+                    "type: ${widget.getWidgetType()}, status: ${widget.status}, interactiveUntil : ${widget.interactiveUntil}"
                 }.toTypedArray()) { dialog, which ->
                     dialog.dismiss()
                     showEarnedRewards(result[which])

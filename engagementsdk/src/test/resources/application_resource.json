@@ -17,7 +17,7 @@
   "reaction_packs_url": "http://localhost:8080/api/v1/reaction-packs/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
   "image_url": "https://cf-blast-storage-game-changers.livelikecdn.com/assets/61f7cbf1-13cb-40ae-baa4-e60ce7d64e1d.png",
   "programs_url": "http://localhost:8080/api/v1/programs/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
-  "program_detail_url_template": "https://cf-blast-storage-game-changers.livelikecdn.com/programs/{program_id}/program.json",
+  "program_detail_url_template": "http://localhost:8080/api/v1/programs/{program_id}/program.json",
   "program_custom_id_url_template": "http://localhost:8080/api/v1/program-by-custom-id/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L/{custom_id}/",
   "sticker_pack_detail_url_template": "http://localhost:8080/api/v1/sticker-packs/{sticker_pack_id}/",
   "reaction_pack_detail_url_template": "http://localhost:8080/api/v1/reaction-packs/{reaction_pack_id}/",
@@ -26,7 +26,7 @@
   "chat_room_detail_url_template": "http://localhost:8080/api/v1/chat-rooms/{chat_room_id}/",
   "create_chat_room_url": "http://localhost:8080/api/v1/chat-rooms/",
   "reward_items_url": "http://localhost:8080/api/v1/reward-items/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
-  "mixpanel_token": null,
+  "mixpanel_token": "5c82369365be76b28b3716f260fbd2f5",
   "organization_id": "70bf04e7-36b2-4386-8ccd-d20c4285a129",
   "organization_name": "Game Changers",
   "analytics_properties": {
