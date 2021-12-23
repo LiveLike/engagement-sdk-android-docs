@@ -70,13 +70,13 @@ data class RewardItem(
     @SerializedName("name") val name: String,
     @SerializedName("attributes") internal val _attributes: List<RewardAttribute>?
 ) {
-    val attributes: Map<String, String>
-        get() = _attributes?.associate { Pair(it.key, it.value) } ?: emptyMap()
+    val attributes by lazy {
+        _attributes?.associate { Pair(it.key, it.value) } ?: emptyMap()
+    }
 
     override fun toString(): String {
         return "RewardItem(id='$id', url='$url', client_id='$client_id', name='$name', attributes=$attributes)"
     }
-
 
 }
 
