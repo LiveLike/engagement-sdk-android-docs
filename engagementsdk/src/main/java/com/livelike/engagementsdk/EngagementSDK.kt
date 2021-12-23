@@ -11,23 +11,15 @@ import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.data.models.*
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.*
-import com.livelike.engagementsdk.core.utils.Queue
-import com.livelike.engagementsdk.core.utils.SubscriptionManager
-import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedAccessToken
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
-import com.livelike.engagementsdk.core.utils.map
-import com.livelike.engagementsdk.gamification.Badges
-import com.livelike.engagementsdk.gamification.IRewardsClient
-import com.livelike.engagementsdk.gamification.Rewards
+import com.livelike.engagementsdk.gamification.*
 import com.livelike.engagementsdk.publicapis.*
+import com.livelike.engagementsdk.sponsorship.ISponsor
 import com.livelike.engagementsdk.sponsorship.Sponsor
-import com.livelike.engagementsdk.gamification.InternalLiveLikeLeaderBoardClient
-import com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
@@ -36,8 +28,6 @@ import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 /**
@@ -364,8 +354,8 @@ class EngagementSDK(
         chat().getBlockedProfileList(liveLikePagination, liveLikeCallback)
     }
 
-    override fun sponsor(): Sponsor {
-        return Sponsor(this)
+    override fun sponsor(): ISponsor {
+        return Sponsor(configurationUserPairFlow, dataClient, sdkScope, userRepository,chat())
     }
 
     override fun badges(): Badges {
@@ -587,7 +577,9 @@ class EngagementSDK(
         @SerializedName("pinned_messages_url")
         val pinnedMessageUrl: String,
         @SerializedName("reward_transactions_url")
-        val rewardTransactionsUrl: String = ""
+        val rewardTransactionsUrl: String = "",
+        @SerializedName("sponsors_url")
+        val sponsorsUrl: String?
     )
 
     companion object {
