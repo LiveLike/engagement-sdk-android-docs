@@ -67,8 +67,24 @@ data class RewardItem(
     @SerializedName("id") val id: String,
     @SerializedName("url") val url: String,
     @SerializedName("client_id") val client_id: String,
-    @SerializedName("name") val name: String
+    @SerializedName("name") val name: String,
+    @SerializedName("attributes") internal val _attributes: List<RewardAttribute>?
+) {
+    val attributes: Map<String, String>
+        get() = _attributes?.associate { Pair(it.key, it.value) } ?: emptyMap()
+
+    override fun toString(): String {
+        return "RewardItem(id='$id', url='$url', client_id='$client_id', name='$name', attributes=$attributes)"
+    }
+
+
+}
+
+data class RewardAttribute (
+    @SerializedName( "key") val key: String,
+    @SerializedName( "value") val value: String
 )
+
 
 internal fun RewardItem.toReward(): LeaderBoardReward {
     return LeaderBoardReward(id, name)

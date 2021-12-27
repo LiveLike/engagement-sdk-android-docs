@@ -5,6 +5,7 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
+import com.livelike.engagementsdk.core.data.models.RewardAttribute
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.exceptionhelpers.safeCodeBlockCall
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
@@ -13,6 +14,7 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.services.messaging.LiveLikeEventMessagingService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -89,7 +91,19 @@ internal class Rewards(
     override fun getApplicationRewardItems(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItem>>
-    ) {
+    ){
+        getApplicationRewardItems(
+            liveLikePagination,
+            ApplicationRewardItemsRequestParams(),
+            liveLikeCallback
+        )
+    }
+
+    override fun getApplicationRewardItems(
+        liveLikePagination: LiveLikePagination,
+        requestParams: ApplicationRewardItemsRequestParams,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItem>>
+    ){
         var fetchUrl: String? = null
 
         sdkScope.launch {
@@ -104,6 +118,14 @@ internal class Rewards(
             if (fetchUrl == null) {
                 liveLikeCallback.onResponse(null, "No more data")
             } else {
+                requestParams.attributes?.let { attributes ->
+                    fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
+                        attributes.entries.forEach { entry ->
+                            addQueryParameter("attributes", "${entry.key},${entry.value}")
+                        }
+                    }?.build()?.toUrl()?.toString()
+                }
+
                 dataClient.remoteCall<LLPaginatedResult<RewardItem>>(
                     fetchUrl ?: "",
                     RequestType.GET,
@@ -306,6 +328,17 @@ interface IRewardsClient {
     )
 
     /**
+     * fetch all the rewards item associated to the client id passed at initialization of sdk
+     * to fetch next page function need to be called again with LiveLikePagination.NEXT and for first call as LiveLikePagination.FIRST
+     * @param requestParams allows filtering of rewards based off attribute tags
+     **/
+    fun getApplicationRewardItems(
+        liveLikePagination: LiveLikePagination,
+        requestParams: ApplicationRewardItemsRequestParams,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardItem>>
+    )
+
+    /**
      * fetch all the current user's balance for the passed rewardItemIDs
      * in callback you will receive a map of rewardItemId and balance
      **/
@@ -358,6 +391,10 @@ interface IRewardsClient {
     )
 
 }
+
+data class ApplicationRewardItemsRequestParams(
+    val attributes: Map<String,String>? = null
+)
 
 data class RewardTransaction (
     @SerializedName("id")
