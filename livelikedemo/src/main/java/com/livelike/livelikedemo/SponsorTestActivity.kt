@@ -45,6 +45,55 @@ class SponsorTestActivity : AppCompatActivity() {
                 )
             }
         }
+        fetch_sponsor_program_next.setOnClickListener {
+            if (program_id_et.text.toString().isNotEmpty()) {
+                progress_bar.visibility = View.VISIBLE
+                sponsor.fetchByProgramId(
+                    program_id_et.text.toString(),
+                    LiveLikePagination.NEXT,
+                    object : LiveLikeCallback<List<SponsorModel>>() {
+                        override fun onResponse(result: List<SponsorModel>?, error: String?) {
+                            runOnUiThread {
+                                progress_bar.visibility = View.GONE
+                                error?.let {
+                                    sponsor_result.text = it
+                                }
+                                result?.let {
+                                    for (sponsor in it) {
+                                        sponsor_result.text = "${sponsor_result.text} $sponsor \n "
+                                    }
+                                }
+                            }
+                        }
+                    }
+                )
+            }
+        }
+
+        fetch_sponsor_program_previous.setOnClickListener {
+            if (program_id_et.text.toString().isNotEmpty()) {
+                progress_bar.visibility = View.VISIBLE
+                sponsor.fetchByProgramId(
+                    program_id_et.text.toString(),
+                    LiveLikePagination.PREVIOUS,
+                    object : LiveLikeCallback<List<SponsorModel>>() {
+                        override fun onResponse(result: List<SponsorModel>?, error: String?) {
+                            runOnUiThread {
+                                progress_bar.visibility = View.GONE
+                                error?.let {
+                                    sponsor_result.text = it
+                                }
+                                result?.let {
+                                    for (sponsor in it) {
+                                        sponsor_result.text = "${sponsor_result.text} $sponsor \n "
+                                    }
+                                }
+                            }
+                        }
+                    }
+                )
+            }
+        }
 
         button5.setOnClickListener {
             if (editTextTextPersonName3.text.toString().isNotEmpty()) {
@@ -70,9 +119,97 @@ class SponsorTestActivity : AppCompatActivity() {
             }
         }
 
+        button5_next.setOnClickListener {
+            if (editTextTextPersonName3.text.toString().isNotEmpty()) {
+                progress_bar.visibility = View.VISIBLE
+                sponsor.fetchByChatRoomId(editTextTextPersonName3.text.toString(),
+                    LiveLikePagination.NEXT,
+                    object : LiveLikeCallback<List<SponsorModel>>() {
+                        override fun onResponse(result: List<SponsorModel>?, error: String?) {
+                            runOnUiThread {
+                                progress_bar.visibility = View.GONE
+                                result?.let {
+                                    for (sponsor in it) {
+                                        textView9.text = "${textView9.text} $sponsor \n "
+                                    }
+                                }
+                                error?.let {
+                                    textView9.text = it
+                                }
+                            }
+                        }
+
+                    })
+            }
+        }
+
+        button5_previous.setOnClickListener {
+            if (editTextTextPersonName3.text.toString().isNotEmpty()) {
+                progress_bar.visibility = View.VISIBLE
+                sponsor.fetchByChatRoomId(editTextTextPersonName3.text.toString(),
+                    LiveLikePagination.PREVIOUS,
+                    object : LiveLikeCallback<List<SponsorModel>>() {
+                        override fun onResponse(result: List<SponsorModel>?, error: String?) {
+                            runOnUiThread {
+                                progress_bar.visibility = View.GONE
+                                result?.let {
+                                    for (sponsor in it) {
+                                        textView9.text = "${textView9.text} $sponsor \n "
+                                    }
+                                }
+                                error?.let {
+                                    textView9.text = it
+                                }
+                            }
+                        }
+
+                    })
+            }
+        }
+
         button6.setOnClickListener {
             progress_bar.visibility = View.VISIBLE
             sponsor.fetchForApplication(LiveLikePagination.FIRST,
+                object : LiveLikeCallback<List<SponsorModel>>() {
+                    override fun onResponse(result: List<SponsorModel>?, error: String?) {
+                        runOnUiThread {
+                            progress_bar.visibility = View.GONE
+                            result?.let {
+                                for (sponsor in it) {
+                                    textView10.text = "${textView10.text} $sponsor \n "
+                                }
+                            }
+                            error?.let {
+                                textView10.text = it
+                            }
+                        }
+                    }
+                })
+
+        }
+        button6_next.setOnClickListener {
+            progress_bar.visibility = View.VISIBLE
+            sponsor.fetchForApplication(LiveLikePagination.NEXT,
+                object : LiveLikeCallback<List<SponsorModel>>() {
+                    override fun onResponse(result: List<SponsorModel>?, error: String?) {
+                        runOnUiThread {
+                            progress_bar.visibility = View.GONE
+                            result?.let {
+                                for (sponsor in it) {
+                                    textView10.text = "${textView10.text} $sponsor \n "
+                                }
+                            }
+                            error?.let {
+                                textView10.text = it
+                            }
+                        }
+                    }
+                })
+
+        }
+        button6_previous.setOnClickListener {
+            progress_bar.visibility = View.VISIBLE
+            sponsor.fetchForApplication(LiveLikePagination.PREVIOUS,
                 object : LiveLikeCallback<List<SponsorModel>>() {
                     override fun onResponse(result: List<SponsorModel>?, error: String?) {
                         runOnUiThread {
