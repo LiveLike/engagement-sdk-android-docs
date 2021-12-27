@@ -17,7 +17,7 @@
   "reaction_packs_url": "http://localhost:8080/api/v1/reaction-packs/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
   "image_url": "https://cf-blast-storage-game-changers.livelikecdn.com/assets/61f7cbf1-13cb-40ae-baa4-e60ce7d64e1d.png",
   "programs_url": "http://localhost:8080/api/v1/programs/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
-  "program_detail_url_template": "https://cf-blast-storage-game-changers.livelikecdn.com/programs/{program_id}/program.json",
+  "program_detail_url_template": "http://localhost:8080/programs/{program_id}/program.json",
   "program_custom_id_url_template": "http://localhost:8080/api/v1/program-by-custom-id/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L/{custom_id}/",
   "sticker_pack_detail_url_template": "http://localhost:8080/api/v1/sticker-packs/{sticker_pack_id}/",
   "reaction_pack_detail_url_template": "http://localhost:8080/api/v1/reaction-packs/{reaction_pack_id}/",
@@ -40,5 +40,6 @@
   "widget_detail_url_template": "http://localhost:8080/api/v1/widgets/{kind}/{id}/",
   "badges_url": "http://localhost:8080/api/v1/applications/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L/badges/",
   "profile_search_url": "http://localhost:8080/api/v1/profiles/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L&nickname={search_name}",
-  "pin_message_url": "http://localhost:8080/api/v1/pin-message/"
+  "pin_message_url": "http://localhost:8080/api/v1/pin-message/",
+  "sponsors_url": "http://localhost:8080/api/v1/sponsors/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L"
 }
