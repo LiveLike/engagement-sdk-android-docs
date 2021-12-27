@@ -355,7 +355,14 @@ class EngagementSDK(
     }
 
     override fun sponsor(): ISponsor {
-        return Sponsor(configurationUserPairFlow, dataClient, sdkScope, userRepository,chat())
+        return Sponsor(
+            configurationUserPairFlow,
+            dataClient,
+            sdkScope,
+            userRepository,
+            chat(),
+            uiScope
+        )
     }
 
     override fun badges(): Badges {

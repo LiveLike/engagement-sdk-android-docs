@@ -159,6 +159,8 @@ internal data class ProgramModel(
     val rewardItems: List<RewardItem>,
     @field:SerializedName("sponsors")
     val sponsors: List<SponsorModel>,
+    @field:SerializedName("sponsors_url")
+    val sponsorsUrl: String?,
     @SerializedName("widget_interactions_url_template")
     val widgetInteractionUrl: String?,
     @SerializedName("unclaimed_widget_interactions_url_template")

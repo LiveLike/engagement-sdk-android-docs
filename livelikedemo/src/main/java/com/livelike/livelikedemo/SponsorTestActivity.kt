@@ -3,11 +3,11 @@ package com.livelike.livelikedemo
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.sponsorship.ISponsor
 import com.livelike.engagementsdk.sponsorship.SponsorModel
 import kotlinx.android.synthetic.main.activity_sponsor_test.*
-import kotlinx.android.synthetic.main.activity_widget_json.*
 
 class SponsorTestActivity : AppCompatActivity() {
 
@@ -26,6 +26,7 @@ class SponsorTestActivity : AppCompatActivity() {
                 progress_bar.visibility = View.VISIBLE
                 sponsor.fetchByProgramId(
                     program_id_et.text.toString(),
+                    LiveLikePagination.FIRST,
                     object : LiveLikeCallback<List<SponsorModel>>() {
                         override fun onResponse(result: List<SponsorModel>?, error: String?) {
                             runOnUiThread {
@@ -49,6 +50,7 @@ class SponsorTestActivity : AppCompatActivity() {
             if (editTextTextPersonName3.text.toString().isNotEmpty()) {
                 progress_bar.visibility = View.VISIBLE
                 sponsor.fetchByChatRoomId(editTextTextPersonName3.text.toString(),
+                    LiveLikePagination.FIRST,
                     object : LiveLikeCallback<List<SponsorModel>>() {
                         override fun onResponse(result: List<SponsorModel>?, error: String?) {
                             runOnUiThread {
@@ -70,21 +72,22 @@ class SponsorTestActivity : AppCompatActivity() {
 
         button6.setOnClickListener {
             progress_bar.visibility = View.VISIBLE
-            sponsor.fetchForApplication(object : LiveLikeCallback<List<SponsorModel>>() {
-                override fun onResponse(result: List<SponsorModel>?, error: String?) {
-                    runOnUiThread {
-                        progress_bar.visibility = View.GONE
-                        result?.let {
-                            for (sponsor in it) {
-                                textView10.text = "${textView10.text} $sponsor \n "
+            sponsor.fetchForApplication(LiveLikePagination.FIRST,
+                object : LiveLikeCallback<List<SponsorModel>>() {
+                    override fun onResponse(result: List<SponsorModel>?, error: String?) {
+                        runOnUiThread {
+                            progress_bar.visibility = View.GONE
+                            result?.let {
+                                for (sponsor in it) {
+                                    textView10.text = "${textView10.text} $sponsor \n "
+                                }
+                            }
+                            error?.let {
+                                textView10.text = it
                             }
                         }
-                        error?.let {
-                            textView10.text = it
-                        }
                     }
-                }
-            })
+                })
 
         }
     }
