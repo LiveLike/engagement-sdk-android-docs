@@ -21,13 +21,13 @@ import org.mockito.Mockito
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.timeout
 import org.mockito.kotlin.verify
-import org.robolectric.RobolectricTestRunner
+import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import readAll
 import java.util.concurrent.TimeUnit
 
-@RunWith(RobolectricTestRunner::class)
-class SponsorApiUnitTest {
+@RunWith(ParameterizedRobolectricTestRunner::class)
+class SponsorApiUnitTest(private val param: SponsorListType) {
 
     val context = ApplicationProvider.getApplicationContext<Context>()
 
@@ -108,17 +108,33 @@ class SponsorApiUnitTest {
         mockWebServer.shutdown()
     }
 
+    enum class SponsorListType {
+        program, application, chatRoom
+    }
+
     @Test
-    fun sponsorApi_program_success_with_data() {
+    fun sponsorApi_success_with_data() {
         val callback =
             Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<SponsorModel>>
         Thread.sleep(5000)
         shadowOf(Looper.getMainLooper()).idle()
-        sdk.sponsor().fetchByProgramId(
-            "498591f4-9d6b-4943-9671-f44d3afbb6a4",
-            LiveLikePagination.FIRST,
-            callback
-        )
+        when (param) {
+            SponsorListType.program -> sdk.sponsor().fetchByProgramId(
+                "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+                LiveLikePagination.FIRST,
+                callback
+            )
+            SponsorListType.application -> sdk.sponsor().fetchForApplication(
+                LiveLikePagination.FIRST,
+                callback
+            )
+            SponsorListType.chatRoom -> sdk.sponsor().fetchByChatRoomId(
+                "e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
+                LiveLikePagination.FIRST,
+                callback
+            )
+        }
+
         Thread.sleep(2000)
         shadowOf(Looper.getMainLooper()).idle()
         val resultCaptor =
@@ -133,54 +149,15 @@ class SponsorApiUnitTest {
         assert(resultCaptor.firstValue[0].name == "sponsor1")
     }
 
-    @Test
-    fun sponsorApi_chatRoom_success_with_data() {
-        val callback =
-            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<SponsorModel>>
-        Thread.sleep(5000)
-        shadowOf(Looper.getMainLooper()).idle()
-        sdk.sponsor().fetchByChatRoomId(
-            "e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
-            LiveLikePagination.FIRST,
-            callback
+    companion object {
+        @JvmStatic
+        // name argument is optional, it will show up on the test results
+        @ParameterizedRobolectricTestRunner.Parameters(name = "Input: {0}")
+        // parameters are provided as arrays, allowing more than one parameter
+        fun params() = listOf(
+            arrayOf(SponsorListType.application),
+            arrayOf(SponsorListType.program),
+            arrayOf(SponsorListType.chatRoom)
         )
-        Thread.sleep(2000)
-        shadowOf(Looper.getMainLooper()).idle()
-        val resultCaptor =
-            argumentCaptor<List<SponsorModel>>()
-        val errorCaptor =
-            argumentCaptor<String>()
-        shadowOf(Looper.getMainLooper()).idle()
-        Thread.sleep(2000)
-        shadowOf(Looper.getMainLooper()).idle()
-        verify(callback, timeout(5000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
-        assert(resultCaptor.firstValue.isNotEmpty())
-        assert(resultCaptor.firstValue[0].name == "sponsor1")
     }
-
-    @Test
-    fun sponsorApi_application_success_with_data() {
-        val callback =
-            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<SponsorModel>>
-        Thread.sleep(5000)
-        shadowOf(Looper.getMainLooper()).idle()
-        sdk.sponsor().fetchForApplication(
-            LiveLikePagination.FIRST,
-            callback
-        )
-        Thread.sleep(2000)
-        shadowOf(Looper.getMainLooper()).idle()
-        val resultCaptor =
-            argumentCaptor<List<SponsorModel>>()
-        val errorCaptor =
-            argumentCaptor<String>()
-        shadowOf(Looper.getMainLooper()).idle()
-        Thread.sleep(2000)
-        shadowOf(Looper.getMainLooper()).idle()
-        verify(callback, timeout(5000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
-        assert(resultCaptor.firstValue.isNotEmpty())
-        assert(resultCaptor.firstValue[0].name == "sponsor1")
-    }
-
-
 }
