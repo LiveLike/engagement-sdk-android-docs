@@ -69,13 +69,13 @@ data class RewardItem(
     @SerializedName("client_id") val client_id: String,
     @SerializedName("name") val name: String,
     @SerializedName("attributes") internal val _attributes: List<RewardAttribute>?,
-    @SerializedName("reward_item_images") val images: List<RewardImage>?
+    @SerializedName("reward_item_images") val rewardItemImages: List<RewardItemImage>?
 ) {
     val attributes: Map<String, String>
         get() = _attributes?.associate { Pair(it.key, it.value) } ?: emptyMap()
 
     override fun toString(): String {
-        return "RewardItem(id='$id', url='$url', client_id='$client_id', name='$name', images=$images, attributes=$attributes)"
+        return "RewardItem(id='$id', url='$url', client_id='$client_id', name='$name', images=$rewardItemImages, attributes=$attributes)"
     }
 
 }
@@ -85,10 +85,10 @@ data class RewardAttribute (
     @SerializedName( "value") val value: String
 )
 
-data class RewardImage(
+data class RewardItemImage(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
-    @SerializedName("icon_url") val url: String,
+    @SerializedName("icon_url") val iconUrl: String,
     @SerializedName("mime_type") val mimeType: String
 )
 
