@@ -69,7 +69,7 @@ data class RewardItem(
     @SerializedName("client_id") val client_id: String,
     @SerializedName("name") val name: String,
     @SerializedName("attributes") internal val _attributes: List<RewardAttribute>?,
-    @SerializedName("images") val images: List<RewardImage>?
+    @SerializedName("reward_item_images") val images: List<RewardImage>?
 ) {
     val attributes: Map<String, String>
         get() = _attributes?.associate { Pair(it.key, it.value) } ?: emptyMap()
@@ -86,8 +86,9 @@ data class RewardAttribute (
 )
 
 data class RewardImage(
+    @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
-    @SerializedName("url") val url: String,
+    @SerializedName("icon_url") val url: String,
     @SerializedName("mime_type") val mimeType: String
 )
 
