@@ -225,6 +225,7 @@ internal class ChatSession(
         }
         chatClient = chatClient?.toChatQueue()
             ?.apply {
+                this.liveLikeChatClient = this@ChatSession.liveLikeChatClient
                 msgListener = proxyMsgListener
                 chatRoomListener = this@ChatSession.proxyChatRoomListener
                 this.renderer = chatViewModel
