@@ -11,6 +11,9 @@ import com.livelike.engagementsdk.core.services.messaging.Error
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.publicapis.*
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatRoom
 
@@ -20,6 +23,42 @@ internal class ChatQueue(upstream: MessagingClient) :
 
     var msgListener: MessageListener? = null
     var chatRoomListener: ChatRoomListener? = null
+    var blockedProfileIds = hashSetOf<String>()
+    var liveLikeChatClient: LiveLikeChatClient? = null
+        set(value) {
+            field = value
+            value?.apply {
+                getProfileBlockIds(object : LiveLikeCallback<List<String>>() {
+                    override fun onResponse(result: List<String>?, error: String?) {
+                        error?.let {
+                            logError { "Block Profile Ids Error: $it"}
+                        }
+                        result?.let {
+                            blockedProfileIds.addAll(it)
+                        }
+                    }
+                })
+                (this as InternalLiveLikeChatClient).subscribeToChatRoomInternalDelegate(
+                    this.hashCode().toString(), object : ChatRoomDelegate() {
+                        override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
+
+                        }
+
+                        override fun onReceiveInvitation(invitation: ChatRoomInvitation) {
+
+                        }
+
+                        override fun onBlockProfile(blockedInfo: BlockedInfo) {
+                            blockedProfileIds.add(blockedInfo.blockedProfileID)
+                        }
+
+                        override fun onUnBlockProfile(blockInfoId: String, blockProfileId: String) {
+                            blockedProfileIds.remove(blockProfileId)
+                        }
+                    })
+            }
+        }
+
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         upstream.publishMessage(message, channel, timeSinceEpoch)
     }
@@ -50,7 +89,11 @@ internal class ChatQueue(upstream: MessagingClient) :
             val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
             chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
             return@map chatMessage
+        }.filter {
+            !blockedProfileIds
+                .contains(it.senderId)
         }
+
         renderer?.displayChatMessages(messageList)
         msgListener?.onHistoryMessage(messageList.map { it.toLiveLikeChatMessage() })
     }
@@ -73,6 +116,12 @@ internal class ChatQueue(upstream: MessagingClient) :
             ChatViewModel.EVENT_NEW_MESSAGE -> {
                 val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
                 chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
+                if (blockedProfileIds
+                        .contains(chatMessage.senderId)
+                ) {
+                    logDebug { "user is blocked" }
+                    return
+                }
                 renderer?.displayChatMessage(chatMessage)
                 msgListener?.onNewMessage(chatMessage.toLiveLikeChatMessage())
             }

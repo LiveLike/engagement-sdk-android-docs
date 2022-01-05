@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.publicapis.BlockedInfo
 import com.livelike.engagementsdk.chat.data.remote.LiveLikeOrdering
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.IEngagement
@@ -98,6 +99,28 @@ class ChatRoomApiUnitTest {
                                 javaClass.classLoader.getResourceAsStream("chat_room_members_list.json")
                                     .readAll()
                             )
+                        }
+                    }
+                    "/api/v1/profile-blocks/" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream("block_profile_response.json")
+                                .readAll()
+                        )
+                    }
+                    "/api/v1/profile-blocks/?blocked_profile_id=" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream("block_profile_list_response.json")
+                                .readAll()
+                        )
+                    }
+                    "/api/v1/profile-blocks/5cb2295b-fde9-488a-8105-c2f5cbdd7801/" -> when (request.method) {
+                        "DELETE" -> MockResponse().apply {
+                            setResponseCode(200)
+                        }
+                        else -> MockResponse().apply {
+                            setResponseCode(500)
                         }
                     }
                     "/api/v1/pin-message/" -> when (request.method) {
@@ -276,6 +299,76 @@ class ChatRoomApiUnitTest {
         verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
         assert(resultCaptor.firstValue != null && resultCaptor.firstValue::class.java == LiveLikeEmptyResponse::class.java)
     }
+
+    @Test
+    fun test_block_user() {
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<BlockedInfo>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.chat().blockProfile(
+            "5cb2295b-fde9-488a-8105-c2f5cbdd7801",
+            callback
+        )
+        val resultCaptor =
+            argumentCaptor<BlockedInfo>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue.blockedProfileID == "5cb2295b-fde9-488a-8105-c2f5cbdd7801")
+    }
+
+    @Test
+    fun test_unblock_user() {
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<LiveLikeEmptyResponse>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.chat().unBlockProfile(
+            "5cb2295b-fde9-488a-8105-c2f5cbdd7801",
+            callback
+        )
+        val resultCaptor =
+            argumentCaptor<LiveLikeEmptyResponse>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue::class.java == LiveLikeEmptyResponse::class.java)
+    }
+
+    @Test
+    fun test_list_of_block_users() {
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<BlockedInfo>>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        sdk.chat().getBlockedProfileList(
+            LiveLikePagination.FIRST,
+            callback
+        )
+        val resultCaptor =
+            argumentCaptor<List<BlockedInfo>>()
+        val errorCaptor =
+            argumentCaptor<String>()
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(2000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue.isNotEmpty() && resultCaptor.firstValue.first().blockedProfileID == "5cb2295b-fde9-488a-8105-c2f5cbdd7801")
+    }
+
 
     @Test
     fun pin_message_in_chat_room() {
