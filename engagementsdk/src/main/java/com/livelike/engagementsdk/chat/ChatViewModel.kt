@@ -50,47 +50,7 @@ internal class ChatViewModel(
     var chatAdapter: ChatRecyclerAdapter =
         ChatRecyclerAdapter(analyticsService, ::reportChatMessage, ::blockProfile)
     var messageList = mutableListOf<ChatMessage>()
-    var cacheList = hashSetOf<ChatMessage>()
     var deletedMessages = hashSetOf<String>()
-    var blockedProfileIds = hashSetOf<String>()
-    var liveLikeChatClient: LiveLikeChatClient? = null
-        set(value) {
-            field = value
-            value?.apply {
-                getProfileBlockIds(object : LiveLikeCallback<List<String>>() {
-                    override fun onResponse(result: List<String>?, error: String?) {
-                        error?.let {
-                            errorDelegate?.onError(it)
-                        }
-                        result?.let {
-                            blockedProfileIds.addAll(it)
-                        }
-                    }
-                })
-                (this as InternalLiveLikeChatClient).subscribeToChatRoomInternalDelegate(
-                    this.hashCode().toString(), object : ChatRoomDelegate() {
-                        override fun onNewChatRoomAdded(chatRoomAdd: ChatRoomAdd) {
-
-                        }
-
-                        override fun onReceiveInvitation(invitation: ChatRoomInvitation) {
-
-                        }
-
-                        override fun onBlockProfile(blockedInfo: BlockedInfo) {
-                            blockedProfileIds.add(blockedInfo.blockedProfileID)
-                            messageList.clear()
-                            displayChatMessages(cacheList.toList())
-                        }
-
-                        override fun onUnBlockProfile(blockInfoId: String, blockProfileId: String) {
-                            blockedProfileIds.remove(blockProfileId)
-                            messageList.clear()
-                            displayChatMessages(cacheList.toList())
-                        }
-                    })
-            }
-        }
 
     internal val eventStream: Stream<String> =
         SubscriptionManager(true)
@@ -103,6 +63,7 @@ internal class ChatViewModel(
         }
 
     var avatarUrl: String? = null
+    var liveLikeChatClient: LiveLikeChatClient? = null
 
     var stickerPackRepository: StickerPackRepository? = null
         set(value) {
@@ -141,7 +102,6 @@ internal class ChatViewModel(
 
     override fun displayChatMessages(messages: List<ChatMessage>) {
         Log.d("custom", "messages")
-        cacheList.addAll(messages)
         messages.forEach {
             replaceImageMessageContentWithImageUrl(it)
         }
@@ -149,8 +109,7 @@ internal class ChatViewModel(
         messageList.addAll(
             0,
             messages.filter {
-                !deletedMessages.contains(it.id) && !blockedProfileIds
-                    .contains(it.senderId)
+                !deletedMessages.contains(it.id)
             }.filter {
                 chatAdapter.chatViewDelegate != null || (chatAdapter.chatViewDelegate == null && it.messageEvent != PubnubChatEventType.CUSTOM_MESSAGE_CREATED)
             }.map {
@@ -163,15 +122,11 @@ internal class ChatViewModel(
     }
 
     override fun displayChatMessage(message: ChatMessage) {
-        cacheList.add(message)
         logDebug {
             "Chat display message: ${message.message} check1:${
                 message.channel != currentChatRoom?.channels?.chat?.get(
                     CHAT_PROVIDER
                 )
-            } check blocked:${
-                blockedProfileIds
-                    .contains(message.senderId)
             } check deleted:${deletedMessages.contains(message.id)}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
@@ -180,12 +135,7 @@ internal class ChatViewModel(
         // if integrator provide the chatViewDelegate that means we are allowing to show the custom message
         if (chatAdapter.chatViewDelegate == null && message.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) return
 
-        if (blockedProfileIds
-                .contains(message.senderId)
-        ) {
-            logDebug { "user is blocked" }
-            return
-        }
+
         if (deletedMessages.contains(message.id.lowercase(Locale.getDefault()))) {
             logDebug { "the message is deleted by producer" }
             return
@@ -351,7 +301,6 @@ internal class ChatViewModel(
     }
 
     fun flushMessages() {
-        cacheList = hashSetOf()
         deletedMessages = hashSetOf()
         messageList = mutableListOf()
         chatAdapter.submitList(messageList)
