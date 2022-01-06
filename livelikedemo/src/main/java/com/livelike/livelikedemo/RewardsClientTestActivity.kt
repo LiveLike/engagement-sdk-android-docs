@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
+import com.livelike.engagementsdk.core.data.models.RewardAttribute
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.gamification.*
@@ -261,7 +262,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
                 else ->
                     rewardsClient.getApplicationRewardItems(
                         LiveLikePagination.FIRST,
-                        ApplicationRewardItemsRequestParams(mapOf(Pair(key, value))),
+                        ApplicationRewardItemsRequestParams(listOf(RewardAttribute(key, value))),
                         object : LiveLikeCallback<LLPaginatedResult<RewardItem>>() {
                             override fun onResponse(
                                 result: LLPaginatedResult<RewardItem>?,
