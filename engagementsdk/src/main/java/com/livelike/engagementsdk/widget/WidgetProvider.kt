@@ -56,8 +56,7 @@ import com.livelike.engagementsdk.widget.view.PredictionView
 import com.livelike.engagementsdk.widget.view.QuizView
 import com.livelike.engagementsdk.widget.view.SocialEmbedWidgetView
 import com.livelike.engagementsdk.widget.view.TextAskView
-import com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
-import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
+import com.livelike.engagementsdk.widget.view.components.*
 import com.livelike.engagementsdk.widget.view.components.VideoAlertWidgetView
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
@@ -73,11 +72,6 @@ import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
 import com.livelike.engagementsdk.widget.viewModel.TextAskViewModel
 import com.livelike.engagementsdk.widget.viewModel.VideoWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.atom_widget_tag_view.view.tagTextView
-import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.tagView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 import java.util.Calendar
 import kotlin.math.min
 
@@ -483,20 +477,20 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     }
 
     protected fun applyThemeOnTitleView(it: WidgetBaseThemeComponent) {
-        titleView?.componentTheme = it.title
-        AndroidResource.updateThemeForView(titleTextView, it.title, fontFamilyProvider)
+        findViewById<TitleView>(R.id.titleView)?.componentTheme = it.title
+        AndroidResource.updateThemeForView(findViewById<TitleView>(R.id.titleView)?.titleViewBinding?.titleTextView, it.title, fontFamilyProvider)
         if (it.header?.background != null) {
-            txtTitleBackground?.background = AndroidResource.createDrawable(it.header)
+            findViewById<View>(R.id.txtTitleBackground)?.background = AndroidResource.createDrawable(it.header)
         }
-        AndroidResource.setPaddingForView(txtTitleBackground, it.header?.padding)
+        AndroidResource.setPaddingForView(findViewById(R.id.txtTitleBackground), it.header?.padding)
     }
 
     /**
      * this method in used to apply theme on tag view
      **/
     protected fun applyThemeOnTagView(it: WidgetBaseThemeComponent) {
-        tagView?.componentTheme = it.tag
-        AndroidResource.updateThemeForView(tagTextView, it.tag, fontFamilyProvider)
+        findViewById<TagView>(R.id.tagView)?.componentTheme = it.tag
+        AndroidResource.updateThemeForView(findViewById(R.id.tagTextView), it.tag, fontFamilyProvider)
     }
 
 
@@ -504,13 +498,14 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
      * this method in used to set tag view with style changes (default appearance)
      **/
     protected fun setTagViewWithStyleChanges(tag: String) {
+        val tagView = findViewById<TagView>(R.id.tagView)
         if (tag.isNotEmpty()) {
             tagView.tag = tag
             tagView.visibility = View.VISIBLE
-            AndroidResource.updateDefaultThemeForTagView(titleTextView, titleView)
+            AndroidResource.updateDefaultThemeForTagView(findViewById<TitleView>(R.id.titleView)?.titleViewBinding?.titleTextView, findViewById(R.id.titleView))
         } else {
             tagView.visibility = View.GONE
-            titleTextView.isAllCaps = true
+            findViewById<TitleView>(R.id.titleView)?.titleViewBinding?.titleTextView?.isAllCaps = true
         }
     }
 
