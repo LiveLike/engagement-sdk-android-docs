@@ -6,12 +6,14 @@ import android.graphics.drawable.StateListDrawable
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.databinding.WidgetNumberPredictionBinding
 import com.livelike.engagementsdk.widget.NumberPredictionOptionsTheme
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetsTheme
@@ -21,12 +23,6 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.NumberPredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.NumberPredictionWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.atom_widget_title.view.*
-import kotlinx.android.synthetic.main.common_lock_btn_lay.view.*
-import kotlinx.android.synthetic.main.livelike_user_input.view.*
-import kotlinx.android.synthetic.main.widget_number_prediction.view.*
-import kotlinx.android.synthetic.main.widget_number_prediction.view.label_lock
-import kotlinx.android.synthetic.main.widget_number_prediction.view.lay_lock
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -40,6 +36,8 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
     private var isFirstInteraction = false
 
     private var isFollowUp = false
+
+    private lateinit var binding: WidgetNumberPredictionBinding
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
@@ -80,7 +78,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 // show timer while widget interaction mode
                 viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
                     showTimer(
-                        timeout, textEggTimer,
+                        timeout, binding.textEggTimer,
                         {
                             viewModel?.animationEggTimerProgress = it
                         },
@@ -93,15 +91,15 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 disableLockButton()
-                label_lock.visibility = View.VISIBLE
+                binding.labelLock.visibility = View.VISIBLE
                 onWidgetInteractionCompleted()
 
                     if (viewModel?.adapter?.selectedUserVotes != null && viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
                         viewModel?.adapter?.selectedUserVotes!!.size == viewModel?.data?.currentData?.resource?.options?.size && viewModel?.numberPredictionFollowUp == false
                     ) {
-                        label_lock.visibility = View.VISIBLE
+                        binding.labelLock.visibility = View.VISIBLE
                     }else{
-                        label_lock.visibility = View.GONE
+                        binding.labelLock.visibility = View.GONE
                     }
             }
         }
@@ -116,13 +114,13 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             val optionList = resource.getMergedOptions() ?: return
             if (!inflated) {
                 inflated = true
-                inflate(context, R.layout.widget_number_prediction, this@NumberPredictionView)
+                binding = WidgetNumberPredictionBinding.inflate(LayoutInflater.from(context), this@NumberPredictionView, true)
             }
             isFollowUp = resource.kind.contains("follow-up")
-            titleView.title = resource.question
-            txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
-            lay_textRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
-            titleTextView.gravity = Gravity.START
+            binding.titleView.title = resource.question
+            binding.txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
+            binding.layTextRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
+            binding.titleView.titleViewBinding.titleTextView.gravity = Gravity.START
 
             // added tag for identification of widget (by default will be empty)
             if(isFollowUp){
@@ -140,13 +138,13 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
             disableLockButton()
 
-            textRecyclerView.apply {
+            binding.textRecyclerView.apply {
                 viewModel?.adapter?.restoreSelectedVotes(viewModel?.getUserInteraction()?.votes)
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
 
-            predictBtn.setOnClickListener {
+            binding.predictBtn.setOnClickListener {
                 if (viewModel?.adapter?.selectedUserVotes!!.isEmpty() ||
                     viewModel?.adapter?.selectedUserVotes!!.size !=  viewModel?.adapter?.myDataset?.size ) return@setOnClickListener
 
@@ -155,9 +153,9 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
             if (viewModel?.getUserInteraction() != null) {
                 disableLockButton()
-                label_lock.visibility = View.VISIBLE
+                binding.labelLock.visibility = View.VISIBLE
             }else{
-                label_lock.visibility = View.GONE
+                binding.labelLock.visibility = View.GONE
             }
 
             widgetsTheme?.let {
@@ -217,26 +215,26 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun disableLockButton() {
-        if(predictBtn!=null) {
-            predictBtn.isEnabled = false
+        if(binding.predictBtn!=null) {
+            binding.predictBtn.isEnabled = false
         }
     }
 
 
     private fun enableLockButton() {
-        if(predictBtn!=null) {
-            predictBtn.isEnabled = true
-            label_lock.visibility = GONE
+        if(binding.predictBtn!=null) {
+            binding.predictBtn.isEnabled = true
+            binding.labelLock.visibility = GONE
         }
     }
 
 
     private fun hideLockButton(){
-        lay_lock.visibility = GONE
+        binding.layLock.visibility = GONE
     }
 
     private fun showLockButton(){
-        lay_lock.visibility = VISIBLE
+        binding.layLock.visibility = VISIBLE
     }
 
 
@@ -244,7 +242,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
         viewModel?.adapter?.selectionLocked = true
         viewModel?.data?.latest()?.let {
             if (isFollowUp && viewModel?.showTimer == true) {
-                textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
+                binding.textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
             }
         }
     }
@@ -261,9 +259,9 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
     /** changes the return key as done in keyboard */
     private fun setImeOptionDoneInKeyboard() {
-        if(userInput != null) {
-            userInput.imeOptions = EditorInfo.IME_ACTION_DONE
-            userInput.setRawInputType(InputType.TYPE_CLASS_NUMBER)
+        if(viewModel?.adapter?.binding?.incrementDecrementLayout?.userInput != null) {
+            viewModel?.adapter?.binding?.incrementDecrementLayout?.userInput?.imeOptions = EditorInfo.IME_ACTION_DONE
+            viewModel?.adapter?.binding?.incrementDecrementLayout?.userInput?.setRawInputType(InputType.TYPE_CLASS_NUMBER)
         }
     }
 
@@ -287,7 +285,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
         viewModel?.adapter?.notifyDataSetChanged()
 
         disableLockButton()
-        label_lock.visibility = View.VISIBLE
+        binding.labelLock.visibility = View.VISIBLE
     }
 
 
@@ -299,7 +297,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                     applyThemeOnTitleView(themeComponent)
                     applyThemeOnTagView(themeComponent)
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        lay_textRecyclerView.background = it
+                        binding.layTextRecyclerView.background = it
                     }
                    viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
@@ -314,19 +312,19 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                     val state = StateListDrawable()
                     state.addState(intArrayOf(android.R.attr.state_enabled), submitButtonEnabledDrawable)
                     state.addState(intArrayOf(), submitButtonDisabledDrawable)
-                    predictBtn?.background = state
+                    binding.predictBtn?.background = state
 
                     //confirmation label theme
                     AndroidResource.updateThemeForView(
-                        label_lock,
+                        binding.labelLock,
                         themeComponent.confirmation,
                         fontFamilyProvider
                     )
                     if (themeComponent.confirmation?.background != null) {
-                        label_lock?.background = AndroidResource.createDrawable(themeComponent.confirmation)
+                        binding.labelLock?.background = AndroidResource.createDrawable(themeComponent.confirmation)
                     }
                     themeComponent.confirmation?.padding?.let {
-                        AndroidResource.setPaddingForView(label_lock, themeComponent.confirmation.padding)
+                        AndroidResource.setPaddingForView(binding.labelLock, themeComponent.confirmation.padding)
                     }
                 }
             }
