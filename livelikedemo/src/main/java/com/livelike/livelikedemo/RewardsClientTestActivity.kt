@@ -53,9 +53,9 @@ class RewardsClientTestActivity : AppCompatActivity() {
             selectedrewardItem?.let {
                 AlertDialog.Builder(this)
                     .setTitle("${it.name}: attributes")
-                    .setItems(it.attributes.entries.map { entry ->
+                    .setItems(it.attributes?.map { entry ->
                         "key: ${entry.key}, value : ${entry.value}"
-                    }.toTypedArray()) { _, _ -> }
+                    }?.toTypedArray()) { _, _ -> }
                     .create()
                     .show()
             }
@@ -66,7 +66,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
                 AlertDialog.Builder(this)
                     .setTitle("${it.name}: images")
                     .setItems(it.images?.map { imageData ->
-                        "name: ${imageData.name}\nurl: ${imageData.url}\nmime Type: ${imageData.mimeType}"
+                        "name: ${imageData.name}\nurl: ${imageData.imageUrl}\nmime Type: ${imageData.mimetype}"
                     }?.toTypedArray()) { _, _ -> }
                     .create()
                     .show()
