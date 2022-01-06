@@ -22,7 +22,7 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.TextAskViewModel
 import com.livelike.engagementsdk.widget.viewModel.TextAskWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.common_lock_btn_lay.view.*
+
 
 
 class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
@@ -76,6 +76,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
                     count: Int,
                     after: Int
                 ) {
+                    //not required
                 }
 
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -154,6 +155,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
                 }
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
+                // not required
             }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {

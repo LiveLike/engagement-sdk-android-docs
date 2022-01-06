@@ -32,22 +32,6 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-/*import kotlinx.android.synthetic.main.widget_cheer_meter.view.fl_result_team
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_1
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_2
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_winner_anim
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_winner_team
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.lay_cheer_meter_background
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.lay_cheer_meter_header
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.ll_cheer_meter_teams
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.lottie_vs_animation
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.textEggTimer
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_team_1
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_team_2
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_title
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_my_score
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple2*/
 import kotlin.math.max
 
 class CheerMeterView(context: Context, attr: AttributeSet? = null) :

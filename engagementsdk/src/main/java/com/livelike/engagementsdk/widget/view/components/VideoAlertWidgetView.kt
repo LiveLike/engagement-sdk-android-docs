@@ -34,19 +34,6 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.VideoWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 
-/*import kotlinx.android.synthetic.main.video_widget.view.ic_play
-import kotlinx.android.synthetic.main.video_widget.view.ic_sound
-import kotlinx.android.synthetic.main.video_widget.view.labelText
-import kotlinx.android.synthetic.main.video_widget.view.linkArrow
-import kotlinx.android.synthetic.main.video_widget.view.linkBackground
-import kotlinx.android.synthetic.main.video_widget.view.linkText
-import kotlinx.android.synthetic.main.video_widget.view.mute_tv
-import kotlinx.android.synthetic.main.video_widget.view.playbackErrorView
-import kotlinx.android.synthetic.main.video_widget.view.playerView
-import kotlinx.android.synthetic.main.video_widget.view.progress_bar
-import kotlinx.android.synthetic.main.video_widget.view.sound_view
-import kotlinx.android.synthetic.main.video_widget.view.thumbnailView
-import kotlinx.android.synthetic.main.video_widget.view.widgetContainer*/
 
 internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
