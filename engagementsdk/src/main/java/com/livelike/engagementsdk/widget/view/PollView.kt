@@ -3,11 +3,13 @@ package com.livelike.engagementsdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.databinding.WidgetTextOptionSelectionBinding
 import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetsTheme
@@ -18,20 +20,13 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_textRecyclerView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 
 class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
 
     private var viewModel: PollViewModel? = null
 
     private var inflated = false
+    private lateinit var binding: WidgetTextOptionSelectionBinding
 
     override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
@@ -138,11 +133,11 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun rewardsObserver(points: Int?) {
         points?.let {
             if (!shouldShowPointTutorial() && it > 0) {
-                pointView.startAnimation(it, true)
+                binding.pointView.startAnimation(it, true)
                 wouldShowProgressionMeter(
                     viewModel?.rewardsType,
                     viewModel?.gamificationProfile?.latest(),
-                    progressionMeterView
+                    binding.progressionMeterView
                 )
             }
         }
@@ -159,7 +154,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.fontFamilyProvider = fontFamilyProvider
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        lay_textRecyclerView?.background = it
+                        binding.layTextRecyclerView?.background = it
                     }
                 }
             }
@@ -177,18 +172,17 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             val optionList = resource.getMergedOptions() ?: return
             if (!inflated) {
                 inflated = true
-                inflate(context, R.layout.widget_text_option_selection, this@PollView)
+                binding = WidgetTextOptionSelectionBinding.inflate(LayoutInflater.from(context), this@PollView, true)
                 wouldInflateSponsorUi()
             }
-            txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
-            lay_textRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_poll)
+            binding.txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
+            binding.layTextRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_poll)
 
             // added tag as label for identification of widget (by default tag will be empty)
             setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_poll_tag))
-            titleView.title = resource.question
+            binding.titleView.title = resource.question
             // TODO: update header background with margin or padding
-            titleTextView.gravity = Gravity.START
-
+            binding.titleView.titleViewBinding.titleTextView.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, type)
 
             // set on click
@@ -208,7 +202,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
             viewModel?.onWidgetInteractionCompleted = { onWidgetInteractionCompleted() }
 
-            textRecyclerView.apply {
+            binding.textRecyclerView.apply {
                 isFirstInteraction = viewModel?.getUserInteraction() != null
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.optionId)
                 this.adapter = viewModel?.adapter
@@ -227,7 +221,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun PollWidget.showTimer() {
         showTimer(
-            resource.timeout, textEggTimer,
+            resource.timeout, binding.textEggTimer,
             {
                 viewModel?.animationEggTimerProgress = it
             },
@@ -254,7 +248,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             if (this.getMergedTotal() > 0) {
                 viewModel?.adapter?.showPercentage = true
             }
-            textRecyclerView?.swapAdapter(viewModel?.adapter, false)
+            binding.textRecyclerView?.swapAdapter(viewModel?.adapter, false)
             logDebug { "PollWidget Showing result total:$totalVotes" }
         }
     }
