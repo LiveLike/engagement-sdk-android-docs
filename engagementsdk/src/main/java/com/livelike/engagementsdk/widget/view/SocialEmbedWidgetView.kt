@@ -23,12 +23,6 @@ import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-/*import kotlinx.android.synthetic.main.widget_social_embed.view.progress_bar
-import kotlinx.android.synthetic.main.widget_social_embed.view.titleView
-import kotlinx.android.synthetic.main.widget_social_embed.view.txtTitleBackground
-import kotlinx.android.synthetic.main.widget_social_embed.view.web_view
-import kotlinx.android.synthetic.main.widget_social_embed.view.widgetContainer
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer*/
 
 internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(context) {
 
@@ -98,7 +92,6 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
             binding = WidgetSocialEmbedBinding.inflate(LayoutInflater.from(context), this@SocialEmbedWidgetView, true)
         }
 
-           // binding = WidgetSocialEmbedBinding.inflate(LayoutInflater.from(context), this@SocialEmbedWidgetView, true)
             binding?.titleView?.text = liveLikeWidget.comment ?: ""
 
             liveLikeWidget.socialEmbedItems?.get(0)?.let { oembed ->
