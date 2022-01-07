@@ -34,7 +34,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     )
 
     private var inflated = false
-    private lateinit var binding: WidgetAlertBinding
+    private var binding: WidgetAlertBinding? = null
 
     var viewModel: AlertWidgetViewModel? = null
 
@@ -106,32 +106,32 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         viewModel?.data?.latest()?.let { _ ->
             theme.getThemeLayoutComponent(WidgetType.ALERT)?.let { themeComponent ->
                 AndroidResource.updateThemeForView(
-                    binding.labelText,
+                    binding?.labelText,
                     themeComponent.title,
                     fontFamilyProvider
                 )
                 if (themeComponent.header?.background != null) {
-                    binding.labelText?.background = AndroidResource.createDrawable(themeComponent.header)
+                    binding?.labelText?.background = AndroidResource.createDrawable(themeComponent.header)
                 }
                 themeComponent.header?.padding?.let {
-                    AndroidResource.setPaddingForView(binding.labelText, themeComponent.header.padding)
+                    AndroidResource.setPaddingForView(binding?.labelText, themeComponent.header.padding)
                 }
 
-                binding.widgetContainer?.background =
+                binding?.widgetContainer?.background =
                     AndroidResource.createDrawable(themeComponent.body)
                 AndroidResource.updateThemeForView(
-                    binding.bodyText,
+                    binding?.bodyText,
                     themeComponent.body,
                     fontFamilyProvider
                 )
                 AndroidResource.updateThemeForView(
-                    binding.linkText,
+                    binding?.linkText,
                     themeComponent.body,
                     fontFamilyProvider
                 )
 
                 if (themeComponent.footer?.background != null) {
-                    binding.linkBackground?.background = AndroidResource.createDrawable(themeComponent.footer)
+                    binding?.linkBackground?.background = AndroidResource.createDrawable(themeComponent.footer)
                 }
             }
         }
@@ -154,49 +154,53 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             binding = WidgetAlertBinding.inflate(LayoutInflater.from(context), this@AlertWidgetView, true)
         }
 
-        binding.bodyText.text = resourceAlert.text
-        binding.labelText.text = resourceAlert.title
-        binding.linkText.text = resourceAlert.link_label
+        binding?.apply {
+            bodyText.text = resourceAlert.text
+            labelText.text = resourceAlert.title
+            linkText.text = resourceAlert.link_label
+        }
 
         if (!resourceAlert.link_url.isNullOrEmpty()) {
-            binding.linkBackground.setOnClickListener {
+            binding?.linkBackground?.setOnClickListener {
                 openBrowser(context, resourceAlert.link_url)
             }
         } else {
-            binding.linkArrow.visibility = View.GONE
-            binding.linkBackground.visibility = View.GONE
-            binding.linkText.visibility = View.GONE
+            binding?.apply {
+                linkArrow.visibility = View.GONE
+                linkBackground.visibility = View.GONE
+                linkText.visibility = View.GONE
+            }
         }
 
         if (resourceAlert.image_url.isNullOrEmpty()) {
-            binding.bodyImage.visibility = View.GONE
-            val params = binding.bodyText.layoutParams as ConstraintLayout.LayoutParams
+            binding?.bodyImage?.visibility = View.GONE
+            val params = binding?.bodyText?.layoutParams as ConstraintLayout.LayoutParams
             params.rightMargin = AndroidResource.dpToPx(16)
-            binding.bodyText.requestLayout()
+            binding?.bodyText?.requestLayout()
         } else {
             resourceAlert.image_url.apply {
                 Glide.with(context.applicationContext)
                     .load(resourceAlert.image_url)
-                    .into(binding.bodyImage)
+                    .into(binding?.bodyImage!!)
             }
         }
 
         if (resourceAlert.title.isNullOrEmpty()) {
-            binding.labelText.visibility = View.GONE
-            val params = binding.widgetContainer.layoutParams as ConstraintLayout.LayoutParams
+            binding?.labelText?.visibility = View.GONE
+            val params = binding?.widgetContainer?.layoutParams as ConstraintLayout.LayoutParams
             params.topMargin = AndroidResource.dpToPx(0)
-            binding.widgetContainer.requestLayout()
+            binding?.widgetContainer?.requestLayout()
         } else {
-           binding.widgetContainer.requestLayout()
+           binding?.widgetContainer?.requestLayout()
         }
 
         if (resourceAlert.text.isNullOrEmpty()) {
-            binding.bodyText.visibility = View.GONE
+            binding?.bodyText?.visibility = View.GONE
             if (!resourceAlert.image_url.isNullOrEmpty()) {
                 // Image Only
-                val params = binding.widgetContainer.layoutParams
+                val params = binding?.widgetContainer!!.layoutParams
                 params.height = AndroidResource.dpToPx(200)
-                binding.widgetContainer.requestLayout()
+                binding?.widgetContainer!!.requestLayout()
             }
         }
         widgetsTheme?.let {

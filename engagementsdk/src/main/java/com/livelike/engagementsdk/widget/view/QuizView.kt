@@ -41,7 +41,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         }
 
     private var isFirstInteraction = false
-    private lateinit var binding: WidgetTextOptionSelectionBinding
+    private var binding: WidgetTextOptionSelectionBinding? = null
 
 
     init {
@@ -76,7 +76,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 // show timer while widget interaction mode
                 viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
                     showTimer(
-                        timeout, binding.textEggTimer,
+                        timeout, binding?.textEggTimer,
                         {
                             viewModel?.animationEggTimerProgress = it
                         },
@@ -85,13 +85,13 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                         }
                     )
                 }
-                binding.layLock.layLock.visibility = View.VISIBLE
+                binding?.layLock?.layLock?.visibility = View.VISIBLE
             }
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
                 disableLockButton()
-                binding.layLock.labelLock.visibility = View.VISIBLE
+                binding?.layLock?.labelLock?.visibility = View.VISIBLE
                 viewModel?.results?.subscribe(javaClass.simpleName) {
                     if (isFirstInteraction) {
                         resultsObserver(viewModel?.results?.latest())
@@ -123,11 +123,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                         return@let null
                     } ?: ""
 
-                    binding.textRecyclerView.swapAdapter(viewModel?.adapter, false)
-                    binding.textRecyclerView.adapter?.notifyItemChanged(0)
+                    binding?.textRecyclerView?.swapAdapter(viewModel?.adapter, false)
+                    binding?.textRecyclerView?.adapter?.notifyItemChanged(0)
                 }
 
-                binding.followupAnimation.apply {
+                binding?.followupAnimation?.apply {
                     if (isFirstInteraction) {
                         setAnimation(viewModel?.animationPath)
                         progress = viewModel?.animationProgress ?: 0f
@@ -150,11 +150,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
                 viewModel?.points?.let {
                     if (!shouldShowPointTutorial() && it > 0) {
-                        binding.pointView.startAnimation(it, true)
+                        binding?.pointView?.startAnimation(it, true)
                         wouldShowProgressionMeter(
                             viewModel?.rewardsType,
                             viewModel?.gamificationProfile?.latest(),
-                            binding.progressionMeterView
+                            binding?.progressionMeterView!!
                         )
                     }
                 }
@@ -181,7 +181,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        binding.layTextRecyclerView?.background = it
+                        binding?.layTextRecyclerView?.background = it
                     }
 
                     // submit button drawables theme
@@ -194,19 +194,19 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     val state = StateListDrawable()
                     state.addState(intArrayOf(android.R.attr.state_enabled), submitButtonEnabledDrawable)
                     state.addState(intArrayOf(), submitButtonDisabledDrawable)
-                    binding.layLock.btnLock?.background = state
+                    binding?.layLock?.btnLock?.background = state
 
                     //confirmation label theme
                     AndroidResource.updateThemeForView(
-                        binding.layLock.labelLock,
+                        binding?.layLock?.labelLock,
                         themeComponent.confirmation,
                         fontFamilyProvider
                     )
                     if (themeComponent.confirmation?.background != null) {
-                        binding.layLock.labelLock?.background = AndroidResource.createDrawable(themeComponent.confirmation)
+                        binding?.layLock?.labelLock?.background = AndroidResource.createDrawable(themeComponent.confirmation)
                     }
                       themeComponent.confirmation?.padding?.let {
-                        AndroidResource.setPaddingForView(binding.layLock.labelLock, themeComponent.confirmation.padding)
+                        AndroidResource.setPaddingForView(binding?.layLock?.labelLock, themeComponent.confirmation.padding)
                     }
                 }
             }
@@ -223,14 +223,14 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
             // added tag for identification of widget (by default will be empty)
             setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_quiz_tag))
-            binding.titleView.title = resource.question
-            binding.txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_quiz)
-            binding.layTextRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
-            binding.titleView.titleViewBinding.titleTextView.gravity = Gravity.START
-
-            binding.layLock.btnLock.text = context.resources.getString(R.string.livelike_answer_label)
-            binding.layLock.labelLock.text = context.resources.getString(R.string.livelike_answered_label)
-
+            binding?.apply {
+                titleView.title = resource.question
+                txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_quiz)
+                layTextRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_quiz)
+                titleView.titleViewBinding.titleTextView.gravity = Gravity.START
+                layLock.btnLock.text = context.resources.getString(R.string.livelike_answer_label)
+                layLock.labelLock.text = context.resources.getString(R.string.livelike_answered_label)
+            }
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, type)
 
             // set on click
@@ -248,16 +248,16 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 applyTheme(it)
             }
             disableLockButton()
-            binding.textRecyclerView.apply {
+            binding?.textRecyclerView?.apply {
                 isFirstInteraction = viewModel?.getUserInteraction() != null
                 this.adapter = viewModel?.adapter
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.choiceId)
                 setHasFixedSize(true)
             }
-            binding.layLock.btnLock.setOnClickListener {
+            binding?.layLock?.btnLock?.setOnClickListener {
                 if (viewModel?.adapter?.selectedPosition != RecyclerView.NO_POSITION) {
                     lockVote()
-                    binding.textEggTimer.visibility = GONE
+                    binding?.textEggTimer?.visibility = GONE
                 }
             }
             if (viewModel?.getUserInteraction() != null) {
@@ -284,7 +284,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 viewModel?.saveInteraction(option)
             }
         }
-        binding.layLock.labelLock.visibility = View.VISIBLE
+        binding?.layLock?.labelLock?.visibility = View.VISIBLE
         viewModel?.run {
             timeOutJob?.cancel()
             uiScope.launch {
@@ -294,14 +294,18 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private fun enableLockButton() {
-        binding.layLock.btnLock.isEnabled = true
-        binding.layLock.btnLock.alpha = 1f
+        binding?.layLock?.btnLock?.apply{
+            isEnabled = true
+            alpha = 1f
+        }
     }
 
     private fun disableLockButton() {
-        binding.layLock.layLock.visibility = VISIBLE
-        binding.layLock.btnLock.isEnabled = false
-        binding.layLock.btnLock.alpha = 0.5f
+        binding?.layLock?.layLock?.visibility = VISIBLE
+        binding?.layLock?.btnLock?.apply {
+            isEnabled = false
+            alpha = 0.5f
+        }
     }
 
     private fun lockInteraction() {
@@ -331,7 +335,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 if (!isFirstInteraction) {
                     viewModel?.dismissWidget(DismissAction.TIMEOUT)
                 }
-                binding.followupAnimation.apply {
+                binding?.followupAnimation?.apply {
                     addAnimatorListener(object : Animator.AnimatorListener {
                         override fun onAnimationRepeat(animation: Animator?) {
                             // nothing needed here
@@ -374,7 +378,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 }
             }
             viewModel?.adapter?.myDataset = options
-            binding.textRecyclerView.swapAdapter(viewModel?.adapter, false)
+            binding?.textRecyclerView?.swapAdapter(viewModel?.adapter, false)
             viewModel?.adapter?.showPercentage = false
             logDebug { "QuizWidget Showing result total:$totalVotes" }
         }

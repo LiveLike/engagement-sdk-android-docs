@@ -16,8 +16,6 @@ import com.livelike.engagementsdk.widget.FontWeight
 import com.livelike.engagementsdk.widget.Format
 import com.livelike.engagementsdk.widget.ViewStyleProps
 import com.livelike.engagementsdk.widget.view.components.TitleView
-import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import org.threeten.bp.Duration
 import org.threeten.bp.format.DateTimeParseException
 import java.io.BufferedReader

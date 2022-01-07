@@ -2,23 +2,18 @@ package com.livelike.engagementsdk.widget.timeline
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import com.livelike.engagementsdk.ContentSession
-import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.LiveLikeEngagementTheme
-import com.livelike.engagementsdk.LiveLikeWidget
-import com.livelike.engagementsdk.MockAnalyticsService
-import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.databinding.LivelikeProgressItemBinding
+import com.livelike.engagementsdk.databinding.LivelikeTimelineItemBinding
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.livelike_timeline_item.view.widget_view
+
 
 internal class TimeLineViewAdapter(
     private val context: Context,
@@ -36,30 +31,35 @@ internal class TimeLineViewAdapter(
     var isLoadingInProgress = false
     var isEndReached = false
     var liveLikeEngagementTheme: LiveLikeEngagementTheme? = null
-
     var widgetTimerController: WidgetTimerController? = null
+    var itemBinding: LivelikeTimelineItemBinding? = null
+    var progressBinding:LivelikeProgressItemBinding? =null
 
     override fun onCreateViewHolder(p0: ViewGroup, viewtype: Int): RecyclerView.ViewHolder {
         return when (viewtype) {
 
             VIEW_TYPE_DATA -> {
-                TimeLineItemViewHolder(
+                itemBinding = LivelikeTimelineItemBinding.inflate(LayoutInflater.from(p0.context), p0, false)
+               /* TimeLineItemViewHolder(
                     LayoutInflater.from(p0.context).inflate(
                         R.layout.livelike_timeline_item,
                         p0,
                         false
                     )
-                )
+                )*/
+                TimeLineItemViewHolder(itemBinding!!)
             }
 
             VIEW_TYPE_PROGRESS -> {
-                ProgressViewHolder(
+                progressBinding =  LivelikeProgressItemBinding.inflate(LayoutInflater.from(p0.context), p0, false)
+               /* ProgressViewHolder(
                     LayoutInflater.from(p0.context).inflate(
                         R.layout.livelike_progress_item,
                         p0,
                         false
                     )
-                )
+                )*/
+                ProgressViewHolder(progressBinding!!)
             }
 
             else -> throw IllegalArgumentException("Different View type")
@@ -75,17 +75,20 @@ internal class TimeLineViewAdapter(
             val timelineWidgetResource = list[p1]
             // val liveLikeWidget = timelineWidgetResource.liveLikeWidget
             liveLikeEngagementTheme?.let {
-                itemViewHolder.itemView.widget_view.applyTheme(it)
+                itemBinding?.widgetView?.applyTheme(it)
             }
-            itemViewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
-            itemViewHolder.itemView.widget_view.showTimer = widgetTimerController != null
-            itemViewHolder.itemView.widget_view.showDismissButton = false
-            itemViewHolder.itemView.widget_view.widgetViewFactory = widgetViewFactory
+            itemBinding?.apply {
+                widgetView.enableDefaultWidgetTransition = false
+                widgetView.showTimer = widgetTimerController != null
+                widgetView.showDismissButton = false
+                widgetView.widgetViewFactory = widgetViewFactory
+            }
+
             displayWidget(itemViewHolder, timelineWidgetResource)
-            itemViewHolder.itemView.widget_view.setState(
+            itemBinding?.widgetView?.setState(
                 maxOf(
                     timelineWidgetResource.widgetState,
-                    itemViewHolder.itemView.widget_view.getCurrentState() ?: WidgetStates.READY
+                    itemBinding?.widgetView?.getCurrentState() ?: WidgetStates.READY
                 )
             )
         }
@@ -106,7 +109,7 @@ internal class TimeLineViewAdapter(
             "$widgetType-created"
         }
         val widgetId = widgetResourceJson["id"].asString
-        itemViewHolder.itemView.widget_view?.run {
+        itemBinding?.widgetView?.run {
             // TODO segregate widget view and viewmodel creation
             val widgetView = WidgetProvider()
                 .get(
@@ -148,9 +151,9 @@ internal class TimeLineViewAdapter(
     }
 }
 
-class TimeLineItemViewHolder(view: View) : RecyclerView.ViewHolder(view)
+class TimeLineItemViewHolder(val itemBinding: LivelikeTimelineItemBinding) : RecyclerView.ViewHolder(itemBinding.root)
 
-class ProgressViewHolder(view: View) : RecyclerView.ViewHolder(view)
+class ProgressViewHolder(val progressItemBinding: LivelikeProgressItemBinding) : RecyclerView.ViewHolder(progressItemBinding.root)
 
 data class TimelineWidgetResource(
     var widgetState: WidgetStates,

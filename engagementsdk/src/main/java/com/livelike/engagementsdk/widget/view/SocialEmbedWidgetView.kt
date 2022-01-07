@@ -12,28 +12,29 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.LiveLikeWidget
-import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.databinding.WidgetSocialEmbedBinding
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.widget_social_embed.view.progress_bar
+/*import kotlinx.android.synthetic.main.widget_social_embed.view.progress_bar
 import kotlinx.android.synthetic.main.widget_social_embed.view.titleView
 import kotlinx.android.synthetic.main.widget_social_embed.view.txtTitleBackground
 import kotlinx.android.synthetic.main.widget_social_embed.view.web_view
 import kotlinx.android.synthetic.main.widget_social_embed.view.widgetContainer
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer*/
 
 internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(context) {
 
     var viewModel: SocialEmbedViewModel? = null
+    private var inflated = false
+    private var binding: WidgetSocialEmbedBinding? = null
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
@@ -82,48 +83,53 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                 parent?.let { (it as ViewGroup).removeAllViews() }
             }
             WidgetStates.RESULTS -> {
-
+              //not required
             }
             null -> {
+                // not required
 
             }
         }
     }
 
     private fun inflate(context: Context, liveLikeWidget: LiveLikeWidget) {
-        if (titleView == null) {
-            inflate(context, R.layout.widget_social_embed, this@SocialEmbedWidgetView)
-            titleView.text = liveLikeWidget.comment ?: ""
+        if (!inflated){
+            inflated = true
+            binding = WidgetSocialEmbedBinding.inflate(LayoutInflater.from(context), this@SocialEmbedWidgetView, true)
+        }
+
+           // binding = WidgetSocialEmbedBinding.inflate(LayoutInflater.from(context), this@SocialEmbedWidgetView, true)
+            binding?.titleView?.text = liveLikeWidget.comment ?: ""
 
             liveLikeWidget.socialEmbedItems?.get(0)?.let { oembed ->
-                web_view.settings.javaScriptEnabled = true
-                web_view.settings.domStorageEnabled = true
+                binding?.webView?.settings?.javaScriptEnabled = true
+                binding?.webView?.settings?.domStorageEnabled = true
 
                 showTimer(
-                    liveLikeWidget.timeout ?: "", textEggTimer,
+                    liveLikeWidget.timeout ?: "", binding?.textEggTimer,
                     {
                     },
                     {
                         viewModel?.dismissWidget(it)
                     }
                 )
-                web_view.loadDataWithBaseURL(
+                binding?.webView?.loadDataWithBaseURL(
                     oembed.oEmbed.providerUrl,
                     oembed.oEmbed.html, "text/html", "utf-8", ""
                 )
 
-                web_view.webViewClient = object : WebViewClient() {
+                binding?.webView?.webViewClient = object : WebViewClient() {
 
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
                         Log.d("widget", "onPageFinished")
-                        progress_bar.hide()
+                        binding?.progressBar?.hide()
                     }
 
                     override fun onPageCommitVisible(view: WebView?, url: String?) {
                         super.onPageCommitVisible(view, url)
                         Log.d("widget", "onPageCommitVisible")
-                        progress_bar.hide()
+                        binding?.progressBar?.hide()
                     }
 
                     override fun onLoadResource(view: WebView?, url: String?) {
@@ -141,7 +147,7 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                         view: WebView?,
                         request: WebResourceRequest?
                     ): Boolean {
-                        progress_bar.hide()
+                        binding?.progressBar?.hide()
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             request?.url?.let { url ->
@@ -156,7 +162,7 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
             widgetsTheme?.let {
                 applyTheme(it)
             }
-        }
+
     }
 
     override fun applyTheme(theme: WidgetsTheme) {
@@ -164,20 +170,20 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
         viewModel?.data?.latest()?.let { _ ->
             theme.getThemeLayoutComponent(WidgetType.SOCIAL_EMBED)?.let { themeComponent ->
                 AndroidResource.updateThemeForView(
-                    titleView,
+                    binding?.titleView,
                     themeComponent.title,
                     fontFamilyProvider
                 )
 
                 if (themeComponent.header?.background != null) {
-                    txtTitleBackground?.background = AndroidResource.createDrawable(themeComponent.header)
+                    binding?.txtTitleBackground?.background = AndroidResource.createDrawable(themeComponent.header)
                 }
 
                 themeComponent.header?.padding?.let {
-                    AndroidResource.setPaddingForView(titleView, themeComponent.header.padding)
+                    AndroidResource.setPaddingForView(binding?.titleView, themeComponent.header.padding)
                 }
 
-                widgetContainer?.background =
+                binding?.widgetContainer?.background =
                     AndroidResource.createDrawable(themeComponent.body)
             }
         }

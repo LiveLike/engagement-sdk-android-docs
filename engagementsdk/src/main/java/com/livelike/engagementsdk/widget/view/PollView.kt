@@ -26,7 +26,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private var viewModel: PollViewModel? = null
 
     private var inflated = false
-    private lateinit var binding: WidgetTextOptionSelectionBinding
+    private var binding: WidgetTextOptionSelectionBinding? = null
 
     override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
@@ -133,11 +133,11 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun rewardsObserver(points: Int?) {
         points?.let {
             if (!shouldShowPointTutorial() && it > 0) {
-                binding.pointView.startAnimation(it, true)
+                binding?.pointView?.startAnimation(it, true)
                 wouldShowProgressionMeter(
                     viewModel?.rewardsType,
                     viewModel?.gamificationProfile?.latest(),
-                    binding.progressionMeterView
+                    binding?.progressionMeterView!!
                 )
             }
         }
@@ -154,7 +154,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.fontFamilyProvider = fontFamilyProvider
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        binding.layTextRecyclerView?.background = it
+                        binding?.layTextRecyclerView?.background = it
                     }
                 }
             }
@@ -175,14 +175,14 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 binding = WidgetTextOptionSelectionBinding.inflate(LayoutInflater.from(context), this@PollView, true)
                 wouldInflateSponsorUi()
             }
-            binding.txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
-            binding.layTextRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_poll)
+            binding?.txtTitleBackground?.setBackgroundResource(R.drawable.header_rounded_corner_poll)
+            binding?.layTextRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_poll)
 
             // added tag as label for identification of widget (by default tag will be empty)
             setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_poll_tag))
-            binding.titleView.title = resource.question
+            binding?.titleView?.title = resource.question
             // TODO: update header background with margin or padding
-            binding.titleView.titleViewBinding.titleTextView.gravity = Gravity.START
+            binding?.titleView?.titleViewBinding?.titleTextView?.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, type)
 
             // set on click
@@ -202,10 +202,10 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
             viewModel?.onWidgetInteractionCompleted = { onWidgetInteractionCompleted() }
 
-            binding.textRecyclerView.apply {
+            binding?.textRecyclerView.apply {
                 isFirstInteraction = viewModel?.getUserInteraction() != null
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.optionId)
-                this.adapter = viewModel?.adapter
+                this?.adapter = viewModel?.adapter
             }
 
             logDebug { "showing PollWidget" }
@@ -221,7 +221,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun PollWidget.showTimer() {
         showTimer(
-            resource.timeout, binding.textEggTimer,
+            resource.timeout, binding?.textEggTimer,
             {
                 viewModel?.animationEggTimerProgress = it
             },
@@ -248,7 +248,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             if (this.getMergedTotal() > 0) {
                 viewModel?.adapter?.showPercentage = true
             }
-            binding.textRecyclerView?.swapAdapter(viewModel?.adapter, false)
+            binding?.textRecyclerView?.swapAdapter(viewModel?.adapter, false)
             logDebug { "PollWidget Showing result total:$totalVotes" }
         }
     }

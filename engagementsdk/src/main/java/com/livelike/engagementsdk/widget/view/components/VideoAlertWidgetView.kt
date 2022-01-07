@@ -46,7 +46,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     )
 
     private var inflated = false
-    private lateinit var binding: VideoWidgetBinding
+    private var binding: VideoWidgetBinding? = null
     var viewModel: VideoWidgetViewModel? = null
     private var mediaPlayer: MediaPlayer? = null
     private var isMuted: Boolean = false
@@ -108,50 +108,58 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             inflated = true
             binding = VideoWidgetBinding.inflate(LayoutInflater.from(context), this@VideoAlertWidgetView, true)
         }
-        binding.bodyText.text = resourceAlert.text
-        binding.labelText.text = resourceAlert.title
-        binding.linkText.text = resourceAlert.link_label
-        binding.soundView.visibility = View.GONE
-        binding.playbackErrorView.visibility = View.GONE
+        binding?.apply {
+            bodyText.text = resourceAlert.text
+            labelText.text = resourceAlert.title
+            linkText.text = resourceAlert.link_label
+            soundView.visibility = View.GONE
+            playbackErrorView.visibility = View.GONE
+        }
 
         if (!resourceAlert.videoUrl.isNullOrEmpty()) {
             setFrameThumbnail(resourceAlert.videoUrl)
         }
 
         if (!resourceAlert.link_url.isNullOrEmpty()) {
-            binding.linkBackground.setOnClickListener {
+            binding?.linkBackground?.setOnClickListener {
                 openBrowser(context, resourceAlert.link_url)
             }
         } else {
-            binding.linkArrow.visibility = View.GONE
-            binding.linkBackground.visibility = View.GONE
-            binding.linkText.visibility = View.GONE
+            binding?.apply {
+                linkArrow.visibility = View.GONE
+                linkBackground.visibility = View.GONE
+                linkText.visibility = View.GONE
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 setPlayerViewCornersRound(isOnlyBottomCornersToBeRounded = true)
             }
         }
 
         if (resourceAlert.title.isNullOrEmpty()) {
-            binding.labelText.visibility = GONE
-            binding.widgetContainer.setBackgroundResource(R.drawable.video_alert_all_rounded_corner)
+            binding?.labelText?.visibility = GONE
+            binding?.widgetContainer?.setBackgroundResource(R.drawable.video_alert_all_rounded_corner)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 setPlayerViewCornersRound(isOnlyBottomCornersToBeRounded = false)
             }
-            val params = binding.widgetContainer.layoutParams as ConstraintLayout.LayoutParams
+            val params = binding?.widgetContainer?.layoutParams as ConstraintLayout.LayoutParams
             params.topMargin = AndroidResource.dpToPx(0)
-            binding.widgetContainer.requestLayout()
+            binding?.widgetContainer?.requestLayout()
         } else {
-            binding.widgetContainer.setBackgroundResource(R.drawable.video_alert_rounded_corner_black_background)
-            val params = binding.widgetContainer.layoutParams as ConstraintLayout.LayoutParams
-            binding.widgetContainer.layoutParams = params
-            binding.widgetContainer.requestLayout()
+            binding?.widgetContainer?.setBackgroundResource(R.drawable.video_alert_rounded_corner_black_background)
+            val params = binding?.widgetContainer?.layoutParams as ConstraintLayout.LayoutParams
+            binding?.widgetContainer?.apply {
+                layoutParams = params
+                requestLayout()
+            }
         }
 
         if (!resourceAlert.text.isNullOrEmpty()) {
-            binding.bodyText.visibility = View.VISIBLE
-            binding.bodyText.text = resourceAlert.text
+            binding?.bodyText?.apply {
+                visibility = View.VISIBLE
+                text = resourceAlert.text
+            }
         } else {
-            binding.bodyText.visibility = View.GONE
+            binding?.bodyText?.visibility = View.GONE
         }
 
         setOnClickListeners()
@@ -166,22 +174,22 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         viewModel?.data?.latest()?.let { _ ->
             theme.getThemeLayoutComponent(WidgetType.VIDEO_ALERT)?.let { themeComponent ->
                 AndroidResource.updateThemeForView(
-                    binding.labelText,
+                    binding?.labelText,
                     themeComponent.title,
                     fontFamilyProvider
                 )
                 if (themeComponent.header?.background != null) {
-                    binding.labelText.background = AndroidResource.createDrawable(themeComponent.header)
+                    binding?.labelText?.background = AndroidResource.createDrawable(themeComponent.header)
                 }
                 themeComponent.header?.padding?.let {
-                    AndroidResource.setPaddingForView(binding.labelText, themeComponent.header.padding)
+                    AndroidResource.setPaddingForView(binding?.labelText, themeComponent.header.padding)
                 }
 
-                binding.widgetContainer.background =
+                binding?.widgetContainer?.background =
                     AndroidResource.createDrawable(themeComponent.body)
 
                 AndroidResource.updateThemeForView(
-                    binding.linkText,
+                    binding?.linkText,
                     themeComponent.body,
                     fontFamilyProvider
                 )
@@ -191,7 +199,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
     /** sets the listeners */
     private fun setOnClickListeners() {
-        binding.soundView.setOnClickListener {
+        binding?.soundView?.setOnClickListener {
             if (isMuted) {
                 unMute()
             } else {
@@ -199,8 +207,8 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             }
         }
 
-        binding.widgetContainer.setOnClickListener {
-            if (binding.playerView.isPlaying) {
+        binding?.widgetContainer?.setOnClickListener {
+            if (binding?.playerView!!.isPlaying) {
                 pause()
             } else {
                 if (stopPosition > 0) { // already running
@@ -216,93 +224,105 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
     private fun initializePlayer(videoUrl: String) {
         try {
             val uri = Uri.parse(videoUrl)
-            binding.playerView.setVideoURI(uri)
-            // playerView.seekTo(stopPosition)
-            binding.playerView.requestFocus()
-            binding.playerView.start()
+            binding?.apply {
+                playerView.setVideoURI(uri)
+                //playerView.seekTo(stopPosition)
+                playerView.requestFocus()
+                playerView.start()
+            }
             unMute()
 
             // perform set on prepared listener event on video view
             try {
-                binding.playerView.setOnPreparedListener { mp ->
+                binding?.playerView?.setOnPreparedListener { mp ->
                     // do something when video is ready to play
                     this.mediaPlayer = mp
                     playedAtLeastOnce = true
-                    binding.progressBar.visibility = View.GONE
-                    binding.playbackErrorView.visibility = View.GONE
-                    binding.soundView.visibility = VISIBLE
-                    binding.icSound.visibility = VISIBLE
+                    binding?.apply {
+                        progressBar.visibility = View.GONE
+                        playbackErrorView.visibility = View.GONE
+                        soundView.visibility = VISIBLE
+                        icSound.visibility = VISIBLE
+                    }
                 }
 
-                binding.playerView.setOnCompletionListener {
-                    binding.playerView.stopPlayback()
-                    binding.soundView.visibility = GONE
+                binding?.playerView?.setOnCompletionListener {
+                    binding?.playerView?.stopPlayback()
+                    binding?.soundView?.visibility = GONE
                     setFrameThumbnail(videoUrl)
                 }
 
-                binding.playerView.setOnErrorListener { _, _, _ ->
+                binding?.playerView?.setOnErrorListener { _, _, _ ->
                     logError { "Error on playback" }
-                    binding.progressBar.visibility = GONE
-                    binding.icPlay.visibility = GONE
-                    binding.playerView.visibility = INVISIBLE
-                    binding.playbackErrorView.visibility = VISIBLE
-                    binding.soundView.visibility = GONE
+                    binding?.apply {
+                        progressBar.visibility = GONE
+                        icPlay.visibility = GONE
+                        playerView.visibility = INVISIBLE
+                        playbackErrorView.visibility = VISIBLE
+                        soundView.visibility = GONE
+                    }
                     true
                 }
             } catch (e: Exception) {
-                binding.progressBar.visibility = GONE
-                binding.playbackErrorView.visibility = VISIBLE
+                binding?.progressBar?.visibility = GONE
+                binding?.playbackErrorView?.visibility = VISIBLE
                 e.printStackTrace()
             }
         } catch (e: Exception) {
-            binding.progressBar.visibility = GONE
-            binding.playbackErrorView.visibility = VISIBLE
+            binding?.progressBar?.visibility = GONE
+            binding?.playbackErrorView?.visibility = VISIBLE
             e.printStackTrace()
         }
     }
 
     /** responsible for playing the video */
     private fun play() {
-        binding.progressBar.visibility = View.VISIBLE
+        binding?.apply {
+            progressBar.visibility = View.VISIBLE
+            icPlay.visibility = View.GONE
+            playbackErrorView.visibility = View.GONE
+            thumbnailView.visibility = View.GONE
+            playerView.visibility = View.VISIBLE
+        }
         viewModel?.registerPlayStarted()
-        binding.icPlay.visibility = View.GONE
-        binding.playbackErrorView.visibility = View.GONE
-        binding.thumbnailView.visibility = View.GONE
-        binding.playerView.visibility = View.VISIBLE
         viewModel?.data?.latest()?.videoUrl?.let { initializePlayer(it) }
     }
 
     /** responsible for resuming the video from where it was stopped */
     private fun resume() {
-        binding.soundView.visibility = VISIBLE
-        binding.playbackErrorView.visibility = GONE
-        binding.progressBar.visibility = GONE
-        binding.icPlay.visibility = GONE
-        binding.playerView.seekTo(stopPosition)
-        if (binding.playerView.currentPosition == 0) {
+        binding?.apply {
+            soundView.visibility = VISIBLE
+            playbackErrorView.visibility = GONE
+            progressBar.visibility = GONE
+            icPlay.visibility = GONE
+            playerView.seekTo(stopPosition)
+        }
+        if (binding?.playerView?.currentPosition == 0) {
             play()
         } else {
-            binding.playerView.start()
+            binding?.playerView?.start()
         }
     }
 
     /** responsible for stopping the video */
     private fun pause() {
-        stopPosition = binding.playerView.currentPosition
-        binding.playerView.pause()
-        binding.soundView.visibility = GONE
-        binding.icPlay.visibility = View.VISIBLE
-        binding.playbackErrorView.visibility = View.GONE
-        binding.icPlay.setImageResource(R.drawable.ic_play_button)
+        binding?.apply {
+            stopPosition = playerView.currentPosition
+            playerView.pause()
+            soundView.visibility = GONE
+            icPlay.visibility = View.VISIBLE
+            playbackErrorView.visibility = View.GONE
+            icPlay.setImageResource(R.drawable.ic_play_button)
+        }
     }
 
     /** responsible for stopping the player and releasing it */
     private fun release() {
         try {
             playedAtLeastOnce = false
-            if (binding.playerView != null && binding.playerView.isPlaying) {
-                binding.playerView.stopPlayback()
-                binding.playerView.seekTo(0)
+            if (binding?.playerView != null && binding?.playerView!!.isPlaying) {
+                binding?.playerView?.stopPlayback()
+                binding?.playerView?.seekTo(0)
                 stopPosition = 0
                 mediaPlayer?.stop()
                 mediaPlayer?.release()
@@ -323,8 +343,8 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         try {
             isMuted = true
             mediaPlayer?.setVolume(0f, 0f)
-            binding.icSound.setImageResource(R.drawable.ic_volume_on)
-            binding.muteTv.text = context.resources.getString(R.string.livelike_unmute_label)
+            binding?.icSound?.setImageResource(R.drawable.ic_volume_on)
+            binding?.muteTv?.text = context.resources.getString(R.string.livelike_unmute_label)
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
@@ -335,8 +355,8 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
         try {
             isMuted = false
             mediaPlayer?.setVolume(1f, 1f)
-            binding.icSound.setImageResource(R.drawable.ic_volume_off)
-            binding.muteTv.text = context.resources.getString(R.string.livelike_mute_label)
+            binding?.icSound?.setImageResource(R.drawable.ic_volume_off)
+            binding?.muteTv?.text = context.resources.getString(R.string.livelike_mute_label)
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
@@ -344,12 +364,14 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
     /** extract thumbnail from the video url */
     private fun setFrameThumbnail(videoUrl: String) {
-        binding.thumbnailView.visibility = VISIBLE
-        binding.icPlay.visibility = VISIBLE
-        binding.progressBar.visibility = GONE
-        binding.playbackErrorView.visibility = GONE
-        binding.icPlay.setImageResource(R.drawable.ic_play_button)
-        binding.playerView.visibility = INVISIBLE
+        binding?.apply {
+            thumbnailView.visibility = VISIBLE
+            icPlay.visibility = VISIBLE
+            progressBar.visibility = GONE
+            playbackErrorView.visibility = GONE
+            icPlay.setImageResource(R.drawable.ic_play_button)
+            playerView.visibility = INVISIBLE
+        }
         var requestOptions = RequestOptions()
 
         if (videoUrl.isNotEmpty()) {
@@ -364,7 +386,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
                 .apply(requestOptions)
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .thumbnail(0.1f)
-                .into(binding.thumbnailView)
+                .into(binding?.thumbnailView!!)
         }
     }
 
@@ -395,7 +417,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setPlayerViewCornersRound(isOnlyBottomCornersToBeRounded: Boolean) {
-        binding.playerView.outlineProvider = object : ViewOutlineProvider() {
+        binding?.playerView?.outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {
                 val corner = 20f
                 if (isOnlyBottomCornersToBeRounded) {
@@ -412,7 +434,7 @@ internal class VideoAlertWidgetView : SpecifiedWidgetView {
             }
         }
 
-        binding.playerView.clipToOutline = true
+        binding?.playerView?.clipToOutline = true
     }
 
     private fun openBrowser(context: Context, linkUrl: String) {

@@ -37,7 +37,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
     private var isFollowUp = false
 
-    private lateinit var binding: WidgetNumberPredictionBinding
+    private var binding: WidgetNumberPredictionBinding? = null
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
@@ -78,7 +78,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 // show timer while widget interaction mode
                 viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
                     showTimer(
-                        timeout, binding.textEggTimer,
+                        timeout, binding?.textEggTimer,
                         {
                             viewModel?.animationEggTimerProgress = it
                         },
@@ -91,15 +91,15 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 disableLockButton()
-                binding.labelLock.visibility = View.VISIBLE
+                binding?.labelLock?.visibility = View.VISIBLE
                 onWidgetInteractionCompleted()
 
                     if (viewModel?.adapter?.selectedUserVotes != null && viewModel?.adapter?.selectedUserVotes!!.isNotEmpty() &&
                         viewModel?.adapter?.selectedUserVotes!!.size == viewModel?.data?.currentData?.resource?.options?.size && viewModel?.numberPredictionFollowUp == false
                     ) {
-                        binding.labelLock.visibility = View.VISIBLE
+                        binding?.labelLock?.visibility = View.VISIBLE
                     }else{
-                        binding.labelLock.visibility = View.GONE
+                        binding?.labelLock?.visibility = View.GONE
                     }
             }
         }
@@ -117,10 +117,12 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                 binding = WidgetNumberPredictionBinding.inflate(LayoutInflater.from(context), this@NumberPredictionView, true)
             }
             isFollowUp = resource.kind.contains("follow-up")
-            binding.titleView.title = resource.question
-            binding.txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
-            binding.layTextRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
-            binding.titleView.titleViewBinding.titleTextView.gravity = Gravity.START
+            binding?.apply {
+                titleView.title = resource.question
+                txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
+                layTextRecyclerView.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
+                titleView.titleViewBinding.titleTextView.gravity = Gravity.START
+            }
 
             // added tag for identification of widget (by default will be empty)
             if(isFollowUp){
@@ -138,13 +140,13 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
             disableLockButton()
 
-            binding.textRecyclerView.apply {
+            binding?.textRecyclerView?.apply {
                 viewModel?.adapter?.restoreSelectedVotes(viewModel?.getUserInteraction()?.votes)
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
 
-            binding.predictBtn.setOnClickListener {
+            binding?.predictBtn?.setOnClickListener {
                 if (viewModel?.adapter?.selectedUserVotes!!.isEmpty() ||
                     viewModel?.adapter?.selectedUserVotes!!.size !=  viewModel?.adapter?.myDataset?.size ) return@setOnClickListener
 
@@ -153,9 +155,9 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
 
             if (viewModel?.getUserInteraction() != null) {
                 disableLockButton()
-                binding.labelLock.visibility = View.VISIBLE
+                binding?.labelLock?.visibility = View.VISIBLE
             }else{
-                binding.labelLock.visibility = View.GONE
+                binding?.labelLock?.visibility = View.GONE
             }
 
             widgetsTheme?.let {
@@ -215,26 +217,26 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun disableLockButton() {
-        if(binding.predictBtn!=null) {
-            binding.predictBtn.isEnabled = false
+        if(binding?.predictBtn!=null) {
+            binding?.predictBtn?.isEnabled = false
         }
     }
 
 
     private fun enableLockButton() {
-        if(binding.predictBtn!=null) {
-            binding.predictBtn.isEnabled = true
-            binding.labelLock.visibility = GONE
+        if(binding?.predictBtn!=null) {
+            binding?.predictBtn?.isEnabled = true
+            binding?.labelLock?.visibility = GONE
         }
     }
 
 
     private fun hideLockButton(){
-        binding.layLock.visibility = GONE
+        binding?.layLock?.visibility = GONE
     }
 
     private fun showLockButton(){
-        binding.layLock.visibility = VISIBLE
+        binding?.layLock?.visibility = VISIBLE
     }
 
 
@@ -242,7 +244,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
         viewModel?.adapter?.selectionLocked = true
         viewModel?.data?.latest()?.let {
             if (isFollowUp && viewModel?.showTimer == true) {
-                binding.textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
+                binding?.textEggTimer?.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
             }
         }
     }
@@ -285,7 +287,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
         viewModel?.adapter?.notifyDataSetChanged()
 
         disableLockButton()
-        binding.labelLock.visibility = View.VISIBLE
+        binding?.labelLock?.visibility = View.VISIBLE
     }
 
 
@@ -297,7 +299,7 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                     applyThemeOnTitleView(themeComponent)
                     applyThemeOnTagView(themeComponent)
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        binding.layTextRecyclerView.background = it
+                        binding?.layTextRecyclerView?.background = it
                     }
                    viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
@@ -312,19 +314,19 @@ class NumberPredictionView(context: Context, attr: AttributeSet? = null) :
                     val state = StateListDrawable()
                     state.addState(intArrayOf(android.R.attr.state_enabled), submitButtonEnabledDrawable)
                     state.addState(intArrayOf(), submitButtonDisabledDrawable)
-                    binding.predictBtn?.background = state
+                    binding?.predictBtn?.background = state
 
                     //confirmation label theme
                     AndroidResource.updateThemeForView(
-                        binding.labelLock,
+                        binding?.labelLock,
                         themeComponent.confirmation,
                         fontFamilyProvider
                     )
                     if (themeComponent.confirmation?.background != null) {
-                        binding.labelLock?.background = AndroidResource.createDrawable(themeComponent.confirmation)
+                        binding?.labelLock?.background = AndroidResource.createDrawable(themeComponent.confirmation)
                     }
                     themeComponent.confirmation?.padding?.let {
-                        AndroidResource.setPaddingForView(binding.labelLock, themeComponent.confirmation.padding)
+                        AndroidResource.setPaddingForView(binding?.labelLock, themeComponent.confirmation.padding)
                     }
                 }
             }

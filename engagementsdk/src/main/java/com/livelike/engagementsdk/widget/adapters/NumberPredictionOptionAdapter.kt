@@ -40,7 +40,7 @@ internal class NumberPredictionOptionAdapter(
     var isCorrect = false
     var selectedPosition = RecyclerView.NO_POSITION
     var selectedUserVotes = mutableListOf<NumberPredictionVotes>()
-     var binding:WidgetNumberPredictionItemBinding? = null
+    var binding:WidgetNumberPredictionItemBinding? = null
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OptionViewHolder {
@@ -85,15 +85,19 @@ internal class NumberPredictionOptionAdapter(
             binding.incrementDecrementLayout.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_user_input))
 
             if (option.number != null) {
-                binding.incrementDecrementLayout.userInput.setText(option.number.toString())
-                binding.incrementDecrementLayout.userInput.isFocusableInTouchMode = false
-                binding.incrementDecrementLayout.userInput.isCursorVisible = false
+                binding.incrementDecrementLayout.userInput.apply{
+                    setText(option.number.toString())
+                    isFocusableInTouchMode = false
+                    isCursorVisible = false
+                }
             }
 
 
             if(selectionLocked){
-                binding.incrementDecrementLayout.userInput.isFocusableInTouchMode = false
-                binding.incrementDecrementLayout.userInput.isCursorVisible = false
+                binding.incrementDecrementLayout.userInput.apply {
+                    isFocusableInTouchMode = false
+                    isCursorVisible = false
+                }
             }
 
 
@@ -176,8 +180,10 @@ internal class NumberPredictionOptionAdapter(
                     val imm =
                         v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(v.windowToken, 0)
-                    binding.incrementDecrementLayout.userInput.isFocusable = false
-                    binding.incrementDecrementLayout.userInput.isFocusableInTouchMode = true
+                    binding.incrementDecrementLayout.userInput.apply {
+                        isFocusable = false
+                        isFocusableInTouchMode = true
+                    }
                     true
                 } else false
             }
@@ -257,14 +263,17 @@ internal class NumberPredictionOptionAdapter(
         // show user prediction with background
         private fun showUserSelectedPrediction(option: Option){
             if (option.number != null) {
-                binding.incrementDecrementLayout.userInput.visibility = View.VISIBLE
-                binding.incrementDecrementLayout.userInput.setText(option.number.toString())
-                binding.incrementDecrementLayout.userInput.background = (ContextCompat.getDrawable(itemView.context, R.drawable.wrong_background))
-                binding.incrementDecrementLayout.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_wrong_answer))
-
+                binding.incrementDecrementLayout.userInput.apply {
+                    visibility =  View.VISIBLE
+                    setText(option.number.toString())
+                    background = (ContextCompat.getDrawable(itemView.context, R.drawable.wrong_background))
+                    setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_wrong_answer))
+                }
             }else{
-                binding.incrementDecrementLayout.userInput.background = (ContextCompat.getDrawable(itemView.context, R.drawable.user_input_background))
-                binding.incrementDecrementLayout.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_user_input_hint))
+                binding.incrementDecrementLayout.userInput.apply {
+                    background = (ContextCompat.getDrawable(itemView.context, R.drawable.user_input_background))
+                    setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_user_input_hint))
+                }
             }
         }
     }

@@ -24,12 +24,12 @@ import com.livelike.engagementsdk.widget.viewModel.TextAskWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 
 
-
-class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
+class TextAskView(context: Context, attr: AttributeSet? = null) :
+    SpecifiedWidgetView(context, attr) {
 
     private var viewModel: TextAskViewModel? = null
     private var inflated = false
-    private lateinit var binding: WidgetAskMeAnythingBinding
+    private var binding: WidgetAskMeAnythingBinding? = null
 
     override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
@@ -57,17 +57,23 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
         widget?.apply {
             if (!inflated) {
                 inflated = true
-                binding = WidgetAskMeAnythingBinding.inflate(LayoutInflater.from(context), this@TextAskView, true)
+                binding = WidgetAskMeAnythingBinding.inflate(
+                    LayoutInflater.from(context),
+                    this@TextAskView,
+                    true
+                )
+            }
+            binding?.apply {
+                titleView.text = resource.title
+                bodyText.text = resource.prompt
+                confirmationMessageTv.text = resource.confirmation_message
+                confirmationMessageTv.visibility = INVISIBLE
             }
 
-            binding.titleView.text = resource.title
-            binding.bodyText.text = resource.prompt
-            binding.confirmationMessageTv.text = resource.confirmation_message
-            binding.confirmationMessageTv.visibility = INVISIBLE
 
-            binding.userInputEdt.addTextChangedListener(object : TextWatcher {
+            binding?.userInputEdt?.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(arg0: Editable) {
-                    if (binding.userInputEdt.isEnabled) enableSendBtn()
+                    if (binding?.userInputEdt!!.isEnabled) enableSendBtn()
                 }
 
                 override fun beforeTextChanged(
@@ -80,25 +86,25 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
                 }
 
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    val text: String = binding.userInputEdt.text.toString()
+                    val text: String = binding?.userInputEdt?.text.toString()
                     if (text.startsWith(" ")) {
-                        binding.userInputEdt.setText(text.trim { it <= ' ' })
-                    }else {
-                        binding.textCount.text = (240 - s.length).toString()
+                        binding?.userInputEdt?.setText(text.trim { it <= ' ' })
+                    } else {
+                        binding?.textCount?.text = (240 - s.length).toString()
                     }
-                    binding.textCount.visibility = View.VISIBLE
+                    binding?.textCount?.visibility = View.VISIBLE
                 }
             })
 
-            binding.userInputEdt.setOnTouchListener { v, _ -> // Disallow the touch request for parent scroll on touch of child view
-                if (binding.userInputEdt.text.toString().isNotEmpty()) {
+            binding?.userInputEdt?.setOnTouchListener { v, _ -> // Disallow the touch request for parent scroll on touch of child view
+                if (binding?.userInputEdt?.text.toString().isNotEmpty()) {
                     v.parent.requestDisallowInterceptTouchEvent(true)
                 }
                 false
             }
 
-            binding.sendBtn.setOnClickListener {
-                if (binding.userInputEdt.text.toString().trim().isNotEmpty()) {
+            binding?.sendBtn?.setOnClickListener {
+                if (binding?.userInputEdt?.text.toString().trim().isNotEmpty()) {
                     lockInteractionAndSubmitResponse()
                     hideKeyboard()
                 }
@@ -107,10 +113,10 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
             if (viewModel?.getUserInteraction() != null) {
                 disableSendBtn()
                 disableUserInput()
-                binding.confirmationMessageTv.visibility = VISIBLE
-                binding.textCount.visibility = GONE
+                binding?.confirmationMessageTv?.visibility = VISIBLE
+                binding?.textCount?.visibility = GONE
                 viewModel?.getUserInteraction()?.text?.let {
-                    binding.userInputEdt.setText(viewModel?.getUserInteraction()?.text)
+                    binding?.userInputEdt?.setText(viewModel?.getUserInteraction()?.text)
                 }
             }
 
@@ -143,7 +149,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
                 showResultAnimation = true
                 viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
                     showTimer(
-                        timeout, binding.textEggTimer,
+                        timeout, binding?.textEggTimer,
                         {
                             viewModel?.animationEggTimerProgress = it
                         },
@@ -188,51 +194,59 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
         widgetsTheme?.textAsk?.let { themeComponent ->
             // title
             AndroidResource.updateThemeForView(
-                binding.titleView,
+                binding?.titleView,
                 themeComponent.title,
                 fontFamilyProvider
             )
             if (themeComponent.header?.background != null) {
-                binding.txtTitleBackground.background = AndroidResource.createDrawable(themeComponent.header)
+                binding?.txtTitleBackground?.background =
+                    AndroidResource.createDrawable(themeComponent.header)
             }
             themeComponent.header?.padding?.let {
-                AndroidResource.setPaddingForView(binding.titleView, themeComponent.header.padding)
+                AndroidResource.setPaddingForView(binding?.titleView, themeComponent.header.padding)
             }
 
             // prompt
             AndroidResource.updateThemeForView(
-                binding.bodyText,
+                binding?.bodyText,
                 themeComponent.prompt,
                 fontFamilyProvider
             )
 
             // confirmation message
             AndroidResource.updateThemeForView(
-                binding.confirmationMessageTv,
+                binding?.confirmationMessageTv,
                 themeComponent.confirmation,
                 fontFamilyProvider
             )
             if (themeComponent.confirmation?.background != null) {
-                binding.confirmationMessageTv.background = AndroidResource.createDrawable(themeComponent.confirmation)
+                binding?.confirmationMessageTv?.background =
+                    AndroidResource.createDrawable(themeComponent.confirmation)
             }
 
             // widget container background
             AndroidResource.createDrawable(themeComponent.body)?.let {
-                binding.widgetContainer.background = it
+                binding?.widgetContainer?.background = it
             }
             themeComponent.body?.padding?.let {
-                AndroidResource.setPaddingForView(binding.widgetContainer, themeComponent.body.padding)
+                AndroidResource.setPaddingForView(
+                    binding?.widgetContainer,
+                    themeComponent.body.padding
+                )
             }
 
             // user input text
             AndroidResource.updateThemeForView(
-                binding.userInputEdt,
+                binding?.userInputEdt,
                 themeComponent.replyEnabled,
                 fontFamilyProvider
             )
             // user input text padding
             themeComponent.replyEnabled?.padding?.let {
-                AndroidResource.setPaddingForView(binding.userInputEdt, themeComponent.replyEnabled.padding)
+                AndroidResource.setPaddingForView(
+                    binding?.userInputEdt,
+                    themeComponent.replyEnabled.padding
+                )
             }
 
             // submit button drawables with state
@@ -245,7 +259,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
             val state = StateListDrawable()
             state.addState(intArrayOf(android.R.attr.state_enabled), submitButtonEnabledDrawable)
             state.addState(intArrayOf(), submitButtonDisabledDrawable)
-            binding.sendBtn.background = state
+            binding?.sendBtn?.background = state
 
             // user input with state
             if (themeComponent.replyEnabled?.background != null &&
@@ -258,36 +272,40 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
                     themeComponent.replyDisabled
                 )
                 val inputState = StateListDrawable()
-                inputState.addState(intArrayOf(android.R.attr.state_enabled), userInputEnabledDrawable)
+                inputState.addState(
+                    intArrayOf(android.R.attr.state_enabled),
+                    userInputEnabledDrawable
+                )
                 inputState.addState(intArrayOf(), userInputDisabledDrawable)
-                binding.userInputEdt.background = inputState
+                binding?.userInputEdt?.background = inputState
             }
         }
     }
 
     /** disables the send button */
     private fun disableSendBtn() {
-        binding.sendBtn.isEnabled = false
+        binding?.sendBtn?.isEnabled = false
     }
 
     /** enables the send button */
     private fun enableSendBtn() {
-        val isReady: Boolean = binding.userInputEdt.text.toString().isNotEmpty()
-        binding.sendBtn.isEnabled = isReady
+        val isReady: Boolean = binding?.userInputEdt?.text.toString().isNotEmpty()
+        binding?.sendBtn?.isEnabled = isReady
     }
 
     /** disables the user input box */
     private fun disableUserInput() {
-        // binding.userInputEdt.isEnabled = false
-        binding.userInputEdt.isFocusableInTouchMode = false
-        binding.userInputEdt.isCursorVisible = false
-        binding.userInputEdt.clearFocus()
+        binding?.apply {
+            userInputEdt.isFocusableInTouchMode = false
+            userInputEdt.isCursorVisible = false
+            userInputEdt.clearFocus()
+        }
     }
 
     /** changes the return key as done in keyboard */
     private fun setImeOptionDoneInKeyboard() {
-        binding.userInputEdt.imeOptions = EditorInfo.IME_ACTION_DONE
-        binding.userInputEdt.setRawInputType(InputType.TYPE_CLASS_TEXT)
+        binding?.userInputEdt?.imeOptions = EditorInfo.IME_ACTION_DONE
+        binding?.userInputEdt?.setRawInputType(InputType.TYPE_CLASS_TEXT)
     }
 
     private fun unLockInteraction() {
@@ -300,9 +318,9 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
     private fun lockInteractionAndSubmitResponse() {
         disableUserInput()
         disableSendBtn()
-        binding.textCount.visibility = View.GONE
-        viewModel?.lockAndSubmitReply(binding.userInputEdt.text.toString().trim())?.let {
-            binding.confirmationMessageTv.visibility = VISIBLE
+        binding?.textCount?.visibility = View.GONE
+        viewModel?.lockAndSubmitReply(binding?.userInputEdt?.text.toString().trim())?.let {
+            binding?.confirmationMessageTv?.visibility = VISIBLE
         }
     }
 
@@ -313,7 +331,7 @@ class TextAskView(context: Context, attr: AttributeSet? = null) : SpecifiedWidge
         val inputManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(
-            binding.userInputEdt.windowToken,
+            binding?.userInputEdt?.windowToken,
             0
         )
     }

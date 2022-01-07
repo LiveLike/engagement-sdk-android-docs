@@ -34,7 +34,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
     private var inflated = false
 
     private var isFirstInteraction = false
-    private lateinit var binding: WidgetTextOptionSelectionBinding
+    private var binding: WidgetTextOptionSelectionBinding? = null
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
@@ -75,7 +75,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 // show timer while widget interaction mode
                 viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
                     showTimer(
-                        timeout, binding.textEggTimer,
+                        timeout, binding?.textEggTimer,
                         {
                             viewModel?.animationEggTimerProgress = it
                         },
@@ -90,7 +90,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 onWidgetInteractionCompleted()
                 viewModel?.apply {
                     if (followUp) {
-                        binding.followupAnimation?.apply {
+                        binding?.followupAnimation?.apply {
                             if (viewModel?.animationPath?.isNotEmpty() == true)
                                 setAnimation(
                                     viewModel?.animationPath
@@ -110,11 +110,11 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                         }
                         viewModel?.points?.let {
                             if (!shouldShowPointTutorial() && it > 0) {
-                                binding.pointView.startAnimation(it, true)
+                                binding?.pointView?.startAnimation(it, true)
                                 wouldShowProgressionMeter(
                                     viewModel?.rewardsType,
                                     viewModel?.gamificationProfile?.latest(),
-                                    binding.progressionMeterView
+                                    binding?.progressionMeterView!!
                                 )
                             }
                         }
@@ -124,7 +124,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                                 resultsObserver(it)
                         }
 
-                        binding.confirmationMessage?.apply {
+                        binding?.confirmationMessage?.apply {
                             if (isFirstInteraction) {
                                 text =
                                     viewModel?.data?.currentData?.resource?.confirmation_message
@@ -150,11 +150,11 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
 
                         viewModel?.points?.let {
                             if (!shouldShowPointTutorial() && it > 0) {
-                                binding.pointView.startAnimation(it, true)
+                                binding?.pointView?.startAnimation(it, true)
                                 wouldShowProgressionMeter(
                                     viewModel?.rewardsType,
                                     viewModel?.gamificationProfile?.latest(),
-                                    binding.progressionMeterView
+                                    binding?.progressionMeterView!!
                                 )
                             }
                         }
@@ -172,7 +172,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
         viewModel?.data?.latest()?.let {
             val isFollowUp = it.resource.kind.contains("follow-up")
             if (isFollowUp) {
-                binding.textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
+                binding?.textEggTimer?.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
 
             }
         }
@@ -229,7 +229,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             logDebug { "PredictionWidget Showing result total:$totalVotes" }
             viewModel?.adapter?.myDataset = options
             viewModel?.adapter?.showPercentage = true
-            binding.textRecyclerView?.swapAdapter(viewModel?.adapter, false)
+            binding?.textRecyclerView?.swapAdapter(viewModel?.adapter, false)
         }
     }
 
@@ -243,7 +243,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        binding.layTextRecyclerView?.background = it
+                        binding?.layTextRecyclerView?.background = it
                     }
                 }
             }
@@ -267,10 +267,12 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_prediction_tag))
             }
 
-            binding.titleView.title = resource.question
-            binding.txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
-            binding.layTextRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
-            binding.titleView.titleViewBinding.titleTextView.gravity = Gravity.START
+            binding?.apply {
+                titleView.title = resource.question
+                txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
+                layTextRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
+                titleView.titleViewBinding.titleTextView.gravity = Gravity.START
+            }
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(
                 optionList,
                 widget.type,
@@ -300,7 +302,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     ) ?: ""
                 }
 
-            binding.textRecyclerView.apply {
+            binding?.textRecyclerView?.apply {
                 isFirstInteraction = viewModel?.getUserInteraction() != null
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.optionId)
                 this.adapter = viewModel?.adapter
