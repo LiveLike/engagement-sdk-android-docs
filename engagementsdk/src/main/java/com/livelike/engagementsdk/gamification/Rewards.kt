@@ -120,7 +120,7 @@ internal class Rewards(
             } else {
                 requestParams.attributes?.let { attributes ->
                     fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
-                        attributes.entries.forEach { entry ->
+                        attributes.forEach { entry ->
                             addQueryParameter("attributes", "${entry.key},${entry.value}")
                         }
                     }?.build()?.toUrl()?.toString()
@@ -393,7 +393,7 @@ interface IRewardsClient {
 }
 
 data class ApplicationRewardItemsRequestParams(
-    val attributes: Map<String,String>? = null
+    val attributes: List<RewardAttribute>? = null
 )
 
 data class RewardTransaction (

@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LLPaginatedResult
+import com.livelike.engagementsdk.core.data.models.RewardAttribute
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.gamification.*
@@ -53,9 +54,9 @@ class RewardsClientTestActivity : AppCompatActivity() {
             selectedrewardItem?.let {
                 AlertDialog.Builder(this)
                     .setTitle("${it.name}: attributes")
-                    .setItems(it.attributes.entries.map { entry ->
+                    .setItems(it.attributes?.map { entry ->
                         "key: ${entry.key}, value : ${entry.value}"
-                    }.toTypedArray()) { _, _ -> }
+                    }?.toTypedArray()) { _, _ -> }
                     .create()
                     .show()
             }
@@ -66,7 +67,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
                 AlertDialog.Builder(this)
                     .setTitle("${it.name}: images")
                     .setItems(it.images?.map { imageData ->
-                        "name: ${imageData.name}\nurl: ${imageData.url}\nmime Type: ${imageData.mimeType}"
+                        "name: ${imageData.name}\nurl: ${imageData.imageUrl}\nmime Type: ${imageData.mimetype}"
                     }?.toTypedArray()) { _, _ -> }
                     .create()
                     .show()
@@ -261,7 +262,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
                 else ->
                     rewardsClient.getApplicationRewardItems(
                         LiveLikePagination.FIRST,
-                        ApplicationRewardItemsRequestParams(mapOf(Pair(key, value))),
+                        ApplicationRewardItemsRequestParams(listOf(RewardAttribute(key, value))),
                         object : LiveLikeCallback<LLPaginatedResult<RewardItem>>() {
                             override fun onResponse(
                                 result: LLPaginatedResult<RewardItem>?,
