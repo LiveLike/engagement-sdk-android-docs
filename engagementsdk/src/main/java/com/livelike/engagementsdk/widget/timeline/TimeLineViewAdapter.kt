@@ -40,25 +40,11 @@ internal class TimeLineViewAdapter(
 
             VIEW_TYPE_DATA -> {
                 itemBinding = LivelikeTimelineItemBinding.inflate(LayoutInflater.from(p0.context), p0, false)
-               /* TimeLineItemViewHolder(
-                    LayoutInflater.from(p0.context).inflate(
-                        R.layout.livelike_timeline_item,
-                        p0,
-                        false
-                    )
-                )*/
                 TimeLineItemViewHolder(itemBinding!!)
             }
 
             VIEW_TYPE_PROGRESS -> {
                 progressBinding =  LivelikeProgressItemBinding.inflate(LayoutInflater.from(p0.context), p0, false)
-               /* ProgressViewHolder(
-                    LayoutInflater.from(p0.context).inflate(
-                        R.layout.livelike_progress_item,
-                        p0,
-                        false
-                    )
-                )*/
                 ProgressViewHolder(progressBinding!!)
             }
 
