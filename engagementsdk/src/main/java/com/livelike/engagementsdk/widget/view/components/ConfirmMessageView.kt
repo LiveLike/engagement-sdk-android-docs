@@ -2,13 +2,17 @@ package com.livelike.engagementsdk.widget.view.components
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.livelike.engagementsdk.R
-import kotlinx.android.synthetic.main.atom_widget_confirmation_message.view.confirmMessageAnimation
+import com.livelike.engagementsdk.databinding.AtomWidgetConfirmationMessageBinding
+
+
 
 class ConfirmMessageView(context: Context, attr: AttributeSet) : ConstraintLayout(context, attr) {
+    private var binding: AtomWidgetConfirmationMessageBinding? = null
     init {
-        inflate(context, R.layout.atom_widget_confirmation_message, this)
+        binding = AtomWidgetConfirmationMessageBinding.inflate(LayoutInflater.from(context), this@ConfirmMessageView, true)
+
     }
 
     var text: String = ""
@@ -18,14 +22,14 @@ class ConfirmMessageView(context: Context, attr: AttributeSet) : ConstraintLayou
         }
 
     fun startAnimation(animationPath: String, progress: Float) {
-        confirmMessageAnimation.setAnimation(animationPath)
-        confirmMessageAnimation.progress = progress
+        binding?.confirmMessageAnimation?.setAnimation(animationPath)
+        binding?.confirmMessageAnimation?.progress = progress
         if (progress != 1f) {
-            confirmMessageAnimation.resumeAnimation()
+            binding?.confirmMessageAnimation?.resumeAnimation()
         }
     }
 
     fun subscribeToAnimationUpdates(onUpdate: (Float) -> Unit) {
-        confirmMessageAnimation.addAnimatorUpdateListener { onUpdate(it.animatedFraction) }
+        binding?.confirmMessageAnimation?.addAnimatorUpdateListener { onUpdate(it.animatedFraction) }
     }
 }

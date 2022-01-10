@@ -5,6 +5,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -15,18 +16,15 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
-import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.databinding.LivelikeTimelineViewBinding
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.data.models.WidgetKind
 import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 import com.livelike.engagementsdk.widget.util.SmoothScrollerLinearLayoutManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
-import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_rv
-import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_snap_live
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -42,6 +40,7 @@ class WidgetsTimeLineView(
     private var isFirstItemVisible = false
     private var autoScrollTimeline = false
     private var separator: Drawable? = null
+    private var binding: LivelikeTimelineViewBinding? = null
 
     // The minimum amount of items to have below your current scroll position
     // before loading more.
@@ -78,12 +77,13 @@ class WidgetsTimeLineView(
         separator?.let {
             val itemDecoration = DividerItemDecoration(context, VERTICAL)
             itemDecoration.setDrawable(it)
-            timeline_rv.addItemDecoration(itemDecoration)
+            binding?.timelineRv?.addItemDecoration(itemDecoration)
         }
     }
 
     init {
-        inflate(context, R.layout.livelike_timeline_view, this)
+        //inflate(context, R.layout.livelike_timeline_view, this)
+        binding = LivelikeTimelineViewBinding.inflate(LayoutInflater.from(context), this@WidgetsTimeLineView, true)
 
         // added a check based on data, since this will be causing issue during rotation of device
         if (timeLineViewModel.timeLineWidgets.isEmpty()) {
@@ -97,8 +97,8 @@ class WidgetsTimeLineView(
             )
         adapter.widgetTimerController = widgetTimerController
         adapter.list.addAll(timeLineViewModel.timeLineWidgets)
-        timeline_rv.layoutManager = SmoothScrollerLinearLayoutManager(context)
-        timeline_rv.adapter = adapter
+        binding?.timelineRv?.layoutManager = SmoothScrollerLinearLayoutManager(context)
+        binding?.timelineRv?.adapter = adapter
         initListeners()
     }
 
@@ -196,13 +196,14 @@ class WidgetsTimeLineView(
     private fun lockAlreadyInteractedQuizAndEmojiSlider(widgets: List<TimelineWidgetResource>) {
         widgets.forEach {
             val kind = it.liveLikeWidget.kind
-            if (kind == WidgetKind.IMAGE_SLIDER.event || kind?.contains(WidgetKind.QUIZ.event) == true ||
-                   kind?.contains(WidgetKind.TEXT_ASK.event) == true || kind?.contains(WidgetKind.NUMBER_PREDICTION.event) == true) {
-                if ((timeLineViewModel.contentSession as ContentSession).widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
-                        it.liveLikeWidget.id ?: ""
-                    ) != null
-                ) {
-                    it.widgetState = WidgetStates.RESULTS
+            when {
+                kind == WidgetKind.IMAGE_SLIDER.event || kind?.contains(WidgetKind.QUIZ.event) == true || kind?.contains(WidgetKind.TEXT_ASK.event) == true || kind?.contains(WidgetKind.NUMBER_PREDICTION.event) == true -> {
+                    if ((timeLineViewModel.contentSession as ContentSession).widgetInteractionRepository.getWidgetInteraction<WidgetUserInteractionBase>(
+                            it.liveLikeWidget.id ?: ""
+                        ) != null
+                    ) {
+                        it.widgetState = WidgetStates.RESULTS
+                    }
                 }
             }
         }
@@ -236,9 +237,9 @@ class WidgetsTimeLineView(
      **/
     private fun wouldRetreatToActiveWidgetPosition() {
         val shouldRetreatToTopPosition =
-            (timeline_rv.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() == 0
+            (binding?.timelineRv?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() == 0
         if (shouldRetreatToTopPosition) {
-            timeline_rv.smoothScrollToPosition(0)
+            binding?.timelineRv?.smoothScrollToPosition(0)
         }
     }
 
@@ -247,8 +248,8 @@ class WidgetsTimeLineView(
      * snap to live added
      **/
     private fun initListeners() {
-        val lm = timeline_rv.layoutManager as LinearLayoutManager
-        timeline_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        val lm = binding?.timelineRv?.layoutManager as LinearLayoutManager
+        binding?.timelineRv?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(
                 rv: RecyclerView,
                 dx: Int,
@@ -282,7 +283,7 @@ class WidgetsTimeLineView(
             }
         })
 
-        timeline_snap_live.setOnClickListener {
+        binding?.timelineSnapLive?.setOnClickListener {
             autoScrollTimeline = true
             snapToLiveForTimeline()
         }
@@ -317,14 +318,14 @@ class WidgetsTimeLineView(
     }
 
     private fun showLoadingSpinnerForTimeline() {
-        loadingSpinnerTimeline.visibility = View.VISIBLE
-        timeline_rv.visibility = View.GONE
-        timeline_snap_live.visibility = View.GONE
+        binding?.loadingSpinnerTimeline?.visibility = View.VISIBLE
+        binding?.timelineRv?.visibility = View.GONE
+        binding?.timelineSnapLive?.visibility = View.GONE
     }
 
     private fun hideLoadingSpinnerForTimeline() {
-        loadingSpinnerTimeline.visibility = View.GONE
-        timeline_rv.visibility = View.VISIBLE
+        binding?.loadingSpinnerTimeline?.visibility = View.GONE
+        binding?.timelineRv?.visibility = View.VISIBLE
     }
 
     /**
@@ -337,7 +338,7 @@ class WidgetsTimeLineView(
         if (!showingSnapToLive)
             return
         showingSnapToLive = false
-        timeline_snap_live.visibility = View.GONE
+        binding?.timelineSnapLive?.visibility = View.GONE
         animateSnapToLiveButton()
     }
 
@@ -349,15 +350,15 @@ class WidgetsTimeLineView(
         if (showingSnapToLive)
             return
         showingSnapToLive = true
-        timeline_snap_live.visibility = View.VISIBLE
+        binding?.timelineSnapLive?.visibility = View.VISIBLE
         animateSnapToLiveButton()
     }
 
     private fun snapToLiveForTimeline() {
-        timeline_rv?.let { rv ->
+        binding?.timelineRv?.let { rv ->
             hideSnapToLiveForWidgets()
             timeLineViewModel.timeLineWidgets.size.let {
-                timeline_rv.postDelayed(
+                binding?.timelineRv?.postDelayed(
                     {
                         rv.smoothScrollToPosition(0)
                     },
@@ -371,7 +372,7 @@ class WidgetsTimeLineView(
         snapToLiveAnimation?.cancel()
 
         val translateAnimation = ObjectAnimator.ofFloat(
-            timeline_snap_live,
+            binding?.timelineSnapLive!!,
             "translationY",
             if (showingSnapToLive) 0f else AndroidResource.dpToPx(
                 TIMELINE_SNAP_TO_LIVE_ANIMATION_DESTINATION
@@ -380,19 +381,23 @@ class WidgetsTimeLineView(
         )
         translateAnimation?.duration = TIMELINE_SNAP_TO_LIVE_ANIMATION_DURATION.toLong()
         val alphaAnimation =
-            ObjectAnimator.ofFloat(timeline_snap_live, "alpha", if (showingSnapToLive) 1f else 0f)
+            ObjectAnimator.ofFloat( binding?.timelineSnapLive, "alpha", if (showingSnapToLive) 1f else 0f)
         alphaAnimation.duration = (TIMELINE_SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION).toLong()
         alphaAnimation.addListener(object : Animator.AnimatorListener {
             override fun onAnimationEnd(animation: Animator) {
-                timeline_snap_live.visibility = if (showingSnapToLive) View.VISIBLE else View.GONE
+                binding?.timelineSnapLive?.visibility = if (showingSnapToLive) View.VISIBLE else View.GONE
             }
 
             override fun onAnimationStart(animation: Animator) {
-                timeline_snap_live.visibility = if (showingSnapToLive) View.GONE else View.VISIBLE
+                binding?.timelineSnapLive?.visibility = if (showingSnapToLive) View.GONE else View.VISIBLE
             }
 
-            override fun onAnimationCancel(animation: Animator) {}
-            override fun onAnimationRepeat(animation: Animator) {}
+            override fun onAnimationCancel(animation: Animator) {
+                //not required
+            }
+            override fun onAnimationRepeat(animation: Animator) {
+                //not required
+            }
         })
 
         snapToLiveAnimation = AnimatorSet()

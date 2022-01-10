@@ -5,21 +5,19 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.animation.LinearInterpolator
 import com.livelike.engagementsdk.DismissAction
-import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.animators.buildRotationAnimator
 import com.livelike.engagementsdk.core.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.core.utils.animators.buildTranslateYAnimator
+import com.livelike.engagementsdk.databinding.WidgetGamificationCollectBadgeBinding
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.data.models.Badge
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CollectBadgeWidgetViewModel
-import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.badge_iv
-import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.badge_name_tv
-import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.collect_badge_box
-import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.collect_badge_button
+
 
 class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
@@ -36,18 +34,20 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
                 animateView(badge)
             }
         }
+    private var binding:WidgetGamificationCollectBadgeBinding? = null
 
     init {
-        inflate(context, R.layout.widget_gamification_collect_badge, this)
+        binding = WidgetGamificationCollectBadgeBinding.inflate(LayoutInflater.from(context), this@CollectBadgeWidgetView, true)
+
     }
 
     private fun animateView(badge: Badge) {
         clipParents(false)
-        badge_iv.loadImage(badge.imageFile, AndroidResource.dpToPx(80))
-        badge_name_tv.text = badge.name
-        badge_iv.buildRotationAnimator(1000).start()
+        binding?.badgeIv?.loadImage(badge.imageFile, AndroidResource.dpToPx(80))
+        binding?.badgeNameTv?.text = badge.name
+        binding?.badgeIv!!.buildRotationAnimator(1000).start()
         buildScaleAnimator(0f, 1f, 1000).start()
-        collect_badge_button.setOnClickListener {
+        binding?.collectBadgeButton?.setOnClickListener {
             viewModel?.let {
                 it.analyticsService.trackBadgeCollectedButtonPressed(it.badge.id, it.badge.level)
             }
@@ -56,25 +56,25 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun choreogaphBadgeCollection() {
-        collect_badge_button.animate().alpha(0f).setDuration(500).start()
-        collect_badge_box.animate().alpha(0f).setDuration(500).start()
+        binding?.collectBadgeButton?.animate()?.alpha(0f)?.setDuration(500)?.start()
+        binding?.collectBadgeBox?.animate()?.alpha(0f)?.setDuration(500)?.start()
         //            badge_iv.animate().setDuration(500).setStartDelay(500)
         //                .translationY(badge_iv.translationY + collect_badge_box.image_height/2)
-        val badgeTranslateDownCenter = badge_iv.buildTranslateYAnimator(
+        val badgeTranslateDownCenter =  binding?.badgeIv?.buildTranslateYAnimator(
             100,
-            badge_iv.translationY,
-            badge_iv.translationY + collect_badge_box.height / 2,
+            binding?.badgeIv?.translationY,
+            binding?.badgeIv!!.translationY + binding?.collectBadgeBox!!.height / 2,
             LinearInterpolator()
         )
-        val badgeScaleUp = badge_iv.buildScaleAnimator(1f, 1.5f, 1200)
+        val badgeScaleUp = binding?.badgeIv?.buildScaleAnimator(1f, 1.5f, 1200)
 
-        val badgeTranslateDownBox = badge_iv.buildTranslateYAnimator(
+        val badgeTranslateDownBox = binding?.badgeIv?.buildTranslateYAnimator(
             300,
-            badge_iv.translationY + collect_badge_box.height / 2,
-            badge_iv.translationY + collect_badge_box.height / 2 + AndroidResource.dpToPx(80),
+            binding?.badgeIv!!.translationY + binding?.collectBadgeBox!!.height / 2,
+            binding?.badgeIv!!.translationY + binding?.collectBadgeBox!!.height / 2 + AndroidResource.dpToPx(80),
             LinearInterpolator()
         )
-        val badgeScaleDown = badge_iv.buildScaleAnimator(1.5f, 0f, 300, LinearInterpolator())
+        val badgeScaleDown = binding?.badgeIv?.buildScaleAnimator(1.5f, 0f, 300, LinearInterpolator())
 
         val animatorSet = AnimatorSet().apply {
             startDelay = 500
