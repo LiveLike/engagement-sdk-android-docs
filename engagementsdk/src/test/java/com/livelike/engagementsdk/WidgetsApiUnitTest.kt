@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
 import mockingAndroidServicesUsedByMixpanel
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -85,7 +86,13 @@ class WidgetsApiUnitTest {
                         )
                     }
 
+                    "/api/v1/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/widgets/?ordering=recent&status=published" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream(WIDGET_TIMELINE_JSON).readAll()
 
+                        )
+                    }
 
                     else -> MockResponse().apply {
                         setResponseCode(500)
@@ -134,6 +141,31 @@ class WidgetsApiUnitTest {
         assert(resultCaptor.firstValue[0].id == "766e0cfe-6a0f-41c8-8b97-ca1734fb1a03")
         assert(resultCaptor.firstValue[0].kind == "text-quiz")
         mockWebServer.shutdown()
+
+    }
+
+    @Test
+    fun getWidgetTimelineApi_success_with_data(){
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<LiveLikeWidget>>
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+
+        contentSession.getPublishedWidgets(LiveLikePagination.FIRST,callback)
+        Thread.sleep(3000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(3000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+
+        val resultCaptor = argumentCaptor<List<LiveLikeWidget>>()
+        val errorCaptor = argumentCaptor<String>()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(callback, timeout(3000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
+        assert(resultCaptor.firstValue.isNotEmpty())
+        assert(resultCaptor.firstValue[0].kind == "text-prediction")
 
     }
 }
