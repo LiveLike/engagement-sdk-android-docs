@@ -67,7 +67,20 @@ data class RewardItem(
     @SerializedName("id") val id: String,
     @SerializedName("url") val url: String,
     @SerializedName("client_id") val client_id: String,
-    @SerializedName("name") val name: String
+    @SerializedName("name") val name: String,
+    @SerializedName("attributes") val attributes: List<RewardAttribute>?,
+    @SerializedName("images") val images: List<RewardItemImage>?
+)
+data class RewardAttribute (
+    @SerializedName( "key") val key: String,
+    @SerializedName( "value") val value: String
+)
+
+data class RewardItemImage(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("image_url") val imageUrl: String,
+    @SerializedName("mimetype") val mimetype: String
 )
 
 internal fun RewardItem.toReward(): LeaderBoardReward {
