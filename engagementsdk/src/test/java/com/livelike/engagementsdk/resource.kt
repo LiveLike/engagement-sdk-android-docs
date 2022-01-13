@@ -11,4 +11,5 @@ const val SINGLE_CHATROOM_DETAIL_SUCCESS = "single_chatroom_resource.json"
 const val LEADERBOARD_DETAILS_RESOURCE = "leaderboard_details.json"
 const val LEADERBOARD_PROFILE_ENTRY_RESOURCE = "leaderboard_entry_profile.json"
 const val SINGLE_CHATROOM_DETAIL_ERROR = "single_chatroom_error_resource.json"
+const val WIDGET_TIMELINE_JSON = "timeline.json"
 

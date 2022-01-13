@@ -10,34 +10,35 @@ import com.livelike.engagementsdk.widget.timeline.CMSSpecifiedDurationTimer
 import com.livelike.engagementsdk.widget.timeline.WidgetTimerController
 import com.livelike.engagementsdk.widget.timeline.WidgetsTimeLineView
 import com.livelike.livelikedemo.customwidgets.timeline.TimeLineWidgetFactory
+import com.livelike.livelikedemo.databinding.ActivityLiveBlogBinding
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.viewmodels.LiveBlogModelFactory
 import com.livelike.livelikedemo.viewmodels.LiveBlogViewModel
-import kotlinx.android.synthetic.main.activity_live_blog.radio_group
-import kotlinx.android.synthetic.main.activity_live_blog.timeline_container
-import kotlinx.android.synthetic.main.activity_live_blog.timeout_set
-import kotlinx.android.synthetic.main.activity_live_blog.widget_timeout
+//import kotlinx.android.synthetic.main.activity_live_blog.*
 
 open class LiveBlogActivity : AppCompatActivity() {
 
     open var liveBlogViewModel: LiveBlogViewModel? = null
     var timeout: String? = null
+    private lateinit var binding: ActivityLiveBlogBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_live_blog)
+        binding = ActivityLiveBlogBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         /**
          * init view model, which will be responsible for managing WidgetTimelineViewmodel, so that its not created each time
          **/
         initViewModel()
 
-        radio_group.setOnCheckedChangeListener { _, checkedId ->
+        binding.radioGroup.setOnCheckedChangeListener { _, checkedId ->
             liveBlogViewModel?.showAlertOnly = (checkedId == R.id.radio2)
             createTimeLineView()
         }
         createTimeLineView()
-        timeout_set.setOnClickListener {
+        binding.timeoutSet.setOnClickListener {
             Log.d("timeline", "timeout set")
             setWidgetTimeout()
         }
@@ -48,7 +49,7 @@ open class LiveBlogActivity : AppCompatActivity() {
      * for both the filter and non filtered widgets new instance of timeline and timelineviewmodel are created.
      **/
     private fun createTimeLineView() {
-        timeline_container.removeAllViews()
+        binding.timelineContainer.removeAllViews()
 
         val timeLineView = WidgetsTimeLineView(
             this,
@@ -82,13 +83,13 @@ open class LiveBlogActivity : AppCompatActivity() {
                 timeLineView.applyTheme(ThemeRandomizer.themesList.last())
             }
         }
-        timeline_container.addView(timeLineView)
+        binding.timelineContainer.addView(timeLineView)
     }
 
     private fun setWidgetTimeout() {
 
-        if (!widget_timeout.text.toString().isNullOrEmpty()) {
-            this.timeout = widget_timeout.text.toString()
+        if (!binding.widgetTimeout.text.toString().isNullOrEmpty()) {
+            this.timeout = binding.widgetTimeout.text.toString()
             createTimeLineView()
         }
     }

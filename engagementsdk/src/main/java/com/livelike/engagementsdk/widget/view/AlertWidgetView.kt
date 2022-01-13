@@ -12,9 +12,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat.startActivity
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.DismissAction
-import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.databinding.WidgetAlertBinding
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetsTheme
@@ -22,13 +22,7 @@ import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.widget_alert.view.bodyImage
-import kotlinx.android.synthetic.main.widget_alert.view.bodyText
-import kotlinx.android.synthetic.main.widget_alert.view.labelText
-import kotlinx.android.synthetic.main.widget_alert.view.linkArrow
-import kotlinx.android.synthetic.main.widget_alert.view.linkBackground
-import kotlinx.android.synthetic.main.widget_alert.view.linkText
-import kotlinx.android.synthetic.main.widget_alert.view.widgetContainer
+
 
 internal class AlertWidgetView : SpecifiedWidgetView {
     constructor(context: Context) : super(context)
@@ -40,6 +34,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     )
 
     private var inflated = false
+    private var binding: WidgetAlertBinding? = null
 
     var viewModel: AlertWidgetViewModel? = null
 
@@ -111,32 +106,32 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         viewModel?.data?.latest()?.let { _ ->
             theme.getThemeLayoutComponent(WidgetType.ALERT)?.let { themeComponent ->
                 AndroidResource.updateThemeForView(
-                    labelText,
+                    binding?.labelText,
                     themeComponent.title,
                     fontFamilyProvider
                 )
                 if (themeComponent.header?.background != null) {
-                    labelText?.background = AndroidResource.createDrawable(themeComponent.header)
+                    binding?.labelText?.background = AndroidResource.createDrawable(themeComponent.header)
                 }
                 themeComponent.header?.padding?.let {
-                    AndroidResource.setPaddingForView(labelText, themeComponent.header.padding)
+                    AndroidResource.setPaddingForView(binding?.labelText, themeComponent.header.padding)
                 }
 
-                widgetContainer?.background =
+                binding?.widgetContainer?.background =
                     AndroidResource.createDrawable(themeComponent.body)
                 AndroidResource.updateThemeForView(
-                    bodyText,
+                    binding?.bodyText,
                     themeComponent.body,
                     fontFamilyProvider
                 )
                 AndroidResource.updateThemeForView(
-                    linkText,
+                    binding?.linkText,
                     themeComponent.body,
                     fontFamilyProvider
                 )
 
                 if (themeComponent.footer?.background != null) {
-                    linkBackground?.background = AndroidResource.createDrawable(themeComponent.footer)
+                    binding?.linkBackground?.background = AndroidResource.createDrawable(themeComponent.footer)
                 }
             }
         }
@@ -154,53 +149,58 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     private fun inflate(context: Context, resourceAlert: Alert) {
         if (!inflated) {
             inflated = true
-           LayoutInflater.from(context)
-                .inflate(R.layout.widget_alert, this, true)
+          /* LayoutInflater.from(context)
+                .inflate(R.layout.widget_alert, this, true)*/
+            binding = WidgetAlertBinding.inflate(LayoutInflater.from(context), this@AlertWidgetView, true)
         }
 
-        bodyText.text = resourceAlert.text
-        labelText.text = resourceAlert.title
-        linkText.text = resourceAlert.link_label
+        binding?.apply {
+            bodyText.text = resourceAlert.text
+            labelText.text = resourceAlert.title
+            linkText.text = resourceAlert.link_label
+        }
 
         if (!resourceAlert.link_url.isNullOrEmpty()) {
-            linkBackground.setOnClickListener {
+            binding?.linkBackground?.setOnClickListener {
                 openBrowser(context, resourceAlert.link_url)
             }
         } else {
-            linkArrow.visibility = View.GONE
-            linkBackground.visibility = View.GONE
-            linkText.visibility = View.GONE
+            binding?.apply {
+                linkArrow.visibility = View.GONE
+                linkBackground.visibility = View.GONE
+                linkText.visibility = View.GONE
+            }
         }
 
         if (resourceAlert.image_url.isNullOrEmpty()) {
-            bodyImage.visibility = View.GONE
-            val params = bodyText.layoutParams as ConstraintLayout.LayoutParams
+            binding?.bodyImage?.visibility = View.GONE
+            val params = binding?.bodyText?.layoutParams as ConstraintLayout.LayoutParams
             params.rightMargin = AndroidResource.dpToPx(16)
-            bodyText.requestLayout()
+            binding?.bodyText?.requestLayout()
         } else {
             resourceAlert.image_url.apply {
                 Glide.with(context.applicationContext)
                     .load(resourceAlert.image_url)
-                    .into(bodyImage)
+                    .into(binding?.bodyImage!!)
             }
         }
 
         if (resourceAlert.title.isNullOrEmpty()) {
-            labelText.visibility = View.GONE
-            val params = widgetContainer.layoutParams as ConstraintLayout.LayoutParams
+            binding?.labelText?.visibility = View.GONE
+            val params = binding?.widgetContainer?.layoutParams as ConstraintLayout.LayoutParams
             params.topMargin = AndroidResource.dpToPx(0)
-            widgetContainer.requestLayout()
+            binding?.widgetContainer?.requestLayout()
         } else {
-            widgetContainer.requestLayout()
+           binding?.widgetContainer?.requestLayout()
         }
 
         if (resourceAlert.text.isNullOrEmpty()) {
-            bodyText.visibility = View.GONE
+            binding?.bodyText?.visibility = View.GONE
             if (!resourceAlert.image_url.isNullOrEmpty()) {
                 // Image Only
-                val params = widgetContainer.layoutParams
+                val params = binding?.widgetContainer!!.layoutParams
                 params.height = AndroidResource.dpToPx(200)
-                widgetContainer.requestLayout()
+                binding?.widgetContainer!!.requestLayout()
             }
         }
         widgetsTheme?.let {

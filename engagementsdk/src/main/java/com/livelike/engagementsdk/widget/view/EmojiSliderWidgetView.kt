@@ -7,11 +7,13 @@ import android.graphics.drawable.StateListDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.databinding.WidgetEmojiSliderBinding
 import com.livelike.engagementsdk.widget.ImageSliderTheme
 import com.livelike.engagementsdk.widget.model.ImageSliderEntity
 import com.livelike.engagementsdk.widget.view.components.imageslider.ImageSlider
@@ -19,14 +21,6 @@ import com.livelike.engagementsdk.widget.view.components.imageslider.ScaleDrawab
 import com.livelike.engagementsdk.widget.view.components.imageslider.ThumbDrawable
 import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
-import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
-import kotlinx.android.synthetic.main.common_lock_btn_lay.view.btn_lock
-import kotlinx.android.synthetic.main.common_lock_btn_lay.view.label_lock
-import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
-import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider
-import kotlinx.android.synthetic.main.widget_emoji_slider.view.lay_image_slider
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -36,12 +30,15 @@ import java.math.RoundingMode
 
 internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = null) :
     GenericSpecifiedWidgetView<ImageSliderEntity, EmojiSliderWidgetViewModel>(context, attr) {
+
+    private lateinit var binding: WidgetEmojiSliderBinding
+
     override fun lockInteraction() {
-        image_slider.isUserSeekable = false
+        binding.imageSlider.isUserSeekable = false
     }
 
     override fun unLockInteraction() {
-        image_slider.isUserSeekable = true
+        binding.imageSlider.isUserSeekable = true
         viewModel.markAsInteractive()
     }
 
@@ -58,7 +55,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
     }
 
     override fun confirmInteraction() {
-        image_slider.isUserSeekable = false
+        binding.imageSlider.isUserSeekable = false
         onWidgetInteractionCompleted()
     }
 
@@ -68,21 +65,21 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             true -> viewModel.results.latest()
             else -> viewModel.data.latest()
         }
-        image_slider.averageProgress = result?.averageMagnitude ?: image_slider.progress
+        binding.imageSlider.averageProgress = result?.averageMagnitude ?:  binding.imageSlider.progress
         disableLockButton()
-        label_lock.visibility = View.VISIBLE
+        binding.layLock.labelLock.visibility = View.VISIBLE
 
-        logDebug { "EmojiSlider Widget showing result value:${image_slider.averageProgress}" }
+        logDebug { "EmojiSlider Widget showing result value:${ binding.imageSlider.averageProgress}" }
     }
 
     private fun updateTheme(it: ImageSliderTheme?) {
         it?.let { sliderTheme ->
             applyThemeOnTitleView(sliderTheme)
             sliderTheme.header?.padding?.let {
-                AndroidResource.setPaddingForView(titleView, sliderTheme.header.padding)
+                AndroidResource.setPaddingForView(binding.titleView, sliderTheme.header.padding)
             }
             AndroidResource.createDrawable(sliderTheme.body)?.let {
-                lay_image_slider.background = it
+                binding.layImageSlider.background = it
             }
 
             // submit button drawables theme
@@ -95,19 +92,19 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             val state = StateListDrawable()
             state.addState(intArrayOf(android.R.attr.state_enabled), submitButtonEnabledDrawable)
             state.addState(intArrayOf(), submitButtonDisabledDrawable)
-            btn_lock?.background = state
+            binding.layLock.btnLock?.background = state
 
             //confirmation label theme
             AndroidResource.updateThemeForView(
-                label_lock,
+                binding.layLock.labelLock,
                 sliderTheme.confirmation,
                 fontFamilyProvider
             )
             if (sliderTheme.confirmation?.background != null) {
-                label_lock?.background = AndroidResource.createDrawable(sliderTheme.confirmation)
+                binding.layLock.labelLock?.background = AndroidResource.createDrawable(sliderTheme.confirmation)
             }
             sliderTheme.confirmation?.padding?.let {
-                AndroidResource.setPaddingForView(label_lock, sliderTheme.confirmation.padding)
+                AndroidResource.setPaddingForView(binding.layLock.labelLock, sliderTheme.confirmation.padding)
             }
         }
     }
@@ -116,22 +113,22 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
         entity?.let { resource ->
             resource.getMergedOptions() ?: return
             if (!isViewInflated) {
-                inflate(context, R.layout.widget_emoji_slider, this)
+                binding = WidgetEmojiSliderBinding.inflate(LayoutInflater.from(context), this@EmojiSliderWidgetView, true)
                 wouldInflateSponsorUi()
                 updateTheme(widgetsTheme?.imageSlider)
-                titleTextView.gravity = Gravity.START
-                titleView.title = resource.question
-                if (image_slider.progress == ImageSlider.INITIAL_POSITION)
+                binding.titleView.titleViewBinding.titleTextView.gravity = Gravity.START
+                binding.titleView.title = resource.question
+                if (binding.imageSlider.progress == ImageSlider.INITIAL_POSITION)
                     entity.initialMagnitude?.let {
-                        image_slider.progress = it
+                        binding.imageSlider.progress = it
                     }
                 enableLockButton()
                 if (viewModel.getUserInteraction() != null) {
                     isFirstInteraction = true
-                    label_lock.visibility = VISIBLE
+                    binding.layLock.labelLock.visibility = VISIBLE
                 }
                 viewModel.currentVote.currentData?.let {
-                    image_slider.progress = it.toFloat()
+                    binding.imageSlider.progress = it.toFloat()
                 }
                 val size = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
@@ -163,20 +160,20 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                         val drawableList = list.mapNotNull { t -> ScaleDrawable(t.await()) }
                         withContext(Dispatchers.Main) {
                             val drawable = ThumbDrawable(drawableList, .5f)
-                            image_slider.thumbDrawable = drawable
+                            binding.imageSlider.thumbDrawable = drawable
                         }
                     }
                 }
-                btn_lock.setOnClickListener {
-                    viewModel.currentVote.onNext(image_slider.progress.toString())
+                binding.layLock.btnLock.setOnClickListener {
+                    viewModel.currentVote.onNext(binding.imageSlider.progress.toString())
                     viewModel.currentVote.currentData?.let {
                         lockVote()
                         viewModel.saveInteraction(it.toFloat(), entity.voteUrl)
-                        textEggTimer.visibility = GONE
+                        binding.textEggTimer.visibility = GONE
                     }
                 }
 
-                image_slider.positionListener = { magnitude ->
+                binding.imageSlider.positionListener = { magnitude ->
                     viewModel.currentVote.onNext(
                         "${
                         magnitude.toBigDecimal().setScale(
@@ -197,7 +194,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
 
     private fun lockVote() {
         disableLockButton()
-        label_lock.visibility = View.VISIBLE
+        binding.layLock.labelLock.visibility = View.VISIBLE
         viewModel.run {
             timeOutJob?.cancel()
             onInteractionCompletion {}
@@ -205,14 +202,14 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
     }
 
     private fun enableLockButton() {
-        lay_lock.visibility = VISIBLE
-        btn_lock.isEnabled = true
-        btn_lock.alpha = 1f
+        binding.layLock.layLock.visibility = VISIBLE
+        binding.layLock.btnLock.isEnabled = true
+        binding.layLock.btnLock.alpha = 1f
     }
 
     private fun disableLockButton() {
-        lay_lock.visibility = VISIBLE
-        btn_lock.isEnabled = false
-        btn_lock.alpha = 0.5f
+        binding.layLock.layLock.visibility = VISIBLE
+        binding.layLock.btnLock.isEnabled = false
+        binding.layLock.btnLock.alpha = 0.5f
     }
 }

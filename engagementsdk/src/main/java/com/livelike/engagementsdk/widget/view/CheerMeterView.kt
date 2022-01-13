@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,7 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.databinding.WidgetCheerMeterBinding
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.ViewStyleProps
 import com.livelike.engagementsdk.widget.model.Resource
@@ -30,22 +32,6 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.fl_result_team
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_1
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_2
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_winner_anim
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_winner_team
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.lay_cheer_meter_background
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.lay_cheer_meter_header
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.ll_cheer_meter_teams
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.lottie_vs_animation
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.textEggTimer
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_team_1
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_team_2
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_title
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_my_score
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple2
 import kotlin.math.max
 
 class CheerMeterView(context: Context, attr: AttributeSet? = null) :
@@ -56,6 +42,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private var viewModel: CheerMeterViewModel? = null
 
     private var inflated = false
+    private var binding: WidgetCheerMeterBinding? = null
 
     override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
@@ -94,7 +81,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 // show timer while widget interaction mode
                 viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
                     showTimer(
-                        timeout, textEggTimer,
+                        timeout, binding?.textEggTimer,
                         {
                             viewModel?.animationEggTimerProgress = it
                         },
@@ -123,13 +110,13 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun lockInteraction() {
-        view_ripple?.isClickable = false
-        view_ripple2?.isClickable = false
+        binding?.viewRipple?.isClickable = false
+        binding?.viewRipple2?.isClickable = false
     }
 
     private fun unLockInteraction() {
-        view_ripple?.isClickable = true
-        view_ripple2?.isClickable = true
+        binding?.viewRipple?.isClickable = true
+        binding?.viewRipple2?.isClickable = true
         viewModel?.isWidgetInteractedEventLogged = false
         viewModel?.markAsInteractive()
     }
@@ -145,6 +132,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 }
             }
             WidgetStates.RESULTS -> {
+                //not required
             }
             WidgetStates.FINISHED -> {
                 resourceObserver(null)
@@ -165,16 +153,16 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
                 val totalCount = max(vote1 + vote2, 1)
 
-                ll_cheer_meter_teams.weightSum = totalCount.toFloat()
-                ll_cheer_meter_teams.orientation = LinearLayout.HORIZONTAL
+                binding?.llCheerMeterTeams?.weightSum = totalCount.toFloat()
+                binding?.llCheerMeterTeams?.orientation = LinearLayout.HORIZONTAL
 
-                txt_cheer_meter_team_1.layoutParams = LinearLayout.LayoutParams(
+                binding?.txtCheerMeterTeam1?.layoutParams = LinearLayout.LayoutParams(
                     0,
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     vote1.toFloat()
                 )
 
-                txt_cheer_meter_team_2.layoutParams = LinearLayout.LayoutParams(
+                binding?.txtCheerMeterTeam2?.layoutParams = LinearLayout.LayoutParams(
                     0,
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     vote2.toFloat()
@@ -194,58 +182,58 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             val optionList = resource.getMergedOptions() ?: return
             if (!inflated) {
                 inflated = true
-                inflate(context, R.layout.widget_cheer_meter, this@CheerMeterView)
+                binding = WidgetCheerMeterBinding.inflate(LayoutInflater.from(context), this@CheerMeterView, true)
             }
             widgetsTheme?.cheerMeter?.let { cheerMeterTheme ->
                 AndroidResource.updateThemeForView(
-                    txt_cheer_meter_title,
+                    binding?.txtCheerMeterTitle,
                     cheerMeterTheme.title,
                     fontFamilyProvider
                 )
                 cheerMeterTheme.header?.let {
-                    lay_cheer_meter_header.background = AndroidResource.createDrawable(it)
+                    binding?.layCheerMeterHeader?.background = AndroidResource.createDrawable(it)
                 }
                 AndroidResource.updateThemeForView(
-                    txt_cheer_meter_team_1,
+                    binding?.txtCheerMeterTeam1,
                     cheerMeterTheme.sideABar,
                     fontFamilyProvider
                 )
                 AndroidResource.updateThemeForView(
-                    txt_cheer_meter_team_2,
+                    binding?.txtCheerMeterTeam2,
                     cheerMeterTheme.sideBBar,
                     fontFamilyProvider
                 )
-                txt_cheer_meter_team_1.background =
+                binding?.txtCheerMeterTeam1?.background =
                     AndroidResource.createDrawable(cheerMeterTheme.sideABar)
 
-                txt_cheer_meter_team_2.background =
+                binding?.txtCheerMeterTeam2?.background =
                     AndroidResource.createDrawable(cheerMeterTheme.sideBBar)
                 widgetsTheme?.cheerMeter?.sideAButton?.let {
-                    updateRippleView(view_ripple, it)
+                    updateRippleView(binding?.viewRipple!!, it)
                 }
                 widgetsTheme?.cheerMeter?.sideBButton?.let {
-                    updateRippleView(view_ripple2, it)
+                    updateRippleView(binding?.viewRipple2!!, it)
                 }
                 widgetsTheme?.cheerMeter?.body?.let { props ->
                     AndroidResource.createDrawable(props)?.let {
-                        lay_cheer_meter_background.background = it
+                        binding?.layCheerMeterBackground?.background = it
                     }
                 }
             }
-            txt_cheer_meter_title.text = resource.question
+            binding?.txtCheerMeterTitle?.text = resource.question
             if (optionList.size == 2) {
-                txt_cheer_meter_team_1.text = optionList[0].description
+                binding?.txtCheerMeterTeam1?.text = optionList[0].description
                 Glide.with(context.applicationContext)
                     .load(optionList[0].image_url)
-                    .into(img_logo_team_1)
+                    .into(binding?.imgLogoTeam1!!)
 
-                txt_cheer_meter_team_2.text = optionList[1].description
+                binding?.txtCheerMeterTeam2?.text = optionList[1].description
 
                 Glide.with(context.applicationContext)
                     .load(optionList[1].image_url)
-                    .into(img_logo_team_2)
+                    .into(binding?.imgLogoTeam2!!)
 
-                img_logo_team_1.startAnimation(
+                binding?.imgLogoTeam1?.startAnimation(
                     AnimationUtils.loadAnimation(
                         context,
                         R.anim.scale_animation
@@ -254,7 +242,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         repeatCount = Animation.INFINITE
                     }
                 )
-                img_logo_team_2.startAnimation(
+                binding?.imgLogoTeam2?.startAnimation(
                     AnimationUtils.loadAnimation(
                         context,
                         R.anim.scale_reverse_animation
@@ -264,16 +252,16 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     }
                 )
 
-                setupTeamCheerRipple(view_ripple, img_logo_team_1, 0)
-                setupTeamCheerRipple(view_ripple2, img_logo_team_2, 1)
+                setupTeamCheerRipple(binding?.viewRipple!!, binding?.imgLogoTeam1!!, 0)
+                setupTeamCheerRipple(binding?.viewRipple2!!, binding?.imgLogoTeam2!!, 1)
             }
 
             if ((viewModel?.totalVoteCount ?: 0) > 0) {
                 clearStartingAnimations()
-                txt_my_score.visibility = View.VISIBLE
-                txt_my_score.text = "${viewModel?.totalVoteCount}"
+                binding?.txtMyScore?.visibility = View.VISIBLE
+                binding?.txtMyScore?.text = "${viewModel?.totalVoteCount}"
             } else {
-                lottie_vs_animation.apply {
+                binding?.lottieVsAnimation?.apply {
                     setAnimation("vs_animation.json")
                     progress = viewModel?.animationProgress ?: 0f
                     repeatCount = 0
@@ -311,18 +299,16 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                 teamView.animate().rotation(0F).setDuration(50)
                                     .start()
                                 if (teamIndex == 0) {
-                                    txt_cheer_meter_team_1.animate().alpha(1F).setDuration(30)
-                                        .start()
+                                    binding?.txtCheerMeterTeam1!!.animate().alpha(1F).setDuration(30).start()
                                 } else {
-                                    txt_cheer_meter_team_2.animate().alpha(1F).setDuration(30)
-                                        .start()
+                                    binding?.txtCheerMeterTeam2!!.animate().alpha(1F).setDuration(30).start()
                                 }
                                 handler.removeCallbacksAndMessages(null)
                                 handler.postDelayed(
                                     {
                                         // txt_my_score.visibility = View.INVISIBLE
-                                        txt_my_score.visibility = View.VISIBLE
-                                        txt_my_score.text = "${viewModel?.totalVoteCount}"
+                                        binding?.txtMyScore?.visibility = View.VISIBLE
+                                        binding?.txtMyScore?.text = "${viewModel?.totalVoteCount}"
                                     },
                                     500
                                 )
@@ -335,26 +321,26 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                             if (!angle) {
                                 angle = true
                                 var txtTeamView = if (teamIndex == 0) {
-                                    txt_cheer_meter_team_1
+                                    binding?.txtCheerMeterTeam1
                                 } else {
-                                    txt_cheer_meter_team_2
+                                    binding?.txtCheerMeterTeam2
                                 }
                                 teamView.animate().rotation(35F).setDuration(50)
                                     .start()
                                 val listener = object : AnimatorListenerAdapter() {
                                     override fun onAnimationEnd(animation: Animator?) {
-                                        txtTeamView.animate().alpha(1F)
-                                            .setDuration(30)
-                                            .start()
+                                        txtTeamView?.animate()?.alpha(1F)
+                                            ?.setDuration(30)
+                                            ?.start()
                                     }
                                 }
-                                txtTeamView.animate().alpha(0F).setDuration(30)
-                                    .setListener(listener)
-                                    .start()
+                                txtTeamView?.animate()?.alpha(0F)?.setDuration(30)
+                                    ?.setListener(listener)
+                                    ?.start()
 
                                 viewModel?.incrementVoteCount(teamIndex)
-                                txt_my_score.visibility = View.VISIBLE
-                                txt_my_score.text = "${viewModel?.totalVoteCount}"
+                                binding?.txtMyScore?.visibility = View.VISIBLE
+                                binding?.txtMyScore?.text = "${viewModel?.totalVoteCount}"
                             }
                         }
                         return false
@@ -368,9 +354,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
     // all animations which run before user start interactions
     private fun clearStartingAnimations() {
-        img_logo_team_1.clearAnimation()
-        img_logo_team_2.clearAnimation()
-        lottie_vs_animation.visibility = View.GONE
+        binding?.imgLogoTeam1?.clearAnimation()
+        binding?.imgLogoTeam2?.clearAnimation()
+        binding?.lottieVsAnimation?.visibility = View.GONE
 //        collapse(lottie_vs_animation, 500, 0)
     }
 
@@ -401,8 +387,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun endObserver(it: Boolean?) {
         if (it == true) {
             this@CheerMeterView.clearStartingAnimations()
-            txt_cheer_meter_team_1.alpha = 1F
-            txt_cheer_meter_team_2.alpha = 1F
+            binding?.txtCheerMeterTeam1?.alpha = 1F
+            binding?.txtCheerMeterTeam2?.alpha = 1F
             if (lastResult == null) {
                 mShowTeamResults = true
             } else {
@@ -423,9 +409,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 resource.options?.find { option -> option.id == team2.id }?.vote_count
 
             // viewModel?.voteEnd()
-            fl_result_team.visibility = View.VISIBLE
+            binding?.flResultTeam?.visibility = View.VISIBLE
             logDebug { "CheerMeter voting stop,result: Team1:${team1.vote_count},Team2:${team2.vote_count}" }
-            fl_result_team.postDelayed(
+            binding?.flResultTeam?.postDelayed(
                 {
                     if (team1.vote_count == team2.vote_count) {
                         playDrawAnimation()
@@ -437,30 +423,32 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     } else {
                         team2
                     }
-                    img_logo_team_2.visibility = View.GONE
-                    img_logo_team_1.visibility = View.GONE
+                    binding?.imgLogoTeam2?.visibility = View.GONE
+                    binding?.imgLogoTeam1?.visibility = View.GONE
                     val animation =
                         AnimationUtils.loadAnimation(
                             context,
                             R.anim.cheer_meter_winner_scale_animation
                         )
-                    img_winner_team.visibility = View.VISIBLE
+                    binding?.imgWinnerTeam?.visibility = View.VISIBLE
                     Glide.with(context.applicationContext)
                         .load(winnerTeam.image_url)
-                        .into(img_winner_team)
+                        .into(binding?.imgWinnerTeam!!)
                     animation.setAnimationListener(object :
                             Animation.AnimationListener {
                             override fun onAnimationRepeat(animation: Animation?) {
+                                //not required
                             }
 
                             override fun onAnimationStart(animation: Animation?) {
+                                //not required
                             }
 
                             override fun onAnimationEnd(animation: Animation?) {
                                 playWinnerAnimation()
                             }
                         })
-                    img_winner_team.startAnimation(animation)
+                    binding?.imgWinnerTeam!!.startAnimation(animation)
                 },
                 500
             )
@@ -471,7 +459,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playLoserAnimation() {
         logDebug { "CheerMeter user lose" }
         viewModel?.animationProgress = 0f
-        img_winner_anim.apply {
+        binding?.imgWinnerAnim?.apply {
             val rootPath = widgetViewThemeAttributes.widgetLoseAnimation
             val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
             setAnimation(animationPath)
@@ -489,7 +477,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playWinnerAnimation() {
         logDebug { "CheerMeter user win" }
         viewModel?.animationProgress = 0f
-        img_winner_anim.apply {
+        binding?.imgWinnerAnim?.apply {
             val rootPath = widgetViewThemeAttributes.widgetWinAnimation
             val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
             setAnimation(animationPath)
@@ -508,7 +496,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playDrawAnimation() {
         logDebug { "CheerMeter user draw" }
         viewModel?.animationProgress = 0f
-        img_winner_anim.apply {
+        binding?.imgWinnerAnim?.apply {
             val rootPath = widgetViewThemeAttributes.widgetDrawAnimation
             val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
             setAnimation(animationPath)

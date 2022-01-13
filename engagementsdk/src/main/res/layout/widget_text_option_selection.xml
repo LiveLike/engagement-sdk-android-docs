@@ -101,6 +101,7 @@
 
         <include
             layout="@layout/common_lock_btn_lay"
+            android:id="@+id/lay_lock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

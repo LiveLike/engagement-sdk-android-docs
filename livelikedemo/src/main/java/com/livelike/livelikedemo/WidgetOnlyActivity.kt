@@ -29,6 +29,7 @@ import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.widgetModel.*
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.*
+import com.livelike.livelikedemo.databinding.ActivityEachWidgetTypeWithVarianceBinding
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
 import com.livelike.livelikedemo.models.CheerMeterRequestResponse
@@ -45,12 +46,6 @@ import com.livelike.livelikedemo.models.QuizResponse
 import com.livelike.livelikedemo.models.TextAskRequest
 import com.livelike.livelikedemo.models.TextAskResponse
 import com.livelike.livelikedemo.utils.ThemeRandomizer
-import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.btn_change_background
-import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.fm_lay
-import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.progress_view
-import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.rcyl_view
-import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.rewards_tv
-import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.widget_view
 import kotlinx.android.synthetic.main.rcyl_item_header.view.textView
 import kotlinx.android.synthetic.main.rcyl_list_item.view.button
 import kotlinx.coroutines.CoroutineScope
@@ -87,17 +82,21 @@ class WidgetOnlyActivity : AppCompatActivity() {
     private val cheerMeter = "cheer-meters"
     private val textAsk = "text-asks"
     private val imgNumberPrediction = "image-number-predictions"
-
+    private lateinit var binding: ActivityEachWidgetTypeWithVarianceBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_each_widget_type_with_variance)
+        binding = ActivityEachWidgetTypeWithVarianceBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        //setContentView(R.layout.activity_each_widget_type_with_variance)
         channelManager = (application as LiveLikeApplication).channelManager
         session = (application as LiveLikeApplication).createPublicSession(
             channelManager.selectedChannel.llProgram.toString(), allowTimeCodeGetter = false
         )
         val adapter = HeaderAdapter(
-            progress_view,
+            binding.progressView,
             channelManager.selectedChannel.llProgram.toString(),
             listOf(
                 PostType("Text Quiz", true),
@@ -150,7 +149,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
 
         )
         )
-        rcyl_view.adapter = adapter
+        binding.rcylView.adapter = adapter
         val jsonTheme = intent.getStringExtra("jsonTheme")
         if (jsonTheme != null) {
             Toast.makeText(
@@ -159,7 +158,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
             try {
-                widget_view.applyTheme(ThemeRandomizer.themesList.last())
+                binding.widgetView.applyTheme(ThemeRandomizer.themesList.last())
             } catch (e: Exception) {
                 Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
             }
@@ -176,29 +175,29 @@ class WidgetOnlyActivity : AppCompatActivity() {
 //            widget_view.applyTheme(element.data)
 
         val rnd = java.util.Random()
-        btn_change_background.setOnClickListener {
+        binding.btnChangeBackground.setOnClickListener {
             if (rnd.nextBoolean()) {
                 val color: Int =
                     Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-                fm_lay.setBackgroundColor(color)
+                binding.fmLay.setBackgroundColor(color)
             } else {
                 val list = arrayListOf(
                     R.drawable.background1,
                     R.drawable.background2,
                     R.drawable.background3
                 )
-                fm_lay.setBackgroundResource(list.random())
+                binding.fmLay.setBackgroundResource(list.random())
             }
         }
 
-        widget_view.setWidgetListener(object : WidgetListener {
+        binding.widgetView.setWidgetListener(object : WidgetListener {
             override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
                 println("Widget:${liveLikeWidget.id},${liveLikeWidget.programId},${liveLikeWidget.options?.size}")
             }
         })
-        widget_view.setSession(session)
+        binding.widgetView.setSession(session)
         if (intent.getBooleanExtra("customCheerMeter", false))
-            widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
+            binding.widgetView.widgetViewFactory = object : LiveLikeWidgetViewFactory {
                 override fun createCheerMeterView(cheerMeterWidgetModel: CheerMeterWidgetmodel): View? {
                     return CustomCheerMeter(this@WidgetOnlyActivity).apply {
                         this.cheerMeterWidgetModel = cheerMeterWidgetModel
@@ -307,13 +306,13 @@ class WidgetOnlyActivity : AppCompatActivity() {
             ) {
                 val text =
                     "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
-                rewards_tv.text =
+                binding.rewardsTv.text =
                     "At time ${SimpleDateFormat("hh:mm:ss").format(Calendar.getInstance().time)} : $text"
                 println(text)
             }
         }
 
-        widget_view.postDelayed(
+        binding.widgetView.postDelayed(
             {
                 val availableRewards = session.getRewardItems().joinToString { rewardItem ->
                     rewardItem.name
