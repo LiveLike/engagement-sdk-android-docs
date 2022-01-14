@@ -3,16 +3,16 @@ package com.livelike.engagementsdk.gamification
 import android.content.Context
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
-import com.livelike.engagementsdk.APPLICATION_RESOURCE
-import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.PROGRAM_RESOURCE
-import com.livelike.engagementsdk.USER_PROFILE_RESOURCE
+import com.livelike.engagementsdk.*
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.sponsorship.SponsorModel
 import mockingAndroidServicesUsedByMixpanel
+import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -21,12 +21,13 @@ import org.mockito.Mockito
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.timeout
 import org.mockito.kotlin.verify
-import org.robolectric.RobolectricTestRunner
+import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import readAll
+import java.util.concurrent.TimeUnit
 
-@RunWith(RobolectricTestRunner::class)
-class SponsorApiUnitTest {
+@RunWith(ParameterizedRobolectricTestRunner::class)
+class SponsorApiUnitTest(private val param: SponsorListType) {
 
     val context = ApplicationProvider.getApplicationContext<Context>()
 
@@ -41,24 +42,65 @@ class SponsorApiUnitTest {
 
     @Before
     fun setup() {
+        mockWebServer.takeRequest(1, TimeUnit.SECONDS)
         mockWebServer.start(8080)
-        mockWebServer.enqueue(MockResponse().apply {
-            setResponseCode(200)
-            setBody(
-                javaClass.classLoader.getResourceAsStream(APPLICATION_RESOURCE).readAll()
-            )
-        })
-        mockWebServer.enqueue(MockResponse().apply {
-            setResponseCode(200)
-            setBody(
-                javaClass.classLoader.getResourceAsStream(USER_PROFILE_RESOURCE).readAll()
-            )
-        })
-        mockWebServer.enqueue(MockResponse().apply {
-            setResponseCode(200)
-            setBody(javaClass.classLoader.getResourceAsStream(PROGRAM_RESOURCE).readAll())
-        })
         mockingAndroidServicesUsedByMixpanel()
+        mockWebServer.dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                println("SponsorApiUnitTest.dispatch>${request.path}")
+                return when (request.path) {
+                    "/api/v1/applications/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream(APPLICATION_RESOURCE)
+                                .readAll()
+                        )
+                    }
+                    "/api/v1/applications/GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L/profile/" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream(USER_PROFILE_RESOURCE)
+                                .readAll()
+                        )
+                    }
+                    "/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/program.json" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream(PROGRAM_RESOURCE)
+                                .readAll()
+                        )
+                    }
+                    "/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream(SINGLE_CHATROOM_DETAIL_SUCCESS)
+                                .readAll()
+                        )
+                    }
+                    "/api/v1/sponsors/?program_id=498591f4-9d6b-4943-9671-f44d3afbb6a4",
+                    "/sponsors/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/sponsors.json",
+                    "/api/v1/sponsors/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L"
+                    -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream("sponsor_list.json")
+                                .readAll()
+                        )
+                    }
+                    else -> MockResponse().apply {
+                        setResponseCode(500)
+                    }
+                }
+            }
+        }
+        sdk = EngagementSDK(
+            "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+            context,
+            null,
+            "http://localhost:8080",
+            null
+        )
+
     }
 
     @After
@@ -66,29 +108,56 @@ class SponsorApiUnitTest {
         mockWebServer.shutdown()
     }
 
+    enum class SponsorListType {
+        program, application, chatRoom
+    }
+
     @Test
     fun sponsorApi_success_with_data() {
-        sdk = EngagementSDK(
-            "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
-            context,
-            null,
-            "http://localhost:8080/",
-            null
-        )
         val callback =
             Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<List<SponsorModel>>
-        Thread.sleep(1000)
-        sdk.sponsor().fetchByProgramId("498591f4-9d6b-4943-9671-f44d3afbb6a4", callback)
+        Thread.sleep(5000)
+        shadowOf(Looper.getMainLooper()).idle()
+        when (param) {
+            SponsorListType.program -> sdk.sponsor().fetchByProgramId(
+                "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+                LiveLikePagination.FIRST,
+                callback
+            )
+            SponsorListType.application -> sdk.sponsor().fetchForApplication(
+                LiveLikePagination.FIRST,
+                callback
+            )
+            SponsorListType.chatRoom -> sdk.sponsor().fetchByChatRoomId(
+                "e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
+                LiveLikePagination.FIRST,
+                callback
+            )
+        }
+
+        Thread.sleep(2000)
+        shadowOf(Looper.getMainLooper()).idle()
         val resultCaptor =
             argumentCaptor<List<SponsorModel>>()
         val errorCaptor =
             argumentCaptor<String>()
         shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        shadowOf(Looper.getMainLooper()).idle()
         verify(callback, timeout(5000)).onResponse(resultCaptor.capture(), errorCaptor.capture())
         assert(resultCaptor.firstValue.isNotEmpty())
-        assert(resultCaptor.firstValue[0].name == "Ringside Coffee Company")
-        mockWebServer.shutdown()
+        assert(resultCaptor.firstValue[0].name == "sponsor1")
     }
 
-
+    companion object {
+        @JvmStatic
+        // name argument is optional, it will show up on the test results
+        @ParameterizedRobolectricTestRunner.Parameters(name = "Input: {0}")
+        // parameters are provided as arrays, allowing more than one parameter
+        fun params() = listOf(
+            arrayOf(SponsorListType.application),
+            arrayOf(SponsorListType.program),
+            arrayOf(SponsorListType.chatRoom)
+        )
+    }
 }

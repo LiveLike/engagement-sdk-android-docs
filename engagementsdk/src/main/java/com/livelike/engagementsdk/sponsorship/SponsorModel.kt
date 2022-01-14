@@ -10,5 +10,7 @@ data class SponsorModel(
     @field:SerializedName("client_id")
     val clientId: String,
     @field:SerializedName("logo_url")
-    val logoUrl: String
+    val logoUrl: String,
+    @field:SerializedName("brand_color")
+    val brandColor: String? = null
 )

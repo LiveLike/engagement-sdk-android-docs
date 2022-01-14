@@ -77,6 +77,17 @@
 
 #Livelike classes, this should be reduced in scope (if possible)
 -keep class com.livelike.** { *; }
+-keep class org.json.** { *; }
+
+# Android X
+-keep class com.google.android.material.** { *; }
+
+-dontwarn com.google.android.material.**
+-dontnote com.google.android.material.**
+
+-dontwarn androidx.**
+-keep class androidx.** { *; }
+-keep interface androidx.** { *; }
 
 #Mixpanel multi instances hack
 -keep class com.mixpanel.android.mpmetrics.MixpanelExtension
