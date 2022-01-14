@@ -7,17 +7,14 @@ import android.content.Context
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.animators.buildRotationAnimator
 import com.livelike.engagementsdk.core.utils.animators.buildScaleAnimator
+import com.livelike.engagementsdk.databinding.AtomGamificationProgressionMeterBinding
 import com.livelike.engagementsdk.widget.view.loadImage
-import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.gamification_badge_iv
-import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.new_badge_label
-import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.progression_meter_progress_view
-import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.progression_meter_text
 import kotlin.math.min
 
 class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(context, attr) {
@@ -25,17 +22,14 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
     private var progression: Int = 0
         set(value) {
             field = value
-            progression_meter_text.text = "$value/$totalPointsToNextbadge"
+           binding?.progressionMeterText?.text = "$value/$totalPointsToNextbadge"
         }
 
     private var totalPointsToNextbadge: Int = 0
+    private var binding:AtomGamificationProgressionMeterBinding? = null
 
     init {
-        ConstraintLayout.inflate(
-            context,
-            com.livelike.engagementsdk.R.layout.atom_gamification_progression_meter,
-            this
-        )
+        binding = AtomGamificationProgressionMeterBinding.inflate(LayoutInflater.from(context), this@ProgressionMeterView, true)
         visibility = View.GONE
     }
 
@@ -47,27 +41,27 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
     ) {
         visibility = View.VISIBLE
 
-        gamification_badge_iv.loadImage(badgeIconURL, AndroidResource.dpToPx(30))
+        binding?.gamificationBadgeIv?.loadImage(badgeIconURL, AndroidResource.dpToPx(30))
         totalPointsToNextbadge = totalPointsNextBadge
 
         var colorMatrix = ColorMatrix()
         colorMatrix.setSaturation(0f)
         var filter = ColorMatrixColorFilter(colorMatrix)
-        gamification_badge_iv.colorFilter = filter
+        binding?.gamificationBadgeIv?.colorFilter = filter
 
         val newBadgeEarned = totalPointsToNextbadge <= currentPointsForNextBadge + newPoints
         if (newBadgeEarned) {
-            gamification_badge_iv.postDelayed(
+            binding?.gamificationBadgeIv?.postDelayed(
                 {
                     colorMatrix = ColorMatrix()
                     colorMatrix.setSaturation(1f)
                     filter = ColorMatrixColorFilter(colorMatrix)
-                    gamification_badge_iv.colorFilter = filter
-                    gamification_badge_iv.buildRotationAnimator(2000).apply {
+                    binding?.gamificationBadgeIv?.colorFilter = filter
+                    binding?.gamificationBadgeIv!!.buildRotationAnimator(2000).apply {
                         addListener(object : AnimatorListenerAdapter() {
                             override fun onAnimationEnd(animation: Animator?) {
                                 super.onAnimationEnd(animation)
-                                new_badge_label.visibility = View.VISIBLE
+                                binding?.newBadgeLabel?.visibility = View.VISIBLE
                                 val listener = object : Animator.AnimatorListener {
                                     override fun onAnimationRepeat(animation: Animator?) {
                                     }
@@ -82,9 +76,9 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
                                     override fun onAnimationStart(animation: Animator?) {
                                     }
                                 }
-                                val animator = new_badge_label.buildScaleAnimator(0f, 1f, 300)
-                                animator.addListener(listener)
-                                animator.start()
+                                val animator =  binding?.newBadgeLabel?.buildScaleAnimator(0f, 1f, 300)
+                                animator?.addListener(listener)
+                                animator?.start()
                             }
                         })
                     }.start()
@@ -92,7 +86,7 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
                 500
             )
         } else {
-            new_badge_label.visibility = View.GONE
+            binding?.newBadgeLabel?.visibility = View.GONE
         }
         ValueAnimator.ofInt(currentPointsForNextBadge, currentPointsForNextBadge + newPoints)
             .apply {
@@ -112,9 +106,9 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
             (endPercentage.toInt() * AndroidResource.dpToPx(100) / 100).toInt()
         ).apply {
             addUpdateListener {
-                val layoutParams = progression_meter_progress_view.layoutParams
-                layoutParams.width = it.animatedValue as Int
-                progression_meter_progress_view.layoutParams = layoutParams
+                val layoutParams = binding?.progressionMeterProgressView?.layoutParams
+                layoutParams?.width = it.animatedValue as Int
+                binding?.progressionMeterProgressView?.layoutParams = layoutParams
             }
             duration = 1000
             start()

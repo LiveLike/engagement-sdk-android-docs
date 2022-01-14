@@ -98,7 +98,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="4"
             android:layout_marginBottom="12dp"
-            tools:listitem="@layout/atom_widget_image_item" />
+            tools:listitem="@layout/widget_number_prediction_item" />
 
     <LinearLayout
         android:id="@+id/lay_lock"

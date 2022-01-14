@@ -6,19 +6,18 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import com.livelike.engagementsdk.DismissAction
+import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.widget.view.components.PointView
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
-import kotlinx.android.synthetic.main.common_lock_btn_lay.view.lay_lock
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -89,8 +88,8 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
     private fun rewardsObserver() {
         viewModel.gamificationProfile?.latest()?.let {
             if (!shouldShowPointTutorial() && it.newPoints > 0) {
-                pointView.startAnimation(it.newPoints, true)
-                wouldShowProgressionMeter(viewModel?.rewardsType, it, progressionMeterView)
+                findViewById<PointView>(R.id.pointView).startAnimation(it.newPoints, true)
+                wouldShowProgressionMeter(viewModel?.rewardsType, it, findViewById(R.id.progressionMeterView))
             }
         }
     }
@@ -113,7 +112,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                     showResultAnimation = true
                     viewModel?.data?.latest()?.timeout?.let { timeout ->
                         showTimer(
-                            timeout, textEggTimer,
+                            timeout, findViewById(R.id.textEggTimer),
                             {
                                 viewModel?.animationEggTimerProgress = it
                             },
@@ -122,7 +121,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                             }
                         )
                     }
-                    lay_lock.visibility = View.VISIBLE
+                    findViewById<LinearLayout>(R.id.lay_lock).visibility = View.VISIBLE
                     viewModel?.results?.subscribe(javaClass.simpleName) {
                         if (isFirstInteraction)
                             showResults()

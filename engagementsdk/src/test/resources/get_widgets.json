@@ -1,0 +1,145 @@
+{
+  "count": 444,
+  "next": "http://localhost:8080/api/v1/programs/498591f4-9d6b-4943-9671-f44d3afbb6a4/widgets/?page=2",
+  "previous": null,
+  "widget_interactions_url_template": "http://localhost:8080/api/v1/profiles/{profile_id}/widget-interactions/?text_quiz_id=766e0cfe-6a0f-41c8-8b97-ca1734fb1a03&text_quiz_id=cb969ec4-d749-415a-b2e5-5bea10ad1667&text_quiz_id=8b32fde5-1379-4832-b87f-d813d5e1f3b3&text_quiz_id=8726a9a2-6fb5-4a9d-ba34-ae9457ece08a&text_quiz_id=885bb46f-e19a-4dad-bcb1-2a5c72b8b0aa&text_poll_id=37eed08d-cc73-4967-b935-b5447c146d94&text_prediction_id=779d86f4-8928-4f29-98c8-2c7b09191ff8&text_prediction_id=779d86f4-8928-4f29-98c8-2c7b09191ff8&image_prediction_id=1770154b-cb87-417a-85d9-87d679b012ae&image_prediction_id=1770154b-cb87-417a-85d9-87d679b012ae&image_prediction_id=4c34953d-0151-4426-bcae-ab618e1e5282&image_prediction_id=4c34953d-0151-4426-bcae-ab618e1e5282&image_quiz_id=bf87c67f-8f8a-4f19-b959-a07d98d934ce",
+  "results": [
+    {
+      "id": "766e0cfe-6a0f-41c8-8b97-ca1734fb1a03",
+      "url": "http://localhost:8080/api/v1/text-quizzes/766e0cfe-6a0f-41c8-8b97-ca1734fb1a03/",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "created_at": "2021-08-05T19:47:50.686160Z",
+      "kind": "text-quiz",
+      "published_at": "2021-08-05T19:48:00.032342Z",
+      "scheduled_at": "2021-08-05T19:47:51.655859Z",
+      "question": "This is a question? (Aug 5, 3:47 pm)",
+      "timeout": "P0DT00H00M05S",
+      "choices": [
+        {
+          "id": "73f50a6b-b887-4fc3-98d1-2c520b6c4605",
+          "description": "Correct",
+          "is_correct": true,
+          "answer_url": "http://localhost:8080/api/v1/widget-interactions/text-quiz/766e0cfe-6a0f-41c8-8b97-ca1734fb1a03/choices/73f50a6b-b887-4fc3-98d1-2c520b6c4605/answers/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbmNyeXB0ZWQiOiJnQUFBQUFCaHVNVThTRHlHYVJOTUlaZG1ydXZZcFNoMVVJbGRNRVpUZS1SVXJGTnRFTUFKdHJ3N2xIbm5hbTlRbWh0VVpYaVVXakV4am9yNXpETS1qbHJua1ZYbER6UU9Tdz09IiwiaXNzIjoiYmxhc3QiLCJpYXQiOjE2Mzk0OTkwNjh9.NBVwI3SPgwiXMxXkHMOHhsQkJbmsYV3qFFDsr6UYDb0/",
+          "answer_count": 0,
+          "translations": {
+
+          },
+          "translatable_fields": [
+            "description"
+          ]
+        },
+        {
+          "id": "7a324d87-95aa-4b39-b79c-bace3d278040",
+          "description": "Incorrect",
+          "is_correct": false,
+          "answer_url": "http://localhost:8080/api/v1/widget-interactions/text-quiz/766e0cfe-6a0f-41c8-8b97-ca1734fb1a03/choices/7a324d87-95aa-4b39-b79c-bace3d278040/answers/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbmNyeXB0ZWQiOiJnQUFBQUFCaHVNVThsa1JweTFJa0lrWU1tOWNqOW8tbEZEZUs2d05rQVlzUVhnVXMzeThvSENVQlRLTkExR09TNWRXbnJpOGlIQWtJaFhPMi1COUszTGJSMDJ1Wm1TaHE4dz09IiwiaXNzIjoiYmxhc3QiLCJpYXQiOjE2Mzk0OTkwNjh9.5dESVhftiMunUVRz_a8zABEGAhz6I4GCVLPDiSGITao/",
+          "answer_count": 0,
+          "translations": {
+
+          },
+          "translatable_fields": [
+            "description"
+          ]
+        }
+      ],
+      "subscribe_channel": "program.widget.766e0cfe-6a0f-41c8-8b97-ca1734fb1a03",
+      "program_date_time": null,
+      "publish_delay": "P0DT00H00M00S",
+      "interaction_url": "http://localhost:8080/api/v1/text-quizzes/766e0cfe-6a0f-41c8-8b97-ca1734fb1a03/interactions/",
+      "impression_url": "http://localhost:8080/api/v1/widget-impressions/text-quiz/766e0cfe-6a0f-41c8-8b97-ca1734fb1a03/",
+      "impression_count": 33,
+      "unique_impression_count": 6,
+      "engagement_count": 0,
+      "engagement_percent": "0.000",
+      "status": "published",
+      "created_by": {
+        "id": "e4e072f5-4837-4b11-bfaa-167ada9db953",
+        "name": null,
+        "image_url": null
+      },
+      "schedule_url": "http://localhost:8080/api/v1/text-quizzes/766e0cfe-6a0f-41c8-8b97-ca1734fb1a03/schedule/",
+      "rewards_url": null,
+      "translations": {
+
+      },
+      "translatable_fields": [
+        "question"
+      ],
+      "reactions": [
+
+      ],
+      "custom_data": "Text Quiz Custom Data",
+      "sponsors": [
+
+      ],
+      "earnable_rewards": [
+        {
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5",
+          "reward_item_name": "TestFreeItem",
+          "reward_action_key": "quiz-correct",
+          "reward_item_amount": 500
+        },
+        {
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5",
+          "reward_item_name": "TestFreeItem",
+          "reward_action_key": "quiz-answered",
+          "reward_item_amount": 1000
+        }
+      ],
+      "widget_interactions_url_template": "http://localhost:8080/api/v1/profiles/{profile_id}/widget-interactions/?text_quiz_id=766e0cfe-6a0f-41c8-8b97-ca1734fb1a03"
+    },
+    {
+      "id": "f36190b6-a949-4234-a79a-ea60c9e1c9eb",
+      "url": "http://localhost:8080/api/v1/video-alerts/f36190b6-a949-4234-a79a-ea60c9e1c9eb/",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "published_at": "2021-08-05T19:48:19.322747Z",
+      "scheduled_at": "2021-08-05T19:48:08.736470Z",
+      "timeout": "P0DT00H00M05S",
+      "title": null,
+      "text": null,
+      "video_url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "link_url": null,
+      "link_label": null,
+      "created_at": "2021-08-05T19:48:08.157069Z",
+      "kind": "video-alert",
+      "subscribe_channel": "program.widget.f36190b6-a949-4234-a79a-ea60c9e1c9eb",
+      "program_date_time": null,
+      "publish_delay": "P0DT00H00M00S",
+      "interaction_url": "http://localhost:8080/api/v1/video-alerts/f36190b6-a949-4234-a79a-ea60c9e1c9eb/interactions/",
+      "impression_url": "http://localhost:8080/api/v1/widget-impressions/video-alert/f36190b6-a949-4234-a79a-ea60c9e1c9eb/",
+      "impression_count": 6,
+      "unique_impression_count": 3,
+      "engagement_count": null,
+      "engagement_percent": null,
+      "status": "published",
+      "created_by": {
+        "id": "e4e072f5-4837-4b11-bfaa-167ada9db953",
+        "name": null,
+        "image_url": null
+      },
+      "schedule_url": "http://localhost:8080/api/v1/video-alerts/f36190b6-a949-4234-a79a-ea60c9e1c9eb/schedule/",
+      "rewards_url": null,
+      "translations": {
+
+      },
+      "translatable_fields": [
+        "title",
+        "text",
+        "link_label"
+      ],
+      "reactions": [
+
+      ],
+      "custom_data": null,
+      "sponsors": [
+
+      ],
+      "earnable_rewards": [
+
+      ],
+      "widget_interactions_url_template": "http://localhost:8080/api/v1/profiles/{profile_id}/widget-interactions/?video_alert_id=f36190b6-a949-4234-a79a-ea60c9e1c9eb"
+    }
+  ]
+}

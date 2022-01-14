@@ -58,7 +58,7 @@ class IntractableTimelineActivity : AppCompatActivity() {
         )
 
         // added test theme
-        val themeFileName = "themes/test.json"
+      /*  val themeFileName = "themes/test.json"
         val bufferReader = application.assets.open(themeFileName).bufferedReader()
         val data = bufferReader.use {
             it.readText()
@@ -66,7 +66,7 @@ class IntractableTimelineActivity : AppCompatActivity() {
         val element =
             LiveLikeEngagementTheme.instanceFrom(JsonParser.parseString(data).asJsonObject)
         if (element is Result.Success)
-            timeLineView.applyTheme(element.data)
+            timeLineView.applyTheme(element.data)*/
 
         // adding custom separator between widgets in timeline
         timeLineView.setSeparator(ContextCompat.getDrawable(this, R.drawable.white_separator))
