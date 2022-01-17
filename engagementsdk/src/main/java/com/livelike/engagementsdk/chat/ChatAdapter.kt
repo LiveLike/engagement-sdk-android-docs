@@ -928,15 +928,6 @@ internal class ChatRecyclerAdapter(
                             txt_chat_reactions_count.text = "  "
                         }
                     }
-
-                    lay_parent_message.visibility = when (parentChatMessage != null) {
-                        true -> View.VISIBLE
-                        else -> View.GONE
-                    }
-                    parentChatMessage?.let {
-                        chat_parent_nickname.text = it.senderDisplayName
-                        parent_chatMessage.text = it.message
-                    }
                 }
             }
         }

@@ -56,13 +56,6 @@ import kotlin.math.min
  */
 open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
-
-    private var currentReplyParentMessage: ChatMessage? = null
-        set(value) {
-            field = value
-            updateInputView()
-        }
-
     /**
      * use this variable to hide message input to build use case like influencer chat
      **/
@@ -642,15 +635,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             })
-            val messageSwipeController =
-                MessageSwipeController(context, object : SwipeControllerActions {
-                    override fun showReplyUI(position: Int) {
-                        Toast.makeText(context, "Send Reply", Toast.LENGTH_SHORT).show()
-                        currentReplyParentMessage = chatAdapter.getChatMessage(position)
-                    }
-                })
-            val itemTouchHelper = ItemTouchHelper(messageSwipeController)
-            itemTouchHelper.attachToRecyclerView(rv)
         }
 
         snap_live.setOnClickListener {
@@ -711,17 +695,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             }
-        }
-    }
-
-    private fun updateInputView() {
-        lay_parent_message.visibility = when (currentReplyParentMessage != null) {
-            true -> {
-                chat_parent_nickname.text = currentReplyParentMessage?.senderDisplayName
-                parent_chatMessage.text = currentReplyParentMessage?.message
-                View.VISIBLE
-            }
-            else -> View.GONE
         }
     }
 
@@ -846,13 +819,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             isFromMe = true,
             image_width = 100,
             image_height = 100,
-            timeStamp = timeData.timeSinceEpochInMs.toString(),
-            parentChatMessage = currentReplyParentMessage
+            timeStamp = timeData.timeSinceEpochInMs.toString()
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
-                currentReplyParentMessage = null
                 val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
                 if (hasExternalImage) {
                     uploadAndPostImage(context, it, timeData)
