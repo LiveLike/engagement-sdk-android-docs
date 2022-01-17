@@ -14,13 +14,12 @@ import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.publicapis.*
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatRoom
 
-internal class ChatQueue(upstream: MessagingClient) :
+internal class ChatQueue(
+    upstream: MessagingClient,
+) :
     MessagingClientProxy(upstream),
     ChatEventListener {
-
     var msgListener: MessageListener? = null
     var chatRoomListener: ChatRoomListener? = null
     var blockedProfileIds = hashSetOf<String>()
@@ -31,7 +30,7 @@ internal class ChatQueue(upstream: MessagingClient) :
                 getProfileBlockIds(object : LiveLikeCallback<List<String>>() {
                     override fun onResponse(result: List<String>?, error: String?) {
                         error?.let {
-                            logError { "Block Profile Ids Error: $it"}
+                            logError { "Block Profile Ids Error: $it" }
                         }
                         result?.let {
                             blockedProfileIds.addAll(it)
@@ -93,9 +92,9 @@ internal class ChatQueue(upstream: MessagingClient) :
             !blockedProfileIds
                 .contains(it.senderId)
         }
-
-        renderer?.displayChatMessages(messageList)
         msgListener?.onHistoryMessage(messageList.map { it.toLiveLikeChatMessage() })
+        renderer?.displayChatMessages(messageList)
+
     }
 
     var renderer: ChatRenderer? = null

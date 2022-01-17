@@ -2,7 +2,7 @@ package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import java.util.UUID
+import java.util.*
 
 internal interface ChatEventListener {
     fun onChatMessageSend(message: ChatMessage, timeData: EpochTime)
@@ -57,7 +57,8 @@ internal data class ChatMessage(
     var timetoken: Long = 0L,
     var image_width: Int? = 100,
     var image_height: Int? = 100,
-    var isDeleted: Boolean = false
+    var isDeleted: Boolean = false,
+    var parentChatMessage: ChatMessage? = null,
 ) {
     // Update the user_id to profile_id as required from backend
     fun toReportMessageJson(): String {

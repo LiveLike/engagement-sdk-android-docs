@@ -4,14 +4,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
 import com.example.example.PinMessageInfo
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.CHAT_PROVIDER
-import com.livelike.engagementsdk.ChatRoomListener
-import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.MessageListener
-import com.livelike.engagementsdk.MockAnalyticsService
-import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
@@ -27,21 +20,15 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.*
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.net.URL
-import java.util.UUID
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by Shivansh Mittal on 2020-04-08.
@@ -167,7 +154,9 @@ internal class ChatSession(
         chatClient?.run {
             destroy()
         }
-        (liveLikeChatClient as InternalLiveLikeChatClient).unsubscribeToChatRoomDelegate(chatViewModel.hashCode().toString())
+        (liveLikeChatClient as InternalLiveLikeChatClient).unsubscribeToChatRoomDelegate(
+            chatViewModel.hashCode().toString()
+        )
         contentSessionScope.cancel()
         isClosed = true
         chatViewModel.chatAdapter.mRecyclerView = null
@@ -393,6 +382,41 @@ internal class ChatSession(
         imageHeight: Int?,
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
+        internalSendMessage(
+            message,
+            imageUrl,
+            imageWidth,
+            imageHeight,
+            liveLikeCallback = liveLikeCallback
+        )
+    }
+
+    override fun sendReplyChatMessage(
+        message: String?,
+        imageUrl: String?,
+        imageWidth: Int?,
+        imageHeight: Int?,
+        parentChatMessage: LiveLikeChatMessage,
+        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+    ) {
+        internalSendMessage(
+            message,
+            imageUrl,
+            imageWidth,
+            imageHeight,
+            parentChatMessage,
+            liveLikeCallback
+        )
+    }
+
+    private fun internalSendMessage(
+        message: String?,
+        imageUrl: String?,
+        imageWidth: Int?,
+        imageHeight: Int?,
+        parentChatMessage: LiveLikeChatMessage? = null,
+        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+    ) {
         if (message?.isEmpty() == true) {
             liveLikeCallback.onResponse(null, "Message cannot be empty")
             return
@@ -413,7 +437,8 @@ internal class ChatSession(
             isFromMe = true,
             image_width = imageWidth ?: 100,
             image_height = imageHeight ?: 100,
-            timeStamp = timeData.timeSinceEpochInMs.toString()
+            timeStamp = timeData.timeSinceEpochInMs.toString(),
+            parentChatMessage = parentChatMessage?.toChatMessage()
         ).let { chatMessage ->
 
             // TODO: need to update for error handling here if pubnub respond failure of message

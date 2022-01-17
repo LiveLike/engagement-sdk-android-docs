@@ -68,6 +68,35 @@
                     tools:ignore="HardcodedText"
                     tools:text="asd" />
 
+                <LinearLayout
+                    android:id="@+id/lay_parent_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#F24183"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/chat_parent_nickname"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/livelike_default_chat_cell_name_color"
+                        android:textSize="@dimen/livelike_default_chat_cell_name_size"
+                        android:textStyle="bold"
+                        app:fontFamily="@font/livelike_chat_nickname_font"
+                        tools:text="parent" />
+                    <TextView
+                        android:id="@+id/parent_chatMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:text=""
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/livelike_default_chat_cell_message_color"
+                        android:textSize="@dimen/livelike_default_chat_cell_text_size"
+                        app:fontFamily="@font/livelike_chat_message_font"
+                        tools:ignore="HardcodedText"
+                        tools:text="@tools:sample/lorem[30]" />
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/chatMessage"
                     android:layout_width="wrap_content"

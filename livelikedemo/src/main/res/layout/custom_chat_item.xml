@@ -2,14 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/normal_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#45AAFF"
         android:layout_marginTop="10dp"
+        android:background="#45AAFF"
         android:orientation="horizontal">
 
         <ImageView
@@ -31,6 +32,34 @@
                 android:layout_height="wrap_content"
                 android:textStyle="bold" />
 
+            <LinearLayout
+                android:id="@+id/lay_reply_chat_msg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#32AAAA"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/txt_name_reply"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_message_reply"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:id="@+id/img_message_reply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/txt_message"
                 android:layout_width="match_parent"
@@ -49,11 +78,11 @@
 
         <ImageView
             android:id="@+id/img_pin"
-            android:visibility="invisible"
             android:layout_width="20dp"
-            android:layout_margin="5dp"
+            android:layout_height="20dp"
             android:layout_gravity="center"
-            android:layout_height="20dp" />
+            android:layout_margin="5dp"
+            android:visibility="invisible" />
     </LinearLayout>
 
     <LinearLayout

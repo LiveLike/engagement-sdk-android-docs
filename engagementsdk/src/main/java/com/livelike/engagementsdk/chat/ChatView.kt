@@ -15,8 +15,10 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.*
@@ -54,6 +56,12 @@ import kotlin.math.min
  */
 open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
+
+    private var currentReplyParentMessage: ChatMessage? = null
+        set(value) {
+            field = value
+            updateInputView()
+        }
 
     /**
      * use this variable to hide message input to build use case like influencer chat
@@ -127,7 +135,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     init {
         context.scanForActivity()?.window?.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-                or @Suppress("DEPRECATION") WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE //kept due to pre M support
+                    or @Suppress("DEPRECATION") WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE //kept due to pre M support
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
         context.obtainStyledAttributes(
             attrs,
@@ -294,7 +302,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         autoScroll = true
                         checkEmptyChat()
                         if (viewModel?.isLastItemVisible == true && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
-                            .not()
+                                .not()
                         ) {
                             snapToLive()
                         } else if (chatAdapter.isReactionPopUpShowing() || (viewModel?.isLastItemVisible == false && chatAdapter.itemCount > 0)) {
@@ -634,6 +642,15 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             })
+            val messageSwipeController =
+                MessageSwipeController(context, object : SwipeControllerActions {
+                    override fun showReplyUI(position: Int) {
+                        Toast.makeText(context, "Send Reply", Toast.LENGTH_SHORT).show()
+                        currentReplyParentMessage = chatAdapter.getChatMessage(position)
+                    }
+                })
+            val itemTouchHelper = ItemTouchHelper(messageSwipeController)
+            itemTouchHelper.attachToRecyclerView(rv)
         }
 
         snap_live.setOnClickListener {
@@ -694,6 +711,17 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             }
+        }
+    }
+
+    private fun updateInputView() {
+        lay_parent_message.visibility = when (currentReplyParentMessage != null) {
+            true -> {
+                chat_parent_nickname.text = currentReplyParentMessage?.senderDisplayName
+                parent_chatMessage.text = currentReplyParentMessage?.message
+                View.VISIBLE
+            }
+            else -> View.GONE
         }
     }
 
@@ -818,11 +846,13 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             isFromMe = true,
             image_width = 100,
             image_height = 100,
-            timeStamp = timeData.timeSinceEpochInMs.toString()
+            timeStamp = timeData.timeSinceEpochInMs.toString(),
+            parentChatMessage = currentReplyParentMessage
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
+                currentReplyParentMessage = null
                 val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
                 if (hasExternalImage) {
                     uploadAndPostImage(context, it, timeData)

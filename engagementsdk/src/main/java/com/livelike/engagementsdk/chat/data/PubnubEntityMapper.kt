@@ -17,7 +17,8 @@ internal fun ChatMessage.toPubnubChatMessage(programDateTime: String?): PubnubCh
         imageUrl = imageUrl,
         image_width = image_width,
         image_height = image_height,
-        custom_data = ""
+        custom_data = "",
+        parentMessage = parentChatMessage?.toPubnubChatMessage(null)
     )
 }
 
@@ -42,6 +43,13 @@ internal fun PubnubChatMessage.toChatMessage(
         imageUrl = imageUrl,
         image_width = image_width,
         image_height = image_height,
-        timetoken = timetoken
+        timetoken = timetoken,
+        parentChatMessage = parentMessage?.toChatMessage(
+            channel,
+            0L,
+            mutableMapOf(),
+            null,
+            PubnubChatEventType.MESSAGE_CREATED
+        )
     )
 }

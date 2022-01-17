@@ -25,6 +25,7 @@ internal data class PubnubChatMessage(
     @SerializedName("image_height")
     val image_height: Int?,
     @SerializedName("custom_data")
-    val custom_data: String?
-
+    val custom_data: String?,
+    @SerializedName("parent_message")
+    val parentMessage: PubnubChatMessage? = null
 )

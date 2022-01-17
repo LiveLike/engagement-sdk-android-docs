@@ -145,6 +145,8 @@ internal class ChatRecyclerAdapter(
         mRecyclerView = null
     }
 
+    fun getChatMessage(position: Int): ChatMessage = getItem(position)
+
     /** Commenting this code for now so QA finalize whether old issues are coming or not
     Flowing code helps in accessbility related issues
      **/
@@ -925,6 +927,15 @@ internal class ChatRecyclerAdapter(
                             txt_chat_reactions_count.visibility = View.INVISIBLE
                             txt_chat_reactions_count.text = "  "
                         }
+                    }
+
+                    lay_parent_message.visibility = when (parentChatMessage != null) {
+                        true -> View.VISIBLE
+                        else -> View.GONE
+                    }
+                    parentChatMessage?.let {
+                        chat_parent_nickname.text = it.senderDisplayName
+                        parent_chatMessage.text = it.message
                     }
                 }
             }

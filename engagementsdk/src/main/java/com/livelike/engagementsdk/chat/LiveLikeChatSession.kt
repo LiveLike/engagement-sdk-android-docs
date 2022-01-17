@@ -67,6 +67,15 @@ interface LiveLikeChatSession {
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     )
 
+    fun sendReplyChatMessage(
+        message: String?,
+        imageUrl: String? = null,
+        imageWidth: Int?,
+        imageHeight: Int?,
+        parentChatMessage: LiveLikeChatMessage,
+        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+    )
+
     /**
      * to load Chat History
      * @limit: default is 20,max is 100

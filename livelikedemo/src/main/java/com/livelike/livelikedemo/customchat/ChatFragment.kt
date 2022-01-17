@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -17,8 +18,10 @@ import com.example.example.PinMessageInfo
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.MessageListener
-import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.MessageSwipeController
+import com.livelike.engagementsdk.chat.SwipeControllerActions
 import com.livelike.engagementsdk.chat.data.remote.LiveLikeOrdering
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
@@ -39,14 +42,29 @@ import okhttp3.OkHttpClient
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class ChatFragment : Fragment() {
 
+    private var currentReplyParentMessage: LiveLikeChatMessage? = null
+        set(value) {
+            field = value
+            if (value != null) {
+                lay_reply.visibility = View.VISIBLE
+                txt_reply_msg.text = when (value.imageUrl != null) {
+                    true -> "Image"
+                    else -> value.message
+                }
+            } else {
+                lay_reply.visibility = View.INVISIBLE
+                txt_reply_msg.text = ""
+            }
+        }
     val images = arrayListOf<String>(
-        "https://homepages.cae.wisc.edu/~ece533/images/fruits.png",
-        "https://homepages.cae.wisc.edu/~ece533/images/monarch.png",
-        "https://homepages.cae.wisc.edu/~ece533/images/mountain.png",
-        "https://homepages.cae.wisc.edu/~ece533/images/watch.png",
-        "https://homepages.cae.wisc.edu/~ece533/images/serrano.png"
+        "https://i.picsum.photos/id/574/200/300.jpg?hmac=8A2sOGZU1xgRXI46snJ80xNY3Yx-KcLVsBG-wRchwFg",
+        "https://i.picsum.photos/id/958/200/300.jpg?hmac=oCwv3AFzS5VqZv3nvDJ3H5RzcDH2OiL2g-GGwWL5fsI",
+        "https://i.picsum.photos/id/658/200/300.jpg?hmac=K1TI0jSVU6uQZCZkkCMzBiau45UABMHNIqoaB9icB_0",
+        "https://i.picsum.photos/id/237/200/300.jpg?hmac=TmmQSbShHz9CdQm0NkEjx1Dyh_Y984R9LpNrpvH2D_U",
+        "https://i.picsum.photos/id/185/200/300.jpg?hmac=77sYncM4jSlhNlIKtqotElWQuIV3br7wNsq18rlbKnA"
     )
     val gifs = arrayListOf<String>(
         "https://media.giphy.com/media/SggILpMXO7Xt6/giphy.gif",
@@ -80,6 +98,17 @@ class ChatFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         rcyl_chat.adapter = adapter
+        context?.let {
+            val messageSwipeController =
+                MessageSwipeController(it, object : SwipeControllerActions {
+                    override fun showReplyUI(position: Int) {
+                        Toast.makeText(context, "Send Reply", Toast.LENGTH_SHORT).show()
+                        currentReplyParentMessage = adapter.getChatMessage(position)
+                    }
+                })
+            val itemTouchHelper = ItemTouchHelper(messageSwipeController)
+            itemTouchHelper.attachToRecyclerView(rcyl_chat)
+        }
 
         // presently program id and chat room has been harcoded for just
         // testing purpose wheather we the data is received and rendered correctly
@@ -120,6 +149,11 @@ class ChatFragment : Fragment() {
 
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             adapter.chatRoomId = homeChat.session.chatSession.getCurrentChatRoom()
+
+            img_rply_remove.setOnClickListener {
+                currentReplyParentMessage = null
+            }
+
             adapter.loadPinnedMessage(context)
             adapter.chatList.clear()
             adapter.chatList.addAll(homeChat.session.chatSession.getLoadedMessages())
@@ -184,7 +218,6 @@ class ChatFragment : Fragment() {
                         adapter.pinnedList.add(message)
                         adapter.notifyDataSetChanged()
                     }
-
                 }
 
                 override fun onUnPinMessage(pinMessageId: String) {
@@ -209,6 +242,7 @@ class ChatFragment : Fragment() {
                 val msg = ed_msg.text.toString()
                 if (msg.trim().isNotEmpty()) {
                     sendMessage(msg, null)
+                    currentReplyParentMessage = null
                 }
             }
             btn_img_send.setOnClickListener {
@@ -234,22 +268,34 @@ class ChatFragment : Fragment() {
 
     private fun sendMessage(message: String?, imageUrl: String?) {
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
-            homeChat.session.chatSession.sendChatMessage(
-                message, imageUrl = imageUrl, imageWidth = 150, imageHeight = 150,
-                liveLikeCallback = object : LiveLikeCallback<LiveLikeChatMessage>() {
-                    override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                        ed_msg.text?.clear()
-                        result?.let { message ->
-                            val index = adapter.chatList.indexOfFirst { message.id == it.id }
-                            if (index == -1) {
-                                adapter.chatList.add(message)
-                                adapter.notifyItemInserted(adapter.chatList.size - 1)
-                                rcyl_chat.scrollToPosition(adapter.itemCount - 1)
-                            }
+            val callback = object : LiveLikeCallback<LiveLikeChatMessage>() {
+                override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                    ed_msg.text?.clear()
+                    result?.let { message ->
+                        val index = adapter.chatList.indexOfFirst { message.id == it.id }
+                        if (index == -1) {
+                            adapter.chatList.add(message)
+                            adapter.notifyItemInserted(adapter.chatList.size - 1)
+                            rcyl_chat.scrollToPosition(adapter.itemCount - 1)
                         }
                     }
                 }
-            )
+            }
+            if (currentReplyParentMessage != null) {
+                homeChat.session.chatSession.sendReplyChatMessage(
+                    message,
+                    imageUrl,
+                    imageWidth = 150,
+                    imageHeight = 150,
+                    liveLikeCallback = callback,
+                    parentChatMessage = currentReplyParentMessage!!
+                )
+            } else {
+                homeChat.session.chatSession.sendChatMessage(
+                    message, imageUrl = imageUrl, imageWidth = 150, imageHeight = 150,
+                    liveLikeCallback = callback
+                )
+            }
         }
     }
 
@@ -353,8 +399,36 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
         )
     }
 
+    override fun getItemViewType(position: Int): Int {
+        val chat = chatList[position]
+        if (chat.parentChatMessage != null) {
+            return 2
+        }
+        return 1
+    }
+
     override fun onBindViewHolder(holder: CustomChatViewHolder, position: Int) {
         val chatMessage = chatList[position]
+
+        if (chatMessage.parentChatMessage != null) {
+            holder.itemView.lay_reply_chat_msg.visibility = View.VISIBLE
+            holder.itemView.txt_name_reply.text = chatMessage.parentChatMessage?.nickname
+            holder.itemView.txt_message_reply.text = chatMessage.parentChatMessage?.message
+            chatMessage.parentChatMessage?.imageUrl?.let {
+                Glide.with(holder.itemView.img_message_reply.context)
+                    .load(it)
+                    .apply(
+                        RequestOptions().override(
+                            chatMessage.parentChatMessage!!.image_width!!,
+                            chatMessage.parentChatMessage!!.image_height!!
+                        )
+                    )
+                    .into(holder.itemView.img_message_reply)
+            }
+        } else {
+            holder.itemView.lay_reply_chat_msg.visibility = View.GONE
+        }
+
         holder.itemView.normal_message.visibility = View.VISIBLE
         holder.itemView.custom_messages.visibility = View.GONE
         holder.itemView.custom_tv.visibility = View.GONE
@@ -475,9 +549,14 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
             "MMM d, h:mm a",
             Locale.getDefault()
         ).format(dateTime)
+
     }
 
     override fun getItemCount(): Int = chatList.size
+    fun getChatMessage(position: Int): LiveLikeChatMessage {
+        return chatList[position]
+    }
+
 }
 
 class CustomChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
