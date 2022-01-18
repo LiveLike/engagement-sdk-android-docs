@@ -399,6 +399,11 @@ internal class ChatSession(
         parentChatMessage: LiveLikeChatMessage,
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
+        // Removing the parent message from parent message in order to avoid reply to reply in terms of data
+        // and avoid data nesting
+        if (parentChatMessage.parentChatMessage != null) {
+            parentChatMessage.parentChatMessage = null
+        }
         internalSendMessage(
             message,
             imageUrl,
