@@ -31,6 +31,7 @@ internal class Rewards(
 ) : IRewardsClient {
 
     private var lastRewardItemsPage: LLPaginatedResult<RewardItem>? = null
+    private var redemptionCodesPage: LLPaginatedResult<RedemptionCode>? = null
 
     /*map of rewardITemRequestOptions and last response*/
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
@@ -309,6 +310,71 @@ internal class Rewards(
             }
         }
     }
+
+    override fun getRedemptionCodes(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
+    ) {
+        var fetchUrl: String? = null
+        sdkScope.launch {
+            if (redemptionCodesPage == null || liveLikePagination == LiveLikePagination.FIRST) {
+                configurationUserPairFlow.collect { pair ->
+                    fetchUrl = pair.second.rewardTransactionsUrl //TODO: get real code
+                }
+            } else {
+                fetchUrl =
+                    redemptionCodesPage?.getPaginationUrl(liveLikePagination)
+            }
+            if (fetchUrl == null) {
+                liveLikeCallback.onResponse(null, "No more data")
+            } else {
+                configurationUserPairFlow.collect { pair ->
+                    dataClient.remoteCall<LLPaginatedResult<RedemptionCode>>(
+                        fetchUrl ?: "",
+                        RequestType.GET,
+                        null,
+                        pair.first.accessToken
+                    ).run {
+                        if (this is Result.Success) {
+                            redemptionCodesPage = this.data
+                        }
+                        liveLikeCallback.processResult(this)
+                    }
+                }
+            }
+        }
+    }
+
+    override fun redeemCode(
+        profileId: String,
+        redemptionCode: String,
+        liveLikeCallback: LiveLikeCallback<RedemptionCode>
+    ) {
+        var fetchUrl: String? = null
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                fetchUrl = pair.second.rewardTransactionsUrl //TODO: get real code
+            }
+            if (fetchUrl == null) {
+                liveLikeCallback.onResponse(null, "No more data")
+            } else {
+                configurationUserPairFlow.collect { pair ->
+                    fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
+                        addPathSegment(redemptionCode)
+                    }?.build()?.toUrl()?.toString()
+
+                    dataClient.remoteCall<RedemptionCode>(
+                        fetchUrl ?: "",
+                        RequestType.PATCH,
+                        "{\"redeemed_by\":\"${profileId}\"}".toRequestBody(),
+                        pair.first.accessToken
+                    ).run {
+                        liveLikeCallback.processResult(this)
+                    }
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -390,6 +456,44 @@ interface IRewardsClient {
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardTransaction>>
     )
 
+    /**
+     * Retrieve all redemption code associated
+     * with the current user profile
+     **/
+    fun getRedemptionCodes(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
+    )
+
+    /**
+     * redeem redemption code
+     *
+     * @param profileId profile to associate with code
+     * @param redemptionCode code being submitted
+     **/
+    fun redeemCode(
+        profileId: String,
+        redemptionCode: String,
+        liveLikeCallback: LiveLikeCallback<RedemptionCode>
+    )
+
+}
+
+data class RedemptionCode (
+    @SerializedName("id") val id: String,
+    @SerializedName("client_id") val clientId: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("description") val description: String,
+    @SerializedName("code") val code: String,
+    @SerializedName("created_at") val createdAt: String,
+    @SerializedName("redeemed_at") val redeemedAt: String?,
+    @SerializedName("redeemed_by") val redeemedBy: String?,
+    @SerializedName("status") val status: RedemptionCodeEnum
+
+)
+
+enum class RedemptionCodeEnum {
+    Deactivated, Redeemed, Open;
 }
 
 data class ApplicationRewardItemsRequestParams(
