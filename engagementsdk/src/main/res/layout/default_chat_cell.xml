@@ -72,26 +72,29 @@
                     android:id="@+id/lay_parent_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#F24183"
+                    android:padding="8dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/parent_chat_rounded_background"
                     android:orientation="vertical">
                     <TextView
                         android:id="@+id/chat_parent_nickname"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/livelike_default_chat_cell_name_color"
-                        android:textSize="@dimen/livelike_default_chat_cell_name_size"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
                         android:textStyle="bold"
                         app:fontFamily="@font/livelike_chat_nickname_font"
-                        tools:text="parent" />
+                        tools:text="Parent" />
                     <TextView
                         android:id="@+id/parent_chatMessage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="start"
                         android:text=""
+                        android:layout_marginTop="4dp"
                         android:textAlignment="viewStart"
-                        android:textColor="@color/livelike_default_chat_cell_message_color"
-                        android:textSize="@dimen/livelike_default_chat_cell_text_size"
+                        android:textColor="#949494"
+                        android:textSize="16sp"
                         app:fontFamily="@font/livelike_chat_message_font"
                         tools:ignore="HardcodedText"
                         tools:text="@tools:sample/lorem[30]" />

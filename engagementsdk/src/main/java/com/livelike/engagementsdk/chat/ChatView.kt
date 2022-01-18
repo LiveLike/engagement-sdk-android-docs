@@ -21,6 +21,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.stickerKeyboard.*
@@ -35,8 +39,12 @@ import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.chat_input.view.*
+import kotlinx.android.synthetic.main.chat_input.view.chat_parent_nickname
+import kotlinx.android.synthetic.main.chat_input.view.lay_parent_message
+import kotlinx.android.synthetic.main.chat_input.view.parent_chatMessage
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.*
 import kotlinx.android.synthetic.main.chat_view.view.*
+import kotlinx.android.synthetic.main.default_chat_cell.view.*
 import kotlinx.coroutines.*
 import pl.droidsonroids.gif.MultiCallback
 import java.util.*
@@ -719,6 +727,33 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             true -> {
                 chat_parent_nickname.text = currentReplyParentMessage?.senderDisplayName
                 parent_chatMessage.text = currentReplyParentMessage?.message
+                chatAttribute.apply {
+                    var options = RequestOptions()
+                    if (chatAvatarCircle) {
+                        options = options.optionalCircleCrop()
+                    }
+                    if (chatAvatarRadius > 0) {
+                        options = options.transform(
+                            CenterCrop(),
+                            RoundedCorners(chatAvatarRadius)
+                        )
+                    }
+                    if (currentReplyParentMessage!!.senderDisplayPic.isNullOrEmpty()) {
+                        // load local image
+                        Glide.with(context.applicationContext)
+                            .load(R.drawable.default_avatar)
+                            .apply(options)
+                            .placeholder(chatUserPicDrawable)
+                            .into(img_parent_chat_avatar)
+                    } else {
+                        Glide.with(context.applicationContext)
+                            .load(currentReplyParentMessage!!.senderDisplayPic)
+                            .apply(options)
+                            .placeholder(chatUserPicDrawable)
+                            .error(chatUserPicDrawable)
+                            .into(img_parent_chat_avatar)
+                    }
+                }
                 View.VISIBLE
             }
             else -> View.GONE

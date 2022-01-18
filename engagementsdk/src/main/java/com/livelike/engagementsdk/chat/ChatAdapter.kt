@@ -251,8 +251,6 @@ internal class ChatRecyclerAdapter(
             }
         }
 
-        val callback = MultiCallback(true)
-
         fun bindTo(item: ChatMessage?) {
             v.tag = item
 
@@ -708,12 +706,12 @@ internal class ChatRecyclerAdapter(
                         layoutParamAvatar.gravity = chatAvatarGravity
                         v.img_chat_avatar.layoutParams = layoutParamAvatar
 
-                        val options = RequestOptions()
+                        var options = RequestOptions()
                         if (chatAvatarCircle) {
-                            options.optionalCircleCrop()
+                            options = options.optionalCircleCrop()
                         }
                         if (chatAvatarRadius > 0) {
-                            options.transform(
+                            options = options.transform(
                                 CenterCrop(),
                                 RoundedCorners(chatAvatarRadius)
                             )
@@ -737,102 +735,7 @@ internal class ChatRecyclerAdapter(
                                 .into(img_chat_avatar)
                         }
                         chatMessage.tag = message.id
-
-                        val spaceRemover = Pattern.compile("[\\s]")
-                        val inputNoString = spaceRemover.matcher(message.message ?: "")
-                            .replaceAll(Matcher.quoteReplacement(""))
-                        val isOnlyStickers =
-                            inputNoString.findIsOnlyStickers()
-                                .matches() || message.message?.findImages()?.matches() == true
-                        val atLeastOneSticker =
-                            inputNoString.findStickers().find() || message.message?.findImages()
-                                ?.matches() == true
-                        val numberOfStickers = message.message?.findStickers()?.countMatches() ?: 0
-                        val isExternalImage = message.message?.findImages()?.matches() ?: false
-
-                        chatMessage.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-                        callback.addView(chatMessage)
-                        chatMessage.contentDescription = if (isExternalImage) {
-                            context.getString(R.string.image)
-                        } else {
-                            message.message
-                        }
-                        when {
-                            !isDeleted && isExternalImage -> {
-                                chatMessage.minHeight = AndroidResource.dpToPx(LARGER_STICKER_SIZE)
-                                val s = SpannableString(message.message)
-                                replaceWithImages(
-                                    s,
-                                    context.applicationContext,
-                                    callback,
-                                    false,
-                                    message.id,
-                                    message.image_width ?: LARGER_STICKER_SIZE,
-                                    message.image_height ?: LARGER_STICKER_SIZE
-                                ) {
-                                    // TODO this might write to the wrong messageView on slow connection.
-                                    if (chatMessage.tag == message.id)
-                                        chatMessage.text = s
-                                }
-                            }
-                            !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
-                                chatMessage.minHeight = AndroidResource.dpToPx(MEDIUM_STICKER_SIZE)
-                                val s = SpannableString(message.message)
-                                replaceWithStickers(
-                                    s,
-                                    context.applicationContext,
-                                    stickerPackRepository,
-                                    null,
-                                    callback,
-                                    MEDIUM_STICKER_SIZE
-                                ) {
-                                    // TODO this might write to the wrong messageView on slow connection.
-                                    if (chatMessage.tag == message.id) {
-                                        chatMessage.text = when (showLinks) {
-                                            true -> getTextWithCustomLinks(s)
-                                            else -> s
-                                        }
-                                    }
-                                }
-                            }
-                            !isDeleted && atLeastOneSticker -> {
-                                var columnCount = numberOfStickers / 8
-                                val lines = message.message?.withoutStickers()?.getLinesCount() ?: 0
-                                if (columnCount == 0) {
-                                    columnCount = 1
-                                }
-                                chatMessage.minHeight =
-                                    (chatMessageTextSize.toInt() * columnCount) + when {
-                                        lines != columnCount -> (lines * chatMessageTextSize.toInt())
-                                        else -> 0
-                                    }
-                                val s = SpannableString(message.message)
-                                replaceWithStickers(
-                                    s,
-                                    context.applicationContext,
-                                    stickerPackRepository,
-                                    null,
-                                    callback,
-                                    SMALL_STICKER_SIZE
-                                ) {
-                                    // TODO this might write to the wrong messageView on slow connection.
-                                    if (chatMessage.tag == message.id) {
-                                        chatMessage.text = when (showLinks) {
-                                            true -> getTextWithCustomLinks(s)
-                                            else -> s
-                                        }
-                                    }
-                                }
-                            }
-                            else -> {
-                                clearTarget(message.id, context)
-                                chatMessage.minHeight = chatMessageTextSize.toInt()
-                                chatMessage.text = when (showLinks) {
-                                    true -> getTextWithCustomLinks(SpannableString(message.message))
-                                    else -> message.message
-                                }
-                            }
-                        }
+                        setTextOrImageToView(message, chatMessage, this)
 
                         var imageView: ImageView
                         rel_reactions_lay.removeAllViews()
@@ -934,8 +837,118 @@ internal class ChatRecyclerAdapter(
                         else -> View.GONE
                     }
                     parentChatMessage?.let {
+                        parent_chatMessage.tag = it.id
+                        setTextOrImageToView(it, parent_chatMessage, chatViewThemeAttribute)
                         chat_parent_nickname.text = it.senderDisplayName
-                        parent_chatMessage.text = it.message
+                    }
+                }
+            }
+        }
+
+        private fun setTextOrImageToView(
+            chatMessage: ChatMessage?,
+            textView: TextView,
+            chatViewThemeAttributes: ChatViewThemeAttributes
+        ) {
+            val callback = MultiCallback(true)
+            chatViewThemeAttributes.apply {
+                chatMessage?.apply {
+                    val spaceRemover = Pattern.compile("[\\s]")
+                    val inputNoString = spaceRemover.matcher(message ?: "")
+                        .replaceAll(Matcher.quoteReplacement(""))
+                    val isOnlyStickers =
+                        inputNoString.findIsOnlyStickers()
+                            .matches() || message?.findImages()?.matches() == true
+                    val atLeastOneSticker =
+                        inputNoString.findStickers().find() || message?.findImages()
+                            ?.matches() == true
+                    val numberOfStickers = message?.findStickers()?.countMatches() ?: 0
+                    val isExternalImage = message?.findImages()?.matches() ?: false
+
+                    textView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+                    callback.addView(textView)
+                    textView.contentDescription = if (isExternalImage) {
+                        textView.context.getString(R.string.image)
+                    } else {
+                        message
+                    }
+                    when {
+                        !isDeleted && isExternalImage -> {
+                            textView.minHeight =
+                                AndroidResource.dpToPx(LARGER_STICKER_SIZE)
+                            val s = SpannableString(message)
+                            replaceWithImages(
+                                s,
+                                textView.context.applicationContext,
+                                callback,
+                                false,
+                                id,
+                                image_width ?: LARGER_STICKER_SIZE,
+                                image_height ?: LARGER_STICKER_SIZE
+                            ) {
+                                // TODO this might write to the wrong messageView on slow connection.
+                                if (textView.tag == id)
+                                    textView.text = s
+                            }
+                        }
+                        !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
+                            textView.minHeight =
+                                AndroidResource.dpToPx(MEDIUM_STICKER_SIZE)
+                            val s = SpannableString(message)
+                            replaceWithStickers(
+                                s,
+                                textView.context.applicationContext,
+                                stickerPackRepository,
+                                null,
+                                callback,
+                                MEDIUM_STICKER_SIZE
+                            ) {
+                                // TODO this might write to the wrong messageView on slow connection.
+                                if (textView.tag == id) {
+                                    textView.text = when (showLinks) {
+                                        true -> getTextWithCustomLinks(s)
+                                        else -> s
+                                    }
+                                }
+                            }
+                        }
+                        !isDeleted && atLeastOneSticker -> {
+                            var columnCount = numberOfStickers / 8
+                            val lines = message?.withoutStickers()?.getLinesCount() ?: 0
+                            if (columnCount == 0) {
+                                columnCount = 1
+                            }
+                            textView.minHeight =
+                                (chatMessageTextSize.toInt() * columnCount) + when {
+                                    lines != columnCount -> (lines * chatMessageTextSize.toInt())
+                                    else -> 0
+                                }
+                            val s = SpannableString(message)
+                            replaceWithStickers(
+                                s,
+                                textView.context.applicationContext,
+                                stickerPackRepository,
+                                null,
+                                callback,
+                                SMALL_STICKER_SIZE
+                            ) {
+                                // TODO this might write to the wrong messageView on slow connection.
+                                if (textView.tag == id) {
+                                    textView.text = when (showLinks) {
+                                        true -> getTextWithCustomLinks(s)
+                                        else -> s
+                                    }
+                                }
+                            }
+                        }
+                        else -> {
+                            clearTarget(id, textView.context)
+                            textView.minHeight = chatMessageTextSize.toInt()
+                            textView.text = when (showLinks) {
+                                true -> getTextWithCustomLinks(SpannableString(message))
+                                else -> message
+                            }
+                        }
                     }
                 }
             }

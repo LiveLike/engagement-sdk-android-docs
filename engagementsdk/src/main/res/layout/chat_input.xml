@@ -42,35 +42,77 @@
         android:layout_marginLeft="@dimen/livelike_chat_input_border_box_margin_left"
         android:layout_marginTop="@dimen/livelike_chat_input_border_box_margin_top"
         android:layout_marginRight="@dimen/livelike_chat_input_border_box_margin_right"
-        android:background="#F24183"
-        android:orientation="vertical"
+        android:background="@drawable/ic_parent_chat_window"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="7dp"
+        android:paddingTop="7dp"
+        android:paddingRight="7dp"
+        android:paddingBottom="7dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_profile_display_LL">
+        app:layout_constraintTop_toBottomOf="@+id/user_profile_display_LL"
+        tools:visibility="visible">
 
-        <TextView
-            android:id="@+id/chat_parent_nickname"
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/parent_chat_rounded_background"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/img_parent_chat_avatar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="bottom"
+                android:contentDescription="@string/user_image"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="6dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/chat_parent_nickname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/livelike_default_chat_cell_name_size"
+                    android:textStyle="bold"
+                    app:fontFamily="@font/livelike_chat_nickname_font"
+                    tools:text="parent" />
+
+                <TextView
+                    android:id="@+id/parent_chatMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text=""
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/livelike_default_chat_cell_message_color"
+                    android:textSize="11sp"
+                    app:fontFamily="@font/livelike_chat_message_font"
+                    tools:ignore="HardcodedText"
+                    tools:text="Check" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_parent_msg_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/livelike_default_chat_cell_name_color"
-            android:textSize="@dimen/livelike_default_chat_cell_name_size"
-            android:textStyle="bold"
-            app:fontFamily="@font/livelike_chat_nickname_font"
-            tools:text="parent" />
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="6dp"
+            android:contentDescription="Cancel the Parent Chat Window"
+            android:src="@drawable/ic_cancel" />
 
-        <TextView
-            android:id="@+id/parent_chatMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:text=""
-            android:textAlignment="viewStart"
-            android:textColor="@color/livelike_default_chat_cell_message_color"
-            android:textSize="@dimen/livelike_default_chat_cell_text_size"
-            app:fontFamily="@font/livelike_chat_message_font"
-            tools:ignore="HardcodedText"
-            tools:text="Check" />
     </LinearLayout>
 
     <View
@@ -79,6 +121,7 @@
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/livelike_chat_input_border_box_margin_start"
         android:layout_marginLeft="@dimen/livelike_chat_input_border_box_margin_left"
+        android:layout_marginTop="5dp"
         android:layout_marginRight="@dimen/livelike_chat_input_border_box_margin_right"
         android:background="@drawable/ic_chat_input"
         android:visibility="visible"
