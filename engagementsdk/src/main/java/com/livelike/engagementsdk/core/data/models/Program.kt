@@ -67,7 +67,20 @@ data class RewardItem(
     @SerializedName("id") val id: String,
     @SerializedName("url") val url: String,
     @SerializedName("client_id") val client_id: String,
-    @SerializedName("name") val name: String
+    @SerializedName("name") val name: String,
+    @SerializedName("attributes") val attributes: List<RewardAttribute>?,
+    @SerializedName("images") val images: List<RewardItemImage>?
+)
+data class RewardAttribute (
+    @SerializedName( "key") val key: String,
+    @SerializedName( "value") val value: String
+)
+
+data class RewardItemImage(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("image_url") val imageUrl: String,
+    @SerializedName("mimetype") val mimetype: String
 )
 
 internal fun RewardItem.toReward(): LeaderBoardReward {
@@ -159,6 +172,8 @@ internal data class ProgramModel(
     val rewardItems: List<RewardItem>,
     @field:SerializedName("sponsors")
     val sponsors: List<SponsorModel>,
+    @field:SerializedName("sponsors_url")
+    val sponsorsUrl: String?,
     @SerializedName("widget_interactions_url_template")
     val widgetInteractionUrl: String?,
     @SerializedName("unclaimed_widget_interactions_url_template")

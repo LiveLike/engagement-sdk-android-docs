@@ -121,32 +121,37 @@ internal class ContentSession(
         requestParams: WidgetsRequestParameters?,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
     ){
-        uiScope.launch {
+        contentSessionScope.launch {
             programFlow.collect { program ->
-                    program?.widgetsUrl?.let{ url ->
-                    val innerUrl = when (liveLikePagination) {
-                        LiveLikePagination.FIRST -> url
-                        LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
-                        LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
-                    }?.toHttpUrlOrNull()?.newBuilder()?.apply {
-                        requestParams?.widgetStatus?.let {
-                            addQueryParameter("status", it.parameterValue)
+                uiScope.launch {
+                    program?.widgetsUrl?.let { url ->
+                        val innerUrl = when (liveLikePagination) {
+                            LiveLikePagination.FIRST -> url
+                            LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
+                            LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
+                        }?.toHttpUrlOrNull()?.newBuilder()?.apply {
+                            requestParams?.widgetStatus?.let {
+                                addQueryParameter("status", it.parameterValue)
+                            }
+                            requestParams?.ordering?.let {
+                                addQueryParameter("ordering", it.parameterValue)
+                            }
+                            requestParams?.widgetTypeFilter?.forEach {
+                                addQueryParameter("kind", it.getKindName())
+                            }
+                            requestParams?.interactive?.let {
+                                addQueryParameter("interactive", it.toString())
+                            }
+                        }?.build()?.toUrl().toString()
+                        try {
+                            buildWidgetList(innerUrl, liveLikeCallback)
+                        } catch (e: JsonParseException) {
+                            e.printStackTrace()
+                            liveLikeCallback.onResponse(null, e.message)
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                            liveLikeCallback.onResponse(null, e.message)
                         }
-                        requestParams?.ordering?.let {
-                            addQueryParameter("ordering", it.parameterValue)
-                        }
-                        requestParams?.widgetTypeFilter?.forEach {
-                            addQueryParameter("kind", it.getKindName())
-                        }
-                    }?.build()?.toUrl().toString()
-                    try {
-                        buildWidgetList(innerUrl, liveLikeCallback)
-                    } catch (e: JsonParseException) {
-                        e.printStackTrace()
-                        liveLikeCallback.onResponse(null, e.message)
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                        liveLikeCallback.onResponse(null, e.message)
                     }
                 }
             }
@@ -157,27 +162,29 @@ internal class ContentSession(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
     ) {
-        uiScope.launch {
+        contentSessionScope.launch {
             programFlow.collect { program ->
-                program?.timelineUrl?.let { url ->
-
-                    val innerUrl = when (liveLikePagination) {
-                        LiveLikePagination.FIRST -> url
-                        LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
-                        LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
-                    }
-                    try {
-                        if (innerUrl == null) {
-                            liveLikeCallback.onResponse(null, null)
-                        } else {
-                            buildWidgetList(innerUrl, liveLikeCallback)
+                uiScope.launch {
+                    program?.timelineUrl?.let { url ->
+                        val innerUrl = when (liveLikePagination) {
+                            LiveLikePagination.FIRST -> url
+                            LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
+                            LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
                         }
-                    } catch (e: JsonParseException) {
-                        e.printStackTrace()
-                        liveLikeCallback.onResponse(null, e.message)
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                        liveLikeCallback.onResponse(null, e.message)
+                        try {
+
+                            if (innerUrl == null) {
+                                liveLikeCallback.onResponse(null, null)
+                            } else {
+                                buildWidgetList(innerUrl, liveLikeCallback)
+                            }
+                        } catch (e: JsonParseException) {
+                            e.printStackTrace()
+                            liveLikeCallback.onResponse(null, e.message)
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                            liveLikeCallback.onResponse(null, e.message)
+                        }
                     }
                 }
             }

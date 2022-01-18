@@ -10,14 +10,13 @@ import android.graphics.Color
 import android.os.Build
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.databinding.AtomWidgetPointBinding
 import com.livelike.engagementsdk.widget.view.clipParents
-import kotlinx.android.synthetic.main.atom_widget_point.view.coinDroppingView
-import kotlinx.android.synthetic.main.atom_widget_point.view.coinView
-import kotlinx.android.synthetic.main.atom_widget_point.view.pointTextView
 import kotlin.math.roundToInt
 
 class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context, attr) {
@@ -32,11 +31,13 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
     private var point: Int = 0
         set(value) {
             field = value
-            pointTextView.text = if (hidePlus) "$value" else "+$value"
+            binding?.pointTextView?.text = if (hidePlus) "$value" else "+$value"
         }
 
+    private var binding:AtomWidgetPointBinding? = null
+
     init {
-        inflate(context, R.layout.atom_widget_point, this)
+        binding = AtomWidgetPointBinding.inflate(LayoutInflater.from(context), this@PointView, true)
         context.theme.obtainStyledAttributes(
             attr,
             R.styleable.PointView,
@@ -53,7 +54,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         }
         // Handling non-default case
         if (iconSize != 0) {
-            (coinDroppingView.layoutParams as LayoutParams).apply {
+            (binding?.coinDroppingView?.layoutParams as LayoutParams).apply {
                 width = iconSize
                 height = iconSize
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -61,7 +62,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
                     topMargin = AndroidResource.dpToPx(5)
                 }
             }
-            (coinView.layoutParams as LayoutParams).apply {
+            (binding?.coinDroppingView?.layoutParams as LayoutParams).apply {
                 width = iconSize
                 height = iconSize
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -71,9 +72,9 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
             }
         }
         if (textSize != 0f) {
-            pointTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+            binding?.pointTextView?.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
         }
-        pointTextView.setTextColor(textColor)
+        binding?.pointTextView?.setTextColor(textColor)
     }
 
     fun startAnimation(newPoint: Int, hideOnEnd: Boolean = false) {
@@ -88,10 +89,10 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         }
 
         val popping = AnimatorInflater.loadAnimator(context, R.animator.popping) as AnimatorSet
-        popping.setTarget(coinView)
+        popping.setTarget(binding?.coinView)
 
         val dropping = AnimatorInflater.loadAnimator(context, R.animator.dropping) as AnimatorSet
-        dropping.setTarget(coinDroppingView)
+        dropping.setTarget(binding?.coinDroppingView)
         val bothAnimatorSet = AnimatorSet()
         bothAnimatorSet.playTogether(popping, dropping)
         bothAnimatorSet.startDelay = 300
@@ -123,11 +124,11 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         }
 
         val popping = AnimatorInflater.loadAnimator(context, R.animator.popping) as AnimatorSet
-        popping.setTarget(coinView)
+        popping.setTarget(binding?.coinView)
 
         val dropping =
             AnimatorInflater.loadAnimator(context, R.animator.dropping_from_top) as AnimatorSet
-        dropping.setTarget(coinDroppingView)
+        dropping.setTarget(binding?.coinDroppingView)
         val bothAnimatorSet = AnimatorSet()
         bothAnimatorSet.playTogether(popping, dropping)
         bothAnimatorSet.start()

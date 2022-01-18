@@ -16,6 +16,7 @@ import com.livelike.engagementsdk.gamification.Badges
 import com.livelike.engagementsdk.gamification.IRewardsClient
 import com.livelike.engagementsdk.sponsorship.Sponsor
 import com.livelike.engagementsdk.gamification.LiveLikeLeaderBoardClient
+import com.livelike.engagementsdk.sponsorship.ISponsor
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 
@@ -311,7 +312,7 @@ interface IEngagement {
     /**
      * Returns the sponsor client
      */
-    fun sponsor(): Sponsor
+    fun sponsor(): ISponsor
 
     /**
      * Returns the Badges client

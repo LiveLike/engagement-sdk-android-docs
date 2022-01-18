@@ -3,21 +3,22 @@ package com.livelike.engagementsdk.widget.view.components
 import android.animation.Animator
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.DismissAction
-import com.livelike.engagementsdk.R
-import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.view.closeButton
-import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.view.eggTimer
+import com.livelike.engagementsdk.databinding.AtomWidgetEggTimerAndCloseButtonBinding
 
 class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
     ConstraintLayout(context, attr) {
 
     private var dismiss: ((action: DismissAction) -> Unit)? = null
+    private var binding:AtomWidgetEggTimerAndCloseButtonBinding? = null
 
     init {
-        View.inflate(context, R.layout.atom_widget_egg_timer_and_close_button, this)
-        closeButton.setOnClickListener {
+       // View.inflate(context, R.layout.atom_widget_egg_timer_and_close_button, this)
+        binding = AtomWidgetEggTimerAndCloseButtonBinding.inflate(LayoutInflater.from(context), this@EggTimerCloseButtonView, true)
+        binding?.closeButton?.setOnClickListener {
             dismiss?.invoke(DismissAction.TAP_X)
         }
     }
@@ -30,38 +31,42 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
         showDismissButton: Boolean = true
     ) {
         showEggTimer()
-        eggTimer.speed = ANIMATION_BASE_TIME / duration
+        binding?.apply {
+            eggTimer.speed = ANIMATION_BASE_TIME / duration
+            eggTimer.playAnimation()
+            eggTimer.pauseAnimation()
+            eggTimer.progress = progress
+            eggTimer.resumeAnimation()
+        }
 
         // commenting this part, as this is not working properly since timer is getting reset (we haven't called playAnimation(),
         // instead we are calling pauseAnimation)
 
         // eggTimer.resumeAnimation()
 
-        eggTimer.playAnimation()
-        eggTimer.pauseAnimation()
-        eggTimer.progress = progress
-        eggTimer.resumeAnimation()
-
         showEggTimer()
-        eggTimer.addAnimatorListener(object : Animator.AnimatorListener {
+        binding?.eggTimer?.addAnimatorListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) {
+                //not required
             }
 
             override fun onAnimationCancel(animation: Animator?) {
+                //not required
             }
 
             override fun onAnimationStart(animation: Animator?) {
+                //not required
             }
 
             override fun onAnimationEnd(animation: Animator?) {
-                eggTimer.removeAllUpdateListeners()
-                eggTimer.removeAllAnimatorListeners()
+                binding?.eggTimer?.removeAllUpdateListeners()
+                binding?.eggTimer?.removeAllAnimatorListeners()
                 if (showDismissButton) {
                     showCloseButton(dismissAction)
                 }
             }
         })
-        eggTimer.addAnimatorUpdateListener {
+        binding?.eggTimer?.addAnimatorUpdateListener {
             if (it.animatedFraction < 1) {
                 showEggTimer()
                 onUpdate(it.animatedFraction)
@@ -71,13 +76,13 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
 
     fun showCloseButton(dismissAction: (action: DismissAction) -> Unit) {
         dismiss = dismissAction
-        closeButton.visibility = View.VISIBLE
-        eggTimer.visibility = View.GONE
+        binding?.closeButton?.visibility = View.VISIBLE
+        binding?.eggTimer?.visibility = View.GONE
     }
 
     private fun showEggTimer() {
-        eggTimer.visibility = View.VISIBLE
-        closeButton.visibility = View.GONE
+        binding?.eggTimer?.visibility = View.VISIBLE
+        binding?.closeButton?.visibility = View.GONE
     }
 
     companion object {

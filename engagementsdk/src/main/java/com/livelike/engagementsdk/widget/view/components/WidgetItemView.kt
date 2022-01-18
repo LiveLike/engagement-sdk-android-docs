@@ -11,6 +11,7 @@ import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.ScaleDrawable
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
@@ -21,24 +22,20 @@ import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.databinding.AtomWidgetImageItemBinding
+import com.livelike.engagementsdk.databinding.AtomWidgetTextItemBinding
+import com.livelike.engagementsdk.databinding.WidgetTextOptionSelectionBinding
 import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
 import com.livelike.engagementsdk.widget.ViewStyleProps
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
-import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageBar
-import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButton
-import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageItemRoot
-import kotlinx.android.synthetic.main.atom_widget_image_item.view.imagePercentage
-import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageText
-import kotlinx.android.synthetic.main.atom_widget_text_item.view.bkgrd
-import kotlinx.android.synthetic.main.atom_widget_text_item.view.determinateBar
-import kotlinx.android.synthetic.main.atom_widget_text_item.view.percentageText
-import kotlinx.android.synthetic.main.atom_widget_text_item.view.text_button
 import kotlin.math.roundToInt
 
 internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
     ConstraintLayout(context, attr) {
     private var inflated = false
+    private var imageItemBinding:AtomWidgetImageItemBinding? = null
+    private var textItemBinding:AtomWidgetTextItemBinding? = null
     var clickListener: OnClickListener? = null
 
     fun setData(
@@ -57,10 +54,10 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             } else {
                 setupTextItem(option)
             }
-            determinateBar?.progress = option.percentage
-            percentageText?.text = "${option.percentage}%"
-            imageBar?.progress = option.percentage
-            imagePercentage?.text = "${option.percentage}%"
+            textItemBinding?.determinateBar?.progress = option.percentage
+            textItemBinding?.percentageText?.text = "${option.percentage}%"
+            imageItemBinding?.imageBar?.progress = option.percentage
+            imageItemBinding?.imagePercentage?.text = "${option.percentage}%"
         }
 
         setItemBackground(
@@ -79,13 +76,14 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
     private fun setupTextItem(option: Option) {
         if (!inflated) {
             inflated = true
-            inflate(context, R.layout.atom_widget_text_item, this)
+            //inflate(context, R.layout.atom_widget_text_item, this)
+            textItemBinding = AtomWidgetTextItemBinding.inflate(LayoutInflater.from(context), this@WidgetItemView, true)
             layoutTransition = LayoutTransition()
         }
-        text_button?.text = option.description
-        text_button.post {
-            val layoutParam = determinateBar.layoutParams as LayoutParams
-            if (text_button.lineCount > 1) {
+        textItemBinding?.textButton?.text = option.description
+        textItemBinding?.textButton?.post {
+            val layoutParam = textItemBinding?.determinateBar?.layoutParams as LayoutParams
+            if (textItemBinding?.textButton?.lineCount!! > 1) {
                 layoutParam.verticalBias = 0F
                 layoutParam.setMargins(
                     layoutParam.leftMargin,
@@ -93,12 +91,15 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                     layoutParam.rightMargin,
                     0
                 )
-                text_button.setPadding(
-                    text_button.paddingLeft,
-                    AndroidResource.dpToPx(6),
-                    text_button.paddingRight,
-                    text_button.paddingBottom
-                )
+                textItemBinding?.textButton?.let{
+                    it.setPadding(
+                        it.paddingLeft,
+                        AndroidResource.dpToPx(6),
+                        it.paddingRight,
+                        it.paddingBottom
+                    )
+                }
+
             } else {
                 layoutParam.verticalBias = 0.5F
                 layoutParam.setMargins(
@@ -107,17 +108,19 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                     layoutParam.rightMargin,
                     0
                 )
-                text_button.setPadding(
-                    text_button.paddingLeft,
+                textItemBinding?.textButton?.let{
+                    it.setPadding(
+                        it.paddingLeft,
                     0,
-                    text_button.paddingRight,
-                    text_button.paddingBottom
-                )
+                        it.paddingRight,
+                        it.paddingBottom
+                    )
+                }
             }
-            determinateBar.layoutParams = layoutParam
+            textItemBinding?.determinateBar?.layoutParams = layoutParam
         }
         clickListener?.apply {
-            text_button?.setOnClickListener(clickListener)
+            textItemBinding?.textButton?.setOnClickListener(clickListener)
         }
         layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -259,18 +262,13 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                     updateViewButtonBackground(R.drawable.answer_outline_correct)
             }
         }
-// TODO kanav and shivansh check  what are design requirements and why this is required
-//        if (itemIsLast) {
-//            updateViewBackground(R.drawable.answer_background_last_item)
-//        } else {
-//            updateViewBackground(R.drawable.answer_background_default)
-//        }
+
         if (!option.image_url.isNullOrEmpty()) {
-            AndroidResource.updateThemeForView(imageText, optionDescTheme, fontFamilyProvider)
-            AndroidResource.updateThemeForView(imagePercentage, optionDescTheme, fontFamilyProvider)
+            AndroidResource.updateThemeForView(imageItemBinding?.imageText, optionDescTheme, fontFamilyProvider)
+            AndroidResource.updateThemeForView(imageItemBinding?.imagePercentage, optionDescTheme, fontFamilyProvider)
         } else {
-            AndroidResource.updateThemeForView(text_button, optionDescTheme, fontFamilyProvider)
-            AndroidResource.updateThemeForView(percentageText, optionDescTheme, fontFamilyProvider)
+            AndroidResource.updateThemeForView(textItemBinding?.textButton, optionDescTheme, fontFamilyProvider)
+            AndroidResource.updateThemeForView(textItemBinding?.percentageText, optionDescTheme, fontFamilyProvider)
         }
         setProgressVisibility(!correctOptionId.isNullOrEmpty())
     }
@@ -282,10 +280,10 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             ValueAnimator.ofFloat(startValue.toFloat(), option.percentage.toFloat()).apply {
                 addUpdateListener {
                     val progress = (it.animatedValue as Float).roundToInt()
-                    determinateBar?.progress = progress
-                    percentageText?.text = "$progress%"
-                    imageBar?.progress = progress
-                    imagePercentage?.text = "$progress%"
+                    textItemBinding?.determinateBar?.progress = progress
+                    textItemBinding?.percentageText?.text = "$progress%"
+                    imageItemBinding?.imageBar?.progress = progress
+                    imageItemBinding?.imagePercentage?.text = "$progress%"
                 }
                 interpolator = LinearInterpolator()
                 duration = 500
@@ -295,23 +293,24 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun getCurrentProgress(): Int {
-        return determinateBar?.progress ?: imageBar?.progress ?: 0
+        return textItemBinding?.determinateBar?.progress ?: imageItemBinding?.imageBar?.progress ?: 0
     }
 
     private fun setupImageItem(option: Option) {
         if (!inflated) {
             inflated = true
-            inflate(context, R.layout.atom_widget_image_item, this)
+            //inflate(context, R.layout.atom_widget_image_item, this)
+            imageItemBinding = AtomWidgetImageItemBinding.inflate(LayoutInflater.from(context), this@WidgetItemView, true)
             layoutTransition = LayoutTransition()
         }
 
-        imageText.text = option.description
+        imageItemBinding?.imageText?.text = option.description
 
         Glide.with(context.applicationContext)
             .load(option.image_url)
-            .into(imageButton)
+            .into(imageItemBinding?.imageButton!!)
         clickListener?.apply {
-            imageItemRoot.setOnClickListener(clickListener)
+            imageItemBinding?.imageItemRoot?.setOnClickListener(clickListener)
         }
         layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -322,9 +321,9 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
     private fun updateDescViewTheme(isImage: Boolean, component: ViewStyleProps?) {
         component?.let {
             if (isImage) {
-                AndroidResource.updateThemeForView(imageText, it)
+                AndroidResource.updateThemeForView(imageItemBinding?.imageText, it)
             } else {
-                AndroidResource.updateThemeForView(text_button, it)
+                AndroidResource.updateThemeForView(textItemBinding?.textButton, it)
             }
         }
     }
@@ -346,17 +345,17 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
 
                 )
             layerDrawable.setId(1, android.R.id.progress)
-            determinateBar?.progressDrawable = layerDrawable
-            imageBar?.progressDrawable = layerDrawable
+            textItemBinding?.determinateBar?.progressDrawable = layerDrawable
+            imageItemBinding?.imageBar?.progressDrawable = layerDrawable
         }
         if (component == null) {
-            if (determinateBar != null && determinateBar?.tag != drawableId) {
-                determinateBar?.progressDrawable = drawable
-                determinateBar?.tag = drawableId
+            if (textItemBinding?.determinateBar != null && textItemBinding?.determinateBar?.tag != drawableId) {
+                textItemBinding?.determinateBar?.progressDrawable = drawable
+                textItemBinding?.determinateBar?.tag = drawableId
             }
-            if (imageBar != null && imageBar?.tag != drawableId) {
-                imageBar?.progressDrawable = drawable
-                determinateBar?.tag = drawableId
+            if (imageItemBinding?.imageBar != null && imageItemBinding?.imageBar?.tag != drawableId) {
+                imageItemBinding?.imageBar?.progressDrawable = drawable
+                textItemBinding?.determinateBar?.tag = drawableId
             }
         }
     }
@@ -367,34 +366,34 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             else -> drawable2
         }
         drawable?.let {
-            if (bkgrd != null && bkgrd?.tag != drawableId ?: drawable2) {
-                bkgrd?.background = drawable
-                bkgrd?.tag = drawableId ?: drawable2
+            if (textItemBinding?.bkgrd != null && textItemBinding?.bkgrd?.tag != drawableId ?: drawable2) {
+                textItemBinding?.bkgrd?.background = drawable
+                textItemBinding?.bkgrd?.tag = drawableId ?: drawable2
             }
-            if (imageItemRoot != null && imageItemRoot?.tag != drawableId ?: drawable2) {
-                imageItemRoot?.background = drawable
-                imageItemRoot?.tag = drawableId ?: drawable2
+            if (imageItemBinding?.imageItemRoot != null && imageItemBinding?.imageItemRoot?.tag != drawableId ?: drawable2) {
+                imageItemBinding?.imageItemRoot?.background = drawable
+                imageItemBinding?.imageItemRoot?.tag = drawableId ?: drawable2
             }
         }
     }
 
     private fun updateViewBackground(drawableId: Int) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
-        if (bkgrd != null && bkgrd.tag != drawableId) {
-            bkgrd.background = drawable
-            bkgrd.tag = drawableId
+        if (textItemBinding?.bkgrd != null && textItemBinding?.bkgrd?.tag != drawableId) {
+            textItemBinding?.bkgrd?.background = drawable
+            textItemBinding?.bkgrd?.tag = drawableId
         }
-        if (imageItemRoot != null && imageItemRoot.tag != drawableId) {
-            imageItemRoot.background = drawable
-            imageItemRoot.tag = drawableId
+        if (imageItemBinding?.imageItemRoot != null && imageItemBinding?.imageItemRoot?.tag != drawableId) {
+            imageItemBinding?.imageItemRoot?.background = drawable
+            imageItemBinding?.imageItemRoot?.tag = drawableId
         }
     }
 
     fun setProgressVisibility(b: Boolean) {
         val visibility = if (b) View.VISIBLE else View.INVISIBLE
-        imagePercentage?.visibility = visibility
-        imageBar?.visibility = visibility
-        determinateBar?.visibility = visibility
-        percentageText?.visibility = visibility
+        imageItemBinding?.imagePercentage?.visibility = visibility
+        imageItemBinding?.imageBar?.visibility = visibility
+        textItemBinding?.determinateBar?.visibility = visibility
+        textItemBinding?.percentageText?.visibility = visibility
     }
 }
