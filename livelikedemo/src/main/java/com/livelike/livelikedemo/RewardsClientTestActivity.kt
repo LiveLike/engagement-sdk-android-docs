@@ -283,6 +283,49 @@ class RewardsClientTestActivity : AppCompatActivity() {
                         })
             }
         }
+
+        show_redemption.setOnClickListener {
+            rewardsClient.getRedemptionCodes(LiveLikePagination.FIRST, object :
+                LiveLikeCallback<LLPaginatedResult<RedemptionCode>>() {
+                override fun onResponse(
+                    result: LLPaginatedResult<RedemptionCode>?,
+                    error: String?
+                ) {
+                    result?.let{
+                        runOnUiThread {
+                            AlertDialog.Builder(this@RewardsClientTestActivity)
+                                .setTitle("matching reward items")
+                                .setItems(result
+                                    .results
+                                    ?.map(RedemptionCode::toString)
+                                    ?.toTypedArray()) { _, _ -> }
+                                .create()
+                                .show()
+                        }
+
+                    }
+                }
+            })
+        }
+
+        redeem_code.setOnClickListener {
+            rewardsClient.redeemCode("get profile",
+                redemption_code.toString(),
+                object : LiveLikeCallback<RedemptionCode>() {
+                    override fun onResponse(result: RedemptionCode?, error: String?) {
+                        result?.let {
+                            runOnUiThread {
+                                AlertDialog.Builder(this@RewardsClientTestActivity)
+                                    .setTitle("matching reward items")
+                                    .setItems(arrayOf(result.toString())) { _, _ -> }
+                                    .create()
+                                    .show()
+                            }
+                        }
+                    }
+                })
+        }
+
     }
 
     private fun buildResultDialog(result: LLPaginatedResult<RewardTransaction>?, error: String?) {

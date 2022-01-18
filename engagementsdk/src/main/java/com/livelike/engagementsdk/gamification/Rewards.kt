@@ -489,7 +489,6 @@ data class RedemptionCode (
     @SerializedName("redeemed_at") val redeemedAt: String?,
     @SerializedName("redeemed_by") val redeemedBy: String?,
     @SerializedName("status") val status: RedemptionCodeEnum
-
 )
 
 enum class RedemptionCodeEnum {
