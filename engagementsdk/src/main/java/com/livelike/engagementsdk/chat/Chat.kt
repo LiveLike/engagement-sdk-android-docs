@@ -58,7 +58,7 @@ internal data class ChatMessage(
     var image_width: Int? = 100,
     var image_height: Int? = 100,
     var isDeleted: Boolean = false,
-    var parentChatMessage: ChatMessage? = null,
+    var parentMessage: ChatMessage? = null,
 ) {
     // Update the user_id to profile_id as required from backend
     fun toReportMessageJson(): String {

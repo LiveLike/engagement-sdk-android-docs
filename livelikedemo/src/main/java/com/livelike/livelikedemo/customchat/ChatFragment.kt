@@ -282,16 +282,17 @@ class ChatFragment : Fragment() {
                 }
             }
             if (currentReplyParentMessage != null) {
-                homeChat.session.chatSession.sendReplyChatMessage(
+                homeChat.session.chatSession.sendReplyMessage(
                     message,
                     imageUrl,
                     imageWidth = 150,
                     imageHeight = 150,
                     liveLikeCallback = callback,
-                    parentChatMessage = currentReplyParentMessage!!
+                    parentMessage = currentReplyParentMessage!!,
+                    parentMessageId = currentReplyParentMessage!!.id!!
                 )
             } else {
-                homeChat.session.chatSession.sendChatMessage(
+                homeChat.session.chatSession.sendMessage(
                     message, imageUrl = imageUrl, imageWidth = 150, imageHeight = 150,
                     liveLikeCallback = callback
                 )
@@ -401,7 +402,7 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
         val chat = chatList[position]
-        if (chat.parentChatMessage != null) {
+        if (chat.parentMessage != null) {
             return 2
         }
         return 1
@@ -410,20 +411,24 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
     override fun onBindViewHolder(holder: CustomChatViewHolder, position: Int) {
         val chatMessage = chatList[position]
 
-        if (chatMessage.parentChatMessage != null) {
+        if (chatMessage.parentMessage != null) {
             holder.itemView.lay_reply_chat_msg.visibility = View.VISIBLE
-            holder.itemView.txt_name_reply.text = chatMessage.parentChatMessage?.nickname
-            holder.itemView.txt_message_reply.text = chatMessage.parentChatMessage?.message
-            chatMessage.parentChatMessage?.imageUrl?.let {
+            holder.itemView.txt_name_reply.text = chatMessage.parentMessage?.nickname
+            holder.itemView.txt_message_reply.text = chatMessage.parentMessage?.message
+            if (chatMessage.parentMessage?.imageUrl != null) {
+                holder.itemView.img_message_reply.visibility = View.VISIBLE
                 Glide.with(holder.itemView.img_message_reply.context)
-                    .load(it)
+                    .load(chatMessage.parentMessage!!.imageUrl!!)
                     .apply(
                         RequestOptions().override(
-                            chatMessage.parentChatMessage!!.image_width!!,
-                            chatMessage.parentChatMessage!!.image_height!!
+                            chatMessage.parentMessage!!.image_width!!,
+                            chatMessage.parentMessage!!.image_height!!
                         )
                     )
                     .into(holder.itemView.img_message_reply)
+
+            } else {
+                holder.itemView.img_message_reply.visibility = View.GONE
             }
         } else {
             holder.itemView.lay_reply_chat_msg.visibility = View.GONE
