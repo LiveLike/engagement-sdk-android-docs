@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -734,8 +735,8 @@ internal class ChatRecyclerAdapter(
                                 .error(chatUserPicDrawable)
                                 .into(img_chat_avatar)
                         }
-                        chatMessage.tag = message.id
-                        setTextOrImageToView(message, chatMessage, this)
+
+                        setTextOrImageToView(message, chatMessage, img_chat_message, this)
 
                         var imageView: ImageView
                         rel_reactions_lay.removeAllViews()
@@ -837,8 +838,13 @@ internal class ChatRecyclerAdapter(
                         else -> View.GONE
                     }
                     parentChatMessage?.let {
-                        parent_chatMessage.tag = it.id
-                        setTextOrImageToView(it, parent_chatMessage, chatViewThemeAttribute)
+                        setTextOrImageToView(
+                            it,
+                            parent_chatMessage,
+                            img_parent_chat_message,
+                            chatViewThemeAttribute,
+                            true
+                        )
                         chat_parent_nickname.text = it.senderDisplayName
                     }
                 }
@@ -848,11 +854,18 @@ internal class ChatRecyclerAdapter(
         private fun setTextOrImageToView(
             chatMessage: ChatMessage?,
             textView: TextView,
-            chatViewThemeAttributes: ChatViewThemeAttributes
+            imageView: ImageView,
+            chatViewThemeAttributes: ChatViewThemeAttributes,
+            parent: Boolean = false
         ) {
             val callback = MultiCallback(true)
             chatViewThemeAttributes.apply {
                 chatMessage?.apply {
+                    val tag = when (parent) {
+                        true -> "parent_$id"
+                        else -> id
+                    }
+                    textView.tag = tag
                     val spaceRemover = Pattern.compile("[\\s]")
                     val inputNoString = spaceRemover.matcher(message ?: "")
                         .replaceAll(Matcher.quoteReplacement(""))
@@ -874,24 +887,29 @@ internal class ChatRecyclerAdapter(
                     }
                     when {
                         !isDeleted && isExternalImage -> {
-                            textView.minHeight =
-                                AndroidResource.dpToPx(LARGER_STICKER_SIZE)
-                            val s = SpannableString(message)
-                            replaceWithImages(
-                                s,
-                                textView.context.applicationContext,
-                                callback,
-                                false,
-                                id,
-                                image_width ?: LARGER_STICKER_SIZE,
-                                image_height ?: LARGER_STICKER_SIZE
-                            ) {
-                                // TODO this might write to the wrong messageView on slow connection.
-                                if (textView.tag == id)
-                                    textView.text = s
+                            imageView.contentDescription = if (isExternalImage) {
+                                textView.context.getString(R.string.image)
+                            } else {
+                                message
                             }
+                            textView.minHeight = 0
+                            textView.text = ""
+                            textView.visibility = View.GONE
+                            imageView.minimumHeight =
+                                AndroidResource.dpToPx(LARGER_STICKER_SIZE)
+                            Glide.with(imageView.context)
+                                .load(imageUrl)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .apply(
+                                    RequestOptions().override(
+                                        image_width ?: LARGER_STICKER_SIZE,
+                                        image_height ?: LARGER_STICKER_SIZE
+                                    )
+                                )
+                                .into(imageView)
                         }
                         !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
+                            textView.visibility = View.VISIBLE
                             textView.minHeight =
                                 AndroidResource.dpToPx(MEDIUM_STICKER_SIZE)
                             val s = SpannableString(message)
@@ -904,7 +922,7 @@ internal class ChatRecyclerAdapter(
                                 MEDIUM_STICKER_SIZE
                             ) {
                                 // TODO this might write to the wrong messageView on slow connection.
-                                if (textView.tag == id) {
+                                if (textView.tag == tag) {
                                     textView.text = when (showLinks) {
                                         true -> getTextWithCustomLinks(s)
                                         else -> s
@@ -913,6 +931,7 @@ internal class ChatRecyclerAdapter(
                             }
                         }
                         !isDeleted && atLeastOneSticker -> {
+                            textView.visibility = View.VISIBLE
                             var columnCount = numberOfStickers / 8
                             val lines = message?.withoutStickers()?.getLinesCount() ?: 0
                             if (columnCount == 0) {
@@ -933,7 +952,7 @@ internal class ChatRecyclerAdapter(
                                 SMALL_STICKER_SIZE
                             ) {
                                 // TODO this might write to the wrong messageView on slow connection.
-                                if (textView.tag == id) {
+                                if (textView.tag == tag) {
                                     textView.text = when (showLinks) {
                                         true -> getTextWithCustomLinks(s)
                                         else -> s
@@ -942,6 +961,7 @@ internal class ChatRecyclerAdapter(
                             }
                         }
                         else -> {
+                            textView.visibility = View.VISIBLE
                             clearTarget(id, textView.context)
                             textView.minHeight = chatMessageTextSize.toInt()
                             textView.text = when (showLinks) {

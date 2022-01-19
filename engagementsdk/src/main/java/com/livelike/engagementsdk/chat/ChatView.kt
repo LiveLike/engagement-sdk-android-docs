@@ -235,6 +235,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 sendImageTintColor,
                 android.graphics.PorterDuff.Mode.MULTIPLY
             )
+            img_parent_msg_cancel.setOnClickListener {
+                currentReplyParentMessage = null
+            }
             initEmptyView()
         }
         callback.addView(edittext_chat_message)
@@ -868,6 +871,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             return
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
+        if (currentReplyParentMessage?.parentChatMessage != null) {
+            currentReplyParentMessage?.parentChatMessage = null
+        }
 
         // TODO all this can be moved to view model easily
         ChatMessage(
