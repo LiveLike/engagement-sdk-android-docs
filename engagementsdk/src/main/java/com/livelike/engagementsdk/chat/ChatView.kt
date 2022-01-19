@@ -871,8 +871,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             return
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
-        if (currentReplyParentMessage?.parentChatMessage != null) {
-            currentReplyParentMessage?.parentChatMessage = null
+        if (currentReplyParentMessage?.parentMessage != null) {
+            currentReplyParentMessage?.parentMessage = null
         }
 
         // TODO all this can be moved to view model easily
@@ -888,7 +888,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             image_width = 100,
             image_height = 100,
             timeStamp = timeData.timeSinceEpochInMs.toString(),
-            parentChatMessage = currentReplyParentMessage
+            parentMessage = currentReplyParentMessage
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {

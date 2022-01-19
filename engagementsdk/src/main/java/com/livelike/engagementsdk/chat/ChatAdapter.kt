@@ -833,11 +833,11 @@ internal class ChatRecyclerAdapter(
                         }
                     }
 
-                    lay_parent_message.visibility = when (parentChatMessage != null) {
+                    lay_parent_message.visibility = when (parentMessage != null) {
                         true -> View.VISIBLE
                         else -> View.GONE
                     }
-                    parentChatMessage?.let {
+                    parentMessage?.let {
                         setTextOrImageToView(
                             it,
                             parent_chatMessage,
@@ -895,6 +895,7 @@ internal class ChatRecyclerAdapter(
                             textView.minHeight = 0
                             textView.text = ""
                             textView.visibility = View.GONE
+                            imageView.visibility = View.VISIBLE
                             imageView.minimumHeight =
                                 AndroidResource.dpToPx(LARGER_STICKER_SIZE)
                             Glide.with(imageView.context)
@@ -910,6 +911,7 @@ internal class ChatRecyclerAdapter(
                         }
                         !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
                             textView.visibility = View.VISIBLE
+                            imageView.visibility = View.GONE
                             textView.minHeight =
                                 AndroidResource.dpToPx(MEDIUM_STICKER_SIZE)
                             val s = SpannableString(message)
@@ -932,6 +934,7 @@ internal class ChatRecyclerAdapter(
                         }
                         !isDeleted && atLeastOneSticker -> {
                             textView.visibility = View.VISIBLE
+                            imageView.visibility = View.GONE
                             var columnCount = numberOfStickers / 8
                             val lines = message?.withoutStickers()?.getLinesCount() ?: 0
                             if (columnCount == 0) {
@@ -961,6 +964,7 @@ internal class ChatRecyclerAdapter(
                             }
                         }
                         else -> {
+                            imageView.visibility = View.GONE
                             textView.visibility = View.VISIBLE
                             clearTarget(id, textView.context)
                             textView.minHeight = chatMessageTextSize.toInt()

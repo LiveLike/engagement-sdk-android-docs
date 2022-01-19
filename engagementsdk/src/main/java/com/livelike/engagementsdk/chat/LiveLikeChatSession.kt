@@ -59,7 +59,7 @@ interface LiveLikeChatSession {
      * then the #messageListener will recieve the same chatMessage with uploaded url and timetoken updated ,you can check it with the id in #ChatMessage
      *
      * **/
-    fun sendChatMessage(
+    fun sendMessage(
         message: String?,
         imageUrl: String? = null,
         imageWidth: Int?,
@@ -67,12 +67,13 @@ interface LiveLikeChatSession {
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     )
 
-    fun sendReplyChatMessage(
+    fun sendReplyMessage(
         message: String?,
         imageUrl: String? = null,
         imageWidth: Int?,
         imageHeight: Int?,
-        parentChatMessage: LiveLikeChatMessage,
+        parentMessageId: String,
+        parentMessage: LiveLikeChatMessage,
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     )
 

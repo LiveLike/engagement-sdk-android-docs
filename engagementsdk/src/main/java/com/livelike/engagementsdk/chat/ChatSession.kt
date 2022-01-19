@@ -21,7 +21,6 @@ import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.publicapis.*
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
@@ -375,7 +374,7 @@ internal class ChatSession(
     /**
      * TODO: added it into default chat once all functionality related to chat is done
      */
-    override fun sendChatMessage(
+    override fun sendMessage(
         message: String?,
         imageUrl: String?,
         imageWidth: Int?,
@@ -391,20 +390,26 @@ internal class ChatSession(
         )
     }
 
-    override fun sendReplyChatMessage(
+    override fun sendReplyMessage(
         message: String?,
         imageUrl: String?,
         imageWidth: Int?,
         imageHeight: Int?,
-        parentChatMessage: LiveLikeChatMessage,
+        parentMessageId: String,
+        parentMessage: LiveLikeChatMessage,
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
+        // Removing the parent message from parent message in order to avoid reply to reply in terms of data
+        // and avoid data nesting
+        if (parentMessage.parentMessage != null) {
+            parentMessage.parentMessage = null
+        }
         internalSendMessage(
             message,
             imageUrl,
             imageWidth,
             imageHeight,
-            parentChatMessage,
+            parentMessage,
             liveLikeCallback
         )
     }
@@ -438,7 +443,7 @@ internal class ChatSession(
             image_width = imageWidth ?: 100,
             image_height = imageHeight ?: 100,
             timeStamp = timeData.timeSinceEpochInMs.toString(),
-            parentChatMessage = parentChatMessage?.toChatMessage()
+            parentMessage = parentChatMessage?.toChatMessage()
         ).let { chatMessage ->
 
             // TODO: need to update for error handling here if pubnub respond failure of message
