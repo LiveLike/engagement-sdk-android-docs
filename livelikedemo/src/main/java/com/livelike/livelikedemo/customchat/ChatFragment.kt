@@ -16,8 +16,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.example.PinMessageInfo
 import com.google.gson.JsonParser
+import com.livelike.engagementsdk.ChatRoomListener
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.MessageSwipeController
 import com.livelike.engagementsdk.chat.SwipeControllerActions
 import com.livelike.engagementsdk.chat.data.remote.LiveLikeOrdering
@@ -157,6 +159,38 @@ class ChatFragment : Fragment() {
             adapter.loadPinnedMessage(context)
             adapter.chatList.clear()
             adapter.chatList.addAll(homeChat.session.chatSession.getLoadedMessages())
+            homeChat.session.chatSession.setChatRoomListener(object : ChatRoomListener {
+                override fun onChatRoomUpdate(chatRoom: ChatRoomInfo) {
+                    activity?.runOnUiThread {
+                        switch_reply_message.isChecked = chatRoom.enableMessageReply
+                    }
+                }
+            })
+//            switch_reply_message.setOnCheckedChangeListener { buttonView, isChecked ->
+//                (activity as CustomChatActivity).sdk?.chat()
+//                    ?.updateChatRoom(homeChat.session.chatSession.getCurrentChatRoom(),
+//                        enableMessageReply = isChecked,
+//                        liveLikeCallback = object : LiveLikeCallback<ChatRoomInfo>() {
+//                            override fun onResponse(result: ChatRoomInfo?, error: String?) {
+//                                switch_reply_message.isChecked = result?.enableMessageReply ?: false
+//                                error?.let {
+//                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+//                                }
+//                            }
+//                        })
+//            }
+            (activity as CustomChatActivity).sdk?.chat()
+                ?.getChatRoom(homeChat.session.chatSession.getCurrentChatRoom(),
+                    object : LiveLikeCallback<ChatRoomInfo>() {
+                        override fun onResponse(result: ChatRoomInfo?, error: String?) {
+                            error?.let {
+                                Toast.makeText(context, "FetchError: $it", Toast.LENGTH_SHORT).show()
+                            }
+                            switch_reply_message.isChecked = result?.enableMessageReply ?: false
+
+                        }
+                    })
+
             homeChat.session.chatSession.setMessageListener(object : MessageListener {
                 private val TAG = "LiveLike"
                 override fun onNewMessage(message: LiveLikeChatMessage) {

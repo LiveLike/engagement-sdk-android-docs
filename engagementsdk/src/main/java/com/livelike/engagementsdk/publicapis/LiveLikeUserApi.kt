@@ -172,7 +172,8 @@ internal fun ChatRoom.toLiveLikeChatRoom(): ChatRoomInfo {
         this.title,
         this.visibility,
         this.contentFilter,
-        this.customData
+        this.customData,
+        this.enableMessageReply
     )
 }
 
