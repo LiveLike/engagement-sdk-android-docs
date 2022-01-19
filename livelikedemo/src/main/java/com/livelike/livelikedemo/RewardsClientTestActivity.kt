@@ -308,9 +308,9 @@ class RewardsClientTestActivity : AppCompatActivity() {
             })
         }
 
+
         redeem_code.setOnClickListener {
-            rewardsClient.redeemCode("get profile",
-                redemption_code.toString(),
+            rewardsClient.redeemCode(redemption_code.text.toString(),
                 object : LiveLikeCallback<RedemptionCode>() {
                     override fun onResponse(result: RedemptionCode?, error: String?) {
                         result?.let {
@@ -322,8 +322,17 @@ class RewardsClientTestActivity : AppCompatActivity() {
                                     .show()
                             }
                         }
+                        error?.let {
+                            runOnUiThread {
+                                AlertDialog.Builder(this@RewardsClientTestActivity)
+                                    .setMessage(it)
+                                    .create()
+                                    .show()
+                            }
+                        }
                     }
                 })
+
         }
 
     }

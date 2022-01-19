@@ -14,7 +14,6 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetType
-import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.services.messaging.LiveLikeEventMessagingService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -346,7 +345,6 @@ internal class Rewards(
     }
 
     override fun redeemCode(
-        profileId: String,
         redemptionCode: String,
         liveLikeCallback: LiveLikeCallback<RedemptionCode>
     ) {
@@ -366,7 +364,7 @@ internal class Rewards(
                     dataClient.remoteCall<RedemptionCode>(
                         fetchUrl ?: "",
                         RequestType.PATCH,
-                        "{\"redeemed_by\":\"${profileId}\"}".toRequestBody(),
+                        "{\"status\":\"redeemed\"}".toRequestBody(),
                         pair.first.accessToken
                     ).run {
                         liveLikeCallback.processResult(this)
@@ -472,7 +470,6 @@ interface IRewardsClient {
      * @param redemptionCode code being submitted
      **/
     fun redeemCode(
-        profileId: String,
         redemptionCode: String,
         liveLikeCallback: LiveLikeCallback<RedemptionCode>
     )
