@@ -104,8 +104,8 @@ class ChatFragment : Fragment() {
             val messageSwipeController =
                 MessageSwipeController(it, object : SwipeControllerActions {
                     override fun showReplyUI(position: Int) {
-                        Toast.makeText(context, "Send Reply", Toast.LENGTH_SHORT).show()
                         currentReplyParentMessage = adapter.getChatMessage(position)
+                        Toast.makeText(context, "Send Reply", Toast.LENGTH_SHORT).show()
                     }
                 })
             val itemTouchHelper = ItemTouchHelper(messageSwipeController)
@@ -184,7 +184,8 @@ class ChatFragment : Fragment() {
                     object : LiveLikeCallback<ChatRoomInfo>() {
                         override fun onResponse(result: ChatRoomInfo?, error: String?) {
                             error?.let {
-                                Toast.makeText(context, "FetchError: $it", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "FetchError: $it", Toast.LENGTH_SHORT)
+                                    .show()
                             }
                             switch_reply_message.isChecked = result?.enableMessageReply ?: false
 
@@ -593,7 +594,22 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
 
     override fun getItemCount(): Int = chatList.size
     fun getChatMessage(position: Int): LiveLikeChatMessage {
-        return chatList[position]
+        val msg = chatList[position]
+        return LiveLikeChatMessage(msg.message).apply {
+            isDeleted = msg.isDeleted
+            channel = msg.channel
+            custom_data = msg.custom_data
+            id = msg.id
+            imageUrl = msg.imageUrl
+            image_height = msg.image_height
+            image_width = msg.image_width
+            nickname = msg.nickname
+            parentMessage = msg.parentMessage
+            senderId = msg.senderId
+            timestamp = msg.timestamp
+            userPic = msg.userPic
+            type = msg.type
+        }
     }
 
 }

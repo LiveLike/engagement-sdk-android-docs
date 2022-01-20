@@ -18,7 +18,8 @@ internal fun ChatMessage.toPubnubChatMessage(programDateTime: String?): PubnubCh
         image_width = image_width,
         image_height = image_height,
         custom_data = "",
-        parentMessage = parentMessage?.toPubnubChatMessage(null)
+        parentMessage = parentMessage?.toPubnubChatMessage(null),
+        parentMessageId = parentMessage?.id
     )
 }
 
