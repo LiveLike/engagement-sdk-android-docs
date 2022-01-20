@@ -504,7 +504,7 @@ interface IRewardsClient {
 }
 
 data class RedemptionCodesRequestParameters (
-    val status: RedemptionCodeEnum
+    val status: RedemptionCodeStatus
 )
 
 data class RedemptionCode (
@@ -516,10 +516,10 @@ data class RedemptionCode (
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("redeemed_at") val redeemedAt: String?,
     @SerializedName("redeemed_by") val redeemedBy: String?,
-    @SerializedName("status") val status: RedemptionCodeEnum
+    @SerializedName("status") val status: RedemptionCodeStatus
 )
 
-enum class RedemptionCodeEnum {
+enum class RedemptionCodeStatus {
     Deactivated, Redeemed, Open;
 }
 
