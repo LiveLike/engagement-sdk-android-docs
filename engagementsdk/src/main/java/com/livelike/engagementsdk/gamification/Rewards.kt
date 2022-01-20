@@ -30,13 +30,13 @@ internal class Rewards(
 ) : IRewardsClient {
 
     private var lastRewardItemsPage: LLPaginatedResult<RewardItem>? = null
+    private var redemptionCodesPage: LLPaginatedResult<RedemptionCode>? = null
 
     /*map of rewardITemRequestOptions and last response*/
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
 
     private var rewardTransactionsPageMap: MutableMap<RewardTransactionsRequestParameters?,LLPaginatedResult<RewardTransaction>?> = mutableMapOf()
 
-    private var redemptionCodesPageMap: MutableMap<RedemptionCodesRequestParameters?, LLPaginatedResult<RedemptionCode>?> = mutableMapOf()
 
     override var rewardEventsListener: RewardEventsListener? = null
         set(value) {
@@ -315,33 +315,21 @@ internal class Rewards(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
     ) {
-        getRedemptionCodes(liveLikePagination, null, liveLikeCallback)
-    }
-
-    override fun getRedemptionCodes(
-        liveLikePagination: LiveLikePagination,
-        requestParams: RedemptionCodesRequestParameters?,
-        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
-    ) {
         var fetchUrl: String? = null
         sdkScope.launch {
-            if (redemptionCodesPageMap[requestParams] == null || liveLikePagination == LiveLikePagination.FIRST) {
+            if (redemptionCodesPage == null || liveLikePagination == LiveLikePagination.FIRST) {
                 configurationUserPairFlow.collect { pair ->
-                    fetchUrl = pair.second.rewardTransactionsUrl //todo: get correct endpoint
+//                    fetchUrl = pair.second.rewardTransactionsUrl //todo: get correct endpoint
+                    fetchUrl = "https://cf-blast-game-changers.livelikecdn.com/api/v1/redemption-codes/"
                 }
             } else {
                 fetchUrl =
-                    redemptionCodesPageMap[requestParams]?.getPaginationUrl(liveLikePagination)
+                    redemptionCodesPage?.getPaginationUrl(liveLikePagination)
             }
             if (fetchUrl == null) {
                 liveLikeCallback.onResponse(null, "No more data")
             } else {
                 configurationUserPairFlow.collect { pair ->
-                    fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
-                        requestParams?.let {
-                            addQueryParameter("status", it.status.name)
-                        }
-                    }?.build()?.toUrl()?.toString()
 
                     dataClient.remoteCall<LLPaginatedResult<RedemptionCode>>(
                         fetchUrl ?: "",
@@ -350,7 +338,7 @@ internal class Rewards(
                         pair.first.accessToken
                     ).run {
                         if (this is Result.Success) {
-                            redemptionCodesPageMap[requestParams] = this.data
+                            redemptionCodesPage = this.data
                         }
                         liveLikeCallback.processResult(this)
                     }
@@ -366,7 +354,8 @@ internal class Rewards(
         var fetchUrl: String? = null
         sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-                fetchUrl = pair.second.rewardTransactionsUrl //TODO: get real code
+//                fetchUrl = pair.second.rewardTransactionsUrl //TODO: get real code
+                fetchUrl = "https://cf-blast-game-changers.livelikecdn.com/api/v1/redemption-codes/"
             }
             if (fetchUrl == null) {
                 liveLikeCallback.onResponse(null, "No more data")
@@ -475,18 +464,6 @@ interface IRewardsClient {
      **/
     fun getRedemptionCodes(
         liveLikePagination: LiveLikePagination,
-        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
-    )
-
-    /**
-     * Retrieve all redemption code associated
-     * with the current user profile
-     *
-     * @param requestParams allows filtering by type
-     **/
-    fun getRedemptionCodes(
-        liveLikePagination: LiveLikePagination,
-        requestParams: RedemptionCodesRequestParameters?,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
     )
 
