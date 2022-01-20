@@ -497,7 +497,7 @@ data class RedemptionCode (
 )
 
 enum class RedemptionCodeStatus {
-    Deactivated, Redeemed, Open;
+    deactivated, redeemed, open;
 }
 
 data class ApplicationRewardItemsRequestParams(
