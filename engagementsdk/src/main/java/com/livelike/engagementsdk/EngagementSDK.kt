@@ -586,7 +586,11 @@ class EngagementSDK(
         @SerializedName("reward_transactions_url")
         val rewardTransactionsUrl: String = "",
         @SerializedName("sponsors_url")
-        val sponsorsUrl: String?
+        val sponsorsUrl: String?,
+        @SerializedName("redemption_codes_url")
+        val redemptionCodesUrl: String?,
+        @SerializedName("redemption_code_detail_url_template")
+        val redemptionCodeDetailUrlTemplate: String?
     )
 
     companion object {

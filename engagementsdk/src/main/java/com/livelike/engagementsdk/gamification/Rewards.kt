@@ -319,8 +319,7 @@ internal class Rewards(
         sdkScope.launch {
             if (redemptionCodesPage == null || liveLikePagination == LiveLikePagination.FIRST) {
                 configurationUserPairFlow.collect { pair ->
-//                    fetchUrl = pair.second.rewardTransactionsUrl //todo: get correct endpoint
-                    fetchUrl = "https://cf-blast-game-changers.livelikecdn.com/api/v1/redemption-codes/"
+                    fetchUrl = pair.second.redemptionCodesUrl
                 }
             } else {
                 fetchUrl =
@@ -354,21 +353,16 @@ internal class Rewards(
         var fetchUrl: String? = null
         sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-//                fetchUrl = pair.second.rewardTransactionsUrl //TODO: get real code
-                fetchUrl = "https://cf-blast-game-changers.livelikecdn.com/api/v1/redemption-codes/"
+                fetchUrl = pair.second.redemptionCodeDetailUrlTemplate?.replace("redemption_code_id", redemptionCode)
             }
             if (fetchUrl == null) {
                 liveLikeCallback.onResponse(null, "No more data")
             } else {
                 configurationUserPairFlow.collect { pair ->
-                    fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
-                        addPathSegment(redemptionCode)
-                    }?.build()?.toUrl()?.toString()
-
                     dataClient.remoteCall<RedemptionCode>(
                         fetchUrl ?: "",
                         RequestType.PATCH,
-                        "{\"status\":\"redeemed\"}".toRequestBody(),
+                        "{\"status\":\"redeemed\"}".toRequestBody("application/json".toMediaTypeOrNull()),
                         pair.first.accessToken
                     ).run {
                         liveLikeCallback.processResult(this)

@@ -294,7 +294,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
                     result?.let{
                         runOnUiThread {
                             AlertDialog.Builder(this@RewardsClientTestActivity)
-                                .setTitle("matching reward items")
+                                .setTitle("codes assigned to user")
                                 .setItems(result
                                     .results
                                     ?.map(RedemptionCode::toString)
@@ -316,7 +316,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
                         result?.let {
                             runOnUiThread {
                                 AlertDialog.Builder(this@RewardsClientTestActivity)
-                                    .setTitle("matching reward items")
+                                    .setTitle("redeem code result")
                                     .setItems(arrayOf(result.toString())) { _, _ -> }
                                     .create()
                                     .show()
