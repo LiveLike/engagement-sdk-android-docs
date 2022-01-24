@@ -308,57 +308,34 @@ class RewardsClientTestActivity : AppCompatActivity() {
             })
         }
 
+        val callback = object : LiveLikeCallback<RedemptionCode>() {
+            override fun onResponse(result: RedemptionCode?, error: String?) {
+                result?.let {
+                    runOnUiThread {
+                        AlertDialog.Builder(this@RewardsClientTestActivity)
+                            .setTitle("redeem code result")
+                            .setItems(arrayOf(result.toString())) { _, _ -> }
+                            .create()
+                            .show()
+                    }
+                }
+                error?.let {
+                    runOnUiThread {
+                        AlertDialog.Builder(this@RewardsClientTestActivity)
+                            .setMessage(it)
+                            .create()
+                            .show()
+                    }
+                }
+            }
+        }
 
         redeem_code.setOnClickListener {
-            rewardsClient.redeemCodeById(redemption_code.text.toString(),
-                object : LiveLikeCallback<RedemptionCode>() {
-                    override fun onResponse(result: RedemptionCode?, error: String?) {
-                        result?.let {
-                            runOnUiThread {
-                                AlertDialog.Builder(this@RewardsClientTestActivity)
-                                    .setTitle("redeem code result")
-                                    .setItems(arrayOf(result.toString())) { _, _ -> }
-                                    .create()
-                                    .show()
-                            }
-                        }
-                        error?.let {
-                            runOnUiThread {
-                                AlertDialog.Builder(this@RewardsClientTestActivity)
-                                    .setMessage(it)
-                                    .create()
-                                    .show()
-                            }
-                        }
-                    }
-                })
-
+            rewardsClient.redeemCodeById(redemption_code.text.toString(),callback)
         }
 
         redeem_code2.setOnClickListener {
-            rewardsClient.redeemCode(redemption_code.text.toString(),
-                object : LiveLikeCallback<RedemptionCode>() {
-                    override fun onResponse(result: RedemptionCode?, error: String?) {
-                        result?.let {
-                            runOnUiThread {
-                                AlertDialog.Builder(this@RewardsClientTestActivity)
-                                    .setTitle("redeem code result")
-                                    .setItems(arrayOf(result.toString())) { _, _ -> }
-                                    .create()
-                                    .show()
-                            }
-                        }
-                        error?.let {
-                            runOnUiThread {
-                                AlertDialog.Builder(this@RewardsClientTestActivity)
-                                    .setMessage(it)
-                                    .create()
-                                    .show()
-                            }
-                        }
-                    }
-                })
-
+            rewardsClient.redeemCode(redemption_code.text.toString(),callback)
         }
 
     }

@@ -30,12 +30,12 @@ internal class Rewards(
 ) : IRewardsClient {
 
     private var lastRewardItemsPage: LLPaginatedResult<RewardItem>? = null
-    private var redemptionCodesPage: LLPaginatedResult<RedemptionCode>? = null
 
     /*map of rewardITemRequestOptions and last response*/
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
 
     private var rewardTransactionsPageMap: MutableMap<RewardTransactionsRequestParameters?,LLPaginatedResult<RewardTransaction>?> = mutableMapOf()
+    private var redemptionCodesPageMap: MutableMap<RedemptionCodesRequestParameters?, LLPaginatedResult<RedemptionCode>?> = mutableMapOf()
 
 
     override var rewardEventsListener: RewardEventsListener? = null
@@ -315,20 +315,33 @@ internal class Rewards(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
     ) {
+        return getRedeemedCodes(liveLikePagination, null, liveLikeCallback)
+    }
+
+    override fun getRedeemedCodes(
+        liveLikePagination: LiveLikePagination,
+        requestParams: RedemptionCodesRequestParameters?,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
+    ) {
         var fetchUrl: String? = null
         sdkScope.launch {
-            if (redemptionCodesPage == null || liveLikePagination == LiveLikePagination.FIRST) {
+            if (redemptionCodesPageMap[requestParams] == null || liveLikePagination == LiveLikePagination.FIRST) {
                 configurationUserPairFlow.collect { pair ->
                     fetchUrl = pair.second.redemptionCodesUrl
                 }
             } else {
                 fetchUrl =
-                    redemptionCodesPage?.getPaginationUrl(liveLikePagination)
+                    redemptionCodesPageMap[requestParams]?.getPaginationUrl(liveLikePagination)
             }
             if (fetchUrl == null) {
                 liveLikeCallback.onResponse(null, "No more data")
             } else {
                 configurationUserPairFlow.collect { pair ->
+                    fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
+                        requestParams?.let {
+                            addQueryParameter("status", it.status.name)
+                        }
+                    }?.build()?.toUrl()?.toString()
 
                     dataClient.remoteCall<LLPaginatedResult<RedemptionCode>>(
                         fetchUrl ?: "",
@@ -337,7 +350,7 @@ internal class Rewards(
                         pair.first.accessToken
                     ).run {
                         if (this is Result.Success) {
-                            redemptionCodesPage = this.data
+                            redemptionCodesPageMap[requestParams] = this.data
                         }
                         liveLikeCallback.processResult(this)
                     }
@@ -355,18 +368,25 @@ internal class Rewards(
             configurationUserPairFlow.collect { pair ->
                 fetchUrl = pair.second.redemptionCodeDetailUrlTemplate?.replace("redemption_code_id", redemptionCodeId)
             }
-            if (fetchUrl == null) {
-                liveLikeCallback.onResponse(null, "No more data")
-            } else {
-                configurationUserPairFlow.collect { pair ->
-                    dataClient.remoteCall<RedemptionCode>(
-                        fetchUrl ?: "",
-                        RequestType.PATCH,
-                        "{\"status\":\"redeemed\"}".toRequestBody("application/json".toMediaTypeOrNull()),
-                        pair.first.accessToken
-                    ).run {
-                        liveLikeCallback.processResult(this)
-                    }
+            internalRedeemCode(fetchUrl, liveLikeCallback)
+        }
+    }
+
+    private suspend fun internalRedeemCode(
+        fetchUrl: String?,
+        liveLikeCallback: LiveLikeCallback<RedemptionCode>
+    ) {
+        if (fetchUrl == null) {
+            liveLikeCallback.onResponse(null, "No more data")
+        } else {
+            configurationUserPairFlow.collect { pair ->
+                dataClient.remoteCall<RedemptionCode>(
+                    fetchUrl ?: "",
+                    RequestType.PATCH,
+                    "{\"status\":\"redeemed\"}".toRequestBody("application/json".toMediaTypeOrNull()),
+                    pair.first.accessToken
+                ).run {
+                    liveLikeCallback.processResult(this)
                 }
             }
         }
@@ -381,20 +401,7 @@ internal class Rewards(
             configurationUserPairFlow.collect { pair ->
                 fetchUrl = pair.second.redemptionCodeDetailUrlTemplate?.replace("redemption_code", redemptionCode)
             }
-            if (fetchUrl == null) {
-                liveLikeCallback.onResponse(null, "No more data")
-            } else {
-                configurationUserPairFlow.collect { pair ->
-                    dataClient.remoteCall<RedemptionCode>(
-                        fetchUrl ?: "",
-                        RequestType.PATCH,
-                        "{\"status\":\"redeemed\"}".toRequestBody("application/json".toMediaTypeOrNull()),
-                        pair.first.accessToken
-                    ).run {
-                        liveLikeCallback.processResult(this)
-                    }
-                }
-            }
+            internalRedeemCode(fetchUrl, liveLikeCallback)
         }
     }
 }
@@ -481,9 +488,22 @@ interface IRewardsClient {
     /**
      * Retrieve all redemption code associated
      * with the current user profile
+     *
      **/
     fun getRedeemedCodes(
         liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
+    )
+
+    /**
+     * Retrieve all redemption code associated
+     * with the current user profile
+     *
+     * @param requestParams for applying filters
+     **/
+    fun getRedeemedCodes(
+        liveLikePagination: LiveLikePagination,
+        requestParams: RedemptionCodesRequestParameters?,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
     )
 
