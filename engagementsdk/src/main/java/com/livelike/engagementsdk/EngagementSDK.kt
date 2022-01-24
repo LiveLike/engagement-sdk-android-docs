@@ -590,7 +590,9 @@ class EngagementSDK(
         @SerializedName("redemption_codes_url")
         val redemptionCodesUrl: String?,
         @SerializedName("redemption_code_detail_url_template")
-        val redemptionCodeDetailUrlTemplate: String?
+        val redemptionCodeDetailUrlTemplate: String?,
+        @SerializedName("redemption_code_redeem_url")
+        val redemptionCodeRedeemUrl: String?
     )
 
     companion object {

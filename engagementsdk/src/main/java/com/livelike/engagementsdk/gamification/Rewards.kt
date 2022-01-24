@@ -311,7 +311,7 @@ internal class Rewards(
         }
     }
 
-    override fun getRedemptionCodes(
+    override fun getRedeemedCodes(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
     ) {
@@ -346,6 +346,32 @@ internal class Rewards(
         }
     }
 
+    override fun redeemCodeById(
+        redemptionCodeId: String,
+        liveLikeCallback: LiveLikeCallback<RedemptionCode>
+    ) {
+        var fetchUrl: String? = null
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                fetchUrl = pair.second.redemptionCodeDetailUrlTemplate?.replace("redemption_code_id", redemptionCodeId)
+            }
+            if (fetchUrl == null) {
+                liveLikeCallback.onResponse(null, "No more data")
+            } else {
+                configurationUserPairFlow.collect { pair ->
+                    dataClient.remoteCall<RedemptionCode>(
+                        fetchUrl ?: "",
+                        RequestType.PATCH,
+                        "{\"status\":\"redeemed\"}".toRequestBody("application/json".toMediaTypeOrNull()),
+                        pair.first.accessToken
+                    ).run {
+                        liveLikeCallback.processResult(this)
+                    }
+                }
+            }
+        }
+    }
+
     override fun redeemCode(
         redemptionCode: String,
         liveLikeCallback: LiveLikeCallback<RedemptionCode>
@@ -353,7 +379,7 @@ internal class Rewards(
         var fetchUrl: String? = null
         sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-                fetchUrl = pair.second.redemptionCodeDetailUrlTemplate?.replace("redemption_code_id", redemptionCode)
+                fetchUrl = pair.second.redemptionCodeDetailUrlTemplate?.replace("redemption_code", redemptionCode)
             }
             if (fetchUrl == null) {
                 liveLikeCallback.onResponse(null, "No more data")
@@ -456,7 +482,7 @@ interface IRewardsClient {
      * Retrieve all redemption code associated
      * with the current user profile
      **/
-    fun getRedemptionCodes(
+    fun getRedeemedCodes(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
     )
@@ -464,7 +490,16 @@ interface IRewardsClient {
     /**
      * redeem redemption code
      *
-     * @param profileId profile to associate with code
+     * @param redemptionCodeId id of code being submitted
+     **/
+    fun redeemCodeById(
+        redemptionCodeId: String,
+        liveLikeCallback: LiveLikeCallback<RedemptionCode>
+    )
+
+    /**
+     * redeem redemption code
+     *
      * @param redemptionCode code being submitted
      **/
     fun redeemCode(
@@ -491,7 +526,7 @@ data class RedemptionCode (
 )
 
 enum class RedemptionCodeStatus {
-    deactivated, redeemed, open;
+    active, redeemed, inactive;
 }
 
 data class ApplicationRewardItemsRequestParams(
