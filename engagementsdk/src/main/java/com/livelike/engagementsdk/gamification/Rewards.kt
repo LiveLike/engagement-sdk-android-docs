@@ -35,7 +35,7 @@ internal class Rewards(
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
 
     private var rewardTransactionsPageMap: MutableMap<RewardTransactionsRequestParameters?,LLPaginatedResult<RewardTransaction>?> = mutableMapOf()
-    private var redemptionCodesPageMap: MutableMap<RedemptionCodesRequestParameters?, LLPaginatedResult<RedemptionCode>?> = mutableMapOf()
+    private var redemptionCodesPageMap: MutableMap<GetRedemptionCodesRequestOptions?, LLPaginatedResult<RedemptionCode>?> = mutableMapOf()
 
 
     override var rewardEventsListener: RewardEventsListener? = null
@@ -320,7 +320,7 @@ internal class Rewards(
 
     override fun getRedeemedCodes(
         liveLikePagination: LiveLikePagination,
-        requestParams: RedemptionCodesRequestParameters?,
+        requestParams: GetRedemptionCodesRequestOptions?,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
     ) {
         var fetchUrl: String? = null
@@ -366,7 +366,20 @@ internal class Rewards(
         var fetchUrl: String? = null
         sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-                fetchUrl = pair.second.redemptionCodeDetailUrlTemplate?.replace("redemption_code_id", redemptionCodeId)
+                fetchUrl = pair.second.redemptionCodeDetailUrlTemplate?.replace("{redemption_code_id}", redemptionCodeId)
+            }
+            internalRedeemCode(fetchUrl, liveLikeCallback)
+        }
+    }
+
+    override fun redeemCode(
+        redemptionCode: String,
+        liveLikeCallback: LiveLikeCallback<RedemptionCode>
+    ) {
+        var fetchUrl: String? = null
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                fetchUrl = pair.second.redemptionCodeRedeemUrl?.replace("{code}", redemptionCode)
             }
             internalRedeemCode(fetchUrl, liveLikeCallback)
         }
@@ -389,19 +402,6 @@ internal class Rewards(
                     liveLikeCallback.processResult(this)
                 }
             }
-        }
-    }
-
-    override fun redeemCode(
-        redemptionCode: String,
-        liveLikeCallback: LiveLikeCallback<RedemptionCode>
-    ) {
-        var fetchUrl: String? = null
-        sdkScope.launch {
-            configurationUserPairFlow.collect { pair ->
-                fetchUrl = pair.second.redemptionCodeDetailUrlTemplate?.replace("redemption_code", redemptionCode)
-            }
-            internalRedeemCode(fetchUrl, liveLikeCallback)
         }
     }
 }
@@ -503,7 +503,7 @@ interface IRewardsClient {
      **/
     fun getRedeemedCodes(
         liveLikePagination: LiveLikePagination,
-        requestParams: RedemptionCodesRequestParameters?,
+        requestParams: GetRedemptionCodesRequestOptions?,
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionCode>>
     )
 
@@ -529,7 +529,7 @@ interface IRewardsClient {
 
 }
 
-data class RedemptionCodesRequestParameters (
+data class GetRedemptionCodesRequestOptions (
     val status: RedemptionCodeStatus
 )
 

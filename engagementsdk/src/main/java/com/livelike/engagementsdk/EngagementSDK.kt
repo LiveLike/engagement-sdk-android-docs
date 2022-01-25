@@ -591,7 +591,7 @@ class EngagementSDK(
         val redemptionCodesUrl: String?,
         @SerializedName("redemption_code_detail_url_template")
         val redemptionCodeDetailUrlTemplate: String?,
-        @SerializedName("redemption_code_redeem_url")
+        @SerializedName("redemption_code_redeem_template")
         val redemptionCodeRedeemUrl: String?
     )
 

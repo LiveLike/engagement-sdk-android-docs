@@ -26,6 +26,8 @@ class RewardsClientTestActivity : AppCompatActivity() {
 
     val rewardItemBalanceMap: MutableMap<String, Int> = mutableMapOf()
 
+    var redemptionOptions: GetRedemptionCodesRequestOptions? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.reward_is_client_test_activity)
@@ -74,6 +76,27 @@ class RewardsClientTestActivity : AppCompatActivity() {
             }
         }
 
+        filter_spinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, RedemptionCodeStatus.values().map {it.name}.toMutableList().apply { add("None") } )
+        filter_spinner.setSelection(RedemptionCodeStatus.values().size)
+        filter_spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                redemptionOptions = if ( position >= RedemptionCodeStatus.values().size ){
+                    null
+                } else {
+                    GetRedemptionCodesRequestOptions(RedemptionCodeStatus.values()[position])
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+        }
     }
 
     fun fetchRewardItemBalances(ids: List<String>) {
@@ -285,8 +308,9 @@ class RewardsClientTestActivity : AppCompatActivity() {
         }
 
         show_redemption.setOnClickListener {
-            rewardsClient.getRedeemedCodes(LiveLikePagination.FIRST, object :
-                LiveLikeCallback<LLPaginatedResult<RedemptionCode>>() {
+            rewardsClient.getRedeemedCodes(LiveLikePagination.FIRST,
+                redemptionOptions,
+                object : LiveLikeCallback<LLPaginatedResult<RedemptionCode>>() {
                 override fun onResponse(
                     result: LLPaginatedResult<RedemptionCode>?,
                     error: String?

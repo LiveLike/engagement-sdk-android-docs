@@ -124,7 +124,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/show_redemption" />
+        app:layout_constraintTop_toBottomOf="@+id/filter_spinner" />
 
     <Button
         android:id="@+id/show_reward"
@@ -189,11 +189,27 @@
 
     <Button
         android:id="@+id/redeem_code"
-        android:text="redeem by id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="redeem by id"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/redemption_code"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/redemption_code" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+        android:text="filter Codes by:"
+        app:layout_constraintBottom_toBottomOf="@+id/filter_spinner"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Spinner
+        android:id="@+id/filter_spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView11"
+        app:layout_constraintTop_toBottomOf="@+id/show_redemption" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
