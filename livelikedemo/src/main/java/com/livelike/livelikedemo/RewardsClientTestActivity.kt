@@ -26,7 +26,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
 
     val rewardItemBalanceMap: MutableMap<String, Int> = mutableMapOf()
 
-    var redemptionOptions: GetRedemptionCodesRequestOptions? = null
+    var redemptionOptions: GetRedemptionKeyRequestOptions? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,8 +76,8 @@ class RewardsClientTestActivity : AppCompatActivity() {
             }
         }
 
-        filter_spinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, RedemptionCodeStatus.values().map {it.name}.toMutableList().apply { add("None") } )
-        filter_spinner.setSelection(RedemptionCodeStatus.values().size)
+        filter_spinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, RedemptionKeyStatus.values().map {it.name}.toMutableList().apply { add("None") } )
+        filter_spinner.setSelection(RedemptionKeyStatus.values().size)
         filter_spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -85,10 +85,10 @@ class RewardsClientTestActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                redemptionOptions = if ( position >= RedemptionCodeStatus.values().size ){
+                redemptionOptions = if ( position >= RedemptionKeyStatus.values().size ){
                     null
                 } else {
-                    GetRedemptionCodesRequestOptions(RedemptionCodeStatus.values()[position])
+                    GetRedemptionKeyRequestOptions(RedemptionKeyStatus.values()[position])
                 }
             }
 
@@ -308,11 +308,11 @@ class RewardsClientTestActivity : AppCompatActivity() {
         }
 
         show_redemption.setOnClickListener {
-            rewardsClient.getRedeemedCodes(LiveLikePagination.FIRST,
+            rewardsClient.getRedemptionKeys(LiveLikePagination.FIRST,
                 redemptionOptions,
-                object : LiveLikeCallback<LLPaginatedResult<RedemptionCode>>() {
+                object : LiveLikeCallback<LLPaginatedResult<RedemptionKey>>() {
                 override fun onResponse(
-                    result: LLPaginatedResult<RedemptionCode>?,
+                    result: LLPaginatedResult<RedemptionKey>?,
                     error: String?
                 ) {
                     result?.let{
@@ -321,7 +321,7 @@ class RewardsClientTestActivity : AppCompatActivity() {
                                 .setTitle("codes assigned to user")
                                 .setItems(result
                                     .results
-                                    ?.map(RedemptionCode::toString)
+                                    ?.map(RedemptionKey::toString)
                                     ?.toTypedArray()) { _, _ -> }
                                 .create()
                                 .show()
@@ -332,8 +332,8 @@ class RewardsClientTestActivity : AppCompatActivity() {
             })
         }
 
-        val callback = object : LiveLikeCallback<RedemptionCode>() {
-            override fun onResponse(result: RedemptionCode?, error: String?) {
+        val callback = object : LiveLikeCallback<RedemptionKey>() {
+            override fun onResponse(result: RedemptionKey?, error: String?) {
                 result?.let {
                     runOnUiThread {
                         AlertDialog.Builder(this@RewardsClientTestActivity)
@@ -355,11 +355,11 @@ class RewardsClientTestActivity : AppCompatActivity() {
         }
 
         redeem_code.setOnClickListener {
-            rewardsClient.redeemCodeById(redemption_code.text.toString(),callback)
+            rewardsClient.redeemKeyWithId(redemption_code.text.toString(),callback)
         }
 
         redeem_code2.setOnClickListener {
-            rewardsClient.redeemCode(redemption_code.text.toString(),callback)
+            rewardsClient.redeemKeyWithCode(redemption_code.text.toString(),callback)
         }
 
     }
