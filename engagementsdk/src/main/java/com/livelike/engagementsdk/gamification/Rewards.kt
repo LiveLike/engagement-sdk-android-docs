@@ -327,7 +327,7 @@ internal class Rewards(
         sdkScope.launch {
             if (redemptionCodesPageMap[requestParams] == null || liveLikePagination == LiveLikePagination.FIRST) {
                 configurationUserPairFlow.collect { pair ->
-                    fetchUrl = pair.second.redemptionCodesUrl
+                    fetchUrl = pair.second.redemptionKeysUrl
                 }
             } else {
                 fetchUrl =
@@ -360,13 +360,13 @@ internal class Rewards(
     }
 
     override fun redeemKeyWithId(
-        keyId: String,
+        redemptionKeyId: String,
         liveLikeCallback: LiveLikeCallback<RedemptionKey>
     ) {
         var fetchUrl: String? = null
         sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-                fetchUrl = pair.second.redemptionCodeDetailUrlTemplate?.replace("{redemption_code_id}", keyId)
+                fetchUrl = pair.second.redemptionKeyDetailUrlTemplate?.replace("{redemption_code_id}", redemptionKeyId)
             }
             internalRedeemCode(fetchUrl, liveLikeCallback)
         }
@@ -379,7 +379,7 @@ internal class Rewards(
         var fetchUrl: String? = null
         sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-                fetchUrl = pair.second.redemptionCodeRedeemUrl?.replace("{code}", code)
+                fetchUrl = pair.second.redemptionKeyDetailByCodeUrlTemplate?.replace("{code}", code)
             }
             internalRedeemCode(fetchUrl, liveLikeCallback)
         }
@@ -510,10 +510,10 @@ interface IRewardsClient {
     /**
      * redeem redemption code
      *
-     * @param keyId id of code being submitted
+     * @param redemptionKeyId id of code being submitted
      **/
     fun redeemKeyWithId(
-        keyId: String,
+        redemptionKeyId: String,
         liveLikeCallback: LiveLikeCallback<RedemptionKey>
     )
 
