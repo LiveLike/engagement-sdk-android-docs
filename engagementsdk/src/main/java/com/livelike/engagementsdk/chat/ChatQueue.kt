@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.chat
 
-import com.example.example.PinMessageInfo
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.ChatRoomListener
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener

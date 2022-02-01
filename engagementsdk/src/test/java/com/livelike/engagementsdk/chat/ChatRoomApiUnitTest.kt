@@ -3,7 +3,7 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
-import com.example.example.PinMessageInfo
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.BlockedInfo
