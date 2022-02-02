@@ -366,7 +366,7 @@ internal class Rewards(
         var fetchUrl: String? = null
         sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
-                fetchUrl = pair.second.redemptionKeyDetailUrlTemplate?.replace("{redemption_code_id}", redemptionKeyId)
+                fetchUrl = pair.second.redemptionKeyDetailUrlTemplate?.replace("{redemption_key_id}", redemptionKeyId)
             }
             internalRedeemCode(fetchUrl, liveLikeCallback)
         }
