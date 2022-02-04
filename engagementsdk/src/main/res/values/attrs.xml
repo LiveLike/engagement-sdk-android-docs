@@ -112,20 +112,20 @@
         <attr name="chatMessageTopBorderColor" format="color" />
         <attr name="chatMessageBottomBorderHeight" format="dimension" />
         <attr name="chatMessageBottomBorderColor" format="color" />
-        <attr name="reaction_hint_enable" format="boolean" />
-        <attr name="reaction_icon" format="reference" />
-        <attr name="reaction_icons_margin_top" format="dimension" />
-        <attr name="reaction_icons_margin_right" format="dimension" />
-        <attr name="reaction_icons_margin_left" format="dimension" />
-        <attr name="reaction_icons_margin_bottom" format="dimension" />
-        <attr name="reaction_icon_position_bottom" format="boolean" />
-        <attr name="reaction_count_icons_position_bottom" format="boolean" />
-        <attr name="reaction_icons_gap_factor" format="float" />
+        <attr name="chatReactionHintEnable" format="boolean" />
+        <attr name="chatReactionIcon" format="reference" />
+        <attr name="chatReactionIconsMarginTop" format="dimension" />
+        <attr name="chatReactionIconsMarginRight" format="dimension" />
+        <attr name="chatReactionIconsMarginLeft" format="dimension" />
+        <attr name="chatReactionIconsMarginBottom" format="dimension" />
+        <attr name="chatReactionIconPositionBottom" format="boolean" />
+        <attr name="chatReactionCountIconsPositionBottom" format="boolean" />
+        <attr name="chatReactionIconsGapFactor" format="float" />
         <attr name="chatReactionModerationFlagVisible" format="boolean" />
-        <attr name="reaction_count_margin_top" format="dimension" />
-        <attr name="reaction_count_margin_right" format="dimension" />
-        <attr name="reaction_count_margin_left" format="dimension" />
-        <attr name="reaction_count_margin_bottom" format="dimension" />
+        <attr name="chatReactionCountMarginTop" format="dimension" />
+        <attr name="chatReactionCountMarginRight" format="dimension" />
+        <attr name="chatReactionCountMarginLeft" format="dimension" />
+        <attr name="chatReactionCountMarginBottom" format="dimension" />
         <attr name="chatUserNameTextStyle">
             <flag name="normal" value="0" />
             <flag name="bold" value="1" />
