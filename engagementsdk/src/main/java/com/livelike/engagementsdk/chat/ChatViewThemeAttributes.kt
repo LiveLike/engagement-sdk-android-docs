@@ -631,6 +631,10 @@ class ChatViewThemeAttributes {
                 R.styleable.ChatView_chatMessageLinkTextColor,
                 ContextCompat.getColor(context, R.color.livelike_chatMessage_link_text_color)
             )
+            chatInputCharLimit = getInteger(
+                R.styleable.ChatView_chatInputMaxCharLimit,
+                R.integer.chat_input_max_char_limit
+            )
         }
     }
 
@@ -744,4 +748,5 @@ class ChatViewThemeAttributes {
     var chatReactionPanelGravity: Int = Gravity.CENTER or Gravity.TOP
     var chatReactionPanelCountVisibleIfZero: Boolean = true
     var chatMessageLinkTextColor: Int = Color.BLUE
+    var chatInputCharLimit: Int = 250
 }

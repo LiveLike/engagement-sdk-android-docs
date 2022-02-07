@@ -150,9 +150,9 @@
         </attr>
         <attr name="chatMessageTimeTextAllCaps" format="boolean" />
         <attr name="chatMessageTimeTextColor" format="color" />
-        <attr name="chatMessageTimeTextLetterSpacing" format="float"/>
-        <attr name="chatMessageTextLetterSpacing" format="float"/>
-        <attr name="chatUserNameTextLetterSpacing" format="float"/>
+        <attr name="chatMessageTimeTextLetterSpacing" format="float" />
+        <attr name="chatMessageTextLetterSpacing" format="float" />
+        <attr name="chatUserNameTextLetterSpacing" format="float" />
         <attr name="chatReactionDisplayCountTextStyle">
             <flag name="normal" value="0" />
             <flag name="bold" value="1" />
@@ -180,6 +180,7 @@
         <attr name="chatReactionPanelCountCustomFontPath" format="string" />
         <attr name="chatReactionPanelCountVisibleIfZero" format="boolean" />
         <attr name="chatMessageLinkTextColor" format="color" />
+        <attr name="chatInputMaxCharLimit" format="integer" />
     </declare-styleable>
 
     <declare-styleable name="PointView">
