@@ -9,6 +9,6 @@ data class RegisteredLink (
     val name: String,
     @field:SerializedName("description")
     val description: String?,
-    @field:SerializedName("url")
-    val url : String,
+    @field:SerializedName("link_url")
+    val linkUrl : String,
 )
