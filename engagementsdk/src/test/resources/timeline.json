@@ -1,0 +1,2945 @@
+{
+  "next": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/programs\/498591f4-9d6b-4943-9671-f44d3afbb6a4\/widgets\/?ordering=recent&page=2&status=published",
+  "previous": null,
+  "results": [
+    {
+      "translatable_fields": [
+        "question"
+      ],
+      "subscribe_channel": "program.widget.42861ba8-49bd-48da-b3c4-2366e35a3f22",
+      "rewards_url": null,
+      "engagement_count": 1,
+      "unique_impression_count": 1,
+      "engagement_percent": "1.000",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-quizzes\/42861ba8-49bd-48da-b3c4-2366e35a3f22\/interactions\/",
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-quizzes\/42861ba8-49bd-48da-b3c4-2366e35a3f22\/schedule\/",
+      "custom_data": null,
+      "kind": "text-quiz",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-quiz\/42861ba8-49bd-48da-b3c4-2366e35a3f22\/",
+      "created_by": {
+        "id": "b64d27ac-a92b-4f72-b030-bc747be8fae8",
+        "image_url": null,
+        "name": null
+      },
+      "reactions": [
+
+      ],
+      "impression_count": 1,
+      "earnable_rewards": [
+        {
+          "reward_action_key": "quiz-correct",
+          "reward_item_amount": 500,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "quiz-answered",
+          "reward_item_amount": 1000,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "choices": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "description": "c",
+          "answer_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-quiz\/42861ba8-49bd-48da-b3c4-2366e35a3f22\/choices\/d0166bdd-8684-40ac-9b68-39f040d0a3b6\/answers\/",
+          "id": "d0166bdd-8684-40ac-9b68-39f040d0a3b6",
+          "answer_count": 1,
+          "is_correct": true,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "description": "d",
+          "answer_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-quiz\/42861ba8-49bd-48da-b3c4-2366e35a3f22\/choices\/636dee2b-bc6e-4664-bba3-41db80a962f0\/answers\/",
+          "id": "636dee2b-bc6e-4664-bba3-41db80a962f0",
+          "answer_count": 0,
+          "is_correct": false,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-quizzes\/42861ba8-49bd-48da-b3c4-2366e35a3f22\/",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_quiz_id=42861ba8-49bd-48da-b3c4-2366e35a3f22",
+      "created_at": "2022-01-11T11:30:18.435Z",
+      "timeout": "P0DT00H00M30S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "42861ba8-49bd-48da-b3c4-2366e35a3f22",
+      "question": "quiz3",
+      "published_at": "2022-01-11T11:30:26.533Z",
+      "scheduled_at": "2022-01-11T11:30:18.534Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question"
+      ],
+      "subscribe_channel": "program.widget.3f9d0382-deb0-49b1-977f-ee056d6fa849",
+      "rewards_url": null,
+      "engagement_count": 1,
+      "unique_impression_count": 1,
+      "engagement_percent": "1.000",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-quizzes\/3f9d0382-deb0-49b1-977f-ee056d6fa849\/interactions\/",
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-quizzes\/3f9d0382-deb0-49b1-977f-ee056d6fa849\/schedule\/",
+      "custom_data": null,
+      "kind": "text-quiz",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-quiz\/3f9d0382-deb0-49b1-977f-ee056d6fa849\/",
+      "created_by": {
+        "id": "b64d27ac-a92b-4f72-b030-bc747be8fae8",
+        "image_url": null,
+        "name": null
+      },
+      "reactions": [
+
+      ],
+      "impression_count": 1,
+      "earnable_rewards": [
+        {
+          "reward_action_key": "quiz-correct",
+          "reward_item_amount": 500,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "quiz-answered",
+          "reward_item_amount": 1000,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "choices": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "description": "a",
+          "answer_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-quiz\/3f9d0382-deb0-49b1-977f-ee056d6fa849\/choices\/3e897b32-cbf6-4240-a8d8-13d863d8fcad\/answers\/",
+          "id": "3e897b32-cbf6-4240-a8d8-13d863d8fcad",
+          "answer_count": 1,
+          "is_correct": false,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "description": "b",
+          "answer_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-quiz\/3f9d0382-deb0-49b1-977f-ee056d6fa849\/choices\/7cad98bf-33e6-44ab-b410-abfd4dd17ab6\/answers\/",
+          "id": "7cad98bf-33e6-44ab-b410-abfd4dd17ab6",
+          "answer_count": 0,
+          "is_correct": false,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-quizzes\/3f9d0382-deb0-49b1-977f-ee056d6fa849\/",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_quiz_id=3f9d0382-deb0-49b1-977f-ee056d6fa849",
+      "created_at": "2022-01-11T11:29:48.222Z",
+      "timeout": "P0DT00H00M30S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "3f9d0382-deb0-49b1-977f-ee056d6fa849",
+      "question": "quiz2",
+      "published_at": "2022-01-11T11:29:51.477Z",
+      "scheduled_at": "2022-01-11T11:29:48.327Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question",
+        "confirmation_message"
+      ],
+      "rewards_url": null,
+      "engagement_count": 0,
+      "impression_count": 11,
+      "engagement_percent": "0.000",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction",
+      "follow_up_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/",
+      "follow_ups": [
+        {
+          "translatable_fields": [
+
+          ],
+          "rewards_url": null,
+          "engagement_count": null,
+          "unique_impression_count": 0,
+          "engagement_percent": null,
+          "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+          "kind": "text-prediction-follow-up",
+          "options": [
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/2c4a0702-ae76-4949-aeef-372cc8f1b597\/options\/7c23d83c-0a70-4745-bd51-3de0ee4fd3bf\/votes\/",
+              "description": "1",
+              "earnable_rewards": [
+                {
+                  "reward_action_key": "prediction-correct",
+                  "reward_item_amount": 9,
+                  "reward_item_name": "TestFreeItem",
+                  "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+                }
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/7c23d83c-0a70-4745-bd51-3de0ee4fd3bf\/",
+              "id": "7c23d83c-0a70-4745-bd51-3de0ee4fd3bf",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            },
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/2c4a0702-ae76-4949-aeef-372cc8f1b597\/options\/64a122e3-f3f6-4105-8e8f-c11fc5c9296a\/votes\/",
+              "description": "2",
+              "earnable_rewards": [
+
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/64a122e3-f3f6-4105-8e8f-c11fc5c9296a\/",
+              "id": "64a122e3-f3f6-4105-8e8f-c11fc5c9296a",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            }
+          ],
+          "status": "pending",
+          "sponsors": [
+
+          ],
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+          "custom_data": null,
+          "subscribe_channel": "program.widget.2c4a0702-ae76-4949-aeef-372cc8f1b597",
+          "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/2c4a0702-ae76-4949-aeef-372cc8f1b597\/",
+          "correct_option_id": null,
+          "created_by": {
+            "id": "e4e072f5-4837-4b11-bfaa-167ada9db953",
+            "image_url": null,
+            "name": null
+          },
+          "program_date_time": null,
+          "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/f7d73bd0-2ec0-46e1-8d40-fa0ea8ae4e54\/schedule\/",
+          "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/f7d73bd0-2ec0-46e1-8d40-fa0ea8ae4e54\/interactions\/",
+          "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/f7d73bd0-2ec0-46e1-8d40-fa0ea8ae4e54\/",
+          "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/2c4a0702-ae76-4949-aeef-372cc8f1b597\/claims\/",
+          "reactions": [
+
+          ],
+          "impression_count": 0,
+          "id": "f7d73bd0-2ec0-46e1-8d40-fa0ea8ae4e54",
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/f7d73bd0-2ec0-46e1-8d40-fa0ea8ae4e54\/",
+          "text_prediction_id": "2c4a0702-ae76-4949-aeef-372cc8f1b597",
+          "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=2c4a0702-ae76-4949-aeef-372cc8f1b597",
+          "earnable_rewards": [
+
+          ],
+          "timeout": "P0DT00H00M30S",
+          "publish_delay": "P0DT00H00M00S",
+          "created_at": "2021-12-13T16:27:18.182Z",
+          "question": "Hi Jacob",
+          "published_at": null,
+          "scheduled_at": null,
+          "translations": {
+
+          }
+        }
+      ],
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/2c4a0702-ae76-4949-aeef-372cc8f1b597\/options\/7c23d83c-0a70-4745-bd51-3de0ee4fd3bf\/votes\/",
+          "description": "1",
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 9,
+              "reward_item_name": "TestFreeItem",
+              "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/7c23d83c-0a70-4745-bd51-3de0ee4fd3bf\/",
+          "id": "7c23d83c-0a70-4745-bd51-3de0ee4fd3bf",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/2c4a0702-ae76-4949-aeef-372cc8f1b597\/options\/64a122e3-f3f6-4105-8e8f-c11fc5c9296a\/votes\/",
+          "description": "2",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/64a122e3-f3f6-4105-8e8f-c11fc5c9296a\/",
+          "id": "64a122e3-f3f6-4105-8e8f-c11fc5c9296a",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.2c4a0702-ae76-4949-aeef-372cc8f1b597",
+      "created_by": {
+        "id": "e4e072f5-4837-4b11-bfaa-167ada9db953",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/2c4a0702-ae76-4949-aeef-372cc8f1b597\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/2c4a0702-ae76-4949-aeef-372cc8f1b597\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction\/2c4a0702-ae76-4949-aeef-372cc8f1b597\/",
+      "reactions": [
+
+      ],
+      "unique_impression_count": 3,
+      "created_at": "2021-12-13T16:27:17.867Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/2c4a0702-ae76-4949-aeef-372cc8f1b597\/",
+      "earnable_rewards": [
+        {
+          "reward_action_key": "prediction-correct",
+          "reward_item_amount": 60,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "prediction-made",
+          "reward_item_amount": 100,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=2c4a0702-ae76-4949-aeef-372cc8f1b597",
+      "confirmation_message": "Alright! Stay tuned to see the result.",
+      "timeout": "P0DT00H00M30S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "2c4a0702-ae76-4949-aeef-372cc8f1b597",
+      "question": "Hi Jacob",
+      "published_at": "2021-12-13T16:27:18.556Z",
+      "scheduled_at": "2021-12-13T16:27:18.425Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question",
+        "confirmation_message"
+      ],
+      "rewards_url": null,
+      "engagement_count": 0,
+      "impression_count": 15,
+      "engagement_percent": "0.000",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction",
+      "follow_up_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/",
+      "follow_ups": [
+        {
+          "translatable_fields": [
+
+          ],
+          "rewards_url": null,
+          "engagement_count": null,
+          "unique_impression_count": 0,
+          "engagement_percent": null,
+          "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+          "kind": "text-prediction-follow-up",
+          "options": [
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7\/options\/6f909501-452d-436b-8961-77d3b54e2e61\/votes\/",
+              "description": "yes",
+              "earnable_rewards": [
+                {
+                  "reward_action_key": "prediction-correct",
+                  "reward_item_amount": 10,
+                  "reward_item_name": "Game Changer Points",
+                  "reward_item_id": "26894d5d-1efa-4997-bfe0-7e105fdc474d"
+                }
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/6f909501-452d-436b-8961-77d3b54e2e61\/",
+              "id": "6f909501-452d-436b-8961-77d3b54e2e61",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            },
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7\/options\/f401730f-0cf4-4df0-a5c3-927b3ecf6347\/votes\/",
+              "description": "no",
+              "earnable_rewards": [
+                {
+                  "reward_action_key": "prediction-correct",
+                  "reward_item_amount": 100,
+                  "reward_item_name": "Game Changer Points",
+                  "reward_item_id": "26894d5d-1efa-4997-bfe0-7e105fdc474d"
+                }
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/f401730f-0cf4-4df0-a5c3-927b3ecf6347\/",
+              "id": "f401730f-0cf4-4df0-a5c3-927b3ecf6347",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            }
+          ],
+          "status": "pending",
+          "sponsors": [
+
+          ],
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+          "custom_data": null,
+          "subscribe_channel": "program.widget.23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7",
+          "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7\/",
+          "correct_option_id": null,
+          "created_by": {
+            "id": "74ba7b54-2010-4017-9290-bafa1c22fa1a",
+            "image_url": null,
+            "name": null
+          },
+          "program_date_time": null,
+          "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/04a1d972-c7e4-4bb6-8222-2d5e9ca66b69\/schedule\/",
+          "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/04a1d972-c7e4-4bb6-8222-2d5e9ca66b69\/interactions\/",
+          "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/04a1d972-c7e4-4bb6-8222-2d5e9ca66b69\/",
+          "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7\/claims\/",
+          "reactions": [
+
+          ],
+          "impression_count": 0,
+          "id": "04a1d972-c7e4-4bb6-8222-2d5e9ca66b69",
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/04a1d972-c7e4-4bb6-8222-2d5e9ca66b69\/",
+          "text_prediction_id": "23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7",
+          "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7",
+          "earnable_rewards": [
+
+          ],
+          "timeout": "P0DT00H00M30S",
+          "publish_delay": "P0DT00H00M00S",
+          "created_at": "2021-12-13T15:03:47.743Z",
+          "question": "Waffles 3",
+          "published_at": null,
+          "scheduled_at": null,
+          "translations": {
+
+          }
+        }
+      ],
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7\/options\/6f909501-452d-436b-8961-77d3b54e2e61\/votes\/",
+          "description": "yes",
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 10,
+              "reward_item_name": "Game Changer Points",
+              "reward_item_id": "26894d5d-1efa-4997-bfe0-7e105fdc474d"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/6f909501-452d-436b-8961-77d3b54e2e61\/",
+          "id": "6f909501-452d-436b-8961-77d3b54e2e61",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7\/options\/f401730f-0cf4-4df0-a5c3-927b3ecf6347\/votes\/",
+          "description": "no",
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 100,
+              "reward_item_name": "Game Changer Points",
+              "reward_item_id": "26894d5d-1efa-4997-bfe0-7e105fdc474d"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/f401730f-0cf4-4df0-a5c3-927b3ecf6347\/",
+          "id": "f401730f-0cf4-4df0-a5c3-927b3ecf6347",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7",
+      "created_by": {
+        "id": "74ba7b54-2010-4017-9290-bafa1c22fa1a",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction\/23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7\/",
+      "reactions": [
+
+      ],
+      "unique_impression_count": 2,
+      "created_at": "2021-12-13T15:03:47.605Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7\/",
+      "earnable_rewards": [
+        {
+          "reward_action_key": "prediction-correct",
+          "reward_item_amount": 60,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "prediction-made",
+          "reward_item_amount": 100,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7",
+      "confirmation_message": "Alright! Stay tuned to see the result.",
+      "timeout": "P0DT00H00M30S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7",
+      "question": "Waffles 3",
+      "published_at": "2021-12-13T15:03:48.119Z",
+      "scheduled_at": "2021-12-13T15:03:47.926Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question",
+        "confirmation_message"
+      ],
+      "rewards_url": null,
+      "engagement_count": 0,
+      "impression_count": 7,
+      "engagement_percent": "0.000",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "image-prediction",
+      "follow_up_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/",
+      "follow_ups": [
+        {
+          "translatable_fields": [
+
+          ],
+          "rewards_url": null,
+          "engagement_count": null,
+          "unique_impression_count": 0,
+          "engagement_percent": null,
+          "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+          "kind": "image-prediction-follow-up",
+          "options": [
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "image_url": "https:\/\/cf-blast-storage-game-changers.livelikecdn.com\/assets\/9c650cf6-f6be-45e4-8a0b-908c10603278.png",
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/image-prediction\/0e47ad8d-766d-487f-b18b-e86c16a52019\/options\/a0ce6e8f-85d4-4693-ac55-5d2d6353f060\/votes\/",
+              "vote_count": 0,
+              "earnable_rewards": [
+                {
+                  "reward_action_key": "prediction-correct",
+                  "reward_item_amount": 10,
+                  "reward_item_name": "Ben Point",
+                  "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a"
+                }
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-options\/a0ce6e8f-85d4-4693-ac55-5d2d6353f060\/",
+              "id": "a0ce6e8f-85d4-4693-ac55-5d2d6353f060",
+              "description": "Yes",
+              "translations": {
+
+              }
+            },
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "image_url": "https:\/\/cf-blast-storage-game-changers.livelikecdn.com\/assets\/9c650cf6-f6be-45e4-8a0b-908c10603278.png",
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/image-prediction\/0e47ad8d-766d-487f-b18b-e86c16a52019\/options\/874a0267-9c53-4961-a439-1018e3fac0ee\/votes\/",
+              "vote_count": 0,
+              "earnable_rewards": [
+                {
+                  "reward_action_key": "prediction-correct",
+                  "reward_item_amount": 10,
+                  "reward_item_name": "Ben Point",
+                  "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a"
+                }
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-options\/874a0267-9c53-4961-a439-1018e3fac0ee\/",
+              "id": "874a0267-9c53-4961-a439-1018e3fac0ee",
+              "description": "No",
+              "translations": {
+
+              }
+            }
+          ],
+          "status": "pending",
+          "sponsors": [
+
+          ],
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+          "custom_data": null,
+          "subscribe_channel": "program.widget.0e47ad8d-766d-487f-b18b-e86c16a52019",
+          "correct_option_id": null,
+          "created_by": {
+            "id": "74ba7b54-2010-4017-9290-bafa1c22fa1a",
+            "image_url": null,
+            "name": null
+          },
+          "program_date_time": null,
+          "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/4b325e14-daa7-4e84-b318-bd1363d7c1ea\/schedule\/",
+          "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/4b325e14-daa7-4e84-b318-bd1363d7c1ea\/interactions\/",
+          "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/image-prediction-follow-up\/4b325e14-daa7-4e84-b318-bd1363d7c1ea\/",
+          "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/image-prediction\/0e47ad8d-766d-487f-b18b-e86c16a52019\/claims\/",
+          "image_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-predictions\/0e47ad8d-766d-487f-b18b-e86c16a52019\/",
+          "image_prediction_id": "0e47ad8d-766d-487f-b18b-e86c16a52019",
+          "reactions": [
+
+          ],
+          "impression_count": 0,
+          "id": "4b325e14-daa7-4e84-b318-bd1363d7c1ea",
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/4b325e14-daa7-4e84-b318-bd1363d7c1ea\/",
+          "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?image_prediction_id=0e47ad8d-766d-487f-b18b-e86c16a52019",
+          "created_at": "2021-12-13T15:00:22.790Z",
+          "timeout": "P0DT00H00M30S",
+          "publish_delay": "P0DT00H00M00S",
+          "earnable_rewards": [
+
+          ],
+          "question": "Image prediction Waffles",
+          "published_at": null,
+          "scheduled_at": null,
+          "translations": {
+
+          }
+        }
+      ],
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "image_url": "https:\/\/cf-blast-storage-game-changers.livelikecdn.com\/assets\/9c650cf6-f6be-45e4-8a0b-908c10603278.png",
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/image-prediction\/0e47ad8d-766d-487f-b18b-e86c16a52019\/options\/a0ce6e8f-85d4-4693-ac55-5d2d6353f060\/votes\/",
+          "vote_count": 0,
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 10,
+              "reward_item_name": "Ben Point",
+              "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-options\/a0ce6e8f-85d4-4693-ac55-5d2d6353f060\/",
+          "id": "a0ce6e8f-85d4-4693-ac55-5d2d6353f060",
+          "description": "Yes",
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "image_url": "https:\/\/cf-blast-storage-game-changers.livelikecdn.com\/assets\/9c650cf6-f6be-45e4-8a0b-908c10603278.png",
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/image-prediction\/0e47ad8d-766d-487f-b18b-e86c16a52019\/options\/874a0267-9c53-4961-a439-1018e3fac0ee\/votes\/",
+          "vote_count": 0,
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 10,
+              "reward_item_name": "Ben Point",
+              "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-options\/874a0267-9c53-4961-a439-1018e3fac0ee\/",
+          "id": "874a0267-9c53-4961-a439-1018e3fac0ee",
+          "description": "No",
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.0e47ad8d-766d-487f-b18b-e86c16a52019",
+      "created_by": {
+        "id": "74ba7b54-2010-4017-9290-bafa1c22fa1a",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-predictions\/0e47ad8d-766d-487f-b18b-e86c16a52019\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-predictions\/0e47ad8d-766d-487f-b18b-e86c16a52019\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/image-prediction\/0e47ad8d-766d-487f-b18b-e86c16a52019\/",
+      "reactions": [
+
+      ],
+      "unique_impression_count": 2,
+      "created_at": "2021-12-13T15:00:22.696Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-predictions\/0e47ad8d-766d-487f-b18b-e86c16a52019\/",
+      "earnable_rewards": [
+        {
+          "reward_action_key": "prediction-correct",
+          "reward_item_amount": 60,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "prediction-made",
+          "reward_item_amount": 100,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?image_prediction_id=0e47ad8d-766d-487f-b18b-e86c16a52019",
+      "confirmation_message": "Alright! Stay tuned to see the result.",
+      "timeout": "P0DT00H00M30S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "0e47ad8d-766d-487f-b18b-e86c16a52019",
+      "question": "Image prediction Waffles",
+      "published_at": "2021-12-13T15:00:25.778Z",
+      "scheduled_at": "2021-12-13T15:00:23.230Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question",
+        "confirmation_message"
+      ],
+      "rewards_url": null,
+      "engagement_count": 0,
+      "impression_count": 14,
+      "engagement_percent": "0.000",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction",
+      "follow_up_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/",
+      "follow_ups": [
+        {
+          "translatable_fields": [
+
+          ],
+          "rewards_url": null,
+          "engagement_count": null,
+          "unique_impression_count": 0,
+          "engagement_percent": null,
+          "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+          "kind": "text-prediction-follow-up",
+          "options": [
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/a56248a8-843c-4408-84d8-ce7dea895418\/options\/c42f3ab2-4316-4f83-b9c7-ee961c497b47\/votes\/",
+              "description": "Yes",
+              "earnable_rewards": [
+                {
+                  "reward_action_key": "prediction-correct",
+                  "reward_item_amount": 1000,
+                  "reward_item_name": "Game Changer Points",
+                  "reward_item_id": "26894d5d-1efa-4997-bfe0-7e105fdc474d"
+                }
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/c42f3ab2-4316-4f83-b9c7-ee961c497b47\/",
+              "id": "c42f3ab2-4316-4f83-b9c7-ee961c497b47",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            },
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/a56248a8-843c-4408-84d8-ce7dea895418\/options\/e7146835-013e-4c08-b4e5-60b913931311\/votes\/",
+              "description": "No",
+              "earnable_rewards": [
+                {
+                  "reward_action_key": "prediction-correct",
+                  "reward_item_amount": 10,
+                  "reward_item_name": "Ben Point",
+                  "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a"
+                }
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/e7146835-013e-4c08-b4e5-60b913931311\/",
+              "id": "e7146835-013e-4c08-b4e5-60b913931311",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            }
+          ],
+          "status": "pending",
+          "sponsors": [
+
+          ],
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+          "custom_data": null,
+          "subscribe_channel": "program.widget.a56248a8-843c-4408-84d8-ce7dea895418",
+          "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/a56248a8-843c-4408-84d8-ce7dea895418\/",
+          "correct_option_id": null,
+          "created_by": {
+            "id": "74ba7b54-2010-4017-9290-bafa1c22fa1a",
+            "image_url": null,
+            "name": null
+          },
+          "program_date_time": null,
+          "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/825166ed-2758-4f82-a322-f4f7180b3b69\/schedule\/",
+          "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/825166ed-2758-4f82-a322-f4f7180b3b69\/interactions\/",
+          "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/825166ed-2758-4f82-a322-f4f7180b3b69\/",
+          "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/a56248a8-843c-4408-84d8-ce7dea895418\/claims\/",
+          "reactions": [
+
+          ],
+          "impression_count": 0,
+          "id": "825166ed-2758-4f82-a322-f4f7180b3b69",
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/825166ed-2758-4f82-a322-f4f7180b3b69\/",
+          "text_prediction_id": "a56248a8-843c-4408-84d8-ce7dea895418",
+          "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=a56248a8-843c-4408-84d8-ce7dea895418",
+          "earnable_rewards": [
+
+          ],
+          "timeout": "P0DT00H00M30S",
+          "publish_delay": "P0DT00H00M00S",
+          "created_at": "2021-12-13T14:28:14.636Z",
+          "question": "waffles?",
+          "published_at": null,
+          "scheduled_at": null,
+          "translations": {
+
+          }
+        }
+      ],
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/a56248a8-843c-4408-84d8-ce7dea895418\/options\/c42f3ab2-4316-4f83-b9c7-ee961c497b47\/votes\/",
+          "description": "Yes",
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 1000,
+              "reward_item_name": "Game Changer Points",
+              "reward_item_id": "26894d5d-1efa-4997-bfe0-7e105fdc474d"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/c42f3ab2-4316-4f83-b9c7-ee961c497b47\/",
+          "id": "c42f3ab2-4316-4f83-b9c7-ee961c497b47",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/a56248a8-843c-4408-84d8-ce7dea895418\/options\/e7146835-013e-4c08-b4e5-60b913931311\/votes\/",
+          "description": "No",
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 10,
+              "reward_item_name": "Ben Point",
+              "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/e7146835-013e-4c08-b4e5-60b913931311\/",
+          "id": "e7146835-013e-4c08-b4e5-60b913931311",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.a56248a8-843c-4408-84d8-ce7dea895418",
+      "created_by": {
+        "id": "74ba7b54-2010-4017-9290-bafa1c22fa1a",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/a56248a8-843c-4408-84d8-ce7dea895418\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/a56248a8-843c-4408-84d8-ce7dea895418\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction\/a56248a8-843c-4408-84d8-ce7dea895418\/",
+      "reactions": [
+
+      ],
+      "unique_impression_count": 2,
+      "created_at": "2021-12-13T14:28:14.397Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/a56248a8-843c-4408-84d8-ce7dea895418\/",
+      "earnable_rewards": [
+        {
+          "reward_action_key": "prediction-correct",
+          "reward_item_amount": 60,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "prediction-made",
+          "reward_item_amount": 100,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=a56248a8-843c-4408-84d8-ce7dea895418",
+      "confirmation_message": "Alright! Stay tuned to see the result.",
+      "timeout": "P0DT00H00M30S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "a56248a8-843c-4408-84d8-ce7dea895418",
+      "question": "waffles?",
+      "published_at": "2021-12-13T14:28:26.616Z",
+      "scheduled_at": "2021-12-13T14:28:14.896Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question",
+        "confirmation_message"
+      ],
+      "rewards_url": null,
+      "engagement_count": 1,
+      "impression_count": 16,
+      "engagement_percent": "0.333",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "image-prediction",
+      "follow_up_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/",
+      "follow_ups": [
+        {
+          "translatable_fields": [
+
+          ],
+          "rewards_url": null,
+          "engagement_count": null,
+          "unique_impression_count": 0,
+          "engagement_percent": null,
+          "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+          "kind": "image-prediction-follow-up",
+          "options": [
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "image_url": "https:\/\/livelike.com\/wp-content\/uploads\/2019\/07\/Mike-Moloksher.jpg",
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/image-prediction\/6aac10c0-a8e7-4733-b28c-c46f72b5a3eb\/options\/aa118c36-64ce-4bbf-a56f-9a3b9d04389f\/votes\/",
+              "vote_count": 0,
+              "earnable_rewards": [
+                {
+                  "reward_action_key": "prediction-correct",
+                  "reward_item_amount": 100,
+                  "reward_item_name": "Game Changer Points",
+                  "reward_item_id": "26894d5d-1efa-4997-bfe0-7e105fdc474d"
+                }
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-options\/aa118c36-64ce-4bbf-a56f-9a3b9d04389f\/",
+              "id": "aa118c36-64ce-4bbf-a56f-9a3b9d04389f",
+              "description": "Choice A",
+              "translations": {
+
+              }
+            },
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "image_url": "https:\/\/livelike.com\/wp-content\/uploads\/2018\/11\/Jelzon.jpg",
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/image-prediction\/6aac10c0-a8e7-4733-b28c-c46f72b5a3eb\/options\/8b6d4702-e978-40e9-8d58-d3edc502c895\/votes\/",
+              "vote_count": 1,
+              "earnable_rewards": [
+                {
+                  "reward_action_key": "prediction-correct",
+                  "reward_item_amount": 50,
+                  "reward_item_name": "Ben Point",
+                  "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a"
+                }
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-options\/8b6d4702-e978-40e9-8d58-d3edc502c895\/",
+              "id": "8b6d4702-e978-40e9-8d58-d3edc502c895",
+              "description": "Choice B",
+              "translations": {
+
+              }
+            }
+          ],
+          "status": "pending",
+          "sponsors": [
+
+          ],
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+          "custom_data": null,
+          "subscribe_channel": "program.widget.6aac10c0-a8e7-4733-b28c-c46f72b5a3eb",
+          "correct_option_id": null,
+          "created_by": {
+            "id": "bdfe4076-ccd0-4713-a319-d0ad46298961",
+            "image_url": null,
+            "name": null
+          },
+          "program_date_time": null,
+          "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/da32aa4d-dbba-4cb3-a35b-aee52c4d698d\/schedule\/",
+          "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/da32aa4d-dbba-4cb3-a35b-aee52c4d698d\/interactions\/",
+          "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/image-prediction-follow-up\/da32aa4d-dbba-4cb3-a35b-aee52c4d698d\/",
+          "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/image-prediction\/6aac10c0-a8e7-4733-b28c-c46f72b5a3eb\/claims\/",
+          "image_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-predictions\/6aac10c0-a8e7-4733-b28c-c46f72b5a3eb\/",
+          "image_prediction_id": "6aac10c0-a8e7-4733-b28c-c46f72b5a3eb",
+          "reactions": [
+
+          ],
+          "impression_count": 0,
+          "id": "da32aa4d-dbba-4cb3-a35b-aee52c4d698d",
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/da32aa4d-dbba-4cb3-a35b-aee52c4d698d\/",
+          "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?image_prediction_id=6aac10c0-a8e7-4733-b28c-c46f72b5a3eb",
+          "created_at": "2021-12-13T05:24:06.791Z",
+          "timeout": "P0DT00H00M30S",
+          "publish_delay": "P0DT00H00M00S",
+          "earnable_rewards": [
+
+          ],
+          "question": "This is a question? (Nov 17, 4:48 pm)",
+          "published_at": null,
+          "scheduled_at": null,
+          "translations": {
+
+          }
+        }
+      ],
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "image_url": "https:\/\/livelike.com\/wp-content\/uploads\/2019\/07\/Mike-Moloksher.jpg",
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/image-prediction\/6aac10c0-a8e7-4733-b28c-c46f72b5a3eb\/options\/aa118c36-64ce-4bbf-a56f-9a3b9d04389f\/votes\/",
+          "vote_count": 0,
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 100,
+              "reward_item_name": "Game Changer Points",
+              "reward_item_id": "26894d5d-1efa-4997-bfe0-7e105fdc474d"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-options\/aa118c36-64ce-4bbf-a56f-9a3b9d04389f\/",
+          "id": "aa118c36-64ce-4bbf-a56f-9a3b9d04389f",
+          "description": "Choice A",
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "image_url": "https:\/\/livelike.com\/wp-content\/uploads\/2018\/11\/Jelzon.jpg",
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/image-prediction\/6aac10c0-a8e7-4733-b28c-c46f72b5a3eb\/options\/8b6d4702-e978-40e9-8d58-d3edc502c895\/votes\/",
+          "vote_count": 1,
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 50,
+              "reward_item_name": "Ben Point",
+              "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-options\/8b6d4702-e978-40e9-8d58-d3edc502c895\/",
+          "id": "8b6d4702-e978-40e9-8d58-d3edc502c895",
+          "description": "Choice B",
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+        {
+          "mimetype": "application\/octet-stream",
+          "logo_url": "https:\/\/cf-blast-storage-game-changers.livelikecdn.com\/assets\/92150b1e-61b1-4eff-850c-23bcb486cc61.png",
+          "name": "Ringside Coffee Company",
+          "id": "ead40f4c-2ba2-4fab-8374-98609c02d85a",
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L"
+        }
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.6aac10c0-a8e7-4733-b28c-c46f72b5a3eb",
+      "created_by": {
+        "id": "bdfe4076-ccd0-4713-a319-d0ad46298961",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-predictions\/6aac10c0-a8e7-4733-b28c-c46f72b5a3eb\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-predictions\/6aac10c0-a8e7-4733-b28c-c46f72b5a3eb\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/image-prediction\/6aac10c0-a8e7-4733-b28c-c46f72b5a3eb\/",
+      "reactions": [
+
+      ],
+      "unique_impression_count": 3,
+      "created_at": "2021-12-13T05:24:05.865Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-predictions\/6aac10c0-a8e7-4733-b28c-c46f72b5a3eb\/",
+      "confirmation_message": "Alright! Stay tuned to see the result.",
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?image_prediction_id=6aac10c0-a8e7-4733-b28c-c46f72b5a3eb",
+      "earnable_rewards": [
+        {
+          "reward_action_key": "prediction-correct",
+          "reward_item_amount": 60,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "prediction-made",
+          "reward_item_amount": 100,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "timeout": "P0DT00H00M05S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "6aac10c0-a8e7-4733-b28c-c46f72b5a3eb",
+      "question": "This is a question? (Nov 17, 4:48 pm)",
+      "published_at": "2021-12-13T05:26:00.954Z",
+      "scheduled_at": "2021-12-13T05:25:57.439Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+
+      ],
+      "rewards_url": null,
+      "engagement_count": null,
+      "unique_impression_count": 1,
+      "engagement_percent": null,
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "image-prediction-follow-up",
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "image_url": "https:\/\/cf-blast-storage-qa.livelikecdn.com\/assets\/7eea3117-20ce-455e-8996-9021e62245b1.png",
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/image-prediction\/1770154b-cb87-417a-85d9-87d679b012ae\/options\/1a2aa4ab-6673-4660-bb03-6435d86416f5\/votes\/",
+          "vote_count": 0,
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 100,
+              "reward_item_name": "Ben Point",
+              "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-options\/1a2aa4ab-6673-4660-bb03-6435d86416f5\/",
+          "id": "1a2aa4ab-6673-4660-bb03-6435d86416f5",
+          "description": "fqw fqwf",
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "image_url": "https:\/\/cf-blast-storage-qa.livelikecdn.com\/assets\/2e2bae46-ff6c-4d47-8dff-2d98aa385d99.png",
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/image-prediction\/1770154b-cb87-417a-85d9-87d679b012ae\/options\/101c3a43-b0b1-4256-b742-2dc693b0983b\/votes\/",
+          "vote_count": 1,
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 50,
+              "reward_item_name": "Game Changer Points",
+              "reward_item_id": "26894d5d-1efa-4997-bfe0-7e105fdc474d"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-options\/101c3a43-b0b1-4256-b742-2dc693b0983b\/",
+          "id": "101c3a43-b0b1-4256-b742-2dc693b0983b",
+          "description": "qw fqwf",
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+        {
+          "mimetype": "application\/octet-stream",
+          "logo_url": "https:\/\/cf-blast-storage-game-changers.livelikecdn.com\/assets\/92150b1e-61b1-4eff-850c-23bcb486cc61.png",
+          "name": "Ringside Coffee Company",
+          "id": "ead40f4c-2ba2-4fab-8374-98609c02d85a",
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L"
+        }
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.1770154b-cb87-417a-85d9-87d679b012ae",
+      "correct_option_id": null,
+      "created_by": {
+        "id": "bdfe4076-ccd0-4713-a319-d0ad46298961",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/ef6579fe-cbd2-4dd9-92fe-dc7d9fb05cb5\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/ef6579fe-cbd2-4dd9-92fe-dc7d9fb05cb5\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/image-prediction-follow-up\/ef6579fe-cbd2-4dd9-92fe-dc7d9fb05cb5\/",
+      "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/image-prediction\/1770154b-cb87-417a-85d9-87d679b012ae\/claims\/",
+      "image_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-predictions\/1770154b-cb87-417a-85d9-87d679b012ae\/",
+      "image_prediction_id": "1770154b-cb87-417a-85d9-87d679b012ae",
+      "reactions": [
+
+      ],
+      "impression_count": 4,
+      "created_at": "2021-08-06T08:29:50.948Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/ef6579fe-cbd2-4dd9-92fe-dc7d9fb05cb5\/",
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?image_prediction_id=1770154b-cb87-417a-85d9-87d679b012ae",
+      "earnable_rewards": [
+
+      ],
+      "timeout": "P0DT00H00M30S",
+      "publish_delay": "P0DT00H00M00S",
+      "published_at": "2021-12-13T05:24:45.781Z",
+      "question": "qwf qwfqw",
+      "id": "ef6579fe-cbd2-4dd9-92fe-dc7d9fb05cb5",
+      "scheduled_at": "2021-12-13T05:24:42.573Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question"
+      ],
+      "subscribe_channel": "program.widget.9154c44e-fe6b-4844-8014-7177a89dbf80",
+      "rewards_url": null,
+      "engagement_count": 1,
+      "unique_impression_count": 1,
+      "engagement_percent": "1.000",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-quizzes\/9154c44e-fe6b-4844-8014-7177a89dbf80\/interactions\/",
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-quizzes\/9154c44e-fe6b-4844-8014-7177a89dbf80\/schedule\/",
+      "custom_data": null,
+      "kind": "text-quiz",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-quiz\/9154c44e-fe6b-4844-8014-7177a89dbf80\/",
+      "created_by": {
+        "id": "bdfe4076-ccd0-4713-a319-d0ad46298961",
+        "image_url": null,
+        "name": null
+      },
+      "reactions": [
+
+      ],
+      "impression_count": 2,
+      "earnable_rewards": [
+        {
+          "reward_action_key": "quiz-correct",
+          "reward_item_amount": 500,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "quiz-answered",
+          "reward_item_amount": 1000,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "choices": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "description": "correct option",
+          "answer_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-quiz\/9154c44e-fe6b-4844-8014-7177a89dbf80\/choices\/b746d76f-243b-4a63-807f-3d2a11e3cead\/answers\/",
+          "id": "b746d76f-243b-4a63-807f-3d2a11e3cead",
+          "answer_count": 1,
+          "is_correct": true,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "description": "incorrect option",
+          "answer_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-quiz\/9154c44e-fe6b-4844-8014-7177a89dbf80\/choices\/088ed179-cad1-432c-b23a-25860ce4de85\/answers\/",
+          "id": "088ed179-cad1-432c-b23a-25860ce4de85",
+          "answer_count": 0,
+          "is_correct": false,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-quizzes\/9154c44e-fe6b-4844-8014-7177a89dbf80\/",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_quiz_id=9154c44e-fe6b-4844-8014-7177a89dbf80",
+      "created_at": "2021-12-08T09:52:00.627Z",
+      "timeout": "P0DT00H00M15S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "9154c44e-fe6b-4844-8014-7177a89dbf80",
+      "question": "test question",
+      "published_at": "2021-12-08T09:52:02.759Z",
+      "scheduled_at": "2021-12-08T09:52:00.907Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question",
+        "confirmation_message"
+      ],
+      "rewards_url": null,
+      "engagement_count": 0,
+      "impression_count": 64,
+      "engagement_percent": "0.000",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction",
+      "follow_up_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/",
+      "follow_ups": [
+        {
+          "translatable_fields": [
+
+          ],
+          "rewards_url": null,
+          "engagement_count": null,
+          "unique_impression_count": 0,
+          "engagement_percent": null,
+          "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+          "kind": "text-prediction-follow-up",
+          "options": [
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/ff4f04ea-500e-4179-ae93-1ffa082a18b8\/options\/75e2b0b1-b2b8-4cca-85cf-fc23bae2d1bf\/votes\/",
+              "description": "waffles",
+              "earnable_rewards": [
+                {
+                  "reward_action_key": "prediction-correct",
+                  "reward_item_amount": 50,
+                  "reward_item_name": "Ben Point",
+                  "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a"
+                }
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/75e2b0b1-b2b8-4cca-85cf-fc23bae2d1bf\/",
+              "id": "75e2b0b1-b2b8-4cca-85cf-fc23bae2d1bf",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            },
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/ff4f04ea-500e-4179-ae93-1ffa082a18b8\/options\/9493ee28-722d-45e2-b2fa-cd5c14a862c2\/votes\/",
+              "description": "not waffles",
+              "earnable_rewards": [
+                {
+                  "reward_action_key": "prediction-correct",
+                  "reward_item_amount": 1,
+                  "reward_item_name": "Game Changer Points",
+                  "reward_item_id": "26894d5d-1efa-4997-bfe0-7e105fdc474d"
+                }
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/9493ee28-722d-45e2-b2fa-cd5c14a862c2\/",
+              "id": "9493ee28-722d-45e2-b2fa-cd5c14a862c2",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            }
+          ],
+          "status": "pending",
+          "sponsors": [
+
+          ],
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+          "custom_data": null,
+          "subscribe_channel": "program.widget.ff4f04ea-500e-4179-ae93-1ffa082a18b8",
+          "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/ff4f04ea-500e-4179-ae93-1ffa082a18b8\/",
+          "correct_option_id": null,
+          "created_by": {
+            "id": "74ba7b54-2010-4017-9290-bafa1c22fa1a",
+            "image_url": null,
+            "name": null
+          },
+          "program_date_time": null,
+          "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/9e086385-77ba-46ed-ba0a-377e50511197\/schedule\/",
+          "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/9e086385-77ba-46ed-ba0a-377e50511197\/interactions\/",
+          "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/9e086385-77ba-46ed-ba0a-377e50511197\/",
+          "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/ff4f04ea-500e-4179-ae93-1ffa082a18b8\/claims\/",
+          "reactions": [
+
+          ],
+          "impression_count": 0,
+          "id": "9e086385-77ba-46ed-ba0a-377e50511197",
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/9e086385-77ba-46ed-ba0a-377e50511197\/",
+          "text_prediction_id": "ff4f04ea-500e-4179-ae93-1ffa082a18b8",
+          "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=ff4f04ea-500e-4179-ae93-1ffa082a18b8",
+          "earnable_rewards": [
+
+          ],
+          "timeout": "P0DT00H00M30S",
+          "publish_delay": "P0DT00H00M00S",
+          "created_at": "2021-12-03T16:24:27.508Z",
+          "question": "Waffles",
+          "published_at": null,
+          "scheduled_at": null,
+          "translations": {
+
+          }
+        }
+      ],
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/ff4f04ea-500e-4179-ae93-1ffa082a18b8\/options\/75e2b0b1-b2b8-4cca-85cf-fc23bae2d1bf\/votes\/",
+          "description": "waffles",
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 50,
+              "reward_item_name": "Ben Point",
+              "reward_item_id": "2becef61-e16d-4033-a994-f48085a5d79a"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/75e2b0b1-b2b8-4cca-85cf-fc23bae2d1bf\/",
+          "id": "75e2b0b1-b2b8-4cca-85cf-fc23bae2d1bf",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/ff4f04ea-500e-4179-ae93-1ffa082a18b8\/options\/9493ee28-722d-45e2-b2fa-cd5c14a862c2\/votes\/",
+          "description": "not waffles",
+          "earnable_rewards": [
+            {
+              "reward_action_key": "prediction-correct",
+              "reward_item_amount": 1,
+              "reward_item_name": "Game Changer Points",
+              "reward_item_id": "26894d5d-1efa-4997-bfe0-7e105fdc474d"
+            }
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/9493ee28-722d-45e2-b2fa-cd5c14a862c2\/",
+          "id": "9493ee28-722d-45e2-b2fa-cd5c14a862c2",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.ff4f04ea-500e-4179-ae93-1ffa082a18b8",
+      "created_by": {
+        "id": "74ba7b54-2010-4017-9290-bafa1c22fa1a",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/ff4f04ea-500e-4179-ae93-1ffa082a18b8\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/ff4f04ea-500e-4179-ae93-1ffa082a18b8\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction\/ff4f04ea-500e-4179-ae93-1ffa082a18b8\/",
+      "reactions": [
+
+      ],
+      "unique_impression_count": 5,
+      "created_at": "2021-12-03T16:24:27.421Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/ff4f04ea-500e-4179-ae93-1ffa082a18b8\/",
+      "earnable_rewards": [
+        {
+          "reward_action_key": "prediction-correct",
+          "reward_item_amount": 60,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "prediction-made",
+          "reward_item_amount": 100,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=ff4f04ea-500e-4179-ae93-1ffa082a18b8",
+      "confirmation_message": "Alright! Stay tuned to see the result.",
+      "timeout": "P0DT00H00M30S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "ff4f04ea-500e-4179-ae93-1ffa082a18b8",
+      "question": "Waffles",
+      "published_at": "2021-12-03T16:24:27.879Z",
+      "scheduled_at": "2021-12-03T16:24:27.734Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+
+      ],
+      "rewards_url": null,
+      "engagement_count": null,
+      "impression_count": 5,
+      "engagement_percent": null,
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction-follow-up",
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": true,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/1352cabf-2f36-4af3-9af5-3d11852cc142\/options\/4142b571-bdd3-4121-b94d-9be5b8ac11c7\/votes\/",
+          "description": "rwt wrt",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/4142b571-bdd3-4121-b94d-9be5b8ac11c7\/",
+          "id": "4142b571-bdd3-4121-b94d-9be5b8ac11c7",
+          "vote_count": 1,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/1352cabf-2f36-4af3-9af5-3d11852cc142\/options\/01a84be5-b6be-4759-bfed-faa0b20c361c\/votes\/",
+          "description": "wr twrt",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/01a84be5-b6be-4759-bfed-faa0b20c361c\/",
+          "id": "01a84be5-b6be-4759-bfed-faa0b20c361c",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.1352cabf-2f36-4af3-9af5-3d11852cc142",
+      "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/1352cabf-2f36-4af3-9af5-3d11852cc142\/",
+      "correct_option_id": "4142b571-bdd3-4121-b94d-9be5b8ac11c7",
+      "created_by": {
+        "id": "bdfe4076-ccd0-4713-a319-d0ad46298961",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/3b88e8c6-a096-49b2-ab38-c544fd41ea57\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/3b88e8c6-a096-49b2-ab38-c544fd41ea57\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/3b88e8c6-a096-49b2-ab38-c544fd41ea57\/",
+      "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/1352cabf-2f36-4af3-9af5-3d11852cc142\/claims\/",
+      "unique_impression_count": 4,
+      "reactions": [
+
+      ],
+      "created_at": "2021-12-03T08:55:19.563Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/3b88e8c6-a096-49b2-ab38-c544fd41ea57\/",
+      "text_prediction_id": "1352cabf-2f36-4af3-9af5-3d11852cc142",
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=1352cabf-2f36-4af3-9af5-3d11852cc142",
+      "id": "3b88e8c6-a096-49b2-ab38-c544fd41ea57",
+      "timeout": "P0DT00H00M15S",
+      "publish_delay": "P0DT00H00M00S",
+      "earnable_rewards": [
+
+      ],
+      "question": "qwnreqkr wetwrt",
+      "published_at": "2021-12-03T08:56:22.954Z",
+      "scheduled_at": "2021-12-03T08:56:12.353Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question",
+        "confirmation_message"
+      ],
+      "rewards_url": null,
+      "engagement_count": 1,
+      "impression_count": 64,
+      "engagement_percent": "0.167",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction",
+      "follow_up_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/",
+      "follow_ups": [
+        {
+          "translatable_fields": [
+
+          ],
+          "rewards_url": null,
+          "engagement_count": null,
+          "impression_count": 5,
+          "engagement_percent": null,
+          "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+          "kind": "text-prediction-follow-up",
+          "options": [
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": true,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/1352cabf-2f36-4af3-9af5-3d11852cc142\/options\/4142b571-bdd3-4121-b94d-9be5b8ac11c7\/votes\/",
+              "description": "rwt wrt",
+              "earnable_rewards": [
+
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/4142b571-bdd3-4121-b94d-9be5b8ac11c7\/",
+              "id": "4142b571-bdd3-4121-b94d-9be5b8ac11c7",
+              "vote_count": 1,
+              "translations": {
+
+              }
+            },
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/1352cabf-2f36-4af3-9af5-3d11852cc142\/options\/01a84be5-b6be-4759-bfed-faa0b20c361c\/votes\/",
+              "description": "wr twrt",
+              "earnable_rewards": [
+
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/01a84be5-b6be-4759-bfed-faa0b20c361c\/",
+              "id": "01a84be5-b6be-4759-bfed-faa0b20c361c",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            }
+          ],
+          "status": "published",
+          "sponsors": [
+
+          ],
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+          "custom_data": null,
+          "subscribe_channel": "program.widget.1352cabf-2f36-4af3-9af5-3d11852cc142",
+          "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/1352cabf-2f36-4af3-9af5-3d11852cc142\/",
+          "correct_option_id": "4142b571-bdd3-4121-b94d-9be5b8ac11c7",
+          "created_by": {
+            "id": "bdfe4076-ccd0-4713-a319-d0ad46298961",
+            "image_url": null,
+            "name": null
+          },
+          "program_date_time": null,
+          "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/3b88e8c6-a096-49b2-ab38-c544fd41ea57\/schedule\/",
+          "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/3b88e8c6-a096-49b2-ab38-c544fd41ea57\/interactions\/",
+          "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/3b88e8c6-a096-49b2-ab38-c544fd41ea57\/",
+          "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/1352cabf-2f36-4af3-9af5-3d11852cc142\/claims\/",
+          "unique_impression_count": 4,
+          "reactions": [
+
+          ],
+          "created_at": "2021-12-03T08:55:19.563Z",
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/3b88e8c6-a096-49b2-ab38-c544fd41ea57\/",
+          "text_prediction_id": "1352cabf-2f36-4af3-9af5-3d11852cc142",
+          "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=1352cabf-2f36-4af3-9af5-3d11852cc142",
+          "id": "3b88e8c6-a096-49b2-ab38-c544fd41ea57",
+          "timeout": "P0DT00H00M15S",
+          "publish_delay": "P0DT00H00M00S",
+          "earnable_rewards": [
+
+          ],
+          "question": "qwnreqkr wetwrt",
+          "published_at": "2021-12-03T08:56:22.954Z",
+          "scheduled_at": "2021-12-03T08:56:12.353Z",
+          "translations": {
+
+          }
+        }
+      ],
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": true,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/1352cabf-2f36-4af3-9af5-3d11852cc142\/options\/4142b571-bdd3-4121-b94d-9be5b8ac11c7\/votes\/",
+          "description": "rwt wrt",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/4142b571-bdd3-4121-b94d-9be5b8ac11c7\/",
+          "id": "4142b571-bdd3-4121-b94d-9be5b8ac11c7",
+          "vote_count": 1,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/1352cabf-2f36-4af3-9af5-3d11852cc142\/options\/01a84be5-b6be-4759-bfed-faa0b20c361c\/votes\/",
+          "description": "wr twrt",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/01a84be5-b6be-4759-bfed-faa0b20c361c\/",
+          "id": "01a84be5-b6be-4759-bfed-faa0b20c361c",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.1352cabf-2f36-4af3-9af5-3d11852cc142",
+      "created_by": {
+        "id": "bdfe4076-ccd0-4713-a319-d0ad46298961",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/1352cabf-2f36-4af3-9af5-3d11852cc142\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/1352cabf-2f36-4af3-9af5-3d11852cc142\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction\/1352cabf-2f36-4af3-9af5-3d11852cc142\/",
+      "reactions": [
+
+      ],
+      "unique_impression_count": 6,
+      "created_at": "2021-12-03T08:55:19.486Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/1352cabf-2f36-4af3-9af5-3d11852cc142\/",
+      "earnable_rewards": [
+        {
+          "reward_action_key": "prediction-correct",
+          "reward_item_amount": 60,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "prediction-made",
+          "reward_item_amount": 100,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=1352cabf-2f36-4af3-9af5-3d11852cc142",
+      "confirmation_message": "Alright! Stay tuned to see the result.",
+      "timeout": "P0DT00H00M15S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "1352cabf-2f36-4af3-9af5-3d11852cc142",
+      "question": "qwnreqkr wetwrt",
+      "published_at": "2021-12-03T08:55:44.061Z",
+      "scheduled_at": "2021-12-03T08:55:19.721Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+
+      ],
+      "rewards_url": null,
+      "engagement_count": null,
+      "impression_count": 5,
+      "engagement_percent": null,
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction-follow-up",
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": true,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/e115f694-14c5-4f04-a29b-19f247188c1a\/options\/bc9accc9-e13b-4dd8-9259-b07d7cb4f7c7\/votes\/",
+          "description": "erg",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/bc9accc9-e13b-4dd8-9259-b07d7cb4f7c7\/",
+          "id": "bc9accc9-e13b-4dd8-9259-b07d7cb4f7c7",
+          "vote_count": 1,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/e115f694-14c5-4f04-a29b-19f247188c1a\/options\/70e1ae67-fdc3-43eb-9ce1-8a7e05fa9883\/votes\/",
+          "description": "erg",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/70e1ae67-fdc3-43eb-9ce1-8a7e05fa9883\/",
+          "id": "70e1ae67-fdc3-43eb-9ce1-8a7e05fa9883",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.e115f694-14c5-4f04-a29b-19f247188c1a",
+      "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/e115f694-14c5-4f04-a29b-19f247188c1a\/",
+      "correct_option_id": "bc9accc9-e13b-4dd8-9259-b07d7cb4f7c7",
+      "created_by": {
+        "id": "bdfe4076-ccd0-4713-a319-d0ad46298961",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/bf6624b0-a16c-44d6-bb4b-dcdf83d11368\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/bf6624b0-a16c-44d6-bb4b-dcdf83d11368\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/bf6624b0-a16c-44d6-bb4b-dcdf83d11368\/",
+      "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/e115f694-14c5-4f04-a29b-19f247188c1a\/claims\/",
+      "unique_impression_count": 4,
+      "reactions": [
+
+      ],
+      "created_at": "2021-12-03T08:53:27.963Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/bf6624b0-a16c-44d6-bb4b-dcdf83d11368\/",
+      "text_prediction_id": "e115f694-14c5-4f04-a29b-19f247188c1a",
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=e115f694-14c5-4f04-a29b-19f247188c1a",
+      "id": "bf6624b0-a16c-44d6-bb4b-dcdf83d11368",
+      "timeout": "P0DT00H00M15S",
+      "publish_delay": "P0DT00H00M00S",
+      "earnable_rewards": [
+
+      ],
+      "question": "test prediction",
+      "published_at": "2021-12-03T08:54:35.624Z",
+      "scheduled_at": "2021-12-03T08:54:14.762Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question",
+        "confirmation_message"
+      ],
+      "rewards_url": null,
+      "engagement_count": 1,
+      "impression_count": 55,
+      "engagement_percent": "0.167",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction",
+      "follow_up_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/",
+      "follow_ups": [
+        {
+          "translatable_fields": [
+
+          ],
+          "rewards_url": null,
+          "engagement_count": null,
+          "impression_count": 5,
+          "engagement_percent": null,
+          "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+          "kind": "text-prediction-follow-up",
+          "options": [
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": true,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/e115f694-14c5-4f04-a29b-19f247188c1a\/options\/bc9accc9-e13b-4dd8-9259-b07d7cb4f7c7\/votes\/",
+              "description": "erg",
+              "earnable_rewards": [
+
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/bc9accc9-e13b-4dd8-9259-b07d7cb4f7c7\/",
+              "id": "bc9accc9-e13b-4dd8-9259-b07d7cb4f7c7",
+              "vote_count": 1,
+              "translations": {
+
+              }
+            },
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/e115f694-14c5-4f04-a29b-19f247188c1a\/options\/70e1ae67-fdc3-43eb-9ce1-8a7e05fa9883\/votes\/",
+              "description": "erg",
+              "earnable_rewards": [
+
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/70e1ae67-fdc3-43eb-9ce1-8a7e05fa9883\/",
+              "id": "70e1ae67-fdc3-43eb-9ce1-8a7e05fa9883",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            }
+          ],
+          "status": "published",
+          "sponsors": [
+
+          ],
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+          "custom_data": null,
+          "subscribe_channel": "program.widget.e115f694-14c5-4f04-a29b-19f247188c1a",
+          "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/e115f694-14c5-4f04-a29b-19f247188c1a\/",
+          "correct_option_id": "bc9accc9-e13b-4dd8-9259-b07d7cb4f7c7",
+          "created_by": {
+            "id": "bdfe4076-ccd0-4713-a319-d0ad46298961",
+            "image_url": null,
+            "name": null
+          },
+          "program_date_time": null,
+          "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/bf6624b0-a16c-44d6-bb4b-dcdf83d11368\/schedule\/",
+          "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/bf6624b0-a16c-44d6-bb4b-dcdf83d11368\/interactions\/",
+          "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/bf6624b0-a16c-44d6-bb4b-dcdf83d11368\/",
+          "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/e115f694-14c5-4f04-a29b-19f247188c1a\/claims\/",
+          "unique_impression_count": 4,
+          "reactions": [
+
+          ],
+          "created_at": "2021-12-03T08:53:27.963Z",
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/bf6624b0-a16c-44d6-bb4b-dcdf83d11368\/",
+          "text_prediction_id": "e115f694-14c5-4f04-a29b-19f247188c1a",
+          "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=e115f694-14c5-4f04-a29b-19f247188c1a",
+          "id": "bf6624b0-a16c-44d6-bb4b-dcdf83d11368",
+          "timeout": "P0DT00H00M15S",
+          "publish_delay": "P0DT00H00M00S",
+          "earnable_rewards": [
+
+          ],
+          "question": "test prediction",
+          "published_at": "2021-12-03T08:54:35.624Z",
+          "scheduled_at": "2021-12-03T08:54:14.762Z",
+          "translations": {
+
+          }
+        }
+      ],
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": true,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/e115f694-14c5-4f04-a29b-19f247188c1a\/options\/bc9accc9-e13b-4dd8-9259-b07d7cb4f7c7\/votes\/",
+          "description": "erg",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/bc9accc9-e13b-4dd8-9259-b07d7cb4f7c7\/",
+          "id": "bc9accc9-e13b-4dd8-9259-b07d7cb4f7c7",
+          "vote_count": 1,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/e115f694-14c5-4f04-a29b-19f247188c1a\/options\/70e1ae67-fdc3-43eb-9ce1-8a7e05fa9883\/votes\/",
+          "description": "erg",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/70e1ae67-fdc3-43eb-9ce1-8a7e05fa9883\/",
+          "id": "70e1ae67-fdc3-43eb-9ce1-8a7e05fa9883",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.e115f694-14c5-4f04-a29b-19f247188c1a",
+      "created_by": {
+        "id": "bdfe4076-ccd0-4713-a319-d0ad46298961",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/e115f694-14c5-4f04-a29b-19f247188c1a\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/e115f694-14c5-4f04-a29b-19f247188c1a\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction\/e115f694-14c5-4f04-a29b-19f247188c1a\/",
+      "reactions": [
+
+      ],
+      "unique_impression_count": 6,
+      "created_at": "2021-12-03T08:53:27.897Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/e115f694-14c5-4f04-a29b-19f247188c1a\/",
+      "earnable_rewards": [
+        {
+          "reward_action_key": "prediction-correct",
+          "reward_item_amount": 60,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "prediction-made",
+          "reward_item_amount": 100,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=e115f694-14c5-4f04-a29b-19f247188c1a",
+      "confirmation_message": "Alright! Stay tuned to see the result.",
+      "timeout": "P0DT00H00M15S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "e115f694-14c5-4f04-a29b-19f247188c1a",
+      "question": "test prediction",
+      "published_at": "2021-12-03T08:53:28.349Z",
+      "scheduled_at": "2021-12-03T08:53:28.130Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+
+      ],
+      "rewards_url": null,
+      "engagement_count": null,
+      "impression_count": 4,
+      "engagement_percent": null,
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction-follow-up",
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/57ef9a5e-df82-40e6-976b-15de43942864\/options\/80fa0441-dde0-4986-aae4-12629cf60e8f\/votes\/",
+          "description": "a",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/80fa0441-dde0-4986-aae4-12629cf60e8f\/",
+          "id": "80fa0441-dde0-4986-aae4-12629cf60e8f",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": true,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/57ef9a5e-df82-40e6-976b-15de43942864\/options\/d2a3c751-0f92-40ec-b6e4-8a533377f1f3\/votes\/",
+          "description": "b",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/d2a3c751-0f92-40ec-b6e4-8a533377f1f3\/",
+          "id": "d2a3c751-0f92-40ec-b6e4-8a533377f1f3",
+          "vote_count": 1,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.57ef9a5e-df82-40e6-976b-15de43942864",
+      "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/57ef9a5e-df82-40e6-976b-15de43942864\/",
+      "correct_option_id": "d2a3c751-0f92-40ec-b6e4-8a533377f1f3",
+      "created_by": {
+        "id": "79138c29-7dda-4906-964c-ddfbdc8e9b90",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/9a04bfac-eda8-4278-a47f-e4234eda5ecd\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/9a04bfac-eda8-4278-a47f-e4234eda5ecd\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/9a04bfac-eda8-4278-a47f-e4234eda5ecd\/",
+      "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/57ef9a5e-df82-40e6-976b-15de43942864\/claims\/",
+      "unique_impression_count": 4,
+      "reactions": [
+
+      ],
+      "created_at": "2021-12-03T08:37:06.576Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/9a04bfac-eda8-4278-a47f-e4234eda5ecd\/",
+      "text_prediction_id": "57ef9a5e-df82-40e6-976b-15de43942864",
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=57ef9a5e-df82-40e6-976b-15de43942864",
+      "id": "9a04bfac-eda8-4278-a47f-e4234eda5ecd",
+      "timeout": "P0DT00H02M00S",
+      "publish_delay": "P0DT00H00M00S",
+      "earnable_rewards": [
+
+      ],
+      "question": "hello1",
+      "published_at": "2021-12-03T08:39:36.697Z",
+      "scheduled_at": "2021-12-03T08:39:26.477Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question",
+        "confirmation_message"
+      ],
+      "rewards_url": null,
+      "engagement_count": 1,
+      "impression_count": 57,
+      "engagement_percent": "0.167",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction",
+      "follow_up_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/",
+      "follow_ups": [
+        {
+          "translatable_fields": [
+
+          ],
+          "rewards_url": null,
+          "engagement_count": null,
+          "impression_count": 4,
+          "engagement_percent": null,
+          "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+          "kind": "text-prediction-follow-up",
+          "options": [
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/57ef9a5e-df82-40e6-976b-15de43942864\/options\/80fa0441-dde0-4986-aae4-12629cf60e8f\/votes\/",
+              "description": "a",
+              "earnable_rewards": [
+
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/80fa0441-dde0-4986-aae4-12629cf60e8f\/",
+              "id": "80fa0441-dde0-4986-aae4-12629cf60e8f",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            },
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": true,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/57ef9a5e-df82-40e6-976b-15de43942864\/options\/d2a3c751-0f92-40ec-b6e4-8a533377f1f3\/votes\/",
+              "description": "b",
+              "earnable_rewards": [
+
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/d2a3c751-0f92-40ec-b6e4-8a533377f1f3\/",
+              "id": "d2a3c751-0f92-40ec-b6e4-8a533377f1f3",
+              "vote_count": 1,
+              "translations": {
+
+              }
+            }
+          ],
+          "status": "published",
+          "sponsors": [
+
+          ],
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+          "custom_data": null,
+          "subscribe_channel": "program.widget.57ef9a5e-df82-40e6-976b-15de43942864",
+          "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/57ef9a5e-df82-40e6-976b-15de43942864\/",
+          "correct_option_id": "d2a3c751-0f92-40ec-b6e4-8a533377f1f3",
+          "created_by": {
+            "id": "79138c29-7dda-4906-964c-ddfbdc8e9b90",
+            "image_url": null,
+            "name": null
+          },
+          "program_date_time": null,
+          "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/9a04bfac-eda8-4278-a47f-e4234eda5ecd\/schedule\/",
+          "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/9a04bfac-eda8-4278-a47f-e4234eda5ecd\/interactions\/",
+          "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/9a04bfac-eda8-4278-a47f-e4234eda5ecd\/",
+          "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/57ef9a5e-df82-40e6-976b-15de43942864\/claims\/",
+          "unique_impression_count": 4,
+          "reactions": [
+
+          ],
+          "created_at": "2021-12-03T08:37:06.576Z",
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/9a04bfac-eda8-4278-a47f-e4234eda5ecd\/",
+          "text_prediction_id": "57ef9a5e-df82-40e6-976b-15de43942864",
+          "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=57ef9a5e-df82-40e6-976b-15de43942864",
+          "id": "9a04bfac-eda8-4278-a47f-e4234eda5ecd",
+          "timeout": "P0DT00H02M00S",
+          "publish_delay": "P0DT00H00M00S",
+          "earnable_rewards": [
+
+          ],
+          "question": "hello1",
+          "published_at": "2021-12-03T08:39:36.697Z",
+          "scheduled_at": "2021-12-03T08:39:26.477Z",
+          "translations": {
+
+          }
+        }
+      ],
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/57ef9a5e-df82-40e6-976b-15de43942864\/options\/80fa0441-dde0-4986-aae4-12629cf60e8f\/votes\/",
+          "description": "a",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/80fa0441-dde0-4986-aae4-12629cf60e8f\/",
+          "id": "80fa0441-dde0-4986-aae4-12629cf60e8f",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": true,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/57ef9a5e-df82-40e6-976b-15de43942864\/options\/d2a3c751-0f92-40ec-b6e4-8a533377f1f3\/votes\/",
+          "description": "b",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/d2a3c751-0f92-40ec-b6e4-8a533377f1f3\/",
+          "id": "d2a3c751-0f92-40ec-b6e4-8a533377f1f3",
+          "vote_count": 1,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.57ef9a5e-df82-40e6-976b-15de43942864",
+      "created_by": {
+        "id": "79138c29-7dda-4906-964c-ddfbdc8e9b90",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/57ef9a5e-df82-40e6-976b-15de43942864\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/57ef9a5e-df82-40e6-976b-15de43942864\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction\/57ef9a5e-df82-40e6-976b-15de43942864\/",
+      "reactions": [
+
+      ],
+      "unique_impression_count": 6,
+      "created_at": "2021-12-03T08:37:06.510Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/57ef9a5e-df82-40e6-976b-15de43942864\/",
+      "earnable_rewards": [
+        {
+          "reward_action_key": "prediction-correct",
+          "reward_item_amount": 60,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "prediction-made",
+          "reward_item_amount": 100,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=57ef9a5e-df82-40e6-976b-15de43942864",
+      "confirmation_message": "Alright! Stay tuned to see the result.",
+      "timeout": "P0DT00H02M00S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "57ef9a5e-df82-40e6-976b-15de43942864",
+      "question": "hello1",
+      "published_at": "2021-12-03T08:37:12.997Z",
+      "scheduled_at": "2021-12-03T08:37:06.778Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+
+      ],
+      "rewards_url": null,
+      "engagement_count": null,
+      "impression_count": 4,
+      "engagement_percent": null,
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction-follow-up",
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/148ae5cf-016f-47b8-811e-beb86c1b000d\/options\/9058f3b6-a5a6-49b4-9138-c78b25e29fc0\/votes\/",
+          "description": "gdsdgs",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/9058f3b6-a5a6-49b4-9138-c78b25e29fc0\/",
+          "id": "9058f3b6-a5a6-49b4-9138-c78b25e29fc0",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": true,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/148ae5cf-016f-47b8-811e-beb86c1b000d\/options\/d3016821-dee9-4b91-8cc3-d692d25d8f60\/votes\/",
+          "description": "gddgs",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/d3016821-dee9-4b91-8cc3-d692d25d8f60\/",
+          "id": "d3016821-dee9-4b91-8cc3-d692d25d8f60",
+          "vote_count": 1,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.148ae5cf-016f-47b8-811e-beb86c1b000d",
+      "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/148ae5cf-016f-47b8-811e-beb86c1b000d\/",
+      "correct_option_id": "d3016821-dee9-4b91-8cc3-d692d25d8f60",
+      "created_by": {
+        "id": "79138c29-7dda-4906-964c-ddfbdc8e9b90",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/25868de8-83b3-408b-839a-0324a1dac5da\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/25868de8-83b3-408b-839a-0324a1dac5da\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/25868de8-83b3-408b-839a-0324a1dac5da\/",
+      "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/148ae5cf-016f-47b8-811e-beb86c1b000d\/claims\/",
+      "unique_impression_count": 4,
+      "reactions": [
+
+      ],
+      "created_at": "2021-12-03T08:31:45.172Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/25868de8-83b3-408b-839a-0324a1dac5da\/",
+      "text_prediction_id": "148ae5cf-016f-47b8-811e-beb86c1b000d",
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=148ae5cf-016f-47b8-811e-beb86c1b000d",
+      "id": "25868de8-83b3-408b-839a-0324a1dac5da",
+      "timeout": "P0DT00H02M00S",
+      "publish_delay": "P0DT00H00M00S",
+      "earnable_rewards": [
+
+      ],
+      "question": "sdggsd",
+      "published_at": "2021-12-03T08:34:18.470Z",
+      "scheduled_at": "2021-12-03T08:34:18.220Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question",
+        "confirmation_message"
+      ],
+      "rewards_url": null,
+      "engagement_count": 1,
+      "impression_count": 51,
+      "engagement_percent": "0.200",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction",
+      "follow_up_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/",
+      "follow_ups": [
+        {
+          "translatable_fields": [
+
+          ],
+          "rewards_url": null,
+          "engagement_count": null,
+          "impression_count": 4,
+          "engagement_percent": null,
+          "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+          "kind": "text-prediction-follow-up",
+          "options": [
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/148ae5cf-016f-47b8-811e-beb86c1b000d\/options\/9058f3b6-a5a6-49b4-9138-c78b25e29fc0\/votes\/",
+              "description": "gdsdgs",
+              "earnable_rewards": [
+
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/9058f3b6-a5a6-49b4-9138-c78b25e29fc0\/",
+              "id": "9058f3b6-a5a6-49b4-9138-c78b25e29fc0",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            },
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": true,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/148ae5cf-016f-47b8-811e-beb86c1b000d\/options\/d3016821-dee9-4b91-8cc3-d692d25d8f60\/votes\/",
+              "description": "gddgs",
+              "earnable_rewards": [
+
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/d3016821-dee9-4b91-8cc3-d692d25d8f60\/",
+              "id": "d3016821-dee9-4b91-8cc3-d692d25d8f60",
+              "vote_count": 1,
+              "translations": {
+
+              }
+            }
+          ],
+          "status": "published",
+          "sponsors": [
+
+          ],
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+          "custom_data": null,
+          "subscribe_channel": "program.widget.148ae5cf-016f-47b8-811e-beb86c1b000d",
+          "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/148ae5cf-016f-47b8-811e-beb86c1b000d\/",
+          "correct_option_id": "d3016821-dee9-4b91-8cc3-d692d25d8f60",
+          "created_by": {
+            "id": "79138c29-7dda-4906-964c-ddfbdc8e9b90",
+            "image_url": null,
+            "name": null
+          },
+          "program_date_time": null,
+          "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/25868de8-83b3-408b-839a-0324a1dac5da\/schedule\/",
+          "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/25868de8-83b3-408b-839a-0324a1dac5da\/interactions\/",
+          "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/25868de8-83b3-408b-839a-0324a1dac5da\/",
+          "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/148ae5cf-016f-47b8-811e-beb86c1b000d\/claims\/",
+          "unique_impression_count": 4,
+          "reactions": [
+
+          ],
+          "created_at": "2021-12-03T08:31:45.172Z",
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/25868de8-83b3-408b-839a-0324a1dac5da\/",
+          "text_prediction_id": "148ae5cf-016f-47b8-811e-beb86c1b000d",
+          "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=148ae5cf-016f-47b8-811e-beb86c1b000d",
+          "id": "25868de8-83b3-408b-839a-0324a1dac5da",
+          "timeout": "P0DT00H02M00S",
+          "publish_delay": "P0DT00H00M00S",
+          "earnable_rewards": [
+
+          ],
+          "question": "sdggsd",
+          "published_at": "2021-12-03T08:34:18.470Z",
+          "scheduled_at": "2021-12-03T08:34:18.220Z",
+          "translations": {
+
+          }
+        }
+      ],
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/148ae5cf-016f-47b8-811e-beb86c1b000d\/options\/9058f3b6-a5a6-49b4-9138-c78b25e29fc0\/votes\/",
+          "description": "gdsdgs",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/9058f3b6-a5a6-49b4-9138-c78b25e29fc0\/",
+          "id": "9058f3b6-a5a6-49b4-9138-c78b25e29fc0",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": true,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/148ae5cf-016f-47b8-811e-beb86c1b000d\/options\/d3016821-dee9-4b91-8cc3-d692d25d8f60\/votes\/",
+          "description": "gddgs",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/d3016821-dee9-4b91-8cc3-d692d25d8f60\/",
+          "id": "d3016821-dee9-4b91-8cc3-d692d25d8f60",
+          "vote_count": 1,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.148ae5cf-016f-47b8-811e-beb86c1b000d",
+      "created_by": {
+        "id": "79138c29-7dda-4906-964c-ddfbdc8e9b90",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/148ae5cf-016f-47b8-811e-beb86c1b000d\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/148ae5cf-016f-47b8-811e-beb86c1b000d\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction\/148ae5cf-016f-47b8-811e-beb86c1b000d\/",
+      "reactions": [
+
+      ],
+      "unique_impression_count": 5,
+      "created_at": "2021-12-03T08:31:45.098Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/148ae5cf-016f-47b8-811e-beb86c1b000d\/",
+      "earnable_rewards": [
+        {
+          "reward_action_key": "prediction-correct",
+          "reward_item_amount": 60,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "prediction-made",
+          "reward_item_amount": 100,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=148ae5cf-016f-47b8-811e-beb86c1b000d",
+      "confirmation_message": "Alright! Stay tuned to see the result.",
+      "timeout": "P0DT00H02M00S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "148ae5cf-016f-47b8-811e-beb86c1b000d",
+      "question": "sdggsd",
+      "published_at": "2021-12-03T08:31:59.938Z",
+      "scheduled_at": "2021-12-03T08:31:45.355Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+
+      ],
+      "rewards_url": null,
+      "engagement_count": null,
+      "impression_count": 4,
+      "engagement_percent": null,
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction-follow-up",
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/options\/a24047a0-7ead-4777-a5b8-51f6cbb6e8a7\/votes\/",
+          "description": "fgddfg",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/a24047a0-7ead-4777-a5b8-51f6cbb6e8a7\/",
+          "id": "a24047a0-7ead-4777-a5b8-51f6cbb6e8a7",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": true,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/options\/44e334aa-062f-4b6d-aed5-f77372b4a4b1\/votes\/",
+          "description": "dfhhfd",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/44e334aa-062f-4b6d-aed5-f77372b4a4b1\/",
+          "id": "44e334aa-062f-4b6d-aed5-f77372b4a4b1",
+          "vote_count": 1,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd",
+      "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/",
+      "correct_option_id": "44e334aa-062f-4b6d-aed5-f77372b4a4b1",
+      "created_by": {
+        "id": "79138c29-7dda-4906-964c-ddfbdc8e9b90",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/ef1671c6-d947-4613-8d1a-2faa2f058ada\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/ef1671c6-d947-4613-8d1a-2faa2f058ada\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/ef1671c6-d947-4613-8d1a-2faa2f058ada\/",
+      "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/claims\/",
+      "unique_impression_count": 4,
+      "reactions": [
+
+      ],
+      "created_at": "2021-12-03T07:29:40.321Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/ef1671c6-d947-4613-8d1a-2faa2f058ada\/",
+      "text_prediction_id": "8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd",
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd",
+      "id": "ef1671c6-d947-4613-8d1a-2faa2f058ada",
+      "timeout": "P0DT00H00M15S",
+      "publish_delay": "P0DT00H00M00S",
+      "earnable_rewards": [
+
+      ],
+      "question": "dffdg",
+      "published_at": "2021-12-03T07:30:37.077Z",
+      "scheduled_at": "2021-12-03T07:30:31.497Z",
+      "translations": {
+
+      }
+    },
+    {
+      "translatable_fields": [
+        "question",
+        "confirmation_message"
+      ],
+      "rewards_url": null,
+      "engagement_count": 1,
+      "impression_count": 21,
+      "engagement_percent": "0.200",
+      "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+      "kind": "text-prediction",
+      "follow_up_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/",
+      "follow_ups": [
+        {
+          "translatable_fields": [
+
+          ],
+          "rewards_url": null,
+          "engagement_count": null,
+          "impression_count": 4,
+          "engagement_percent": null,
+          "program_id": "498591f4-9d6b-4943-9671-f44d3afbb6a4",
+          "kind": "text-prediction-follow-up",
+          "options": [
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": false,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/options\/a24047a0-7ead-4777-a5b8-51f6cbb6e8a7\/votes\/",
+              "description": "fgddfg",
+              "earnable_rewards": [
+
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/a24047a0-7ead-4777-a5b8-51f6cbb6e8a7\/",
+              "id": "a24047a0-7ead-4777-a5b8-51f6cbb6e8a7",
+              "vote_count": 0,
+              "translations": {
+
+              }
+            },
+            {
+              "translatable_fields": [
+                "description"
+              ],
+              "is_correct": true,
+              "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/options\/44e334aa-062f-4b6d-aed5-f77372b4a4b1\/votes\/",
+              "description": "dfhhfd",
+              "earnable_rewards": [
+
+              ],
+              "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/44e334aa-062f-4b6d-aed5-f77372b4a4b1\/",
+              "id": "44e334aa-062f-4b6d-aed5-f77372b4a4b1",
+              "vote_count": 1,
+              "translations": {
+
+              }
+            }
+          ],
+          "status": "published",
+          "sponsors": [
+
+          ],
+          "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+          "custom_data": null,
+          "subscribe_channel": "program.widget.8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd",
+          "text_prediction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/",
+          "correct_option_id": "44e334aa-062f-4b6d-aed5-f77372b4a4b1",
+          "created_by": {
+            "id": "79138c29-7dda-4906-964c-ddfbdc8e9b90",
+            "image_url": null,
+            "name": null
+          },
+          "program_date_time": null,
+          "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/ef1671c6-d947-4613-8d1a-2faa2f058ada\/schedule\/",
+          "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/ef1671c6-d947-4613-8d1a-2faa2f058ada\/interactions\/",
+          "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction-follow-up\/ef1671c6-d947-4613-8d1a-2faa2f058ada\/",
+          "claim_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interaction-claims\/text-prediction\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/claims\/",
+          "unique_impression_count": 4,
+          "reactions": [
+
+          ],
+          "created_at": "2021-12-03T07:29:40.321Z",
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/ef1671c6-d947-4613-8d1a-2faa2f058ada\/",
+          "text_prediction_id": "8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd",
+          "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd",
+          "id": "ef1671c6-d947-4613-8d1a-2faa2f058ada",
+          "timeout": "P0DT00H00M15S",
+          "publish_delay": "P0DT00H00M00S",
+          "earnable_rewards": [
+
+          ],
+          "question": "dffdg",
+          "published_at": "2021-12-03T07:30:37.077Z",
+          "scheduled_at": "2021-12-03T07:30:31.497Z",
+          "translations": {
+
+          }
+        }
+      ],
+      "options": [
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": false,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/options\/a24047a0-7ead-4777-a5b8-51f6cbb6e8a7\/votes\/",
+          "description": "fgddfg",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/a24047a0-7ead-4777-a5b8-51f6cbb6e8a7\/",
+          "id": "a24047a0-7ead-4777-a5b8-51f6cbb6e8a7",
+          "vote_count": 0,
+          "translations": {
+
+          }
+        },
+        {
+          "translatable_fields": [
+            "description"
+          ],
+          "is_correct": true,
+          "vote_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-interactions\/text-prediction\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/options\/44e334aa-062f-4b6d-aed5-f77372b4a4b1\/votes\/",
+          "description": "dfhhfd",
+          "earnable_rewards": [
+
+          ],
+          "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-prediction-options\/44e334aa-062f-4b6d-aed5-f77372b4a4b1\/",
+          "id": "44e334aa-062f-4b6d-aed5-f77372b4a4b1",
+          "vote_count": 1,
+          "translations": {
+
+          }
+        }
+      ],
+      "status": "published",
+      "sponsors": [
+
+      ],
+      "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+      "custom_data": null,
+      "subscribe_channel": "program.widget.8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd",
+      "created_by": {
+        "id": "79138c29-7dda-4906-964c-ddfbdc8e9b90",
+        "image_url": null,
+        "name": null
+      },
+      "program_date_time": null,
+      "schedule_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/schedule\/",
+      "interaction_url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/interactions\/",
+      "impression_url": "https:\/\/blastrt-game-changers-us-east-1.livelikecdn.com\/api\/v1\/widget-impressions\/text-prediction\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/",
+      "reactions": [
+
+      ],
+      "unique_impression_count": 5,
+      "created_at": "2021-12-03T07:29:40.250Z",
+      "url": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/text-predictions\/8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd\/",
+      "earnable_rewards": [
+        {
+          "reward_action_key": "prediction-correct",
+          "reward_item_amount": 60,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        },
+        {
+          "reward_action_key": "prediction-made",
+          "reward_item_amount": 100,
+          "reward_item_name": "TestFreeItem",
+          "reward_item_id": "e4fb8a03-fd8a-4623-a33b-b0c9bb4a41a5"
+        }
+      ],
+      "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?text_prediction_id=8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd",
+      "confirmation_message": "Alright! Stay tuned to see the result.",
+      "timeout": "P0DT00H00M15S",
+      "publish_delay": "P0DT00H00M00S",
+      "id": "8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd",
+      "question": "dffdg",
+      "published_at": "2021-12-03T07:30:06.130Z",
+      "scheduled_at": "2021-12-03T07:29:40.483Z",
+      "translations": {
+
+      }
+    }
+  ],
+  "count": 379,
+  "widget_interactions_url_template": "https:\/\/cf-blast-game-changers.livelikecdn.com\/api\/v1\/profiles\/{profile_id}\/widget-interactions\/?image_prediction_id=0e47ad8d-766d-487f-b18b-e86c16a52019&image_prediction_id=6aac10c0-a8e7-4733-b28c-c46f72b5a3eb&image_prediction_id=1770154b-cb87-417a-85d9-87d679b012ae&text_prediction_id=2c4a0702-ae76-4949-aeef-372cc8f1b597&text_prediction_id=23c2b1fa-13e2-44e4-9a6b-a5dd2fb794c7&text_prediction_id=a56248a8-843c-4408-84d8-ce7dea895418&text_prediction_id=ff4f04ea-500e-4179-ae93-1ffa082a18b8&text_prediction_id=1352cabf-2f36-4af3-9af5-3d11852cc142&text_prediction_id=1352cabf-2f36-4af3-9af5-3d11852cc142&text_prediction_id=e115f694-14c5-4f04-a29b-19f247188c1a&text_prediction_id=e115f694-14c5-4f04-a29b-19f247188c1a&text_prediction_id=57ef9a5e-df82-40e6-976b-15de43942864&text_prediction_id=57ef9a5e-df82-40e6-976b-15de43942864&text_prediction_id=148ae5cf-016f-47b8-811e-beb86c1b000d&text_prediction_id=148ae5cf-016f-47b8-811e-beb86c1b000d&text_prediction_id=8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd&text_prediction_id=8ad22c7f-6a21-4d9c-a532-b5f8a68b82bd&text_quiz_id=42861ba8-49bd-48da-b3c4-2366e35a3f22&text_quiz_id=3f9d0382-deb0-49b1-977f-ee056d6fa849&text_quiz_id=9154c44e-fe6b-4844-8014-7177a89dbf80"
+}

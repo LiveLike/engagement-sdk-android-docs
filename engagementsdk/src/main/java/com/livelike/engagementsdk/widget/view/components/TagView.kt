@@ -2,19 +2,21 @@ package com.livelike.engagementsdk.widget.view.components
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.databinding.AtomWidgetTagViewBinding
 import com.livelike.engagementsdk.widget.ViewStyleProps
-import kotlinx.android.synthetic.main.atom_widget_tag_view.view.tagTextView
-
 
 
 class TagView (context: Context, attr: AttributeSet) : ConstraintLayout(context, attr) {
+    var tagViewBinding: AtomWidgetTagViewBinding =
+        AtomWidgetTagViewBinding.inflate(LayoutInflater.from(context), this@TagView, true)
+
     var tag: String = ""
         set(value) {
             field = value
-            tagTextView.text = value
+            tagViewBinding.tagTextView.text = value
         }
     var componentTheme: ViewStyleProps? = null
         set(value) {
@@ -28,8 +30,4 @@ class TagView (context: Context, attr: AttributeSet) : ConstraintLayout(context,
                 )
             }
         }
-
-    init {
-        inflate(context, R.layout.atom_widget_tag_view, this)
-    }
 }

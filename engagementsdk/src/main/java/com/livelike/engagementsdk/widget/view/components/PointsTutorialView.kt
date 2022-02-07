@@ -2,20 +2,18 @@ package com.livelike.engagementsdk.widget.view.components
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import com.livelike.engagementsdk.DismissAction
-import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.data.models.RewardsType
+import com.livelike.engagementsdk.databinding.AtomWidgetPointsTutorialBinding
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.pointTutorialSeen
 import com.livelike.engagementsdk.widget.view.wouldShowProgressionMeter
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
-import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.pointsAnimation
-import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.pointsTutoView
-import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.points_progression_meter_switcher
-import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.progressionMeterView
+
 
 class PointsTutorialView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
@@ -29,18 +27,18 @@ class PointsTutorialView(context: Context, attr: AttributeSet? = null) :
                 startInteractionTimeout(5000) {
                     removeAllViews()
                 }
-                pointsAnimation.playAnimation()
-                pointsTutoView.startAnimation(getTotalPoints())
+                binding?.pointsAnimation?.playAnimation()
+                binding?.pointsTutoView?.startAnimation(getTotalPoints())
 
                 if (rewardType == RewardsType.BADGES) {
                     postDelayed(
                         {
-                            points_progression_meter_switcher.showNext()
-                            progressionMeterView.visibility = View.GONE
+                           binding?.pointsProgressionMeterSwitcher?.showNext()
+                            binding?.progressionMeterView?.visibility = View.GONE
                             wouldShowProgressionMeter(
                                 rewardType,
                                 programGamificationProfile,
-                                progressionMeterView
+                                binding?.progressionMeterView!!
                             )
                         },
                         1300
@@ -49,9 +47,11 @@ class PointsTutorialView(context: Context, attr: AttributeSet? = null) :
             }
         }
 
+    private var binding:AtomWidgetPointsTutorialBinding? = null
+
     init {
         pointTutorialSeen()
-        inflate(context, R.layout.atom_widget_points_tutorial, this)
+        binding = AtomWidgetPointsTutorialBinding.inflate(LayoutInflater.from(context), this@PointsTutorialView, true)
     }
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? =

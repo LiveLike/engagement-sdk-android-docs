@@ -98,7 +98,7 @@
         android:imeOptions="flagNoExtractUi"
         android:importantForAccessibility="yes"
         android:importantForAutofill="no"
-        android:maxLength="250"
+        android:maxLength="@integer/chat_input_max_char_limit"
         android:maxLines="3"
         android:minHeight="40dp"
         android:paddingStart="@dimen/livelike_chat_input_padding_start"

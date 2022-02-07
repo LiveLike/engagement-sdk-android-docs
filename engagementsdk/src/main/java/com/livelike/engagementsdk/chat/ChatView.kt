@@ -5,6 +5,8 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.text.Editable
+import android.text.InputFilter
+import android.text.InputFilter.LengthFilter
 import android.text.Spannable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -42,6 +44,7 @@ import pl.droidsonroids.gif.MultiCallback
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
+
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -188,6 +191,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             }
             chat_input_background.background = chatInputViewBackgroundRes
             chat_input_border.background = chatInputBackgroundRes
+            edittext_chat_message.filters = arrayOf<InputFilter>(LengthFilter(chatInputCharLimit))
             edittext_chat_message.setTextColor(chatInputTextColor)
             edittext_chat_message.setHintTextColor(chatInputHintTextColor)
             edittext_chat_message.setTextSize(

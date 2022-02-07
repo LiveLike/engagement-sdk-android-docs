@@ -18,15 +18,11 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.data.models.NumberPredictionVotes
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.databinding.WidgetNumberPredictionItemBinding
 import com.livelike.engagementsdk.widget.NumberPredictionOptionsTheme
 import com.livelike.engagementsdk.widget.ViewStyleProps
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
-import kotlinx.android.synthetic.main.livelike_user_input.view.userInput
-import kotlinx.android.synthetic.main.widget_number_prediction_item.view.bkgrd
-import kotlinx.android.synthetic.main.widget_number_prediction_item.view.correct_answer
-import kotlinx.android.synthetic.main.widget_number_prediction_item.view.description
-import kotlinx.android.synthetic.main.widget_number_prediction_item.view.imgView
 
 
 internal class NumberPredictionOptionAdapter(
@@ -44,16 +40,12 @@ internal class NumberPredictionOptionAdapter(
     var isCorrect = false
     var selectedPosition = RecyclerView.NO_POSITION
     var selectedUserVotes = mutableListOf<NumberPredictionVotes>()
+    var binding:WidgetNumberPredictionItemBinding? = null
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OptionViewHolder {
-        return OptionViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.widget_number_prediction_item,
-                parent,
-                false
-            )
-        )
+        val binding = WidgetNumberPredictionItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return OptionViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: OptionViewHolder, position: Int) {
@@ -70,8 +62,8 @@ internal class NumberPredictionOptionAdapter(
     override fun getItemCount() = myDataset.size
 
 
-    inner class OptionViewHolder(view: View) :
-        RecyclerView.ViewHolder(view){
+    inner class OptionViewHolder(val binding: WidgetNumberPredictionItemBinding) :
+        RecyclerView.ViewHolder(binding.root){
 
 
         fun setData(
@@ -83,35 +75,39 @@ internal class NumberPredictionOptionAdapter(
             if (!option.image_url.isNullOrEmpty()) {
                 Glide.with(itemView.context.applicationContext)
                     .load(option.image_url)
-                    .into(itemView.imgView)
-                itemView.imgView.visibility = View.VISIBLE
+                    .into(binding.imgView)
+                binding.imgView.visibility = View.VISIBLE
             } else {
-                itemView.imgView.visibility = View.GONE
+                binding.imgView.visibility = View.GONE
             }
 
-            itemView.description.text = option.description
-            itemView.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_user_input))
+            binding.description.text = option.description
+            binding.incrementDecrementLayout.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_user_input))
 
             if (option.number != null) {
-                itemView.userInput.setText(option.number.toString())
-                itemView.userInput.isFocusableInTouchMode = false
-                itemView.userInput.isCursorVisible = false
+                binding.incrementDecrementLayout.userInput.apply{
+                    setText(option.number.toString())
+                    isFocusableInTouchMode = false
+                    isCursorVisible = false
+                }
             }
 
 
             if(selectionLocked){
-                itemView.userInput.isFocusableInTouchMode = false
-                itemView.userInput.isCursorVisible = false
+                binding.incrementDecrementLayout.userInput.apply {
+                    isFocusableInTouchMode = false
+                    isCursorVisible = false
+                }
             }
 
 
             if(widgetType == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP ||
                 widgetType == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP){
-                itemView.correct_answer.visibility = View.VISIBLE
+                binding.correctAnswer.visibility = View.VISIBLE
                 showCorrectPrediction(option)
 
             }else{
-                itemView.correct_answer.visibility = View.GONE //this shows only for followup
+                binding.correctAnswer.visibility = View.GONE //this shows only for followup
             }
 
             setListeners()
@@ -145,7 +141,7 @@ internal class NumberPredictionOptionAdapter(
         // set listeners
         @SuppressLint("ClickableViewAccessibility")
         private fun setListeners(){
-            itemView.userInput.addTextChangedListener(object : TextWatcher {
+            binding.incrementDecrementLayout.userInput.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(arg0: Editable) {
                     if (adapterPosition == RecyclerView.NO_POSITION || selectionLocked) return
                     val value = arg0.toString()
@@ -179,19 +175,21 @@ internal class NumberPredictionOptionAdapter(
             })
 
 
-            itemView.userInput.setOnEditorActionListener { v, actionId, _ ->
+            binding.incrementDecrementLayout.userInput.setOnEditorActionListener { v, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     val imm =
                         v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(v.windowToken, 0)
-                    itemView.userInput.isFocusable = false
-                    itemView.userInput.isFocusableInTouchMode = true
+                    binding.incrementDecrementLayout.userInput.apply {
+                        isFocusable = false
+                        isFocusableInTouchMode = true
+                    }
                     true
                 } else false
             }
 
-            itemView.userInput.setOnTouchListener { v, _ -> // Disallow the touch request for parent scroll on touch of child view
-                if (itemView.userInput.text.toString().isNotEmpty()) {
+            binding.incrementDecrementLayout.userInput.setOnTouchListener { v, _ -> // Disallow the touch request for parent scroll on touch of child view
+                if ( binding.incrementDecrementLayout.userInput.text.toString().isNotEmpty()) {
                     v.parent.requestDisallowInterceptTouchEvent(true)
                 }
                 false
@@ -207,15 +205,15 @@ internal class NumberPredictionOptionAdapter(
         ) {
 
             val optionDescTheme: ViewStyleProps? = layoutPickerComponent?.option
-            AndroidResource.updateThemeForView(itemView.description, optionDescTheme, fontFamilyProvider)
+            AndroidResource.updateThemeForView(binding.description, optionDescTheme, fontFamilyProvider)
 
             if (layoutPickerComponent?.option != null){
-               itemView.bkgrd.background = AndroidResource.createDrawable(layoutPickerComponent.option)
+               binding.bkgrd.background = AndroidResource.createDrawable(layoutPickerComponent.option)
             }
 
             //input placeholder
             val optionInputPlaceholder: ViewStyleProps? = layoutPickerComponent?.optionInputFieldPlaceholder
-            AndroidResource.updateThemeForView( itemView.userInput, optionInputPlaceholder, fontFamilyProvider)
+            AndroidResource.updateThemeForView(  binding.incrementDecrementLayout.userInput, optionInputPlaceholder, fontFamilyProvider)
 
 
             // user input with state
@@ -231,7 +229,7 @@ internal class NumberPredictionOptionAdapter(
                 val inputState = StateListDrawable()
                 inputState.addState(intArrayOf(android.R.attr.state_focused), userInputEnabledDrawable)
                 inputState.addState(intArrayOf(), userInputDisabledDrawable)
-                itemView.userInput.background = inputState
+                binding.incrementDecrementLayout.userInput.background = inputState
             }
 
             // followup correct/incorrect input background
@@ -239,12 +237,12 @@ internal class NumberPredictionOptionAdapter(
                 widgetType == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP) {
 
                     if(layoutPickerComponent?.optionInputFieldCorrect?.background != null){
-                        itemView.correct_answer.background =
+                        binding.correctAnswer.background =
                             AndroidResource.createDrawable(layoutPickerComponent.optionInputFieldCorrect)
                     }else{
-                        itemView.correct_answer.background = (ContextCompat.getDrawable(itemView.context, R.drawable.correct_background))
+                        binding.correctAnswer.background = (ContextCompat.getDrawable(itemView.context, R.drawable.correct_background))
                     }
-                    if (itemView.userInput.visibility == View.VISIBLE && layoutPickerComponent?.optionInputFieldIncorrect?.background != null) itemView.userInput.background =
+                    if ( binding.incrementDecrementLayout.userInput.visibility == View.VISIBLE && layoutPickerComponent?.optionInputFieldIncorrect?.background != null)  binding.incrementDecrementLayout.userInput.background =
                         AndroidResource.createDrawable(layoutPickerComponent.optionInputFieldIncorrect)
             }
         }
@@ -254,25 +252,28 @@ internal class NumberPredictionOptionAdapter(
             if(!isCorrect){
                 showUserSelectedPrediction(option) //for wrong answer
             }else{
-                itemView.userInput.visibility = View.GONE //this is only visible if correct answer is predicted
+                binding.incrementDecrementLayout.userInput.visibility = View.GONE //this is only visible if correct answer is predicted
             }
-            itemView.userInput.isFocusable = false
-            itemView.userInput.isFocusableInTouchMode = false
-            itemView.correct_answer.setText(option.correct_number.toString())
+            binding.incrementDecrementLayout.userInput.isFocusable = false
+            binding.incrementDecrementLayout.userInput.isFocusableInTouchMode = false
+            binding.correctAnswer.setText(option.correct_number.toString())
         }
 
 
         // show user prediction with background
         private fun showUserSelectedPrediction(option: Option){
             if (option.number != null) {
-                itemView.userInput.visibility = View.VISIBLE
-                itemView.userInput.setText(option.number.toString())
-                itemView.userInput.background = (ContextCompat.getDrawable(itemView.context, R.drawable.wrong_background))
-                itemView.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_wrong_answer))
-
+                binding.incrementDecrementLayout.userInput.apply {
+                    visibility =  View.VISIBLE
+                    setText(option.number.toString())
+                    background = (ContextCompat.getDrawable(itemView.context, R.drawable.wrong_background))
+                    setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_wrong_answer))
+                }
             }else{
-                itemView.userInput.background = (ContextCompat.getDrawable(itemView.context, R.drawable.user_input_background))
-                itemView.userInput.setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_user_input_hint))
+                binding.incrementDecrementLayout.userInput.apply {
+                    background = (ContextCompat.getDrawable(itemView.context, R.drawable.user_input_background))
+                    setTextColor(ContextCompat.getColor(itemView.context, R.color.livelike_number_prediction_user_input_hint))
+                }
             }
         }
     }

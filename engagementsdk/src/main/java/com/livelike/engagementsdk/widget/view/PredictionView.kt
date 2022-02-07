@@ -5,12 +5,14 @@ package com.livelike.engagementsdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.databinding.WidgetTextOptionSelectionBinding
 import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetsTheme
@@ -22,16 +24,7 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.lay_textRecyclerView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
+
 
 class PredictionView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
@@ -41,6 +34,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
     private var inflated = false
 
     private var isFirstInteraction = false
+    private var binding: WidgetTextOptionSelectionBinding? = null
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
@@ -81,7 +75,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 // show timer while widget interaction mode
                 viewModel?.data?.latest()?.resource?.timeout?.let { timeout ->
                     showTimer(
-                        timeout, textEggTimer,
+                        timeout, binding?.textEggTimer,
                         {
                             viewModel?.animationEggTimerProgress = it
                         },
@@ -96,7 +90,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 onWidgetInteractionCompleted()
                 viewModel?.apply {
                     if (followUp) {
-                        followupAnimation?.apply {
+                        binding?.followupAnimation?.apply {
                             if (viewModel?.animationPath?.isNotEmpty() == true)
                                 setAnimation(
                                     viewModel?.animationPath
@@ -116,11 +110,11 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                         }
                         viewModel?.points?.let {
                             if (!shouldShowPointTutorial() && it > 0) {
-                                pointView.startAnimation(it, true)
+                                binding?.pointView?.startAnimation(it, true)
                                 wouldShowProgressionMeter(
                                     viewModel?.rewardsType,
                                     viewModel?.gamificationProfile?.latest(),
-                                    progressionMeterView
+                                    binding?.progressionMeterView!!
                                 )
                             }
                         }
@@ -130,7 +124,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                                 resultsObserver(it)
                         }
 
-                        confirmationMessage?.apply {
+                        binding?.confirmationMessage?.apply {
                             if (isFirstInteraction) {
                                 text =
                                     viewModel?.data?.currentData?.resource?.confirmation_message
@@ -156,11 +150,11 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
 
                         viewModel?.points?.let {
                             if (!shouldShowPointTutorial() && it > 0) {
-                                pointView.startAnimation(it, true)
+                                binding?.pointView?.startAnimation(it, true)
                                 wouldShowProgressionMeter(
                                     viewModel?.rewardsType,
                                     viewModel?.gamificationProfile?.latest(),
-                                    progressionMeterView
+                                    binding?.progressionMeterView!!
                                 )
                             }
                         }
@@ -178,7 +172,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
         viewModel?.data?.latest()?.let {
             val isFollowUp = it.resource.kind.contains("follow-up")
             if (isFollowUp) {
-                textEggTimer.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
+                binding?.textEggTimer?.showCloseButton { viewModel?.dismissWidget(DismissAction.TIMEOUT) }
 
             }
         }
@@ -235,7 +229,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             logDebug { "PredictionWidget Showing result total:$totalVotes" }
             viewModel?.adapter?.myDataset = options
             viewModel?.adapter?.showPercentage = true
-            textRecyclerView?.swapAdapter(viewModel?.adapter, false)
+            binding?.textRecyclerView?.swapAdapter(viewModel?.adapter, false)
         }
     }
 
@@ -249,7 +243,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
                     AndroidResource.createDrawable(themeComponent.body)?.let {
-                        lay_textRecyclerView?.background = it
+                        binding?.layTextRecyclerView?.background = it
                     }
                 }
             }
@@ -261,7 +255,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             val optionList = resource.getMergedOptions() ?: return
             if (!inflated) {
                 inflated = true
-                inflate(context, R.layout.widget_text_option_selection, this@PredictionView)
+                binding = WidgetTextOptionSelectionBinding.inflate(LayoutInflater.from(context), this@PredictionView, true)
             }
 
             val isFollowUp = resource.kind.contains("follow-up")
@@ -273,10 +267,12 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 setTagViewWithStyleChanges(context.resources.getString(R.string.livelike_prediction_tag))
             }
 
-            titleView.title = resource.question
-            txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
-            lay_textRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
-            titleTextView.gravity = Gravity.START
+            binding?.apply {
+                titleView.title = resource.question
+                txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
+                layTextRecyclerView?.setBackgroundResource(R.drawable.body_rounded_corner_prediction)
+                titleView.titleViewBinding.titleTextView.gravity = Gravity.START
+            }
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(
                 optionList,
                 widget.type,
@@ -306,7 +302,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     ) ?: ""
                 }
 
-            textRecyclerView.apply {
+            binding?.textRecyclerView?.apply {
                 isFirstInteraction = viewModel?.getUserInteraction() != null
                 viewModel?.adapter?.restoreSelectedPosition(viewModel?.getUserInteraction()?.optionId)
                 this.adapter = viewModel?.adapter
