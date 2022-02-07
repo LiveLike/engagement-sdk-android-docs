@@ -78,37 +78,37 @@
     "sponsors_url": "http://localhost:8080/api/v1/sponsors/?chat_room_id=773cdce1-1066-47c7-b6ce-26be31a15dd9"
   }],
   "default_chat_room": {
-    "id": "773cdce1-1066-47c7-b6ce-26be31a15dd9",
-    "url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/",
-    "client_id": "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
-    "title": "test",
-    "created_at": "2021-09-03T14:17:19.885098Z",
-    "content_filter": "none",
-    "visibility": "everyone",
+    "reported_messages_url": "http://localhost:8080/api/v1/reported-chat-room-messages/?status=pending&chat_room_id=e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
+    "custom_data": null,
+    "created_at": "2021-11-10T09:02:33.504+00",
+    "content_filter": "filtered",
+    "sticker_packs_url": "http://cf-blast-storage.livelikecdn.com/sticker-packs/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/sticker_packs.json",
+    "reaction_packs_url": "http://cf-blast-storage.livelikecdn.com/reaction-packs/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/reaction_packs.json",
+    "sponsors_url": "http://cf-blast-storage.livelikecdn.com/sponsors/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/sponsors.json",
+    "id": "e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
+    "url": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/",
+    "messages_url": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/messages/",
     "channels": {
+      "control": {
+        "pubnub": "chatroom.control.e8f3b5d2-3353-4c8e-b54e-32ecca6b7482"
+      },
       "chat": {
-        "sendbird": null,
-        "pubnub": "chatroom.773cdce1-1066-47c7-b6ce-26be31a15dd9"
+        "pubnub": "chatroom.e8f3b5d2-3353-4c8e-b54e-32ecca6b7482",
+        "sendbird": null
       },
       "reactions": {
-        "pubnub": "chatroom.reactions.773cdce1-1066-47c7-b6ce-26be31a15dd9"
-      },
-      "control": {
-        "pubnub": "chatroom.control.773cdce1-1066-47c7-b6ce-26be31a15dd9"
+        "pubnub": "chatroom.reactions.e8f3b5d2-3353-4c8e-b54e-32ecca6b7482"
       }
     },
-    "report_message_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/report-chat-message/",
-    "reported_messages_url": "http://localhost:8080/api/v1/reported-chat-room-messages/?chat_room_id=773cdce1-1066-47c7-b6ce-26be31a15dd9&status=pending",
-    "delete_message_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/delete-chat-message/",
-    "upload_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/upload/",
-    "memberships_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/memberships/",
-    "chat_room_invitations_url_template": "http://localhost:8080/api/v1/chat-room-invitations/?client_id={client_id}&chat_room_id={chat_room_id}",
-    "muted_status_url_template": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/muted-status/{profile_id}/",
-    "custom_messages_url": "http://localhost:8080/api/v1/chat-rooms/773cdce1-1066-47c7-b6ce-26be31a15dd9/custom-messages/",
-    "sticker_packs_url": "https://cf-blast-storage-game-changers.livelikecdn.com/sticker-packs/773cdce1-1066-47c7-b6ce-26be31a15dd9/sticker_packs.json",
-    "reaction_packs_url": "https://cf-blast-storage-game-changers.livelikecdn.com/reaction-packs/773cdce1-1066-47c7-b6ce-26be31a15dd9/reaction_packs.json",
-    "custom_data": null,
-    "sponsors_url": "http://localhost:8080/api/v1/sponsors/?chat_room_id=773cdce1-1066-47c7-b6ce-26be31a15dd9"
+    "custom_messages_url": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/custom-messages/",
+    "muted_status_url_template": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/muted-status/{profile_id}/",
+    "memberships_url": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/memberships/",
+    "title": "Live_Test2(1)(1)",
+    "upload_url": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/upload/",
+    "visibility": "everyone",
+    "delete_message_url": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/delete-chat-message/",
+    "client_id": "8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS",
+    "report_message_url": "http://localhost:8080/api/v1/chat-rooms/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/report-chat-message/"
   },
   "leaderboards": [{
     "id": "424d25bd-7404-417c-bb7c-9558a064cce4",

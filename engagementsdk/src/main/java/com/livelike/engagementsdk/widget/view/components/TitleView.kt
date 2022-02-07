@@ -2,17 +2,20 @@ package com.livelike.engagementsdk.widget.view.components
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.databinding.AtomWidgetTitleBinding
 import com.livelike.engagementsdk.widget.ViewStyleProps
-import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 
 class TitleView(context: Context, attr: AttributeSet) : ConstraintLayout(context, attr) {
+     var titleViewBinding: AtomWidgetTitleBinding =
+        AtomWidgetTitleBinding.inflate(LayoutInflater.from(context), this@TitleView, true)
+
     var title: String = ""
         set(value) {
             field = value
-            titleTextView.text = value
+            titleViewBinding.titleTextView.text = value
         }
     var componentTheme: ViewStyleProps? = null
         set(value) {
@@ -26,8 +29,4 @@ class TitleView(context: Context, attr: AttributeSet) : ConstraintLayout(context
                 )
             }
         }
-
-    init {
-        inflate(context, R.layout.atom_widget_title, this)
-    }
 }

@@ -27,5 +27,7 @@ internal data class PubnubChatMessage(
     @SerializedName("custom_data")
     val custom_data: String?,
     @SerializedName("parent_message")
-    val parentMessage: PubnubChatMessage? = null
+    val parentMessage: PubnubChatMessage? = null,
+    @SerializedName("parent_message_id")
+    val parentMessageId: String? = null
 )

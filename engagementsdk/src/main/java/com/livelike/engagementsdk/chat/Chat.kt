@@ -103,7 +103,8 @@ data class ChatRoomInfo(
     val title: String? = null,
     val visibility: Visibility? = null,
     val contentFilter: String? = null,
-    val customData: String? = null
+    val customData: String? = null,
+    val enableMessageReply: Boolean = false
 )
 
 enum class Visibility { everyone, members }

@@ -15,6 +15,8 @@ import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.databinding.LivelikeProgressItemBinding
+import com.livelike.engagementsdk.databinding.LivelikeTimelineItemBinding
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
