@@ -33,10 +33,7 @@
         <item name="chatReactionPanelColor">@android:color/white</item>
         <item name="chatReactionRadius">12dp</item>
         <item name="chatSelectedReactionRadius">12dp</item>
-        <item name="chatBubbleBackground">@drawable/ic_chat_message_bubble_rounded_rectangle</item>
-        <item name="chatReactionMessageBubbleHighlightedBackground">
-            @drawable/ic_chat_message_highlighted_bubble_rounded_rectangle
-        </item>
+        <!--        <item name="chatBubbleBackground">@drawable/ic_chat_message_bubble_rounded_rectangle</item>-->
         <item name="chatMessageTimeTextColor">@android:color/white</item>
         <item name="chatUserNameTextStyle">bold</item>
         <item name="chatReactionXPosition">120dp</item>
@@ -52,9 +49,11 @@
         <item name="chatBackground">#FFF</item>
         <item name="chatReactionMessageBackHighlightedBackground">#FFF</item>
         <item name="usernameColor">#171717</item>
+        <item name="parentUsernameColor">#AC0B0B</item>
         <item name="stickerIconTintColor">#1675E7</item>
         <item name="otherUsernameColor">#000</item>
         <item name="messageColor">#171717</item>
+        <item name="parentMessageColor">#074AA9</item>
         <item name="chatInputViewBackground">#FFF</item>
         <item name="chatDisplayBackground">#fff</item>
         <item name="chatViewBackground">#FFF</item>
@@ -134,6 +133,13 @@
         <item name="chatUserNameTextLetterSpacing">0.0</item>
         <item name="chatMessageLinkTextColor">#13D654</item>
         <item name="chatInputMaxCharLimit">10</item>
+
+        <item name="chatReactionMessageBubbleHighlightedBackground">
+            @drawable/demo_chat_message_highlighted_bubble_rounded_rectangle
+        </item>
+        <item name="parentChatReactionMessageBackHighlightedBackground">
+            @drawable/demo_chat_message_highlighted_parent_bubble_rounded_rectangle
+        </item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">
@@ -141,7 +147,10 @@
         <item name="chatReactionPanelColor">#5028a0</item>
         <item name="chatReactionDisplayCountColor">#ffffff</item>
         <item name="chatReactionMessageBubbleHighlightedBackground">
-            @drawable/ic_chat_message_highlighted_bubble_rounded_rectangle
+            @drawable/demo_chat_message_highlighted_bubble_rounded_rectangle
+        </item>
+        <item name="parentChatReactionMessageBackHighlightedBackground">
+            @drawable/demo_chat_message_highlighted_parent_bubble_rounded_rectangle
         </item>
         <item name="chatReactionFlagTintColor">@android:color/white</item>
         <item name="chatReactionPanelCountColor">@android:color/white</item>

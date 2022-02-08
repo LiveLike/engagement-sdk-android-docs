@@ -41,12 +41,8 @@ import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.chat_input.view.*
-import kotlinx.android.synthetic.main.chat_input.view.chat_parent_nickname
-import kotlinx.android.synthetic.main.chat_input.view.lay_parent_message
-import kotlinx.android.synthetic.main.chat_input.view.parent_chatMessage
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.*
 import kotlinx.android.synthetic.main.chat_view.view.*
-import kotlinx.android.synthetic.main.default_chat_cell.view.*
 import kotlinx.coroutines.*
 import pl.droidsonroids.gif.MultiCallback
 import java.util.*
@@ -163,6 +159,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
         initView(context)
     }
+
+    var enableMessageReply: Boolean = false
+        set(value) {
+            field = value
+            viewModel?.enableMessageReply = value
+        }
 
     var enableChatMessageURLs: Boolean = false
         set(value) {
@@ -294,6 +296,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         viewModel?.apply {
+            this.enableMessageReply = this@ChatView.enableMessageReply
             chatAdapter.showLinks = enableChatMessageURLs
             chatMessageUrlPatterns?.let {
                 if (it.isNotEmpty())
@@ -657,15 +660,17 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             })
-            val messageSwipeController =
-                MessageSwipeController(context, object : SwipeControllerActions {
-                    override fun showReplyUI(position: Int) {
-                        Toast.makeText(context, "Send Reply", Toast.LENGTH_SHORT).show()
-                        currentReplyParentMessage = chatAdapter.getChatMessage(position)
-                    }
-                })
-            val itemTouchHelper = ItemTouchHelper(messageSwipeController)
-            itemTouchHelper.attachToRecyclerView(rv)
+            if (enableMessageReply) {
+                val messageSwipeController =
+                    MessageSwipeController(context, object : SwipeControllerActions {
+                        override fun showReplyUI(position: Int) {
+                            Toast.makeText(context, "Send Reply", Toast.LENGTH_SHORT).show()
+                            currentReplyParentMessage = chatAdapter.getChatMessage(position)
+                        }
+                    })
+                val itemTouchHelper = ItemTouchHelper(messageSwipeController)
+                itemTouchHelper.attachToRecyclerView(rv)
+            }
         }
 
         snap_live.setOnClickListener {
@@ -875,8 +880,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             return
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
-        if (currentReplyParentMessage?.parentMessage != null) {
-            currentReplyParentMessage?.parentMessage = null
+        if (enableMessageReply) {
+            if (currentReplyParentMessage?.parentMessage != null) {
+                currentReplyParentMessage?.parentMessage = null
+            }
         }
 
         // TODO all this can be moved to view model easily
@@ -892,7 +899,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             image_width = 100,
             image_height = 100,
             timeStamp = timeData.timeSinceEpochInMs.toString(),
-            parentMessage = currentReplyParentMessage
+            parentMessage = when (enableMessageReply) {
+                true -> currentReplyParentMessage
+                else -> null
+            }
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {

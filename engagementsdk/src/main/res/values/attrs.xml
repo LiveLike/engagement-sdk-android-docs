@@ -12,12 +12,15 @@
         <attr name="showStickerSend" format="boolean" />
         <attr name="showMessageTime" format="boolean" />
         <attr name="usernameColor" format="color" />
+        <attr name="parentUsernameColor" format="color" />
         <attr name="otherUsernameColor" format="color" />
         <attr name="sendIconTintColor" format="color" />
         <attr name="stickerIconTintColor" format="color" />
         <attr name="messageColor" format="color" />
+        <attr name="parentMessageColor" format="color" />
         <attr name="chatBubbleBackground" format="reference|color" />
         <attr name="chatBackground" format="reference|color" />
+        <attr name="parentChatBackground" format="reference|color" />
         <attr name="chatBubbleWidth" format="dimension">
             <enum name="fill_parent" value="-1" />
             <enum name="match_parent" value="-1" />
@@ -42,6 +45,10 @@
         <attr name="chatBubblePaddingRight" format="dimension" />
         <attr name="chatBubblePaddingTop" format="dimension" />
         <attr name="chatBubblePaddingBottom" format="dimension" />
+        <attr name="parentChatBubblePaddingLeft" format="dimension" />
+        <attr name="parentChatBubblePaddingRight" format="dimension" />
+        <attr name="parentChatBubblePaddingTop" format="dimension" />
+        <attr name="parentChatBubblePaddingBottom" format="dimension" />
         <attr name="chatSendButtonPaddingLeft" format="dimension" />
         <attr name="chatSendButtonPaddingRight" format="dimension" />
         <attr name="chatSendButtonPaddingTop" format="dimension" />
@@ -73,6 +80,7 @@
         <attr name="chatReactionFlagTintColor" format="color" />
         <attr name="chatReactionMessageBubbleHighlightedBackground" format="reference" />
         <attr name="chatReactionMessageBackHighlightedBackground" format="reference|color" />
+        <attr name="parentChatReactionMessageBackHighlightedBackground" format="reference|color" />
         <attr name="chatReactionPadding" format="dimension" />
         <attr name="chatSendDrawable" format="reference" />
         <attr name="chatStickerSendDrawable" format="reference" />
@@ -131,15 +139,29 @@
             <flag name="bold" value="1" />
             <flag name="italic" value="2" />
         </attr>
+        <attr name="parentChatUserNameTextStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
         <attr name="chatUserNameCustomFontPath" format="string" />
+        <attr name="parentChatUserNameCustomFontPath" format="string" />
         <attr name="chatUserNameTextAllCaps" format="boolean" />
         <attr name="chatUserNameTextSize" format="dimension" />
+        <attr name="parentChatUserNameTextSize" format="dimension" />
         <attr name="chatMessageCustomFontPath" format="string" />
+        <attr name="parentChatMessageCustomFontPath" format="string" />
         <attr name="chatMessageTextStyle">
             <flag name="normal" value="0" />
             <flag name="bold" value="1" />
             <flag name="italic" value="2" />
         </attr>
+        <attr name="parentChatMessageTextStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
+        <attr name="parentChatMessageTextSize" format="dimension" />
         <attr name="chatMessageTextSize" format="dimension" />
         <attr name="chatMessageTimeCustomFontPath" format="string" />
         <attr name="chatMessageTimeTextSize" format="dimension" />
@@ -152,7 +174,9 @@
         <attr name="chatMessageTimeTextColor" format="color" />
         <attr name="chatMessageTimeTextLetterSpacing" format="float" />
         <attr name="chatMessageTextLetterSpacing" format="float" />
+        <attr name="parentChatMessageTextLetterSpacing" format="float" />
         <attr name="chatUserNameTextLetterSpacing" format="float" />
+        <attr name="parentChatUserNameTextLetterSpacing" format="float" />
         <attr name="chatReactionDisplayCountTextStyle">
             <flag name="normal" value="0" />
             <flag name="bold" value="1" />
@@ -180,6 +204,7 @@
         <attr name="chatReactionPanelCountCustomFontPath" format="string" />
         <attr name="chatReactionPanelCountVisibleIfZero" format="boolean" />
         <attr name="chatMessageLinkTextColor" format="color" />
+        <attr name="parentChatMessageLinkTextColor" format="color" />
         <attr name="chatInputMaxCharLimit" format="integer" />
     </declare-styleable>
 

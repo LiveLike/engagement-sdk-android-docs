@@ -3,5 +3,5 @@
     android:shape="rectangle">
 
     <corners android:radius="@dimen/parent_chat_bubble_background_radius" />
-    <solid android:color="@color/parent_chat_bubble_background_color" />
+    <solid android:color="@color/parent_chat_highlighted_bubble_background_color" />
 </shape>

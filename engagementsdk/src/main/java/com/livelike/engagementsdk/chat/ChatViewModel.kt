@@ -21,14 +21,15 @@ import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.publicapis.*
+import com.livelike.engagementsdk.publicapis.BlockedInfo
+import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 internal class ChatViewModel(
@@ -51,6 +52,12 @@ internal class ChatViewModel(
         ChatRecyclerAdapter(analyticsService, ::reportChatMessage, ::blockProfile)
     var messageList = mutableListOf<ChatMessage>()
     var deletedMessages = hashSetOf<String>()
+
+    var enableMessageReply: Boolean = false
+        set(value) {
+            field = value
+            chatAdapter.enableMessageReply = value
+        }
 
     internal val eventStream: Stream<String> =
         SubscriptionManager(true)

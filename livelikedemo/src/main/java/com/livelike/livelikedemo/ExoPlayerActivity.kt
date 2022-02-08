@@ -84,6 +84,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private var customLink: String? = null
     private var showLink: Boolean = false
+    private var enableReplies: Boolean = false
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
     private var jsonTheme: String? = null
     private var showNotification: Boolean = true
@@ -145,7 +146,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             showNotification = intent.getBooleanExtra("showNotification", true)
             showLink = intent.getBooleanExtra("showLink", false)
             customLink = intent.getStringExtra("customLink")
-
+            enableReplies = intent.getBooleanExtra("enableReplies",false)
             adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
             val position = savedInstanceState?.getLong(POSITION) ?: 0
             startingState = PlayerState(0, position, !adsPlaying)
@@ -560,7 +561,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             if (showLink) {
                 chat_view.chatMessageUrlPatterns = customLink
             }
-
+            chat_view.enableMessageReply = enableReplies
             chat_view.chatViewDelegate = object : ChatViewDelegate {
                 override fun onCreateViewHolder(
                     parent: ViewGroup,
@@ -579,6 +580,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     showChatAvatar: Boolean
                 ) {
                     println("ExoPlayerActivity.onBindView>> ${holder is MyCustomMsgViewHolder}")
+                    /*
                     chatViewThemeAttributes.chatBubbleBackgroundRes?.let {
                         if (it < 0) {
                             holder.itemView.lay_msg_back.setBackgroundColor(it)
@@ -604,6 +606,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                             }
                         }
                     }
+                    */
                     if (showChatAvatar) {
                         holder.itemView.img_sender_msg.visibility = View.VISIBLE
                         Glide.with(applicationContext)
@@ -626,7 +629,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
             chat_view?.setSession(session!!.chatSession)
-
         }
         player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
     }

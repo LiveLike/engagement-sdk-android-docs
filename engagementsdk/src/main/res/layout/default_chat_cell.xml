@@ -81,8 +81,8 @@
                         android:id="@+id/chat_parent_nickname"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#FFFFFF"
-                        android:textSize="12sp"
+                        android:textColor="@color/livelike_default_parent_chat_cell_name_color"
+                        android:textSize="@dimen/livelike_default_parent_chat_cell_name_size"
                         android:textStyle="bold"
                         app:fontFamily="@font/livelike_chat_nickname_font"
                         tools:text="Parent" />
@@ -95,8 +95,8 @@
                         android:gravity="start"
                         android:text=""
                         android:textAlignment="viewStart"
-                        android:textColor="#949494"
-                        android:textSize="16sp"
+                        android:textColor="@color/livelike_default_chat_cell_message_color"
+                        android:textSize="@dimen/livelike_default_parent_chat_cell_text_size"
                         app:fontFamily="@font/livelike_chat_message_font"
                         tools:ignore="HardcodedText"
                         tools:text="@tools:sample/lorem[30]" />

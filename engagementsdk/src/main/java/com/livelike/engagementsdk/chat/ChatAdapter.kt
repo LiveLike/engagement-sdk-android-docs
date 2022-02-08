@@ -48,7 +48,9 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.*
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.publicapis.*
+import com.livelike.engagementsdk.publicapis.ChatMessageType
+import com.livelike.engagementsdk.publicapis.toChatMessageType
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
 import pl.droidsonroids.gif.MultiCallback
@@ -93,6 +95,7 @@ internal class ChatRecyclerAdapter(
     internal var chatPopUpView: ChatActionsPopupView? = null
     var showChatAvatarLogo = true
     var chatViewDelegate: ChatViewDelegate? = null
+    var enableMessageReply: Boolean = false
 
     override fun onCreateViewHolder(root: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (chatViewDelegate != null) {
@@ -422,18 +425,24 @@ internal class ChatRecyclerAdapter(
             // TODO: Need to check before functionality make it in more proper way
             v.apply {
                 if (currentChatReactionPopUpViewPos > -1 && adapterPosition > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
-                    chatViewThemeAttribute.chatReactionMessageBubbleHighlightedBackground?.let { res ->
-                        updateUI(v.chatBubbleBackground, res)
-                    }
-                    chatViewThemeAttribute.chatReactionMessageBackHighlightedBackground?.let { res ->
-                        updateUI(v.chatBackground, res)
+                    chatViewThemeAttribute.apply {
+                        updateUI(v.chatBubbleBackground,
+                            chatReactionMessageBubbleHighlightedBackground
+                        )
+                        chatReactionMessageBackHighlightedBackground?.let { res ->
+                            updateUI(v.chatBackground, res)
+                        }
+                        updateUI(v.lay_parent_message,
+                            parentChatReactionMessageBackHighlightedBackground
+                        )
                     }
                 } else {
-                    chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
-                        updateUI(v.chatBubbleBackground, res)
-                    }
-                    chatViewThemeAttribute.chatBackgroundRes?.let { res ->
-                        updateUI(v.chatBackground, res)
+                    chatViewThemeAttribute.apply {
+                        updateUI(v.chatBubbleBackground, chatBubbleBackgroundRes)
+                        chatBackgroundRes?.let { res ->
+                            updateUI(v.chatBackground, res)
+                        }
+                        updateUI(v.lay_parent_message, parentChatBackgroundRes)
                     }
                 }
             }
@@ -546,10 +555,10 @@ internal class ChatRecyclerAdapter(
          * Creating this function to get line count of string assuming the width as some value
          * it is estimated not exact value
          */
-        private fun String.getLinesCount(): Int {
+        private fun String.getLinesCount(textSize: Float): Int {
             val density = v.context.resources.displayMetrics.density
             val paint = TextPaint()
-            paint.textSize = chatViewThemeAttribute.chatMessageTextSize * density
+            paint.textSize = textSize * density
             // Using static width for now ,can be replace with dynamic for later
             val width = (AndroidResource.dpToPx(300) * density).toInt()
             val alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL
@@ -588,6 +597,7 @@ internal class ChatRecyclerAdapter(
 
                     chatViewThemeAttribute.apply {
                         v.chatMessage.setTextColor(chatMessageColor)
+                        v.parent_chatMessage.setTextColor(parentChatMessageColor)
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
                             chat_nickname.text =
@@ -596,19 +606,44 @@ internal class ChatRecyclerAdapter(
                             chat_nickname.setTextColor(chatOtherNickNameColor)
                             chat_nickname.text = message.senderDisplayName
                         }
+                        chat_parent_nickname.setTextColor(parentChatNickNameColor)
                         chat_nickname.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatUserNameTextSize)
+                        chat_parent_nickname.setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            parentChatUserNameTextSize
+                        )
                         chat_nickname.isAllCaps = chatUserNameTextAllCaps
                         setCustomFontWithTextStyle(
                             chat_nickname,
                             chatUserNameCustomFontPath,
                             chatUserNameTextStyle
                         )
+                        setCustomFontWithTextStyle(
+                            chat_parent_nickname,
+                            parentChatUserNameCustomFontPath,
+                            parentChatUserNameTextStyle
+                        )
                         setLetterSpacingForTextView(chat_nickname, chatUserNameTextLetterSpacing)
+                        setLetterSpacingForTextView(
+                            chat_parent_nickname,
+                            parentChatUserNameTextLetterSpacing
+                        )
                         chatMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatMessageTextSize)
+                        parent_chatMessage.setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            parentChatMessageTextSize
+                        )
                         if (showLinks) {
-                            chatMessage.linksClickable = showLinks
-                            chatMessage.setLinkTextColor(chatMessageLinkTextColor)
-                            chatMessage.movementMethod = LinkMovementMethod.getInstance()
+                            chatMessage.apply {
+                                linksClickable = showLinks
+                                setLinkTextColor(chatMessageLinkTextColor)
+                                movementMethod = LinkMovementMethod.getInstance()
+                            }
+                            parent_chatMessage.apply {
+                                linksClickable = showLinks
+                                setLinkTextColor(parentChatMessageLinkTextColor)
+                                movementMethod = LinkMovementMethod.getInstance()
+                            }
                         }
                         setCustomFontWithTextStyle(
                             chatMessage,
@@ -618,7 +653,19 @@ internal class ChatRecyclerAdapter(
                                 else -> chatMessageTextStyle
                             }
                         )
+                        setCustomFontWithTextStyle(
+                            parent_chatMessage,
+                            parentChatMessageCustomFontPath,
+                            when (isDeleted) {
+                                true -> Typeface.ITALIC
+                                else -> parentChatMessageTextStyle
+                            }
+                        )
                         setLetterSpacingForTextView(chatMessage, chatMessageTextLetterSpacing)
+                        setLetterSpacingForTextView(
+                            parent_chatMessage,
+                            parentChatMessageTextLetterSpacing
+                        )
                         if (chatViewThemeAttribute.showMessageDateTime) {
                             v.message_date_time.visibility = View.VISIBLE
                             if (EngagementSDK.enableDebug) {
@@ -679,6 +726,12 @@ internal class ChatRecyclerAdapter(
                             chatBubblePaddingRight,
                             chatBubblePaddingBottom
                         )
+                        v.lay_parent_message.setPadding(
+                            parentChatBubblePaddingLeft,
+                            parentChatBubblePaddingTop,
+                            parentChatBubblePaddingRight,
+                            parentChatBubblePaddingBottom
+                        )
                         val layoutParam1: LinearLayout.LayoutParams =
                             v.chatBubbleBackground.layoutParams as LinearLayout.LayoutParams
                         layoutParam1.setMargins(
@@ -736,7 +789,13 @@ internal class ChatRecyclerAdapter(
                                 .into(img_chat_avatar)
                         }
 
-                        setTextOrImageToView(message, chatMessage, img_chat_message, this)
+                        setTextOrImageToView(
+                            message,
+                            chatMessage,
+                            img_chat_message,
+                            false,
+                            chatMessageTextSize
+                        )
 
                         var imageView: ImageView
                         rel_reactions_lay.removeAllViews()
@@ -833,7 +892,7 @@ internal class ChatRecyclerAdapter(
                         }
                     }
 
-                    lay_parent_message.visibility = when (parentMessage != null) {
+                    lay_parent_message.visibility = when (parentMessage != null && enableMessageReply) {
                         true -> View.VISIBLE
                         else -> View.GONE
                     }
@@ -842,8 +901,8 @@ internal class ChatRecyclerAdapter(
                             it,
                             parent_chatMessage,
                             img_parent_chat_message,
-                            chatViewThemeAttribute,
-                            true
+                            true,
+                            chatViewThemeAttribute.parentChatMessageTextSize
                         )
                         chat_parent_nickname.text = it.senderDisplayName
                     }
@@ -855,123 +914,121 @@ internal class ChatRecyclerAdapter(
             chatMessage: ChatMessage?,
             textView: TextView,
             imageView: ImageView,
-            chatViewThemeAttributes: ChatViewThemeAttributes,
-            parent: Boolean = false
+            parent: Boolean = false,
+            textSize: Float
         ) {
             val callback = MultiCallback(true)
-            chatViewThemeAttributes.apply {
-                chatMessage?.apply {
-                    val tag = when (parent) {
-                        true -> "parent_$id"
-                        else -> id
-                    }
-                    textView.tag = tag
-                    val spaceRemover = Pattern.compile("[\\s]")
-                    val inputNoString = spaceRemover.matcher(message ?: "")
-                        .replaceAll(Matcher.quoteReplacement(""))
-                    val isOnlyStickers =
-                        inputNoString.findIsOnlyStickers()
-                            .matches() || message?.findImages()?.matches() == true
-                    val atLeastOneSticker =
-                        inputNoString.findStickers().find() || message?.findImages()
-                            ?.matches() == true
-                    val numberOfStickers = message?.findStickers()?.countMatches() ?: 0
-                    val isExternalImage = message?.findImages()?.matches() ?: false
+            chatMessage?.apply {
+                val tag = when (parent) {
+                    true -> "parent_$id"
+                    else -> id
+                }
+                textView.tag = tag
+                val spaceRemover = Pattern.compile("[\\s]")
+                val inputNoString = spaceRemover.matcher(message ?: "")
+                    .replaceAll(Matcher.quoteReplacement(""))
+                val isOnlyStickers =
+                    inputNoString.findIsOnlyStickers()
+                        .matches() || message?.findImages()?.matches() == true
+                val atLeastOneSticker =
+                    inputNoString.findStickers().find() || message?.findImages()
+                        ?.matches() == true
+                val numberOfStickers = message?.findStickers()?.countMatches() ?: 0
+                val isExternalImage = message?.findImages()?.matches() ?: false
 
-                    textView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-                    callback.addView(textView)
-                    textView.contentDescription = if (isExternalImage) {
-                        textView.context.getString(R.string.image)
-                    } else {
-                        message
-                    }
-                    when {
-                        !isDeleted && isExternalImage -> {
-                            imageView.contentDescription = if (isExternalImage) {
-                                textView.context.getString(R.string.image)
-                            } else {
-                                message
-                            }
-                            textView.minHeight = 0
-                            textView.text = ""
-                            textView.visibility = View.GONE
-                            imageView.visibility = View.VISIBLE
-                            imageView.minimumHeight =
-                                AndroidResource.dpToPx(LARGER_STICKER_SIZE)
-                            Glide.with(imageView.context)
-                                .load(imageUrl)
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .apply(
-                                    RequestOptions().override(
-                                        image_width ?: LARGER_STICKER_SIZE,
-                                        image_height ?: LARGER_STICKER_SIZE
-                                    )
+                textView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+                callback.addView(textView)
+                textView.contentDescription = if (isExternalImage) {
+                    textView.context.getString(R.string.image)
+                } else {
+                    message
+                }
+                when {
+                    !isDeleted && isExternalImage -> {
+                        imageView.contentDescription = if (isExternalImage) {
+                            textView.context.getString(R.string.image)
+                        } else {
+                            message
+                        }
+                        textView.minHeight = 0
+                        textView.text = ""
+                        textView.visibility = View.GONE
+                        imageView.visibility = View.VISIBLE
+                        imageView.minimumHeight =
+                            AndroidResource.dpToPx(LARGER_STICKER_SIZE)
+                        Glide.with(imageView.context)
+                            .load(imageUrl)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .apply(
+                                RequestOptions().override(
+                                    image_width ?: LARGER_STICKER_SIZE,
+                                    image_height ?: LARGER_STICKER_SIZE
                                 )
-                                .into(imageView)
-                        }
-                        !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
-                            textView.visibility = View.VISIBLE
-                            imageView.visibility = View.GONE
-                            textView.minHeight =
-                                AndroidResource.dpToPx(MEDIUM_STICKER_SIZE)
-                            val s = SpannableString(message)
-                            replaceWithStickers(
-                                s,
-                                textView.context.applicationContext,
-                                stickerPackRepository,
-                                null,
-                                callback,
-                                MEDIUM_STICKER_SIZE
-                            ) {
-                                // TODO this might write to the wrong messageView on slow connection.
-                                if (textView.tag == tag) {
-                                    textView.text = when (showLinks) {
-                                        true -> getTextWithCustomLinks(s)
-                                        else -> s
-                                    }
+                            )
+                            .into(imageView)
+                    }
+                    !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
+                        textView.visibility = View.VISIBLE
+                        imageView.visibility = View.GONE
+                        textView.minHeight =
+                            AndroidResource.dpToPx(MEDIUM_STICKER_SIZE)
+                        val s = SpannableString(message)
+                        replaceWithStickers(
+                            s,
+                            textView.context.applicationContext,
+                            stickerPackRepository,
+                            null,
+                            callback,
+                            MEDIUM_STICKER_SIZE
+                        ) {
+                            // TODO this might write to the wrong messageView on slow connection.
+                            if (textView.tag == tag) {
+                                textView.text = when (showLinks) {
+                                    true -> getTextWithCustomLinks(s)
+                                    else -> s
                                 }
                             }
                         }
-                        !isDeleted && atLeastOneSticker -> {
-                            textView.visibility = View.VISIBLE
-                            imageView.visibility = View.GONE
-                            var columnCount = numberOfStickers / 8
-                            val lines = message?.withoutStickers()?.getLinesCount() ?: 0
-                            if (columnCount == 0) {
-                                columnCount = 1
+                    }
+                    !isDeleted && atLeastOneSticker -> {
+                        textView.visibility = View.VISIBLE
+                        imageView.visibility = View.GONE
+                        var columnCount = numberOfStickers / 8
+                        val lines = message?.withoutStickers()?.getLinesCount(textSize) ?: 0
+                        if (columnCount == 0) {
+                            columnCount = 1
+                        }
+                        textView.minHeight =
+                            (textSize.toInt() * columnCount) + when {
+                                lines != columnCount -> (lines * textSize.toInt())
+                                else -> 0
                             }
-                            textView.minHeight =
-                                (chatMessageTextSize.toInt() * columnCount) + when {
-                                    lines != columnCount -> (lines * chatMessageTextSize.toInt())
-                                    else -> 0
-                                }
-                            val s = SpannableString(message)
-                            replaceWithStickers(
-                                s,
-                                textView.context.applicationContext,
-                                stickerPackRepository,
-                                null,
-                                callback,
-                                SMALL_STICKER_SIZE
-                            ) {
-                                // TODO this might write to the wrong messageView on slow connection.
-                                if (textView.tag == tag) {
-                                    textView.text = when (showLinks) {
-                                        true -> getTextWithCustomLinks(s)
-                                        else -> s
-                                    }
+                        val s = SpannableString(message)
+                        replaceWithStickers(
+                            s,
+                            textView.context.applicationContext,
+                            stickerPackRepository,
+                            null,
+                            callback,
+                            SMALL_STICKER_SIZE
+                        ) {
+                            // TODO this might write to the wrong messageView on slow connection.
+                            if (textView.tag == tag) {
+                                textView.text = when (showLinks) {
+                                    true -> getTextWithCustomLinks(s)
+                                    else -> s
                                 }
                             }
                         }
-                        else -> {
-                            imageView.visibility = View.GONE
-                            textView.visibility = View.VISIBLE
-                            clearTarget(id, textView.context)
-                            textView.minHeight = chatMessageTextSize.toInt()
-                            textView.text = when (showLinks) {
-                                true -> getTextWithCustomLinks(SpannableString(message))
-                                else -> message
-                            }
+                    }
+                    else -> {
+                        imageView.visibility = View.GONE
+                        textView.visibility = View.VISIBLE
+                        clearTarget(id, textView.context)
+                        textView.minHeight = textSize.toInt()
+                        textView.text = when (showLinks) {
+                            true -> getTextWithCustomLinks(SpannableString(message))
+                            else -> message
                         }
                     }
                 }
