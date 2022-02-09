@@ -134,7 +134,7 @@ internal class ChatViewModel(
                 message.channel != currentChatRoom?.channels?.chat?.get(
                     CHAT_PROVIDER
                 )
-            } check deleted:${deletedMessages.contains(message.id)}"
+            } check deleted:${deletedMessages.contains(message.id)} has Parent msg: ${message.parentMessage != null}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
 

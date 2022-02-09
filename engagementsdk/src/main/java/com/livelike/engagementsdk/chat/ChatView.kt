@@ -665,7 +665,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     MessageSwipeController(context, object : SwipeControllerActions {
                         override fun showReplyUI(position: Int) {
                             Toast.makeText(context, "Send Reply", Toast.LENGTH_SHORT).show()
-                            currentReplyParentMessage = chatAdapter.getChatMessage(position)
+                            currentReplyParentMessage = chatAdapter.getChatMessage(position).copy()
                         }
                     })
                 val itemTouchHelper = ItemTouchHelper(messageSwipeController)
@@ -907,7 +907,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
-                currentReplyParentMessage = null
                 val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
                 if (hasExternalImage) {
                     uploadAndPostImage(context, it, timeData)
@@ -915,6 +914,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     chatListener?.onChatMessageSend(it, timeData)
                 }
                 edittext_chat_message.setText("")
+                currentReplyParentMessage = null
                 snapToLive()
                 viewModel?.currentChatRoom?.id?.let { id ->
                     analyticsService.trackMessageSent(

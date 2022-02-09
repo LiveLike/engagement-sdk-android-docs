@@ -308,7 +308,7 @@ internal class ChatRecyclerAdapter(
             chatPopUpView = ChatActionsPopupView(
                 v.context,
                 chatReactionRepository,
-                View.OnClickListener { _ ->
+                { _ ->
                     analyticsService.trackFlagButtonPressed()
                     hideFloatingUI()
                     v.context?.let { ctx ->
@@ -891,7 +891,6 @@ internal class ChatRecyclerAdapter(
                             txt_chat_reactions_count.text = "  "
                         }
                     }
-
                     lay_parent_message.visibility = when (parentMessage != null && enableMessageReply) {
                         true -> View.VISIBLE
                         else -> View.GONE

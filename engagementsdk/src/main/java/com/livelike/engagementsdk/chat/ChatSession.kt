@@ -443,7 +443,7 @@ internal class ChatSession(
             image_width = imageWidth ?: 100,
             image_height = imageHeight ?: 100,
             timeStamp = timeData.timeSinceEpochInMs.toString(),
-            parentMessage = parentChatMessage?.toChatMessage()
+            parentMessage = parentChatMessage?.copy()?.toChatMessage()
         ).let { chatMessage ->
 
             // TODO: need to update for error handling here if pubnub respond failure of message
