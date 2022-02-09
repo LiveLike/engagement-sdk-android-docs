@@ -81,7 +81,7 @@ class ChatViewThemeAttributes {
                 R.styleable.ChatView_chatReactionMessageBubbleHighlightedBackground,
                 colorHighlightedBubbleValue
             )
-            println("ChatViewThemeAttributes.initAttributes>>${colorHighlightedBubbleValue.type}")
+
             chatReactionMessageBubbleHighlightedBackground = when {
                 colorHighlightedBubbleValue.type == TypedValue.TYPE_REFERENCE || colorHighlightedBubbleValue.type == TypedValue.TYPE_STRING -> getResourceId(
                     R.styleable.ChatView_chatReactionMessageBubbleHighlightedBackground,

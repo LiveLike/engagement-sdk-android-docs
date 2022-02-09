@@ -892,7 +892,7 @@ internal class ChatRecyclerAdapter(
                         }
                     }
 
-                    lay_parent_message.visibility = when (parentMessage != null && enableMessageReply && !isDeleted) {
+                    lay_parent_message.visibility = when (parentMessage != null && enableMessageReply) {
                         true -> View.VISIBLE
                         else -> View.GONE
                     }
