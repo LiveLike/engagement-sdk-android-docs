@@ -29,16 +29,14 @@ import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
 
-/**
- * Created by Shivansh Mittal on 2020-04-08.
- */
+
 internal class ChatSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val isPublicRoom: Boolean = true,
     internal val analyticsServiceStream: Stream<AnalyticsService>,
-    private val errorDelegate: ErrorDelegate? = null,
+    internal val errorDelegate: ErrorDelegate? = null,
     private val liveLikeChatClient: LiveLikeChatClient,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeChatSession {

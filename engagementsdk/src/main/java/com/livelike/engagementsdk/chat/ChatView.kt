@@ -17,7 +17,6 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -664,8 +663,13 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 val messageSwipeController =
                     MessageSwipeController(context, object : SwipeControllerActions {
                         override fun showReplyUI(position: Int) {
-                            Toast.makeText(context, "Send Reply", Toast.LENGTH_SHORT).show()
-                            currentReplyParentMessage = chatAdapter.getChatMessage(position)
+                            val chatMessage = chatAdapter.getChatMessage(position)
+                            if (!chatMessage.isDeleted)
+                                currentReplyParentMessage = chatMessage.copy()
+                            else {
+                                logDebug { "Not Allowed to reply message" }
+                                (session as? ChatSession)?.errorDelegate?.onError("Not Allowed to reply message")
+                            }
                         }
                     })
                 val itemTouchHelper = ItemTouchHelper(messageSwipeController)
