@@ -51,7 +51,7 @@ internal class ChatViewModel(
     var chatAdapter: ChatRecyclerAdapter =
         ChatRecyclerAdapter(analyticsService, ::reportChatMessage, ::blockProfile)
     var messageList = mutableListOf<ChatMessage>()
-    var deletedMessages = hashSetOf<String>()
+    private var deletedMessages = hashSetOf<String>()
 
     var enableMessageReply: Boolean = false
         set(value) {
@@ -121,6 +121,12 @@ internal class ChatViewModel(
                 chatAdapter.chatViewDelegate != null || (chatAdapter.chatViewDelegate == null && it.messageEvent != PubnubChatEventType.CUSTOM_MESSAGE_CREATED)
             }.map {
                 it.isFromMe = userStream.latest()?.id == it.senderId
+                it.parentMessage = it.parentMessage?.apply {
+                    message = when (deletedMessages.contains(id)) {
+                        true -> applicationContext.getString(R.string.livelike_chat_message_deleted_message)
+                        else -> message
+                    }
+                }
                 it
             }
         )
@@ -152,6 +158,12 @@ internal class ChatViewModel(
         messageList.add(
             message.apply {
                 isFromMe = userStream.latest()?.id == senderId
+                parentMessage = parentMessage?.apply {
+                    this.message = when (deletedMessages.contains(id)) {
+                        true -> applicationContext.getString(R.string.livelike_chat_message_deleted_message)
+                        else -> this.message
+                    }
+                }
             }
         )
 
@@ -238,15 +250,31 @@ internal class ChatViewModel(
                     applicationContext.getString(R.string.livelike_chat_message_deleted_message)
                 isDeleted = true
             }
+            messageList.find {
+                it.parentMessage != null && it.parentMessage?.id?.lowercase(Locale.getDefault()) == messageId
+            }?.apply {
+                parentMessage = parentMessage?.apply {
+                    message = when (messageId == id) {
+                        true -> applicationContext.getString(R.string.livelike_chat_message_deleted_message)
+                        else -> message
+                    }
+                }
+            }
             uiScope.launch {
                 chatAdapter.submitList(ArrayList(messageList.toSet()))
                 chatAdapter.currentChatReactionPopUpViewPos = -1
                 val index = messageList.indexOfFirst { it.id == messageId }
-                if (index != -1 && index < chatAdapter.itemCount) {
-                    chatAdapter.notifyItemChanged(index)
-                }
+                val index2 = messageList.indexOfFirst { it.parentMessage!=null && it.parentMessage?.id == messageId }
+                notifyIndexUpdate(index)
+                notifyIndexUpdate(index2)
                 eventStream.onNext(EVENT_MESSAGE_DELETED)
             }
+        }
+    }
+
+    private fun notifyIndexUpdate(index: Int) {
+        if (index != -1 && index < chatAdapter.itemCount) {
+            chatAdapter.notifyItemChanged(index)
         }
     }
 
