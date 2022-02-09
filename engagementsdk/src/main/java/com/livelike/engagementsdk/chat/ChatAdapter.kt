@@ -19,6 +19,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
@@ -426,13 +427,15 @@ internal class ChatRecyclerAdapter(
             v.apply {
                 if (currentChatReactionPopUpViewPos > -1 && adapterPosition > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
                     chatViewThemeAttribute.apply {
-                        updateUI(v.chatBubbleBackground,
+                        updateUI(
+                            v.chatBubbleBackground,
                             chatReactionMessageBubbleHighlightedBackground
                         )
                         chatReactionMessageBackHighlightedBackground?.let { res ->
                             updateUI(v.chatBackground, res)
                         }
-                        updateUI(v.lay_parent_message,
+                        updateUI(
+                            v.lay_parent_message,
                             parentChatReactionMessageBackHighlightedBackground
                         )
                     }
@@ -892,10 +895,11 @@ internal class ChatRecyclerAdapter(
                         }
                     }
 
-                    lay_parent_message.visibility = when (parentMessage != null && enableMessageReply) {
-                        true -> View.VISIBLE
-                        else -> View.GONE
-                    }
+                    lay_parent_message.visibility =
+                        when (parentMessage != null && enableMessageReply) {
+                            true -> View.VISIBLE
+                            else -> View.GONE
+                        }
                     parentMessage?.let {
                         setTextOrImageToView(
                             it,
@@ -938,17 +942,46 @@ internal class ChatRecyclerAdapter(
 
                 textView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                 callback.addView(textView)
-                textView.contentDescription = if (isExternalImage) {
-                    textView.context.getString(R.string.image)
-                } else {
-                    message
+//                textView.contentDescription = if (isExternalImage) {
+//                    textView.context.getString(R.string.image)
+//                } else {
+//                    message
+//                }
+                textView.accessibilityDelegate = object : View.AccessibilityDelegate() {
+                    override fun onInitializeAccessibilityNodeInfo(
+                        host: View?,
+                        info: AccessibilityNodeInfo?
+                    ) {
+                        super.onInitializeAccessibilityNodeInfo(host, info)
+                        info?.text =  if (isExternalImage) {
+                            if (parent) {
+                                "Reply message to ${textView.context.getString(R.string.image)}"
+                            } else {
+                                textView.context.getString(R.string.image)
+                            }
+                        } else {
+                            if (parent) {
+                                "Reply message to $message"
+                            } else {
+                                message
+                            }
+                        }
+                    }
                 }
                 when {
                     !isDeleted && isExternalImage -> {
                         imageView.contentDescription = if (isExternalImage) {
-                            textView.context.getString(R.string.image)
+                            if (parent) {
+                                "Replying to ${textView.context.getString(R.string.image)}"
+                            } else {
+                                textView.context.getString(R.string.image)
+                            }
                         } else {
-                            message
+                            if (parent) {
+                                "Replying to message $message"
+                            } else {
+                                message
+                            }
                         }
                         textView.minHeight = 0
                         textView.text = ""
@@ -1032,6 +1065,7 @@ internal class ChatRecyclerAdapter(
                         }
                     }
                 }
+                println("ViewHolder.setTextOrImageToView>>${textView.contentDescription} >> ${imageView.contentDescription}")
             }
         }
     }
