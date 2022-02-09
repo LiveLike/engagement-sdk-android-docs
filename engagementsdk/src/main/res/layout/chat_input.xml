@@ -66,11 +66,10 @@
 
             <ImageView
                 android:id="@+id/img_parent_chat_avatar"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="@dimen/input_reply_parent_chat_message_width"
+                android:layout_height="@dimen/input_reply_parent_chat_message_height"
                 android:layout_gravity="bottom"
                 android:contentDescription="@string/user_image"
-                android:visibility="gone"
                 tools:visibility="visible" />
 
             <LinearLayout

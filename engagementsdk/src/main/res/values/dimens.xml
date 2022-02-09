@@ -238,6 +238,8 @@
     <dimen name="livelike_sponsor_label_text_size">12sp</dimen>
     <dimen name="livelike_ama_title_padding_top">12dp</dimen>
     <dimen name="parent_chat_bubble_background_radius">8dp</dimen>
+    <dimen name="input_reply_parent_chat_message_width">48dp</dimen>
+    <dimen name="input_reply_parent_chat_message_height">48dp</dimen>
 
 
 </resources>
