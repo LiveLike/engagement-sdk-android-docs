@@ -53,4 +53,8 @@
 
     <string name="livelike_predict_label">Predict</string>
     <string name="livelike_predicted_label">Predicted!</string>
+    <string name="cancel_the_parent_chat_window">Cancel the Parent Chat Window</string>
+    <string name="send_reply_message_input_accessibility">Send Reply Message to %1$s</string>
+    <string name="reply_image_accessibility">Reply message to Image</string>
+    <string name="reply_message_accessibility">Replying Message to %1$s</string>
 </resources>

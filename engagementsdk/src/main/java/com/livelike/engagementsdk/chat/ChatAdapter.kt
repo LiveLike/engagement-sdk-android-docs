@@ -942,26 +942,24 @@ internal class ChatRecyclerAdapter(
 
                 textView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                 callback.addView(textView)
-//                textView.contentDescription = if (isExternalImage) {
-//                    textView.context.getString(R.string.image)
-//                } else {
-//                    message
-//                }
                 textView.accessibilityDelegate = object : View.AccessibilityDelegate() {
                     override fun onInitializeAccessibilityNodeInfo(
                         host: View?,
                         info: AccessibilityNodeInfo?
                     ) {
                         super.onInitializeAccessibilityNodeInfo(host, info)
-                        info?.text =  if (isExternalImage) {
+                        info?.text = if (isExternalImage) {
                             if (parent) {
-                                "Reply message to ${textView.context.getString(R.string.image)}"
+                                textView.context.getString(R.string.reply_image_accessibility)
                             } else {
                                 textView.context.getString(R.string.image)
                             }
                         } else {
                             if (parent) {
-                                "Reply message to $message"
+                                textView.context.getString(
+                                    R.string.reply_message_accessibility,
+                                    message
+                                )
                             } else {
                                 message
                             }
@@ -972,13 +970,13 @@ internal class ChatRecyclerAdapter(
                     !isDeleted && isExternalImage -> {
                         imageView.contentDescription = if (isExternalImage) {
                             if (parent) {
-                                "Replying to ${textView.context.getString(R.string.image)}"
+                                imageView.context.getString(R.string.reply_image_accessibility)
                             } else {
-                                textView.context.getString(R.string.image)
+                                imageView.context.getString(R.string.image)
                             }
                         } else {
                             if (parent) {
-                                "Replying to message $message"
+                                imageView.context.getString(R.string.reply_message_accessibility, message)
                             } else {
                                 message
                             }
@@ -1065,7 +1063,6 @@ internal class ChatRecyclerAdapter(
                         }
                     }
                 }
-                println("ViewHolder.setTextOrImageToView>>${textView.contentDescription} >> ${imageView.contentDescription}")
             }
         }
     }

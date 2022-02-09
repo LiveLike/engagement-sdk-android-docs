@@ -14,6 +14,7 @@ import android.util.TypedValue
 import android.view.*
 import android.view.View.OnLayoutChangeListener
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -770,9 +771,34 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             .into(img_parent_chat_avatar)
                     }
                 }
+                lay_parent_message.accessibilityDelegate = object : View.AccessibilityDelegate() {
+                    override fun onInitializeAccessibilityNodeInfo(
+                        host: View?,
+                        info: AccessibilityNodeInfo?
+                    ) {
+                        super.onInitializeAccessibilityNodeInfo(host, info)
+                        val isExternalImage =
+                            currentReplyParentMessage?.message?.findImages()?.matches() ?: false
+                        info?.text = context.getString(
+                            R.string.send_reply_message_input_accessibility,
+                            when (isExternalImage) {
+                                true -> context.getString(R.string.image)
+                                false -> currentReplyParentMessage?.message
+                            }
+                        )
+                    }
+                }
                 View.VISIBLE
             }
             else -> View.GONE
+        }
+        if (currentReplyParentMessage != null) {
+            lay_parent_message.postDelayed(
+                {
+                    lay_parent_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+                },
+                100
+            )
         }
     }
 

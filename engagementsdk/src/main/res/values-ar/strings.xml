@@ -50,4 +50,8 @@
     <string name="livelike_answered_label">أجاب!</string>
     <string name="livelike_predict_label">يتنبأ</string>
     <string name="livelike_predicted_label">وتوقع!</string>
+    <string name="cancel_the_parent_chat_window">إلغاء نافذة الدردشة الأصل</string>
+    <string name="send_reply_message_input_accessibility">إرسال رسالة رد إلى %1$s</string>
+    <string name="reply_image_accessibility">Reply message to Image</string>
+    <string name="reply_message_accessibility">Replying Message to %1$s</string>
 </resources>

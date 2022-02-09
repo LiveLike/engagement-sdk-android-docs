@@ -50,4 +50,8 @@
     <string name="livelike_answered_label">जवाब!</string>
     <string name="livelike_predict_label">भविष्यवाणी करना</string>
     <string name="livelike_predicted_label">भविष्यवाणी की!</string>
+    <string name="cancel_the_parent_chat_window">अभिभावक चैट विंडो रद्द करें</string>
+    <string name="send_reply_message_input_accessibility">" %1$s को उत्तर संदेश भेजें"</string>
+    <string name="reply_image_accessibility">Reply message to Image</string>
+    <string name="reply_message_accessibility">Replying Message to %1$s</string>
 </resources>
