@@ -146,7 +146,9 @@ data class LiveLikeWidget(
     @field:SerializedName("rewards")
     val rewards: List<RewardSummary>?,
     @field:SerializedName("earnable_rewards")
-    val earnableRewards: List<EarnableReward>?
+    val earnableRewards: List<EarnableReward>?,
+    @SerializedName("attributes")
+    val attributes: List<WidgetAttribute>?,
 ) {
     /**
      * Added this method to get WidgetType for integrator understanding and they can use it for they implementation
@@ -161,6 +163,13 @@ data class LiveLikeWidget(
         return WidgetType.fromString(widgetType)
     }
 }
+
+data class WidgetAttribute (
+    @SerializedName( "key")
+    val key: String,
+    @SerializedName( "value")
+    val value: String
+)
 
 data class RewardSummary (
     @field:SerializedName("reward_action_key")
