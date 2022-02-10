@@ -1,6 +1,8 @@
 package com.livelike.engagementsdk
 
 import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.core.data.models.Attribute
+import com.livelike.engagementsdk.core.data.models.RewardAttribute
 import com.livelike.engagementsdk.sponsorship.SponsorModel
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.SocialEmbedItem
@@ -164,12 +166,10 @@ data class LiveLikeWidget(
     }
 }
 
-data class WidgetAttribute (
-    @SerializedName( "key")
-    val key: String,
-    @SerializedName( "value")
-    val value: String
-)
+ class WidgetAttribute (
+    key: String,
+    value: String
+): Attribute(key,value)
 
 data class RewardSummary (
     @field:SerializedName("reward_action_key")
