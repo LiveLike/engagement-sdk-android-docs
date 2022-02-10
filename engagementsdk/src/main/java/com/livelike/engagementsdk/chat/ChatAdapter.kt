@@ -426,13 +426,15 @@ internal class ChatRecyclerAdapter(
             v.apply {
                 if (currentChatReactionPopUpViewPos > -1 && adapterPosition > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
                     chatViewThemeAttribute.apply {
-                        updateUI(v.chatBubbleBackground,
+                        updateUI(
+                            v.chatBubbleBackground,
                             chatReactionMessageBubbleHighlightedBackground
                         )
                         chatReactionMessageBackHighlightedBackground?.let { res ->
                             updateUI(v.chatBackground, res)
                         }
-                        updateUI(v.lay_parent_message,
+                        updateUI(
+                            v.lay_parent_message,
                             parentChatReactionMessageBackHighlightedBackground
                         )
                     }
@@ -656,7 +658,7 @@ internal class ChatRecyclerAdapter(
                         setCustomFontWithTextStyle(
                             parent_chatMessage,
                             parentChatMessageCustomFontPath,
-                            when (isDeleted) {
+                            when (parentMessage?.isDeleted) {
                                 true -> Typeface.ITALIC
                                 else -> parentChatMessageTextStyle
                             }
@@ -892,10 +894,11 @@ internal class ChatRecyclerAdapter(
                         }
                     }
 
-                    lay_parent_message.visibility = when (parentMessage != null && enableMessageReply && !isDeleted) {
-                        true -> View.VISIBLE
-                        else -> View.GONE
-                    }
+                    lay_parent_message.visibility =
+                        when (parentMessage != null && enableMessageReply && !isDeleted) {
+                            true -> View.VISIBLE
+                            else -> View.GONE
+                        }
                     parentMessage?.let {
                         setTextOrImageToView(
                             it,

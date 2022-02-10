@@ -105,6 +105,7 @@
                         android:id="@+id/img_parent_chat_message"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="start"
                         android:gravity="start" />
 
                 </LinearLayout>
