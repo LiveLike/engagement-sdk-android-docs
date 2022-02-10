@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.chat.services.messaging.pubnub
 
-import com.example.example.PinMessageInfo
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
@@ -43,7 +43,6 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedPrefer
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.parseISODateTime
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubSubscribeCallbackAdapter
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
