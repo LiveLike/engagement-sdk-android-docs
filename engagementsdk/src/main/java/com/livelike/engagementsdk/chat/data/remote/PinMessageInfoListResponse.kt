@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.chat.data.remote
 
-import com.example.example.PinMessageInfo
 import com.google.gson.annotations.SerializedName
 
 internal data class PinMessageInfoListResponse(

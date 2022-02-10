@@ -1,4 +1,4 @@
-package com.example.example
+package com.livelike.engagementsdk.chat.data.remote
 
 import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
