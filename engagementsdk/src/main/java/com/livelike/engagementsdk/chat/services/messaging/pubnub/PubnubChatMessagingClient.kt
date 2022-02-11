@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.chat.services.messaging.pubnub
 
-import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
@@ -11,37 +10,18 @@ import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.MessageError
-import com.livelike.engagementsdk.chat.data.remote.ChatRoom
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_UPDATED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CUSTOM_MESSAGE_CREATED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_CREATED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_DELETED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_PINNED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_UNPINNED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
-import com.livelike.engagementsdk.chat.data.remote.toPubnubChatEventType
+import com.livelike.engagementsdk.chat.data.remote.*
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.*
 import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.addPublishedMessage
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.flushPublishedMessage
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.getPublishedMessages
-import com.livelike.engagementsdk.core.services.messaging.ClientMessage
-import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
-import com.livelike.engagementsdk.core.services.messaging.Error
-import com.livelike.engagementsdk.core.services.messaging.MessagingClient
-import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
+import com.livelike.engagementsdk.core.services.messaging.*
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.*
 import com.livelike.engagementsdk.core.utils.Queue
-import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
-import com.livelike.engagementsdk.core.utils.gson
-import com.livelike.engagementsdk.core.utils.isoUTCDateTimeFormatter
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedPreferences
-import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubSubscribeCallbackAdapter
 import com.pubnub.api.PNConfiguration
@@ -62,7 +42,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
-import java.util.Calendar
+import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -494,15 +474,13 @@ internal class PubnubChatMessagingClient(
                 PubnubChatEventType.CHATROOM_INVITE -> {
 
                 }
-                MESSAGE_PINNED,MESSAGE_UNPINNED -> {
-                    val pubnubChatRoomEvent: PubnubChatEvent<PinMessageInfo> = gson.fromJson(
+                MESSAGE_PINNED, MESSAGE_UNPINNED -> {
+                    val pubnubChatRoomEvent: PubnubChatEvent<PubnubPinMessageInfo> = gson.fromJson(
                         jsonObject,
-                        object : TypeToken<PubnubChatEvent<PinMessageInfo>>() {}.type
+                        object : TypeToken<PubnubChatEvent<PubnubPinMessageInfo>>() {}.type
                     )
-                    pubnubChatRoomEvent.payload.messagePayload?.senderId = jsonObject.getAsJsonObject("payload").getAsJsonObject("message_payload")?.get("sender_id")?.asString
-                    pubnubChatRoomEvent.payload.messagePayload?.nickname = jsonObject.getAsJsonObject("payload").getAsJsonObject("message_payload")?.get("sender_nickname")?.asString
                     clientMessage = ClientMessage(
-                        gson.toJsonTree(pubnubChatRoomEvent.payload).asJsonObject.apply {
+                        gson.toJsonTree(pubnubChatRoomEvent.payload.toPinMessageInfo()).asJsonObject.apply {
                             addProperty("event", event.key)
                         },
                         channel
@@ -515,6 +493,17 @@ internal class PubnubChatMessagingClient(
             logError { "We don't know how to handle this message" }
         }
         return null
+    }
+
+    fun parseToGetString(key: String, jsonObject: JsonObject): String? {
+        return when (jsonObject.getAsJsonObject("payload")
+            .getAsJsonObject("message_payload")
+            ?.get(key)?.isJsonNull) {
+            true -> null
+            else -> jsonObject.getAsJsonObject("payload")
+                .getAsJsonObject("message_payload")
+                ?.get(key)?.asString
+        }
     }
 
     private fun isMessageModerated(jsonObject: JsonObject): Boolean {

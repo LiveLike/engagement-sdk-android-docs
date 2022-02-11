@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.chat
 
-import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.MockAnalyticsService
@@ -720,13 +719,13 @@ internal class InternalLiveLikeChatClient(
         sdkScope.launch {
             configurationUserPairFlow.collect { pair ->
                 uiScope.launch {
-                    val result = dataClient.remoteCall<PinMessageInfo>(
+                    val result = dataClient.remoteCall<PubnubPinMessageInfo>(
                         pair.second.pinnedMessageUrl,
                         requestType = RequestType.POST,
                         requestBody = gson.toJson(
                             PinMessageInfoRequest(
                                 messageId,
-                                chatMessagePayload,
+                                chatMessagePayload.toPubNubChatMessage(),
                                 chatRoomId
                             )
                         ).toRequestBody(
@@ -735,7 +734,11 @@ internal class InternalLiveLikeChatClient(
                         accessToken = pair.first.accessToken,
                         true
                     )
-                    liveLikeCallback.processResult(result)
+                    if (result is Result.Success) {
+                        liveLikeCallback.onResponse(result.data.toPinMessageInfo(), null)
+                    } else if (result is Result.Error) {
+                        liveLikeCallback.onResponse(null, result.exception.toString())
+                    }
                 }
             }
         }
@@ -788,7 +791,10 @@ internal class InternalLiveLikeChatClient(
                         )
                         if (result is Result.Success) {
                             pinMessageInfoListResponse = result.data
-                            liveLikeCallback.onResponse(result.data.results, null)
+                            liveLikeCallback.onResponse(
+                                result.data.results?.map { it.toPinMessageInfo() },
+                                null
+                            )
                         } else if (result is Result.Error) {
                             liveLikeCallback.onResponse(
                                 null,

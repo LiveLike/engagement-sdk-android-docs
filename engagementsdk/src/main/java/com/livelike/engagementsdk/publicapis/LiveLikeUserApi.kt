@@ -1,11 +1,11 @@
 package com.livelike.engagementsdk.publicapis
 
 import com.google.gson.annotations.SerializedName
-import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 
 /**
  * User pojo to be exposed, should be minimal in terms of fields
@@ -79,7 +79,7 @@ data class LiveLikeChatMessage(val message: String?) {
     /**
      * if the message is deleted when chat is showing
      */
-    var isDeleted : Boolean = false
+    var isDeleted: Boolean = false
 }
 
 enum class ChatMessageType(val key: String) {
@@ -112,6 +112,22 @@ internal fun PubnubChatEventType.toChatMessageType(): ChatMessageType? {
 //        messageId.hashCode().toLong()
 //    )
 // }
+
+internal fun LiveLikeChatMessage.toPubNubChatMessage(): PubnubChatMessage {
+    return PubnubChatMessage(
+        id ?: "",
+        message,
+        senderId ?: "",
+        userPic,
+        nickname ?: "",
+        timestamp,
+        null,
+        imageUrl,
+        image_width,
+        image_height,
+        custom_data
+    )
+}
 
 internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
     var epochTimeStamp = 0L
