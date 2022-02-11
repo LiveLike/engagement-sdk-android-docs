@@ -1,6 +1,8 @@
 package com.livelike.engagementsdk
 
 import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.core.data.models.Attribute
+import com.livelike.engagementsdk.core.data.models.RewardAttribute
 import com.livelike.engagementsdk.sponsorship.SponsorModel
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.models.SocialEmbedItem
@@ -146,7 +148,9 @@ data class LiveLikeWidget(
     @field:SerializedName("rewards")
     val rewards: List<RewardSummary>?,
     @field:SerializedName("earnable_rewards")
-    val earnableRewards: List<EarnableReward>?
+    val earnableRewards: List<EarnableReward>?,
+    @SerializedName("attributes")
+    val attributes: List<WidgetAttribute>?,
 ) {
     /**
      * Added this method to get WidgetType for integrator understanding and they can use it for they implementation
@@ -161,6 +165,11 @@ data class LiveLikeWidget(
         return WidgetType.fromString(widgetType)
     }
 }
+
+ class WidgetAttribute (
+    key: String,
+    value: String
+): Attribute(key,value)
 
 data class RewardSummary (
     @field:SerializedName("reward_action_key")
