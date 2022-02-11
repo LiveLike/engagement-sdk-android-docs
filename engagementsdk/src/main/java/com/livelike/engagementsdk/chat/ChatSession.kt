@@ -3,7 +3,7 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
-import com.example.example.PinMessageInfo
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.ChatRoomListener
