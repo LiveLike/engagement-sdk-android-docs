@@ -788,7 +788,7 @@ internal class InternalLiveLikeChatClient(
                         )
                         if (result is Result.Success) {
                             pinMessageInfoListResponse = result.data
-                            liveLikeCallback.onResponse(result.data.results, null)
+                            liveLikeCallback.onResponse(result.data.results?.map { it.toPinMessageInfo() }, null)
                         } else if (result is Result.Error) {
                             liveLikeCallback.onResponse(
                                 null,
