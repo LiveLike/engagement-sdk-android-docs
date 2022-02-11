@@ -726,7 +726,7 @@ internal class InternalLiveLikeChatClient(
                         requestBody = gson.toJson(
                             PinMessageInfoRequest(
                                 messageId,
-                                chatMessagePayload,
+                                chatMessagePayload.toPubNubChatMessage(),
                                 chatRoomId
                             )
                         ).toRequestBody(
