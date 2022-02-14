@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.chat
 
-import com.example.example.PinMessageInfo
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.MockAnalyticsService
@@ -791,7 +791,7 @@ internal class InternalLiveLikeChatClient(
                         )
                         if (result is Result.Success) {
                             pinMessageInfoListResponse = result.data
-                            liveLikeCallback.onResponse(result.data.results, null)
+                            liveLikeCallback.onResponse(result.data.results?.map { it.toPinMessageInfo() }, null)
                         } else if (result is Result.Error) {
                             liveLikeCallback.onResponse(
                                 null,
