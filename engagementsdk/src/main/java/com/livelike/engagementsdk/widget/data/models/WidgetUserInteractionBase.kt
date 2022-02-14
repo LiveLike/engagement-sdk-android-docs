@@ -96,7 +96,7 @@ class CheerMeterUserInteraction(
     widgetId: String,
     widgetKind: String,
     @field:SerializedName("option_id")
-    var optionId: String
+    var optionId: String?
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
 class TextAskUserInteraction(
