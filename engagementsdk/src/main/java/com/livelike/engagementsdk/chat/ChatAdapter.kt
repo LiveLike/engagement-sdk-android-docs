@@ -9,7 +9,6 @@ import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
-import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Patterns
@@ -31,7 +30,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -44,7 +42,8 @@ import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
-import com.livelike.engagementsdk.chat.stickerKeyboard.*
+import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.chat.utils.setTextOrImageToView
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
@@ -53,11 +52,8 @@ import com.livelike.engagementsdk.publicapis.toChatMessageType
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
-import pl.droidsonroids.gif.MultiCallback
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
@@ -308,7 +304,7 @@ internal class ChatRecyclerAdapter(
             chatPopUpView = ChatActionsPopupView(
                 v.context,
                 chatReactionRepository,
-                View.OnClickListener { _ ->
+                { _ ->
                     analyticsService.trackFlagButtonPressed()
                     hideFloatingUI()
                     v.context?.let { ctx ->
@@ -532,59 +528,6 @@ internal class ChatRecyclerAdapter(
             }
         }
 
-        private fun getTextWithCustomLinks(spannableString: SpannableString): SpannableString {
-            val result = linksRegex.toPattern().matcher(spannableString)
-            while (result.find()) {
-                val start = result.start()
-                val end = result.end()
-                spannableString.setSpan(
-                    InternalURLSpan(
-                        spannableString.subSequence(start, end).toString(),
-                        message?.id,
-                        chatRoomId,
-                        chatRoomName,
-                        analyticsService
-                    ),
-                    start,
-                    end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            }
-            return spannableString
-        }
-
-        /**
-         * Creating this function to get line count of string assuming the width as some value
-         * it is estimated not exact value
-         */
-        private fun String.getLinesCount(textSize: Float): Int {
-            val density = v.context.resources.displayMetrics.density
-            val paint = TextPaint()
-            paint.textSize = textSize * density
-            // Using static width for now ,can be replace with dynamic for later
-            val width = (AndroidResource.dpToPx(300) * density).toInt()
-            val alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL
-            val layout = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                StaticLayout.Builder.obtain(this, 0, this.length, paint, width)
-                    .setAlignment(alignment)
-                    .setLineSpacing(0F, 1F)
-                    .setIncludePad(false)
-                    .build()
-            } else {
-                @Suppress("DEPRECATION") //suppressed as needed to support pre M
-                StaticLayout(this, paint, width, alignment, 1F, 0F, false)
-            }
-            return layout.lineCount
-        }
-
-        private fun String.withoutStickers(): String {
-            var result = this
-            this.findStickerCodes().allMatches().forEach {
-                result = result.replace(it, "")
-            }
-            return result
-        }
-
         @SuppressLint("SetTextI18n")
         private fun setMessage(
             message: ChatMessage?
@@ -796,7 +739,15 @@ internal class ChatRecyclerAdapter(
                             chatMessage,
                             img_chat_message,
                             false,
-                            chatMessageTextSize
+                            chatMessageTextSize,
+                            stickerPackRepository,
+                            showLinks,
+                            v.context.resources.displayMetrics.density,
+                            linksRegex,
+                            chatRoomId,
+                            chatRoomName,
+                            analyticsService,
+                            false
                         )
 
                         var imageView: ImageView
@@ -893,7 +844,6 @@ internal class ChatRecyclerAdapter(
                             txt_chat_reactions_count.text = "  "
                         }
                     }
-
                     lay_parent_message.visibility =
                         when (parentMessage != null && enableMessageReply && !isDeleted) {
                             true -> View.VISIBLE
@@ -905,134 +855,17 @@ internal class ChatRecyclerAdapter(
                             parent_chatMessage,
                             img_parent_chat_message,
                             true,
-                            chatViewThemeAttribute.parentChatMessageTextSize
+                            chatViewThemeAttribute.parentChatMessageTextSize,
+                            stickerPackRepository,
+                            showLinks,
+                            v.context.resources.displayMetrics.density,
+                            linksRegex,
+                            chatRoomId,
+                            chatRoomName,
+                            analyticsService,
+                            false
                         )
                         chat_parent_nickname.text = it.senderDisplayName
-                    }
-                }
-            }
-        }
-
-        private fun setTextOrImageToView(
-            chatMessage: ChatMessage?,
-            textView: TextView,
-            imageView: ImageView,
-            parent: Boolean = false,
-            textSize: Float
-        ) {
-            val callback = MultiCallback(true)
-            chatMessage?.apply {
-                val tag = when (parent) {
-                    true -> "parent_$id"
-                    else -> id
-                }
-                textView.tag = tag
-                val spaceRemover = Pattern.compile("[\\s]")
-                val inputNoString = spaceRemover.matcher(message ?: "")
-                    .replaceAll(Matcher.quoteReplacement(""))
-                val isOnlyStickers =
-                    inputNoString.findIsOnlyStickers()
-                        .matches() || message?.findImages()?.matches() == true
-                val atLeastOneSticker =
-                    inputNoString.findStickers().find() || message?.findImages()
-                        ?.matches() == true
-                val numberOfStickers = message?.findStickers()?.countMatches() ?: 0
-                val isExternalImage = message?.findImages()?.matches() ?: false
-
-                textView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-                callback.addView(textView)
-                textView.contentDescription = if (isExternalImage) {
-                    textView.context.getString(R.string.image)
-                } else {
-                    message
-                }
-                when {
-                    !isDeleted && isExternalImage -> {
-                        imageView.contentDescription = if (isExternalImage) {
-                            textView.context.getString(R.string.image)
-                        } else {
-                            message
-                        }
-                        textView.minHeight = 0
-                        textView.text = ""
-                        textView.visibility = View.GONE
-                        imageView.visibility = View.VISIBLE
-                        imageView.minimumHeight =
-                            AndroidResource.dpToPx(LARGER_STICKER_SIZE)
-                        Glide.with(imageView.context)
-                            .load(imageUrl)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .apply(
-                                RequestOptions().override(
-                                    image_width ?: LARGER_STICKER_SIZE,
-                                    image_height ?: LARGER_STICKER_SIZE
-                                )
-                            )
-                            .into(imageView)
-                    }
-                    !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
-                        textView.visibility = View.VISIBLE
-                        imageView.visibility = View.GONE
-                        textView.minHeight =
-                            AndroidResource.dpToPx(MEDIUM_STICKER_SIZE)
-                        val s = SpannableString(message)
-                        replaceWithStickers(
-                            s,
-                            textView.context.applicationContext,
-                            stickerPackRepository,
-                            null,
-                            callback,
-                            MEDIUM_STICKER_SIZE
-                        ) {
-                            // TODO this might write to the wrong messageView on slow connection.
-                            if (textView.tag == tag) {
-                                textView.text = when (showLinks) {
-                                    true -> getTextWithCustomLinks(s)
-                                    else -> s
-                                }
-                            }
-                        }
-                    }
-                    !isDeleted && atLeastOneSticker -> {
-                        textView.visibility = View.VISIBLE
-                        imageView.visibility = View.GONE
-                        var columnCount = numberOfStickers / 8
-                        val lines = message?.withoutStickers()?.getLinesCount(textSize) ?: 0
-                        if (columnCount == 0) {
-                            columnCount = 1
-                        }
-                        textView.minHeight =
-                            (textSize.toInt() * columnCount) + when {
-                                lines != columnCount -> (lines * textSize.toInt())
-                                else -> 0
-                            }
-                        val s = SpannableString(message)
-                        replaceWithStickers(
-                            s,
-                            textView.context.applicationContext,
-                            stickerPackRepository,
-                            null,
-                            callback,
-                            SMALL_STICKER_SIZE
-                        ) {
-                            // TODO this might write to the wrong messageView on slow connection.
-                            if (textView.tag == tag) {
-                                textView.text = when (showLinks) {
-                                    true -> getTextWithCustomLinks(s)
-                                    else -> s
-                                }
-                            }
-                        }
-                    }
-                    else -> {
-                        imageView.visibility = View.GONE
-                        textView.visibility = View.VISIBLE
-                        clearTarget(id, textView.context)
-                        textView.minHeight = textSize.toInt()
-                        textView.text = when (showLinks) {
-                            true -> getTextWithCustomLinks(SpannableString(message))
-                            else -> message
-                        }
                     }
                 }
             }
@@ -1067,8 +900,3 @@ class InternalURLSpan(
         }
     }
 }
-
-// const val should be in uppercase always
-private const val LARGER_STICKER_SIZE = 100
-private const val MEDIUM_STICKER_SIZE = 50
-private const val SMALL_STICKER_SIZE = 28

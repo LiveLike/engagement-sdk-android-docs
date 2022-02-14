@@ -9,6 +9,7 @@ import android.text.InputFilter
 import android.text.InputFilter.LengthFilter
 import android.text.Spannable
 import android.text.TextWatcher
+import android.text.method.LinkMovementMethod
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.*
@@ -29,6 +30,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.stickerKeyboard.*
+import com.livelike.engagementsdk.chat.utils.setTextOrImageToView
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.core.utils.animators.buildScaleAnimator
@@ -742,7 +744,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         lay_parent_message.visibility = when (currentReplyParentMessage != null) {
             true -> {
                 chat_parent_nickname.text = currentReplyParentMessage?.senderDisplayName
-                parent_chatMessage.text = currentReplyParentMessage?.message
                 chatAttribute.apply {
                     var options = RequestOptions()
                     if (chatAvatarCircle) {
@@ -768,6 +769,35 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             .placeholder(chatUserPicDrawable)
                             .error(chatUserPicDrawable)
                             .into(img_parent_chat_avatar)
+                    }
+                    if (enableChatMessageURLs) {
+                        parent_chatMessage.apply {
+                            linksClickable = enableChatMessageURLs
+                            setLinkTextColor(parentChatMessageLinkTextColor)
+                            movementMethod = LinkMovementMethod.getInstance()
+                        }
+                    }
+                    currentReplyParentMessage?.let {
+                        viewModel?.stickerPackRepository?.let {
+                            viewModel?.chatAdapter?.linksRegex?.let {
+                                viewModel?.analyticsService?.let {
+                                    setTextOrImageToView(
+                                        currentReplyParentMessage,
+                                        parent_chatMessage,
+                                        img_parent_chat_message,
+                                        true,
+                                        parentChatMessageTextSize,
+                                        viewModel?.stickerPackRepository!!,
+                                        enableChatMessageURLs,
+                                        context.resources.displayMetrics.density,
+                                        viewModel?.chatAdapter?.linksRegex!!,
+                                        viewModel?.chatAdapter?.chatRoomId,
+                                        viewModel?.chatAdapter?.chatRoomName,
+                                        viewModel?.analyticsService!!, true
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
                 View.VISIBLE
@@ -911,7 +941,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
-                currentReplyParentMessage = null
                 val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
                 if (hasExternalImage) {
                     uploadAndPostImage(context, it, timeData)
@@ -919,6 +948,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     chatListener?.onChatMessageSend(it, timeData)
                 }
                 edittext_chat_message.setText("")
+                currentReplyParentMessage = null
                 snapToLive()
                 viewModel?.currentChatRoom?.id?.let { id ->
                     analyticsService.trackMessageSent(

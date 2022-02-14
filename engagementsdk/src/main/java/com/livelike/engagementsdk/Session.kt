@@ -1,7 +1,7 @@
 package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
-import com.example.example.PinMessageInfo
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession

@@ -68,15 +68,15 @@
                 android:id="@+id/img_parent_chat_avatar"
                 android:layout_width="@dimen/input_reply_parent_chat_message_width"
                 android:layout_height="@dimen/input_reply_parent_chat_message_height"
-                android:layout_gravity="bottom"
+                android:layout_gravity="center"
                 android:contentDescription="@string/user_image"
                 tools:visibility="visible" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="6dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingLeft="6dp">
 
                 <TextView
                     android:id="@+id/chat_parent_nickname"
@@ -94,12 +94,19 @@
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:text=""
+                    android:maxLines="@integer/chat_input_parent_chat_message_max_lines"
                     android:textAlignment="viewStart"
                     android:textColor="@color/livelike_default_chat_cell_message_color"
                     android:textSize="11sp"
                     app:fontFamily="@font/livelike_chat_message_font"
                     tools:ignore="HardcodedText"
                     tools:text="Check" />
+
+                <ImageView
+                    android:id="@+id/img_parent_chat_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start" />
             </LinearLayout>
         </LinearLayout>
 
@@ -108,9 +115,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:padding="8dp"
             android:layout_marginRight="6dp"
             android:contentDescription="Cancel the Parent Chat Window"
+            android:padding="8dp"
             android:src="@drawable/ic_cancel" />
 
     </LinearLayout>
