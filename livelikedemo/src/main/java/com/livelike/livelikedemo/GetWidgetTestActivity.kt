@@ -130,7 +130,7 @@ class GetWidgetTestActivity : AppCompatActivity() {
 
     private fun showAttributes(liveLikeWidget: LiveLikeWidget) {
         AlertDialog.Builder( this)
-            .setItems( liveLikeWidget.attributes
+            .setItems( liveLikeWidget.widgetAttributes
                 ?.map(WidgetAttribute::toString)
                 ?.toTypedArray()
                 ?: emptyArray() ){ _,_ -> }
