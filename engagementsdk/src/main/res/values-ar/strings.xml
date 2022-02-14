@@ -54,4 +54,5 @@
     <string name="send_reply_message_input_accessibility">إرسال رسالة رد إلى %1$s</string>
     <string name="reply_image_accessibility">Reply message to Image</string>
     <string name="reply_message_accessibility">Replying Message to %1$s</string>
+    <string name="parent_blocked_message">تم حظر مرسل هذه الرسالة</string>
 </resources>

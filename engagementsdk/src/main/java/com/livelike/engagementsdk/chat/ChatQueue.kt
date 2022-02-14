@@ -1,10 +1,10 @@
 package com.livelike.engagementsdk.chat
 
-import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.ChatRoomListener
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.core.services.messaging.ClientMessage
 import com.livelike.engagementsdk.core.services.messaging.Error
@@ -87,6 +87,9 @@ internal class ChatQueue(
         val messageList = list.map { event ->
             val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
             chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
+            chatMessage.parentMessage?.apply {
+                isBlocked = blockedProfileIds.contains(senderId)
+            }
             return@map chatMessage
         }.filter {
             !blockedProfileIds
@@ -94,7 +97,6 @@ internal class ChatQueue(
         }
         msgListener?.onHistoryMessage(messageList.map { it.toLiveLikeChatMessage() })
         renderer?.displayChatMessages(messageList)
-
     }
 
     var renderer: ChatRenderer? = null
@@ -120,6 +122,9 @@ internal class ChatQueue(
                 ) {
                     logDebug { "user is blocked" }
                     return
+                }
+                chatMessage.parentMessage?.apply {
+                    isBlocked = blockedProfileIds.contains(senderId)
                 }
                 renderer?.displayChatMessage(chatMessage)
                 msgListener?.onNewMessage(chatMessage.toLiveLikeChatMessage())

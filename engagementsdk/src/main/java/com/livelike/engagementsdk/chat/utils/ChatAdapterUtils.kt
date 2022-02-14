@@ -76,7 +76,7 @@ internal fun setTextOrImageToView(
             message
         }
         when {
-            !isDeleted && isExternalImage -> {
+            !isDeleted && isExternalImage && !isBlocked -> {
                 imageView.contentDescription = if (isExternalImage) {
                     textView.context.getString(R.string.image)
                 } else {
@@ -109,7 +109,7 @@ internal fun setTextOrImageToView(
                     )
                     .into(imageView)
             }
-            !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
+            !isDeleted && (isOnlyStickers && numberOfStickers < 2) && !isBlocked -> {
                 textView.visibility = View.VISIBLE
                 imageView.visibility = View.GONE
                 textView.minHeight =
@@ -132,7 +132,7 @@ internal fun setTextOrImageToView(
                     }
                 }
             }
-            !isDeleted && atLeastOneSticker -> {
+            !isDeleted && atLeastOneSticker && !isBlocked -> {
                 textView.visibility = View.VISIBLE
                 imageView.visibility = View.GONE
                 var columnCount = numberOfStickers / 8
@@ -168,9 +168,12 @@ internal fun setTextOrImageToView(
                 textView.visibility = View.VISIBLE
                 clearTarget(id, textView.context)
                 textView.minHeight = textSize.toInt()
-                textView.text = when (showLinks) {
-                    true -> linkText
-                    else -> message
+                textView.text = when (parent && isBlocked) {
+                    true -> textView.context.getString(R.string.parent_blocked_message)
+                    else -> when (showLinks) {
+                        true -> linkText
+                        else -> message
+                    }
                 }
             }
         }

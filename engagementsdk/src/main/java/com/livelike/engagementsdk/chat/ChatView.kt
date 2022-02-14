@@ -662,7 +662,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             })
-            if (enableMessageReply) {
+            if (enableMessageReply && isChatInputVisible) {
                 val messageSwipeController =
                     MessageSwipeController(context, object : SwipeControllerActions {
                         override fun showReplyUI(position: Int) {
@@ -742,7 +742,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun updateInputView() {
-        lay_parent_message.visibility = when (currentReplyParentMessage != null) {
+        lay_parent_message.visibility = when (currentReplyParentMessage != null && isChatInputVisible) {
             true -> {
                 chat_parent_nickname.text = currentReplyParentMessage?.senderDisplayName
                 chatAttribute.apply {
@@ -822,7 +822,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             }
             else -> View.GONE
         }
-        if (currentReplyParentMessage != null) {
+        if (currentReplyParentMessage != null && isChatInputVisible) {
             lay_parent_message.postDelayed(
                 {
                     lay_parent_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)

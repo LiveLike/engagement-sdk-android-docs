@@ -54,5 +54,6 @@
     <string name="send_reply_message_input_accessibility">向 %1$s 发送回复消息</string>
     <string name="reply_image_accessibility">Reply message to Image</string>
     <string name="reply_message_accessibility">Replying Message to %1$s</string>
+    <string name="parent_blocked_message">此邮件的发件人已被阻止</string>
 
 </resources>

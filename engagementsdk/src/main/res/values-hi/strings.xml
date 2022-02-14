@@ -54,4 +54,5 @@
     <string name="send_reply_message_input_accessibility">" %1$s को उत्तर संदेश भेजें"</string>
     <string name="reply_image_accessibility">Reply message to Image</string>
     <string name="reply_message_accessibility">Replying Message to %1$s</string>
+    <string name="parent_blocked_message">इस संदेश को भेजने वाले को ब्लॉक कर दिया गया है</string>
 </resources>
