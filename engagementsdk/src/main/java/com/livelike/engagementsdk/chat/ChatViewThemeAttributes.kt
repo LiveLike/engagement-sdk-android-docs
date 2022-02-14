@@ -530,49 +530,49 @@ class ChatViewThemeAttributes {
                     R.styleable.ChatView_chatMessageBottomBorderHeight,
                     AndroidResource.dpToPx(0)
                 )
-            chatReactionHintEnable = getBoolean(R.styleable.ChatView_reaction_hint_enable, true)
+            chatReactionHintEnable = getBoolean(R.styleable.ChatView_chatReactionHintEnable, true)
             chatReactionHintIcon = getResourceId(
-                R.styleable.ChatView_reaction_icon,
+                R.styleable.ChatView_chatReactionIcon,
                 R.drawable.ic_chat_reaction_default
             )
             chatReactionIconsMarginLeft = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_icons_margin_left,
+                R.styleable.ChatView_chatReactionIconsMarginLeft,
                 AndroidResource.dpToPx(0)
             )
             chatReactionIconsMarginBottom = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_icons_margin_bottom,
+                R.styleable.ChatView_chatReactionIconsMarginBottom,
                 AndroidResource.dpToPx(0)
             )
             chatReactionIconsMarginRight = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_icons_margin_right,
+                R.styleable.ChatView_chatReactionIconsMarginRight,
                 AndroidResource.dpToPx(3)
             )
             chatReactionIconsMarginTop = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_icons_margin_top,
+                R.styleable.ChatView_chatReactionIconsMarginTop,
                 AndroidResource.dpToPx(5)
             )
             chatReactionCountMarginLeft = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_count_margin_left,
+                R.styleable.ChatView_chatReactionCountMarginLeft,
                 AndroidResource.dpToPx(0)
             )
             chatReactionCountMarginBottom = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_count_margin_bottom,
+                R.styleable.ChatView_chatReactionCountMarginBottom,
                 AndroidResource.dpToPx(0)
             )
             chatReactionCountMarginRight = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_count_margin_right,
+                R.styleable.ChatView_chatReactionCountMarginRight,
                 AndroidResource.dpToPx(13)
             )
             chatReactionCountMarginTop = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_count_margin_top,
+                R.styleable.ChatView_chatReactionCountMarginTop,
                 AndroidResource.dpToPx(4)
             )
             chatReactionIconsPositionAtBottom =
-                getBoolean(R.styleable.ChatView_reaction_icon_position_bottom, false)
+                getBoolean(R.styleable.ChatView_chatReactionIconPositionBottom, false)
             chatReactionCountPositionAtBottom =
-                getBoolean(R.styleable.ChatView_reaction_count_icons_position_bottom, false)
+                getBoolean(R.styleable.ChatView_chatReactionCountIconsPositionBottom, false)
             chatReactionIconsFactor =
-                getFloat(R.styleable.ChatView_reaction_icons_gap_factor, 1.2f)
+                getFloat(R.styleable.ChatView_chatReactionIconsGapFactor, 1.2f)
             chatReactionModerationFlagVisible =
                 getBoolean(R.styleable.ChatView_chatReactionModerationFlagVisible, true)
             chatUserNameTextStyle =
@@ -630,6 +630,10 @@ class ChatViewThemeAttributes {
             chatMessageLinkTextColor = getColor(
                 R.styleable.ChatView_chatMessageLinkTextColor,
                 ContextCompat.getColor(context, R.color.livelike_chatMessage_link_text_color)
+            )
+            chatInputCharLimit = getInteger(
+                R.styleable.ChatView_chatInputMaxCharLimit,
+                R.integer.chat_input_max_char_limit
             )
         }
     }
@@ -744,4 +748,5 @@ class ChatViewThemeAttributes {
     var chatReactionPanelGravity: Int = Gravity.CENTER or Gravity.TOP
     var chatReactionPanelCountVisibleIfZero: Boolean = true
     var chatMessageLinkTextColor: Int = Color.BLUE
+    var chatInputCharLimit: Int = 250
 }

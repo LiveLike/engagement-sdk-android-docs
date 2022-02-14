@@ -1,6 +1,8 @@
 package com.livelike.livelikedemo
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +27,8 @@ import kotlinx.android.synthetic.main.activity_badges_collection.fetch_badges_pr
 import kotlinx.android.synthetic.main.activity_badges_collection.load_more
 import kotlinx.android.synthetic.main.activity_badges_collection.profile_id_tv
 import kotlinx.android.synthetic.main.activity_badges_collection.progress_bar
+import kotlinx.android.synthetic.main.activity_badges_collection_list_item.view.*
+import kotlinx.android.synthetic.main.rcyl_list_item.view.*
 
 var isProfileBadges = false
 
@@ -222,6 +226,22 @@ class BadgesCollectionActivity : AppCompatActivity() {
             holder.itemView.setOnClickListener {
                 badgeClickListener.invoke(badges.get(position))
             }
+
+            holder.itemView.links.setOnClickListener { _ ->
+                android.app.AlertDialog.Builder(holder.itemView.context)
+                    .setTitle("Registered Links")
+                    .setItems(
+                        badges[position].registeredLinks.map {
+                            it.name
+                        }.toTypedArray()
+                    ) { _,item ->
+                        holder.itemView.context.startActivity(
+                            Intent(Intent.ACTION_VIEW,
+                                Uri.parse(badges[position].registeredLinks[item].linkUrl))
+                        )
+                    }.create().show()
+            }
+
         }
 
         override fun getItemCount(): Int {
