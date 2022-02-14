@@ -126,6 +126,7 @@ internal class ChatViewModel(
                         true -> applicationContext.getString(R.string.livelike_chat_message_deleted_message)
                         else -> message
                     }
+                    isDeleted = deletedMessages.contains(id)
                 }
                 it
             }
@@ -163,6 +164,7 @@ internal class ChatViewModel(
                         true -> applicationContext.getString(R.string.livelike_chat_message_deleted_message)
                         else -> this.message
                     }
+                    this.isDeleted = deletedMessages.contains(id)
                 }
             }
         )
@@ -258,6 +260,7 @@ internal class ChatViewModel(
                         true -> applicationContext.getString(R.string.livelike_chat_message_deleted_message)
                         else -> message
                     }
+                    isDeleted = deletedMessages.contains(id)
                 }
             }
             uiScope.launch {

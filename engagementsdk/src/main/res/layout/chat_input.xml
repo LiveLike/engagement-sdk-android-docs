@@ -70,7 +70,7 @@
                 android:id="@+id/img_parent_chat_avatar"
                 android:layout_width="@dimen/input_reply_parent_chat_message_width"
                 android:layout_height="@dimen/input_reply_parent_chat_message_height"
-                android:layout_gravity="bottom"
+                android:layout_gravity="center"
                 android:contentDescription="@string/user_image"
                 android:importantForAccessibility="no"
                 tools:visibility="visible" />
@@ -99,12 +99,19 @@
                     android:gravity="start"
                     android:importantForAccessibility="no"
                     android:text=""
+                    android:maxLines="@integer/chat_input_parent_chat_message_max_lines"
                     android:textAlignment="viewStart"
                     android:textColor="@color/livelike_default_chat_cell_message_color"
                     android:textSize="11sp"
                     app:fontFamily="@font/livelike_chat_message_font"
                     tools:ignore="HardcodedText"
                     tools:text="Check" />
+
+                <ImageView
+                    android:id="@+id/img_parent_chat_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start" />
             </LinearLayout>
         </LinearLayout>
 
