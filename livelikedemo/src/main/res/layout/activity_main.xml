@@ -221,11 +221,11 @@
                     app:layout_constraintTop_toBottomOf="@+id/chk_custom_widgets_ui" />
 
                 <CheckBox
-                    android:id="@+id/chk_enable_reply_msg"
+                    android:id="@+id/chk_enable_quote_msg"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="6dp"
-                    android:text="Enable Chat Reply Message"
+                    android:text="Enable Chat Quote Message"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/chk_enable_debug" />
@@ -238,7 +238,7 @@
                     android:text="Show Links in Chat"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/chk_enable_reply_msg" />
+                    app:layout_constraintTop_toBottomOf="@+id/chk_enable_quote_msg" />
 
                 <EditText
                     android:id="@+id/ed_link_custom"

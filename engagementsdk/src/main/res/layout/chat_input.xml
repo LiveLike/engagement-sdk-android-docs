@@ -35,14 +35,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/lay_parent_message"
+        android:id="@+id/lay_quote_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/livelike_chat_input_border_box_margin_start"
         android:layout_marginLeft="@dimen/livelike_chat_input_border_box_margin_left"
         android:layout_marginTop="@dimen/livelike_chat_input_border_box_margin_top"
         android:layout_marginRight="@dimen/livelike_chat_input_border_box_margin_right"
-        android:background="@drawable/ic_parent_chat_window"
+        android:background="@drawable/ic_quote_chat_window"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:gravity="center"
@@ -61,15 +61,15 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/parent_chat_rounded_background"
+            android:background="@drawable/quote_chat_rounded_background"
             android:gravity="center"
             android:orientation="horizontal"
             android:padding="8dp">
 
             <ImageView
-                android:id="@+id/img_parent_chat_avatar"
-                android:layout_width="@dimen/input_reply_parent_chat_message_width"
-                android:layout_height="@dimen/input_reply_parent_chat_message_height"
+                android:id="@+id/img_quote_chat_avatar"
+                android:layout_width="@dimen/input_quote_chat_message_width"
+                android:layout_height="@dimen/input_quote_chat_message_height"
                 android:layout_gravity="center"
                 android:contentDescription="@string/user_image"
                 android:importantForAccessibility="no"
@@ -82,7 +82,7 @@
                 android:paddingLeft="6dp">
 
                 <TextView
-                    android:id="@+id/chat_parent_nickname"
+                    android:id="@+id/quote_chat_message_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:importantForAccessibility="no"
@@ -93,13 +93,13 @@
                     tools:text="parent" />
 
                 <TextView
-                    android:id="@+id/parent_chatMessage"
+                    android:id="@+id/quote_chatMessage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:importantForAccessibility="no"
                     android:text=""
-                    android:maxLines="@integer/chat_input_parent_chat_message_max_lines"
+                    android:maxLines="@integer/chat_input_quote_chat_message_max_lines"
                     android:textAlignment="viewStart"
                     android:textColor="@color/livelike_default_chat_cell_message_color"
                     android:textSize="11sp"
@@ -108,7 +108,7 @@
                     tools:text="Check" />
 
                 <ImageView
-                    android:id="@+id/img_parent_chat_message"
+                    android:id="@+id/img_quote_chat_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start" />
@@ -116,12 +116,12 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/img_parent_msg_cancel"
+            android:id="@+id/img_quote_msg_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="6dp"
-            android:contentDescription="@string/cancel_the_parent_chat_window"
+            android:contentDescription="@string/cancel_the_quote_chat_window"
             android:padding="8dp"
             android:src="@drawable/ic_cancel" />
 
@@ -141,7 +141,7 @@
         app:layout_constraintEnd_toStartOf="@+id/button_chat_send"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lay_parent_message" />
+        app:layout_constraintTop_toBottomOf="@+id/lay_quote_message" />
 
     <com.livelike.engagementsdk.chat.RichContentEditText
         android:id="@+id/edittext_chat_message"

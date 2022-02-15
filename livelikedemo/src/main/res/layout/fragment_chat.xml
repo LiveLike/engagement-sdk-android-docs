@@ -20,7 +20,7 @@
             android:text="Enable Reply Message" />
 
         <Switch
-            android:id="@+id/switch_reply_message"
+            android:id="@+id/switch_quote_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false" />
@@ -48,7 +48,7 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/lay_reply"
+            android:id="@+id/lay_quote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -57,14 +57,14 @@
             tools:visibility="visible">
 
             <TextView
-                android:id="@+id/txt_reply_msg"
+                android:id="@+id/txt_quote_msg"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="5dp" />
 
             <ImageView
-                android:id="@+id/img_rply_remove"
+                android:id="@+id/img_quote_remove"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_remove" />

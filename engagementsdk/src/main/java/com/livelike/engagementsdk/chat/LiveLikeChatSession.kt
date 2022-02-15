@@ -67,13 +67,13 @@ interface LiveLikeChatSession {
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     )
 
-    fun sendReplyMessage(
+    fun quoteMessage(
         message: String?,
         imageUrl: String? = null,
         imageWidth: Int?,
         imageHeight: Int?,
-        parentMessageId: String,
-        parentMessage: LiveLikeChatMessage,
+        quoteMessageId: String,
+        quoteMessage: LiveLikeChatMessage,
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     )
 

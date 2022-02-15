@@ -47,18 +47,18 @@ import java.util.*
 
 class ChatFragment : Fragment() {
 
-    private var currentReplyParentMessage: LiveLikeChatMessage? = null
+    private var currentQuoteMessage: LiveLikeChatMessage? = null
         set(value) {
             field = value
             if (value != null) {
-                lay_reply.visibility = View.VISIBLE
-                txt_reply_msg.text = when (value.imageUrl != null) {
+                lay_quote.visibility = View.VISIBLE
+                txt_quote_msg.text = when (value.imageUrl != null) {
                     true -> "Image"
                     else -> value.message
                 }
             } else {
-                lay_reply.visibility = View.INVISIBLE
-                txt_reply_msg.text = ""
+                lay_quote.visibility = View.INVISIBLE
+                txt_quote_msg.text = ""
             }
         }
     val images = arrayListOf<String>(
@@ -104,7 +104,7 @@ class ChatFragment : Fragment() {
             val messageSwipeController =
                 MessageSwipeController(it, object : SwipeControllerActions {
                     override fun showReplyUI(position: Int) {
-                        currentReplyParentMessage = adapter.getChatMessage(position)
+                        currentQuoteMessage = adapter.getChatMessage(position)
                         Toast.makeText(context, "Send Reply", Toast.LENGTH_SHORT).show()
                     }
                 })
@@ -152,8 +152,8 @@ class ChatFragment : Fragment() {
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             adapter.chatRoomId = homeChat.session.chatSession.getCurrentChatRoom()
 
-            img_rply_remove.setOnClickListener {
-                currentReplyParentMessage = null
+            img_quote_remove.setOnClickListener {
+                currentQuoteMessage = null
             }
 
             adapter.loadPinnedMessage(context)
@@ -162,7 +162,7 @@ class ChatFragment : Fragment() {
             homeChat.session.chatSession.setChatRoomListener(object : ChatRoomListener {
                 override fun onChatRoomUpdate(chatRoom: ChatRoomInfo) {
                     activity?.runOnUiThread {
-                        switch_reply_message.isChecked = chatRoom.enableMessageReply
+//                        switch_quote_message.isChecked = chatRoom.enableMessageReply
                     }
                 }
             })
@@ -187,7 +187,7 @@ class ChatFragment : Fragment() {
                                 Toast.makeText(context, "FetchError: $it", Toast.LENGTH_SHORT)
                                     .show()
                             }
-                            switch_reply_message.isChecked = result?.enableMessageReply ?: false
+//                            switch_quote_message.isChecked = result?.enableMessageReply ?: false
 
                         }
                     })
@@ -278,7 +278,7 @@ class ChatFragment : Fragment() {
                 val msg = ed_msg.text.toString()
                 if (msg.trim().isNotEmpty()) {
                     sendMessage(msg, null)
-                    currentReplyParentMessage = null
+                    currentQuoteMessage = null
                 }
             }
             btn_img_send.setOnClickListener {
@@ -317,15 +317,15 @@ class ChatFragment : Fragment() {
                     }
                 }
             }
-            if (currentReplyParentMessage != null) {
-                homeChat.session.chatSession.sendReplyMessage(
+            if (currentQuoteMessage != null) {
+                homeChat.session.chatSession.quoteMessage(
                     message,
                     imageUrl,
                     imageWidth = 150,
                     imageHeight = 150,
                     liveLikeCallback = callback,
-                    parentMessage = currentReplyParentMessage!!,
-                    parentMessageId = currentReplyParentMessage!!.id!!
+                    quoteMessage = currentQuoteMessage!!,
+                    quoteMessageId = currentQuoteMessage!!.id!!
                 )
             } else {
                 homeChat.session.chatSession.sendMessage(
@@ -438,7 +438,7 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
         val chat = chatList[position]
-        if (chat.parentMessage != null) {
+        if (chat.quoteMessage != null) {
             return 2
         }
         return 1
@@ -447,27 +447,27 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
     override fun onBindViewHolder(holder: CustomChatViewHolder, position: Int) {
         val chatMessage = chatList[position]
 
-        if (chatMessage.parentMessage != null) {
-            holder.itemView.lay_reply_chat_msg.visibility = View.VISIBLE
-            holder.itemView.txt_name_reply.text = chatMessage.parentMessage?.nickname
-            holder.itemView.txt_message_reply.text = chatMessage.parentMessage?.message
-            if (chatMessage.parentMessage?.imageUrl != null) {
-                holder.itemView.img_message_reply.visibility = View.VISIBLE
-                Glide.with(holder.itemView.img_message_reply.context)
-                    .load(chatMessage.parentMessage!!.imageUrl!!)
+        if (chatMessage.quoteMessage != null) {
+            holder.itemView.lay_quote_chat_msg.visibility = View.VISIBLE
+            holder.itemView.txt_name_quote.text = chatMessage.quoteMessage?.nickname
+            holder.itemView.txt_message_quote.text = chatMessage.quoteMessage?.message
+            if (chatMessage.quoteMessage?.imageUrl != null) {
+                holder.itemView.img_message_quote.visibility = View.VISIBLE
+                Glide.with(holder.itemView.img_message_quote.context)
+                    .load(chatMessage.quoteMessage!!.imageUrl!!)
                     .apply(
                         RequestOptions().override(
-                            chatMessage.parentMessage!!.image_width!!,
-                            chatMessage.parentMessage!!.image_height!!
+                            chatMessage.quoteMessage!!.image_width!!,
+                            chatMessage.quoteMessage!!.image_height!!
                         )
                     )
-                    .into(holder.itemView.img_message_reply)
+                    .into(holder.itemView.img_message_quote)
 
             } else {
-                holder.itemView.img_message_reply.visibility = View.GONE
+                holder.itemView.img_message_quote.visibility = View.GONE
             }
         } else {
-            holder.itemView.lay_reply_chat_msg.visibility = View.GONE
+            holder.itemView.lay_quote_chat_msg.visibility = View.GONE
         }
 
         holder.itemView.normal_message.visibility = View.VISIBLE
@@ -605,7 +605,7 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
             image_height = msg.image_height
             image_width = msg.image_width
             nickname = msg.nickname
-            parentMessage = msg.parentMessage
+            quoteMessage = msg.quoteMessage
             senderId = msg.senderId
             timestamp = msg.timestamp
             userPic = msg.userPic

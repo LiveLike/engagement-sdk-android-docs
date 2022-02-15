@@ -42,9 +42,7 @@ internal data class ChatRoom(
     @SerializedName("custom_messages_url")
     var customMessagesUrl: String? = null,
     @SerializedName("sponsors_url")
-    var sponsorsUrl: String? = null,
-    @SerializedName("enable_message_reply")
-    var enableMessageReply: Boolean = false
+    var sponsorsUrl: String? = null
 )
 
 internal data class Channels(

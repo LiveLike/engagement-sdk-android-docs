@@ -80,7 +80,7 @@ data class LiveLikeChatMessage(val message: String?) {
      */
     var isDeleted: Boolean = false
 
-    var parentMessage: LiveLikeChatMessage? = null
+    var quoteMessage: LiveLikeChatMessage? = null
 }
 
 enum class ChatMessageType(val key: String) {
@@ -137,7 +137,7 @@ internal fun LiveLikeChatMessage.toChatMessage(): ChatMessage {
         imageUrl = imageUrl,
         image_width = image_width,
         image_height = image_height,
-        parentMessage = parentMessage?.toChatMessage(),
+        quoteMessage = quoteMessage?.toChatMessage(),
         isDeleted = isDeleted,
         timeStamp = timestamp
     )
@@ -161,8 +161,8 @@ internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
         this.senderId = this@toLiveLikeChatMessage.senderId
         this.timestamp = epochTimeStamp.toString()
         this.isDeleted = this@toLiveLikeChatMessage.isDeleted
-        this.parentMessage =
-            this@toLiveLikeChatMessage.parentMessage?.toLiveLikeChatMessage()
+        this.quoteMessage =
+            this@toLiveLikeChatMessage.quoteMessage?.toLiveLikeChatMessage()
     }
 }
 
@@ -172,8 +172,7 @@ internal fun ChatRoom.toLiveLikeChatRoom(): ChatRoomInfo {
         this.title,
         this.visibility,
         this.contentFilter,
-        this.customData,
-        this.enableMessageReply
+        this.customData
     )
 }
 

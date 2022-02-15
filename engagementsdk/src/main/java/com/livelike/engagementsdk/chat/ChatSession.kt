@@ -3,7 +3,6 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
-import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
@@ -396,26 +395,26 @@ internal class ChatSession(
         )
     }
 
-    override fun sendReplyMessage(
+    override fun quoteMessage(
         message: String?,
         imageUrl: String?,
         imageWidth: Int?,
         imageHeight: Int?,
-        parentMessageId: String,
-        parentMessage: LiveLikeChatMessage,
+        quoteMessageId: String,
+        quoteMessage: LiveLikeChatMessage,
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
         // Removing the parent message from parent message in order to avoid reply to reply in terms of data
         // and avoid data nesting
-        if (parentMessage.parentMessage != null) {
-            parentMessage.parentMessage = null
+        if (quoteMessage.quoteMessage != null) {
+            quoteMessage.quoteMessage = null
         }
         internalSendMessage(
             message,
             imageUrl,
             imageWidth,
             imageHeight,
-            parentMessage,
+            quoteMessage,
             liveLikeCallback
         )
     }
@@ -449,7 +448,7 @@ internal class ChatSession(
             image_width = imageWidth ?: 100,
             image_height = imageHeight ?: 100,
             timeStamp = timeData.timeSinceEpochInMs.toString(),
-            parentMessage = parentChatMessage?.copy()?.toChatMessage()
+            quoteMessage = parentChatMessage?.copy()?.toChatMessage()
         ).let { chatMessage ->
 
             // TODO: need to update for error handling here if pubnub respond failure of message

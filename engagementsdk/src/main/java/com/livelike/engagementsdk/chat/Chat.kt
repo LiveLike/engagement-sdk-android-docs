@@ -58,8 +58,9 @@ internal data class ChatMessage(
     var image_width: Int? = 100,
     var image_height: Int? = 100,
     var isDeleted: Boolean = false,
-    var parentMessage: ChatMessage? = null,
-    var isBlocked: Boolean = false
+    var quoteMessage: ChatMessage? = null,
+    var isBlocked: Boolean = false,
+    var quoteMessageID: String? = null
 ) {
     // Update the user_id to profile_id as required from backend
     fun toReportMessageJson(): String {
@@ -104,8 +105,7 @@ data class ChatRoomInfo(
     val title: String? = null,
     val visibility: Visibility? = null,
     val contentFilter: String? = null,
-    val customData: String? = null,
-    val enableMessageReply: Boolean = false
+    val customData: String? = null
 )
 
 enum class Visibility { everyone, members }

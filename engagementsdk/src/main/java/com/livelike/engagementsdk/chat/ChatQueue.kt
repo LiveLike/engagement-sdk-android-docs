@@ -87,7 +87,7 @@ internal class ChatQueue(
         val messageList = list.map { event ->
             val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
             chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
-            chatMessage.parentMessage?.apply {
+            chatMessage.quoteMessage?.apply {
                 isBlocked = blockedProfileIds.contains(senderId)
             }
             return@map chatMessage
@@ -123,7 +123,7 @@ internal class ChatQueue(
                     logDebug { "user is blocked" }
                     return
                 }
-                chatMessage.parentMessage?.apply {
+                chatMessage.quoteMessage?.apply {
                     isBlocked = blockedProfileIds.contains(senderId)
                 }
                 renderer?.displayChatMessage(chatMessage)

@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         var customCheerMeter: Boolean = false,
         var showLink: Boolean = false,
         var customLink: String? = null,
-        var replyMsg: Boolean=false
+        var quoteMsg: Boolean=false
     )
 
     private lateinit var userStream: Stream<LiveLikeUserApi>
@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity() {
 
         layout_side_panel.setOnClickListener {
             player.customLink = ed_link_custom.text.toString()
-            player.replyMsg = chk_enable_reply_msg.isChecked
+            player.quoteMsg = chk_enable_quote_msg.isChecked
             startActivity(playerDetailIntent(player))
         }
 
@@ -175,8 +175,8 @@ class MainActivity : AppCompatActivity() {
         chk_show_links.setOnCheckedChangeListener { _, isChecked ->
             player.showLink = isChecked
         }
-        chk_enable_reply_msg.setOnCheckedChangeListener { _, isChecked ->
-            player.replyMsg = isChecked
+        chk_enable_quote_msg.setOnCheckedChangeListener { _, isChecked ->
+            player.quoteMsg = isChecked
         }
 
         sample_app.setOnClickListener {
@@ -573,7 +573,7 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     intent.putExtra("customCheerMeter", player.customCheerMeter)
     intent.putExtra("showLink", player.showLink)
     intent.putExtra("customLink", player.customLink)
-    intent.putExtra("enableReplies", player.replyMsg)
+    intent.putExtra("enableReplies", player.quoteMsg)
     intent.putExtra(
         "keyboardClose",
         when (player.theme) {

@@ -2,8 +2,6 @@ package com.livelike.livelikedemo
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
-import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
@@ -11,7 +9,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.method.ScrollingMovementMethod
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,7 +64,6 @@ import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
 import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.custom_msg_item.view.img_sender_msg
-import kotlinx.android.synthetic.main.custom_msg_item.view.lay_msg_back
 import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg
 import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_sender_name
 import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_time
@@ -561,7 +557,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             if (showLink) {
                 chat_view.chatMessageUrlPatterns = customLink
             }
-            chat_view.enableMessageReply = enableReplies
+            chat_view.enableQuoteMessage = enableReplies
             chat_view.chatViewDelegate = object : ChatViewDelegate {
                 override fun onCreateViewHolder(
                     parent: ViewGroup,

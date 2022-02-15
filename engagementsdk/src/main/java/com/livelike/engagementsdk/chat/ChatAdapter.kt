@@ -18,7 +18,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
@@ -92,7 +91,7 @@ internal class ChatRecyclerAdapter(
     internal var chatPopUpView: ChatActionsPopupView? = null
     var showChatAvatarLogo = true
     var chatViewDelegate: ChatViewDelegate? = null
-    var enableMessageReply: Boolean = false
+    var enableQuoteMessage: Boolean = false
 
     override fun onCreateViewHolder(root: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (chatViewDelegate != null) {
@@ -431,8 +430,8 @@ internal class ChatRecyclerAdapter(
                             updateUI(v.chatBackground, res)
                         }
                         updateUI(
-                            v.lay_parent_message,
-                            parentChatReactionMessageBackHighlightedBackground
+                            v.lay_quote_message,
+                            quoteChatReactionMessageBackHighlightedBackground
                         )
                     }
                 } else {
@@ -441,7 +440,7 @@ internal class ChatRecyclerAdapter(
                         chatBackgroundRes?.let { res ->
                             updateUI(v.chatBackground, res)
                         }
-                        updateUI(v.lay_parent_message, parentChatBackgroundRes)
+                        updateUI(v.lay_quote_message, quoteChatBackgroundRes)
                     }
                 }
             }
@@ -543,7 +542,7 @@ internal class ChatRecyclerAdapter(
 
                     chatViewThemeAttribute.apply {
                         v.chatMessage.setTextColor(chatMessageColor)
-                        v.parent_chatMessage.setTextColor(parentChatMessageColor)
+                        v.quote_chatMessage.setTextColor(quoteChatMessageColor)
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
                             chat_nickname.text =
@@ -552,11 +551,11 @@ internal class ChatRecyclerAdapter(
                             chat_nickname.setTextColor(chatOtherNickNameColor)
                             chat_nickname.text = message.senderDisplayName
                         }
-                        chat_parent_nickname.setTextColor(parentChatNickNameColor)
+                        quote_chat_message_nickname.setTextColor(quoteChatNickNameColor)
                         chat_nickname.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatUserNameTextSize)
-                        chat_parent_nickname.setTextSize(
+                        quote_chat_message_nickname.setTextSize(
                             TypedValue.COMPLEX_UNIT_PX,
-                            parentChatUserNameTextSize
+                            quoteChatUserNameTextSize
                         )
                         chat_nickname.isAllCaps = chatUserNameTextAllCaps
                         setCustomFontWithTextStyle(
@@ -565,19 +564,19 @@ internal class ChatRecyclerAdapter(
                             chatUserNameTextStyle
                         )
                         setCustomFontWithTextStyle(
-                            chat_parent_nickname,
-                            parentChatUserNameCustomFontPath,
-                            parentChatUserNameTextStyle
+                            quote_chat_message_nickname,
+                            quoteChatUserNameCustomFontPath,
+                            quoteChatUserNameTextStyle
                         )
                         setLetterSpacingForTextView(chat_nickname, chatUserNameTextLetterSpacing)
                         setLetterSpacingForTextView(
-                            chat_parent_nickname,
-                            parentChatUserNameTextLetterSpacing
+                            quote_chat_message_nickname,
+                            quoteChatUserNameTextLetterSpacing
                         )
                         chatMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatMessageTextSize)
-                        parent_chatMessage.setTextSize(
+                        quote_chatMessage.setTextSize(
                             TypedValue.COMPLEX_UNIT_PX,
-                            parentChatMessageTextSize
+                            quoteChatMessageTextSize
                         )
                         if (showLinks) {
                             chatMessage.apply {
@@ -585,9 +584,9 @@ internal class ChatRecyclerAdapter(
                                 setLinkTextColor(chatMessageLinkTextColor)
                                 movementMethod = LinkMovementMethod.getInstance()
                             }
-                            parent_chatMessage.apply {
+                            quote_chatMessage.apply {
                                 linksClickable = showLinks
-                                setLinkTextColor(parentChatMessageLinkTextColor)
+                                setLinkTextColor(quoteChatMessageLinkTextColor)
                                 movementMethod = LinkMovementMethod.getInstance()
                             }
                         }
@@ -600,17 +599,17 @@ internal class ChatRecyclerAdapter(
                             }
                         )
                         setCustomFontWithTextStyle(
-                            parent_chatMessage,
-                            parentChatMessageCustomFontPath,
-                            when (parentMessage?.isDeleted) {
+                            quote_chatMessage,
+                            quoteChatMessageCustomFontPath,
+                            when (quoteMessage?.isDeleted) {
                                 true -> Typeface.ITALIC
-                                else -> parentChatMessageTextStyle
+                                else -> quoteChatMessageTextStyle
                             }
                         )
                         setLetterSpacingForTextView(chatMessage, chatMessageTextLetterSpacing)
                         setLetterSpacingForTextView(
-                            parent_chatMessage,
-                            parentChatMessageTextLetterSpacing
+                            quote_chatMessage,
+                            quoteChatMessageTextLetterSpacing
                         )
                         if (chatViewThemeAttribute.showMessageDateTime) {
                             v.message_date_time.visibility = View.VISIBLE
@@ -672,11 +671,11 @@ internal class ChatRecyclerAdapter(
                             chatBubblePaddingRight,
                             chatBubblePaddingBottom
                         )
-                        v.lay_parent_message.setPadding(
-                            parentChatBubblePaddingLeft,
-                            parentChatBubblePaddingTop,
-                            parentChatBubblePaddingRight,
-                            parentChatBubblePaddingBottom
+                        v.lay_quote_message.setPadding(
+                            quoteChatBubblePaddingLeft,
+                            quoteChatBubblePaddingTop,
+                            quoteChatBubblePaddingRight,
+                            quoteChatBubblePaddingBottom
                         )
                         val layoutParam1: LinearLayout.LayoutParams =
                             v.chatBubbleBackground.layoutParams as LinearLayout.LayoutParams
@@ -845,18 +844,18 @@ internal class ChatRecyclerAdapter(
                             txt_chat_reactions_count.text = "  "
                         }
                     }
-                    lay_parent_message.visibility =
-                        when (parentMessage != null && enableMessageReply && !isDeleted) {
+                    lay_quote_message.visibility =
+                        when (quoteMessage != null && enableQuoteMessage && !isDeleted) {
                             true -> View.VISIBLE
                             else -> View.GONE
                         }
-                    parentMessage?.let {
+                    quoteMessage?.let {
                         setTextOrImageToView(
                             it,
-                            parent_chatMessage,
-                            img_parent_chat_message,
+                            quote_chatMessage,
+                            img_quote_chat_message,
                             true,
-                            chatViewThemeAttribute.parentChatMessageTextSize,
+                            chatViewThemeAttribute.quoteChatMessageTextSize,
                             stickerPackRepository,
                             showLinks,
                             v.context.resources.displayMetrics.density,
@@ -866,7 +865,7 @@ internal class ChatRecyclerAdapter(
                             analyticsService,
                             false
                         )
-                        chat_parent_nickname.text = it.senderDisplayName
+                        quote_chat_message_nickname.text = it.senderDisplayName
                     }
                 }
             }

@@ -190,8 +190,7 @@ internal class InternalLiveLikeChatClient(
                                 chatRoomResult.data.title,
                                 chatRoomResult.data.visibility,
                                 chatRoomResult.data.contentFilter,
-                                chatRoomResult.data.customData,
-                                chatRoomResult.data.enableMessageReply
+                                chatRoomResult.data.customData
                             ),
                             null
                         )

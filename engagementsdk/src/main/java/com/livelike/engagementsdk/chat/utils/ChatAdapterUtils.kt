@@ -29,7 +29,7 @@ internal fun setTextOrImageToView(
     chatMessage: ChatMessage?,
     textView: TextView,
     imageView: ImageView,
-    parent: Boolean = false,
+    isParent: Boolean = false,
     textSize: Float,
     stickerPackRepository: StickerPackRepository,
     showLinks: Boolean,
@@ -42,7 +42,7 @@ internal fun setTextOrImageToView(
 ) {
     val callback = MultiCallback(true)
     chatMessage?.apply {
-        val tag = when (parent) {
+        val tag = when (isParent) {
             true -> "parent_$id"
             else -> id
         }
@@ -86,12 +86,12 @@ internal fun setTextOrImageToView(
                 textView.text = ""
                 textView.visibility = View.GONE
                 imageView.visibility = View.VISIBLE
-                val size = when (parent) {
+                val size = when (isParent) {
                     true -> MEDIUM_STICKER_SIZE
                     else -> LARGER_STICKER_SIZE
                 }
                 imageView.minimumHeight = AndroidResource.dpToPx(size)
-                val factor: Double = when (parent) {
+                val factor: Double = when (isParent) {
                     true -> when (input) {
                         true -> 2.2
                         else -> 1.75
@@ -168,8 +168,8 @@ internal fun setTextOrImageToView(
                 textView.visibility = View.VISIBLE
                 clearTarget(id, textView.context)
                 textView.minHeight = textSize.toInt()
-                textView.text = when (parent && isBlocked) {
-                    true -> textView.context.getString(R.string.parent_blocked_message)
+                textView.text = when (isParent && isBlocked) {
+                    true -> textView.context.getString(R.string.quote_blocked_message)
                     else -> when (showLinks) {
                         true -> linkText
                         else -> message

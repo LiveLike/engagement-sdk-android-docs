@@ -66,7 +66,7 @@ import kotlin.math.min
 open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
 
-    private var currentReplyParentMessage: ChatMessage? = null
+    private var currentQuoteMessage: ChatMessage? = null
         set(value) {
             field = value
             updateInputView()
@@ -162,10 +162,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         initView(context)
     }
 
-    var enableMessageReply: Boolean = false
+    var enableQuoteMessage: Boolean = false
         set(value) {
             field = value
-            viewModel?.enableMessageReply = value
+            viewModel?.enableQuoteMessage = value
         }
 
     var enableChatMessageURLs: Boolean = false
@@ -243,8 +243,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 sendImageTintColor,
                 android.graphics.PorterDuff.Mode.MULTIPLY
             )
-            img_parent_msg_cancel.setOnClickListener {
-                currentReplyParentMessage = null
+            img_quote_msg_cancel.setOnClickListener {
+                currentQuoteMessage = null
             }
             initEmptyView()
         }
@@ -298,7 +298,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         viewModel?.apply {
-            this.enableMessageReply = this@ChatView.enableMessageReply
+            this.enableQuoteMessage = this@ChatView.enableQuoteMessage
             chatAdapter.showLinks = enableChatMessageURLs
             chatMessageUrlPatterns?.let {
                 if (it.isNotEmpty())
@@ -662,13 +662,13 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             })
-            if (enableMessageReply && isChatInputVisible) {
+            if (enableQuoteMessage && isChatInputVisible) {
                 val messageSwipeController =
                     MessageSwipeController(context, object : SwipeControllerActions {
                         override fun showReplyUI(position: Int) {
                             val chatMessage = chatAdapter.getChatMessage(position)
                             if (!chatMessage.isDeleted)
-                                currentReplyParentMessage = chatMessage.copy()
+                                currentQuoteMessage = chatMessage.copy()
                             else {
                                 logDebug { "Not Allowed to reply message" }
                                 (session as? ChatSession)?.errorDelegate?.onError("Not Allowed to reply message")
@@ -742,9 +742,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun updateInputView() {
-        lay_parent_message.visibility = when (currentReplyParentMessage != null && isChatInputVisible) {
+        lay_quote_message.visibility = when (currentQuoteMessage != null && isChatInputVisible) {
             true -> {
-                chat_parent_nickname.text = currentReplyParentMessage?.senderDisplayName
+                quote_chat_message_nickname.text = currentQuoteMessage?.senderDisplayName
                 chatAttribute.apply {
                     var options = RequestOptions()
                     if (chatAvatarCircle) {
@@ -756,38 +756,38 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             RoundedCorners(chatAvatarRadius)
                         )
                     }
-                    if (currentReplyParentMessage!!.senderDisplayPic.isNullOrEmpty()) {
+                    if (currentQuoteMessage!!.senderDisplayPic.isNullOrEmpty()) {
                         // load local image
                         Glide.with(context.applicationContext)
                             .load(R.drawable.default_avatar)
                             .apply(options)
                             .placeholder(chatUserPicDrawable)
-                            .into(img_parent_chat_avatar)
+                            .into(img_quote_chat_avatar)
                     } else {
                         Glide.with(context.applicationContext)
-                            .load(currentReplyParentMessage!!.senderDisplayPic)
+                            .load(currentQuoteMessage!!.senderDisplayPic)
                             .apply(options)
                             .placeholder(chatUserPicDrawable)
                             .error(chatUserPicDrawable)
-                            .into(img_parent_chat_avatar)
+                            .into(img_quote_chat_avatar)
                     }
                     if (enableChatMessageURLs) {
-                        parent_chatMessage.apply {
+                        quote_chatMessage.apply {
                             linksClickable = enableChatMessageURLs
-                            setLinkTextColor(parentChatMessageLinkTextColor)
+                            setLinkTextColor(quoteChatMessageLinkTextColor)
                             movementMethod = LinkMovementMethod.getInstance()
                         }
                     }
-                    currentReplyParentMessage?.let {
+                    currentQuoteMessage?.let {
                         viewModel?.stickerPackRepository?.let {
                             viewModel?.chatAdapter?.linksRegex?.let {
                                 viewModel?.analyticsService?.let {
                                     setTextOrImageToView(
-                                        currentReplyParentMessage,
-                                        parent_chatMessage,
-                                        img_parent_chat_message,
+                                        currentQuoteMessage,
+                                        quote_chatMessage,
+                                        img_quote_chat_message,
                                         true,
-                                        parentChatMessageTextSize,
+                                        quoteChatMessageTextSize,
                                         viewModel?.stickerPackRepository!!,
                                         enableChatMessageURLs,
                                         context.resources.displayMetrics.density,
@@ -801,19 +801,19 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         }
                     }
                 }
-                lay_parent_message.accessibilityDelegate = object : View.AccessibilityDelegate() {
+                lay_quote_message.accessibilityDelegate = object : View.AccessibilityDelegate() {
                     override fun onInitializeAccessibilityNodeInfo(
                         host: View?,
                         info: AccessibilityNodeInfo?
                     ) {
                         super.onInitializeAccessibilityNodeInfo(host, info)
                         val isExternalImage =
-                            currentReplyParentMessage?.message?.findImages()?.matches() ?: false
+                            currentQuoteMessage?.message?.findImages()?.matches() ?: false
                         info?.text = context.getString(
-                            R.string.send_reply_message_input_accessibility,
+                            R.string.send_quote_message_input_accessibility,
                             when (isExternalImage) {
                                 true -> context.getString(R.string.image)
-                                false -> currentReplyParentMessage?.message
+                                false -> currentQuoteMessage?.message
                             }
                         )
                     }
@@ -822,10 +822,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             }
             else -> View.GONE
         }
-        if (currentReplyParentMessage != null && isChatInputVisible) {
-            lay_parent_message.postDelayed(
+        if (currentQuoteMessage != null && isChatInputVisible) {
+            lay_quote_message.postDelayed(
                 {
-                    lay_parent_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+                    lay_quote_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
                 },
                 100
             )
@@ -940,9 +940,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             return
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
-        if (enableMessageReply) {
-            if (currentReplyParentMessage?.parentMessage != null) {
-                currentReplyParentMessage?.parentMessage = null
+        if (enableQuoteMessage) {
+            if (currentQuoteMessage?.quoteMessage != null) {
+                currentQuoteMessage?.quoteMessage = null
             }
         }
 
@@ -959,8 +959,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             image_width = 100,
             image_height = 100,
             timeStamp = timeData.timeSinceEpochInMs.toString(),
-            parentMessage = when (enableMessageReply) {
-                true -> currentReplyParentMessage
+            quoteMessage = when (enableQuoteMessage) {
+                true -> currentQuoteMessage
                 else -> null
             }
         ).let {
@@ -974,7 +974,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     chatListener?.onChatMessageSend(it, timeData)
                 }
                 edittext_chat_message.setText("")
-                currentReplyParentMessage = null
+                currentQuoteMessage = null
                 snapToLive()
                 viewModel?.currentChatRoom?.id?.let { id ->
                     analyticsService.trackMessageSent(
