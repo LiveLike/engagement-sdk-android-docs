@@ -924,7 +924,7 @@ internal class ChatRecyclerAdapter(
                         if (emojiCountMap.isNotEmpty() && sumCount > 0 && isReactionsAvaiable) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
                             txt_chat_reactions_count.text =
-                                reactionCountFormatter?.invoke(2500) ?: "$sumCount"
+                                reactionCountFormatter?.invoke(sumCount) ?: "$sumCount"
                         } else {
                             txt_chat_reactions_count.visibility = View.INVISIBLE
                             txt_chat_reactions_count.text = "  "
