@@ -47,7 +47,9 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.*
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.publicapis.*
+import com.livelike.engagementsdk.publicapis.ChatMessageType
+import com.livelike.engagementsdk.publicapis.toChatMessageType
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
 import pl.droidsonroids.gif.MultiCallback
@@ -88,6 +90,7 @@ internal class ChatRecyclerAdapter(
     internal var isPublicChat: Boolean = true
     internal var mRecyclerView: RecyclerView? = null
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
+    internal var reactionCountFormatter: ((count: Int) -> String)? = null
     var currentChatReactionPopUpViewPos: Int = -1
     internal var chatPopUpView: ChatActionsPopupView? = null
     var showChatAvatarLogo = true
@@ -920,7 +923,8 @@ internal class ChatRecyclerAdapter(
 
                         if (emojiCountMap.isNotEmpty() && sumCount > 0 && isReactionsAvaiable) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
-                            txt_chat_reactions_count.text = "$sumCount"
+                            txt_chat_reactions_count.text =
+                                reactionCountFormatter?.invoke(2500) ?: "$sumCount"
                         } else {
                             txt_chat_reactions_count.visibility = View.INVISIBLE
                             txt_chat_reactions_count.text = "  "

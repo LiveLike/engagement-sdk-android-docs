@@ -56,29 +56,14 @@ import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import kotlinx.android.synthetic.main.activity_exo_player.btn_custom_message
-import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
-import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
-import kotlinx.android.synthetic.main.activity_exo_player.live_blog
-import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
-import kotlinx.android.synthetic.main.activity_exo_player.openLogs
-import kotlinx.android.synthetic.main.activity_exo_player.playerView
-import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
-import kotlinx.android.synthetic.main.activity_exo_player.startAd
-import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
-import kotlinx.android.synthetic.main.custom_msg_item.view.img_sender_msg
-import kotlinx.android.synthetic.main.custom_msg_item.view.lay_msg_back
-import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg
-import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_sender_name
-import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_time
-import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
-import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_id
-import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
-import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
-import java.util.Date
-import java.util.Random
-import java.util.Timer
-import java.util.TimerTask
+import kotlinx.android.synthetic.main.activity_exo_player.*
+import kotlinx.android.synthetic.main.custom_msg_item.view.*
+import kotlinx.android.synthetic.main.widget_chat_stacked.*
+import java.text.DecimalFormat
+import java.util.*
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
 
 class ExoPlayerActivity : AppCompatActivity() {
 
@@ -560,6 +545,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             if (showLink) {
                 chat_view.chatMessageUrlPatterns = customLink
             }
+            chat_view.reactionCountFormatter = { count -> prettyCount(count)}
 
             chat_view.chatViewDelegate = object : ChatViewDelegate {
                 override fun onCreateViewHolder(
@@ -633,6 +619,20 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private fun stopThemeRandomizer() {
         themeRadomizerHandler.removeCallbacksAndMessages(null)
+    }
+
+    private fun prettyCount(number: Number): String {
+        val suffix = charArrayOf(' ', 'k', 'M', 'B', 'T', 'P', 'E')
+        val numValue = number.toLong()
+        val value = floor(log10(numValue.toDouble())).toInt()
+        val base = value / 3
+        return if (value >= 3 && base < suffix.size) {
+            DecimalFormat("#0.0").format(
+                numValue / 10.0.pow((base * 3).toDouble())
+            ) + suffix[base]
+        } else {
+            DecimalFormat("#,##0").format(numValue)
+        }
     }
 
     private fun playThemeRandomizer() {
