@@ -667,11 +667,16 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     MessageSwipeController(context, object : SwipeControllerActions {
                         override fun showReplyUI(position: Int) {
                             val chatMessage = chatAdapter.getChatMessage(position)
-                            if (!chatMessage.isDeleted)
-                                currentQuoteMessage = chatMessage.copy()
-                            else {
-                                logDebug { "Not Allowed to reply message" }
-                                (session as? ChatSession)?.errorDelegate?.onError("Not Allowed to reply message")
+                            if (chatMessage.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) {
+                                logDebug { "Not Allowed to quote message on Custom Message" }
+                                (session as? ChatSession)?.errorDelegate?.onError("Not Allowed to quote message on Custom Message")
+                            } else {
+                                if (!chatMessage.isDeleted)
+                                    currentQuoteMessage = chatMessage.copy()
+                                else {
+                                    logDebug { "Not Allowed to quote message" }
+                                    (session as? ChatSession)?.errorDelegate?.onError("Not Allowed to quote message")
+                                }
                             }
                         }
                     })
