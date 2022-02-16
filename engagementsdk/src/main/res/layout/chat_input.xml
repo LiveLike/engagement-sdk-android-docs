@@ -121,7 +121,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="6dp"
-            android:contentDescription="@string/cancel_the_quote_chat_window"
+            android:contentDescription="@string/livelike_cancel_the_quote_chat_window"
             android:padding="8dp"
             android:src="@drawable/ic_cancel" />
 

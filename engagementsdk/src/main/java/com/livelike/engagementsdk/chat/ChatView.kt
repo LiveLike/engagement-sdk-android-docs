@@ -810,7 +810,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         val isExternalImage =
                             currentQuoteMessage?.message?.findImages()?.matches() ?: false
                         info?.text = context.getString(
-                            R.string.send_quote_message_input_accessibility,
+                            R.string.livelike_send_quote_message_input_accessibility,
                             when (isExternalImage) {
                                 true -> context.getString(R.string.image)
                                 false -> currentQuoteMessage?.message

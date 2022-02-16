@@ -169,7 +169,7 @@ internal fun setTextOrImageToView(
                 clearTarget(id, textView.context)
                 textView.minHeight = textSize.toInt()
                 textView.text = when (isParent && isBlocked) {
-                    true -> textView.context.getString(R.string.quote_blocked_message)
+                    true -> textView.context.getString(R.string.livelike_quote_blocked_message)
                     else -> when (showLinks) {
                         true -> linkText
                         else -> message

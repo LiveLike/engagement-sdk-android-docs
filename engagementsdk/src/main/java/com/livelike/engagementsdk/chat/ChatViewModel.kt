@@ -123,7 +123,7 @@ internal class ChatViewModel(
                 it.isFromMe = userStream.latest()?.id == it.senderId
                 it.quoteMessage = it.quoteMessage?.apply {
                     message = when (deletedMessages.contains(id)) {
-                        true -> applicationContext.getString(R.string.livelike_chat_message_deleted_message)
+                        true -> applicationContext.getString(R.string.livelike_quote_chat_message_deleted_message)
                         else -> message
                     }
                     isDeleted = deletedMessages.contains(id)
@@ -161,7 +161,7 @@ internal class ChatViewModel(
                 isFromMe = userStream.latest()?.id == senderId
                 quoteMessage = quoteMessage?.apply {
                     this.message = when (deletedMessages.contains(id)) {
-                        true -> applicationContext.getString(R.string.livelike_chat_message_deleted_message)
+                        true -> applicationContext.getString(R.string.livelike_quote_chat_message_deleted_message)
                         else -> this.message
                     }
                     this.isDeleted = deletedMessages.contains(id)
@@ -257,7 +257,7 @@ internal class ChatViewModel(
             }?.apply {
                 quoteMessage = quoteMessage?.apply {
                     message = when (messageId == id) {
-                        true -> applicationContext.getString(R.string.livelike_chat_message_deleted_message)
+                        true -> applicationContext.getString(R.string.livelike_quote_chat_message_deleted_message)
                         else -> message
                     }
                     isDeleted = deletedMessages.contains(id)
