@@ -57,6 +57,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlin.math.ln
+import kotlin.math.pow
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
@@ -924,7 +926,7 @@ internal class ChatRecyclerAdapter(
                         if (emojiCountMap.isNotEmpty() && sumCount > 0 && isReactionsAvaiable) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
                             txt_chat_reactions_count.text =
-                                reactionCountFormatter?.invoke(sumCount) ?: "$sumCount"
+                                reactionCountFormatter?.invoke(sumCount) ?: formatReactionCount(sumCount)
                         } else {
                             txt_chat_reactions_count.visibility = View.INVISIBLE
                             txt_chat_reactions_count.text = "  "
@@ -962,6 +964,16 @@ class InternalURLSpan(
             )
         }
     }
+}
+
+internal fun formatReactionCount(count: Int): String {
+    if (count < 1000) return "" + count
+    val exp = (ln(count.toDouble()) / ln(1000.0)).toInt()
+    return String.format(
+        "%.1f%c",
+        count / 1000.0.pow(exp.toDouble()),
+        "kMGTPE"[exp - 1]
+    )
 }
 
 // const val should be in uppercase always
