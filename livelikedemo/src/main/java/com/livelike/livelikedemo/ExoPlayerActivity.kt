@@ -56,16 +56,7 @@ import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import kotlinx.android.synthetic.main.activity_exo_player.btn_custom_message
-import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
-import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
-import kotlinx.android.synthetic.main.activity_exo_player.live_blog
-import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
-import kotlinx.android.synthetic.main.activity_exo_player.openLogs
-import kotlinx.android.synthetic.main.activity_exo_player.playerView
-import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
-import kotlinx.android.synthetic.main.activity_exo_player.startAd
-import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
+import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.custom_msg_item.view.img_sender_msg
 import kotlinx.android.synthetic.main.custom_msg_item.view.lay_msg_back
 import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg
@@ -378,6 +369,22 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
 
+        btn_send_message?.setOnClickListener {
+            session?.chatSession?.sendChatMessage("Sample ${Random().nextInt()}",null,null,null,
+                object : LiveLikeCallback<LiveLikeChatMessage>() {
+                    override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                        runOnUiThread {
+                            result?.let {
+                                Toast.makeText(applicationContext, it.toString(), Toast.LENGTH_SHORT).show()
+                            }
+                            error?.let {
+                                Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+
+                })
+        }
 
 
         btn_custom_message.setOnClickListener {
@@ -533,6 +540,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
             this.session = session
+            val allowDiscard = intent.getBooleanExtra("allowDiscard",true)
+            session.chatSession.allowDiscardOwnPublishedMessageInSubscription = allowDiscard
             player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }
 

@@ -52,7 +52,7 @@ internal class PubnubChatMessagingClient(
     uuid: String,
     private val analyticsService: AnalyticsService,
     publishKey: String? = null,
-    val isDiscardOwnPublishInSubcription: Boolean = true,
+    var isDiscardOwnPublishInSubscription: Boolean = true,
     val origin: String? = null,
     private val pubnubHeartbeatInterval: Int,
     private val pubnubPresenceTimeout: Int
@@ -106,7 +106,7 @@ internal class PubnubChatMessagingClient(
             )
         )
         publishQueue.enqueue(Pair(channel, pubnubChatEvent))
-        if (isDiscardOwnPublishInSubcription) {
+        if (isDiscardOwnPublishInSubscription) {
             addPublishedMessage(channel, pubnubChatEvent.payload.messageId)
         }
         if (!isPublishRunning) {
@@ -395,7 +395,7 @@ internal class PubnubChatMessagingClient(
             var clientMessage: ClientMessage? = null
             when (event) {
                 MESSAGE_CREATED, IMAGE_CREATED, CUSTOM_MESSAGE_CREATED -> {
-                    if (isDiscardOwnPublishInSubcription && getPublishedMessages(channel).contains(
+                    if (isDiscardOwnPublishInSubscription && getPublishedMessages(channel).contains(
                             pubnubChatEvent.payload.messageId
                         )
                     ) {

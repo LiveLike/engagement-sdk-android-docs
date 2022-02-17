@@ -3,17 +3,10 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
-import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.CHAT_PROVIDER
-import com.livelike.engagementsdk.ChatRoomListener
-import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.MessageListener
-import com.livelike.engagementsdk.MockAnalyticsService
-import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
@@ -31,17 +24,12 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.net.URL
-import java.util.UUID
+import java.util.*
 
 /**
  * Created by Shivansh Mittal on 2020-04-08.
@@ -167,7 +155,9 @@ internal class ChatSession(
         chatClient?.run {
             destroy()
         }
-        (liveLikeChatClient as InternalLiveLikeChatClient).unsubscribeToChatRoomDelegate(chatViewModel.hashCode().toString())
+        (liveLikeChatClient as InternalLiveLikeChatClient).unsubscribeToChatRoomDelegate(
+            chatViewModel.hashCode().toString()
+        )
         contentSessionScope.cancel()
         isClosed = true
         chatViewModel.chatAdapter.mRecyclerView = null
@@ -216,9 +206,8 @@ internal class ChatSession(
     ) {
         analyticsServiceStream.latest()!!.trackLastChatStatus(true)
         chatClient = chatRepository?.establishChatMessagingConnection()
-
         pubnubMessagingClient = chatClient as PubnubChatMessagingClient
-
+        pubnubMessagingClient.isDiscardOwnPublishInSubscription = allowDiscardOwnPublishedMessageInSubscription
         currentPlayheadTime.let {
             chatClient =
                 chatClient?.syncTo(it)
@@ -382,6 +371,13 @@ internal class ChatSession(
     }
 
     override var avatarUrl: String? = null
+
+    override var allowDiscardOwnPublishedMessageInSubscription: Boolean = true
+        set(value) {
+            field = value
+            (chatClient as? PubnubChatMessagingClient)?.isDiscardOwnPublishInSubscription = value
+            println("ChatSession.>>${(chatClient as? PubnubChatMessagingClient)?.isDiscardOwnPublishInSubscription}")
+        }
 
     /**
      * TODO: added it into default chat once all functionality related to chat is done
