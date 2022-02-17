@@ -16,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -57,19 +58,10 @@ import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import kotlinx.android.synthetic.main.activity_exo_player.*
-import kotlinx.android.synthetic.main.custom_msg_item.view.img_sender_msg
-import kotlinx.android.synthetic.main.custom_msg_item.view.lay_msg_back
-import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg
-import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_sender_name
-import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_time
-import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
-import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_id
-import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
-import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
-import java.util.Date
-import java.util.Random
-import java.util.Timer
-import java.util.TimerTask
+import kotlinx.android.synthetic.main.custom_msg_item.view.*
+import kotlinx.android.synthetic.main.widget_chat_stacked.*
+import java.util.*
+
 
 class ExoPlayerActivity : AppCompatActivity() {
 
@@ -370,12 +362,16 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
 
         btn_send_message?.setOnClickListener {
-            session?.chatSession?.sendChatMessage("Sample ${Random().nextInt()}",null,null,null,
+            session?.chatSession?.sendChatMessage("Sample ${Random().nextInt()}", null, null, null,
                 object : LiveLikeCallback<LiveLikeChatMessage>() {
                     override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
                         runOnUiThread {
                             result?.let {
-                                Toast.makeText(applicationContext, it.toString(), Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    applicationContext,
+                                    it.toString(),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                             error?.let {
                                 Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
@@ -386,6 +382,21 @@ class ExoPlayerActivity : AppCompatActivity() {
                 })
         }
 
+        btn_scroll_position?.setOnClickListener {
+            val alert = AlertDialog.Builder(this)
+            val edittext = EditText(this)
+            alert.setTitle("Enter Message ID")
+
+            alert.setView(edittext)
+
+            alert.setPositiveButton("Done") { dialog, _ -> //What ever you want to do with the value
+                val text = edittext.text.toString()
+                dialog.dismiss()
+                chat_view?.scrollToMessage(text)
+            }
+
+            alert.show()
+        }
 
         btn_custom_message.setOnClickListener {
             session?.chatSession?.sendCustomChatMessage("{" +
@@ -540,7 +551,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
             this.session = session
-            val allowDiscard = intent.getBooleanExtra("allowDiscard",true)
+            val allowDiscard = intent.getBooleanExtra("allowDiscard", true)
             session.chatSession.allowDiscardOwnPublishedMessageInSubscription = allowDiscard
             player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }
