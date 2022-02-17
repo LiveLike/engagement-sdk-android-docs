@@ -259,6 +259,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         return DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER.format(dateTime)
     }
 
+    open fun scrollChatToBottom() {
+        snapToLive()
+    }
+
     /**
      * chat session is loaded through this
      */
