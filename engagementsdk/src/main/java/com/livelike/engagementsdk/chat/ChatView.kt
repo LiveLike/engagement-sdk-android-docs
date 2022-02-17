@@ -259,6 +259,27 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         return DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER.format(dateTime)
     }
 
+    /**
+     * Scroll directly to the particular messageId mentioned
+     */
+    open fun scrollToMessage(messageId: String) {
+        if (messageId.isEmpty()) {
+            logError { "Not allowed empty Message ID" }
+        } else {
+            val index = viewModel?.messageList?.indexOfFirst { it.id == messageId }
+            index?.let {
+                if (index > -1 && index < (chatdisplay.adapter?.itemCount ?: 0)) {
+                    chatdisplay.postDelayed({
+                        chatdisplay.scrollToPosition(it)
+                    }, 100)
+                }
+            }
+        }
+    }
+
+    /**
+     * Scroll the chat list to the bottom
+     */
     open fun scrollChatToBottom() {
         snapToLive()
     }
