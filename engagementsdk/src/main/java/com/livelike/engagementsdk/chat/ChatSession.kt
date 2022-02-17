@@ -50,7 +50,7 @@ internal class ChatSession(
     }
 
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
-    private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
+    private var pubnubMessagingClient: PubnubChatMessagingClient? = null
     internal val dataClient: ChatDataClient = ChatDataClientImpl()
     private var isClosed = false
     val chatViewModel: ChatViewModel by lazy {
@@ -207,7 +207,6 @@ internal class ChatSession(
         analyticsServiceStream.latest()!!.trackLastChatStatus(true)
         chatClient = chatRepository?.establishChatMessagingConnection()
         pubnubMessagingClient = chatClient as PubnubChatMessagingClient
-        pubnubMessagingClient.isDiscardOwnPublishInSubscription = allowDiscardOwnPublishedMessageInSubscription
         currentPlayheadTime.let {
             chatClient =
                 chatClient?.syncTo(it)
@@ -220,6 +219,8 @@ internal class ChatSession(
                 this.renderer = chatViewModel
                 chatViewModel.chatLoaded = false
                 chatViewModel.chatListener = this
+                pubnubMessagingClient?.isDiscardOwnPublishInSubscription =
+                    allowDiscardOwnPublishedMessageInSubscription
             }
         logDebug { "initialized Chat Messaging" }
     }
@@ -326,13 +327,13 @@ internal class ChatSession(
                         //subscribe to channel for listening for pin message events
                         val controlChannel = chatRoom.channels.control[CHAT_PROVIDER]
                         controlChannel?.let {
-                            pubnubMessagingClient.addChannelSubscription(it)
+                            pubnubMessagingClient?.addChannelSubscription(it)
                         }
                         val channel = chatRoom.channels.chat[CHAT_PROVIDER]
                         channel?.let { ch ->
                             contentSessionScope.launch {
                                 delay(500)
-                                pubnubMessagingClient.addChannelSubscription(ch)
+                                pubnubMessagingClient?.addChannelSubscription(ch)
                                 delay(500)
                                 chatViewModel.apply {
                                     flushMessages()
@@ -347,7 +348,7 @@ internal class ChatSession(
                                     chatLoaded = false
                                 }
                                 this@ChatSession.currentChatRoom = chatRoom
-                                pubnubMessagingClient.activeChatRoom = channel
+                                pubnubMessagingClient?.activeChatRoom = channel
                                 callback?.onResponse(Unit, null)
                             }
                         }
@@ -375,8 +376,7 @@ internal class ChatSession(
     override var allowDiscardOwnPublishedMessageInSubscription: Boolean = true
         set(value) {
             field = value
-            (chatClient as? PubnubChatMessagingClient)?.isDiscardOwnPublishInSubscription = value
-            println("ChatSession.>>${(chatClient as? PubnubChatMessagingClient)?.isDiscardOwnPublishInSubscription}")
+            pubnubMessagingClient?.isDiscardOwnPublishInSubscription = value
         }
 
     /**
