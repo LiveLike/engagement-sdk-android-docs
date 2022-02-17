@@ -122,6 +122,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             viewModel?.chatAdapter?.chatViewDelegate = value
         }
 
+    var reactionCountFormatter: ((count: Int) -> String)? = null
+
     private val viewModel: ChatViewModel?
         get() = (session as ChatSession?)?.chatViewModel
 
@@ -309,6 +311,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatAdapter.messageTimeFormatter = { time ->
                 formatMessageDateTime(time)
             }
+            chatAdapter.reactionCountFormatter = reactionCountFormatter
             initStickerKeyboard(sticker_keyboard, this)
             refreshWithDeletedMessage()
             setDataSource(chatAdapter)

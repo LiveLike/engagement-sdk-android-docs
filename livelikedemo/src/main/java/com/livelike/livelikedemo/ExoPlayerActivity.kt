@@ -75,6 +75,14 @@ import java.util.Date
 import java.util.Random
 import java.util.Timer
 import java.util.TimerTask
+import kotlinx.android.synthetic.main.activity_exo_player.*
+import kotlinx.android.synthetic.main.custom_msg_item.view.*
+import kotlinx.android.synthetic.main.widget_chat_stacked.*
+import java.text.DecimalFormat
+import java.util.*
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
 
 class ExoPlayerActivity : AppCompatActivity() {
 
@@ -558,6 +566,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                 chat_view.chatMessageUrlPatterns = customLink
             }
             chat_view.enableQuoteMessage = enableReplies
+//            chat_view.reactionCountFormatter = { count -> prettyCount(count)}
+
             chat_view.chatViewDelegate = object : ChatViewDelegate {
                 override fun onCreateViewHolder(
                     parent: ViewGroup,
