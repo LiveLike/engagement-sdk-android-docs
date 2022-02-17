@@ -5,22 +5,40 @@
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.40185185185185185" />
         <entry key="engagementsdk/src/main/res/drawable/alert_rounded_corner_with_background.xml" value="0.3902564102564103" />
+        <entry key="engagementsdk/src/main/res/drawable/ic_chat_message_bubble_rounded_rectangle.xml" value="0.206" />
+        <entry key="engagementsdk/src/main/res/drawable/ic_chat_message_highlighted_bubble_rounded_rectangle.xml" value="0.206" />
+        <entry key="engagementsdk/src/main/res/drawable/ic_chat_reaction_default.xml" value="0.206" />
+        <entry key="engagementsdk/src/main/res/drawable/ic_parent_chat_window.xml" value="0.206" />
+        <entry key="engagementsdk/src/main/res/drawable/livelike_rounded_solid_backgound.xml" value="0.206" />
+        <entry key="engagementsdk/src/main/res/drawable/parent_chat_highlighted_rounded_background.xml" value="0.206" />
+        <entry key="engagementsdk/src/main/res/drawable/parent_chat_rounded_background.xml" value="0.206" />
+        <entry key="engagementsdk/src/main/res/drawable/quote_chat_highlighted_rounded_background.xml" value="0.206" />
+        <entry key="engagementsdk/src/main/res/drawable/quote_chat_rounded_background.xml" value="0.206" />
+        <entry key="engagementsdk/src/main/res/layout/chat_input.xml" value="0.2006079027355623" />
         <entry key="engagementsdk/src/main/res/layout/chat_view.xml" value="0.375" />
         <entry key="engagementsdk/src/main/res/layout/default_chat_cell.xml" value="0.14739583333333334" />
         <entry key="engagementsdk/src/main/res/layout/default_sponsor_ui.xml" value="0.33" />
         <entry key="engagementsdk/src/main/res/layout/widget_alert.xml" value="0.3802083333333333" />
         <entry key="engagementsdk/src/main/res/layout/widget_text_option_selection.xml" value="0.3802083333333333" />
+        <entry key="livelikedemo/src/main/res/drawable/demo_chat_message_highlighted_parent_bubble_rounded_rectangle.xml" value="0.206" />
+        <entry key="livelikedemo/src/main/res/drawable/ic_chat_message_highlighted_bubble_rounded_rectangle.xml" value="0.206" />
+        <entry key="livelikedemo/src/main/res/drawable/ic_chat_message_highlighted_parent_bubble_rounded_rectangle.xml" value="0.206" />
         <entry key="livelikedemo/src/main/res/layout-land/activity_exo_player.xml" value="0.21666666666666667" />
         <entry key="livelikedemo/src/main/res/layout/activity_exo_player.xml" value="0.2006079027355623" />
         <entry key="livelikedemo/src/main/res/layout/activity_main.xml" value="0.19351570415400202" />
         <entry key="livelikedemo/src/main/res/layout/activity_sponsor_test.xml" value="0.3401268115942029" />
         <entry key="livelikedemo/src/main/res/layout/activity_widget_json.xml" value="0.32518115942028986" />
         <entry key="livelikedemo/src/main/res/layout/block_list_item.xml" value="0.2375" />
+        <entry key="livelikedemo/src/main/res/layout/custom_chat_item.xml" value="0.2006079027355623" />
+        <entry key="livelikedemo/src/main/res/layout/custom_chat_reply_item.xml" value="0.2006079027355623" />
         <entry key="livelikedemo/src/main/res/layout/custom_msg_item.xml" value="0.34556159420289856" />
+        <entry key="livelikedemo/src/main/res/layout/empty_chat_data_view.xml" value="0.221875" />
+        <entry key="livelikedemo/src/main/res/layout/fragment_chat.xml" value="0.2006079027355623" />
         <entry key="livelikedemo/src/main/res/layout/fragment_chat_only.xml" value="0.1" />
         <entry key="livelikedemo/src/main/res/layout/fragment_chat_only_home.xml" value="0.375" />
+        <entry key="livelikedemo/src/main/res/layout/mml_chat_view.xml" value="0.16666666666666666" />
         <entry key="livelikedemo/src/main/res/layout/progress_dialog.xml" value="0.21875" />
-        <entry key="livelikedemo/src/main/res/layout/reward_is_client_test_activity.xml" value="0.1" />
+        <entry key="livelikedemo/src/main/res/layout/reward_is_client_test_activity.xml" value="0.375" />
         <entry key="livelikedemo/src/main/res/layout/user_list_item.xml" value="0.25271739130434784" />
         <entry key="livelikedemo/src/main/res/layout/widget_chat_stacked.xml" value="0.2006079027355623" />
       </map>

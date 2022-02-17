@@ -168,6 +168,7 @@ class EngagementSDK(
             null,
             visibility,
             title,
+            false,
             liveLikeCallback
         )
     }
@@ -182,6 +183,7 @@ class EngagementSDK(
             chatRoomId,
             visibility,
             title,
+            false,
             liveLikeCallback
         )
     }

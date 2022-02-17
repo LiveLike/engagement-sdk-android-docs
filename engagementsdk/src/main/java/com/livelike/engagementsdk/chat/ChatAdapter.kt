@@ -9,7 +9,6 @@ import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
-import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Patterns
@@ -43,7 +42,8 @@ import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
-import com.livelike.engagementsdk.chat.stickerKeyboard.*
+import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.chat.utils.setTextOrImageToView
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
@@ -52,7 +52,6 @@ import com.livelike.engagementsdk.publicapis.toChatMessageType
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
-import pl.droidsonroids.gif.MultiCallback
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Matcher
@@ -97,6 +96,7 @@ internal class ChatRecyclerAdapter(
     internal var chatPopUpView: ChatActionsPopupView? = null
     var showChatAvatarLogo = true
     var chatViewDelegate: ChatViewDelegate? = null
+    var enableQuoteMessage: Boolean = false
 
     override fun onCreateViewHolder(root: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (chatViewDelegate != null) {
@@ -149,6 +149,8 @@ internal class ChatRecyclerAdapter(
         super.onDetachedFromRecyclerView(recyclerView)
         mRecyclerView = null
     }
+
+    fun getChatMessage(position: Int): ChatMessage = getItem(position)
 
     /** Commenting this code for now so QA finalize whether old issues are coming or not
     Flowing code helps in accessbility related issues
@@ -254,8 +256,6 @@ internal class ChatRecyclerAdapter(
             }
         }
 
-        val callback = MultiCallback(true)
-
         fun bindTo(item: ChatMessage?) {
             v.tag = item
 
@@ -309,7 +309,7 @@ internal class ChatRecyclerAdapter(
             chatPopUpView = ChatActionsPopupView(
                 v.context,
                 chatReactionRepository,
-                View.OnClickListener { _ ->
+                { _ ->
                     analyticsService.trackFlagButtonPressed()
                     hideFloatingUI()
                     v.context?.let { ctx ->
@@ -426,18 +426,26 @@ internal class ChatRecyclerAdapter(
             // TODO: Need to check before functionality make it in more proper way
             v.apply {
                 if (currentChatReactionPopUpViewPos > -1 && adapterPosition > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
-                    chatViewThemeAttribute.chatReactionMessageBubbleHighlightedBackground?.let { res ->
-                        updateUI(v.chatBubbleBackground, res)
-                    }
-                    chatViewThemeAttribute.chatReactionMessageBackHighlightedBackground?.let { res ->
-                        updateUI(v.chatBackground, res)
+                    chatViewThemeAttribute.apply {
+                        updateUI(
+                            v.chatBubbleBackground,
+                            chatReactionMessageBubbleHighlightedBackground
+                        )
+                        chatReactionMessageBackHighlightedBackground?.let { res ->
+                            updateUI(v.chatBackground, res)
+                        }
+                        updateUI(
+                            v.lay_quote_message,
+                            quoteChatReactionMessageBackHighlightedBackground
+                        )
                     }
                 } else {
-                    chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
-                        updateUI(v.chatBubbleBackground, res)
-                    }
-                    chatViewThemeAttribute.chatBackgroundRes?.let { res ->
-                        updateUI(v.chatBackground, res)
+                    chatViewThemeAttribute.apply {
+                        updateUI(v.chatBubbleBackground, chatBubbleBackgroundRes)
+                        chatBackgroundRes?.let { res ->
+                            updateUI(v.chatBackground, res)
+                        }
+                        updateUI(v.lay_quote_message, quoteChatBackgroundRes)
                     }
                 }
             }
@@ -525,59 +533,6 @@ internal class ChatRecyclerAdapter(
             }
         }
 
-        private fun getTextWithCustomLinks(spannableString: SpannableString): SpannableString {
-            val result = linksRegex.toPattern().matcher(spannableString)
-            while (result.find()) {
-                val start = result.start()
-                val end = result.end()
-                spannableString.setSpan(
-                    InternalURLSpan(
-                        spannableString.subSequence(start, end).toString(),
-                        message?.id,
-                        chatRoomId,
-                        chatRoomName,
-                        analyticsService
-                    ),
-                    start,
-                    end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            }
-            return spannableString
-        }
-
-        /**
-         * Creating this function to get line count of string assuming the width as some value
-         * it is estimated not exact value
-         */
-        private fun String.getLinesCount(): Int {
-            val density = v.context.resources.displayMetrics.density
-            val paint = TextPaint()
-            paint.textSize = chatViewThemeAttribute.chatMessageTextSize * density
-            // Using static width for now ,can be replace with dynamic for later
-            val width = (AndroidResource.dpToPx(300) * density).toInt()
-            val alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL
-            val layout = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                StaticLayout.Builder.obtain(this, 0, this.length, paint, width)
-                    .setAlignment(alignment)
-                    .setLineSpacing(0F, 1F)
-                    .setIncludePad(false)
-                    .build()
-            } else {
-                @Suppress("DEPRECATION") //suppressed as needed to support pre M
-                StaticLayout(this, paint, width, alignment, 1F, 0F, false)
-            }
-            return layout.lineCount
-        }
-
-        private fun String.withoutStickers(): String {
-            var result = this
-            this.findStickerCodes().allMatches().forEach {
-                result = result.replace(it, "")
-            }
-            return result
-        }
-
         @SuppressLint("SetTextI18n")
         private fun setMessage(
             message: ChatMessage?
@@ -592,6 +547,7 @@ internal class ChatRecyclerAdapter(
 
                     chatViewThemeAttribute.apply {
                         v.chatMessage.setTextColor(chatMessageColor)
+                        v.quote_chatMessage.setTextColor(quoteChatMessageColor)
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
                             chat_nickname.text =
@@ -600,19 +556,44 @@ internal class ChatRecyclerAdapter(
                             chat_nickname.setTextColor(chatOtherNickNameColor)
                             chat_nickname.text = message.senderDisplayName
                         }
+                        quote_chat_message_nickname.setTextColor(quoteChatNickNameColor)
                         chat_nickname.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatUserNameTextSize)
+                        quote_chat_message_nickname.setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            quoteChatUserNameTextSize
+                        )
                         chat_nickname.isAllCaps = chatUserNameTextAllCaps
                         setCustomFontWithTextStyle(
                             chat_nickname,
                             chatUserNameCustomFontPath,
                             chatUserNameTextStyle
                         )
+                        setCustomFontWithTextStyle(
+                            quote_chat_message_nickname,
+                            quoteChatUserNameCustomFontPath,
+                            quoteChatUserNameTextStyle
+                        )
                         setLetterSpacingForTextView(chat_nickname, chatUserNameTextLetterSpacing)
+                        setLetterSpacingForTextView(
+                            quote_chat_message_nickname,
+                            quoteChatUserNameTextLetterSpacing
+                        )
                         chatMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatMessageTextSize)
+                        quote_chatMessage.setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            quoteChatMessageTextSize
+                        )
                         if (showLinks) {
-                            chatMessage.linksClickable = showLinks
-                            chatMessage.setLinkTextColor(chatMessageLinkTextColor)
-                            chatMessage.movementMethod = LinkMovementMethod.getInstance()
+                            chatMessage.apply {
+                                linksClickable = showLinks
+                                setLinkTextColor(chatMessageLinkTextColor)
+                                movementMethod = LinkMovementMethod.getInstance()
+                            }
+                            quote_chatMessage.apply {
+                                linksClickable = showLinks
+                                setLinkTextColor(quoteChatMessageLinkTextColor)
+                                movementMethod = LinkMovementMethod.getInstance()
+                            }
                         }
                         setCustomFontWithTextStyle(
                             chatMessage,
@@ -622,7 +603,19 @@ internal class ChatRecyclerAdapter(
                                 else -> chatMessageTextStyle
                             }
                         )
+                        setCustomFontWithTextStyle(
+                            quote_chatMessage,
+                            quoteChatMessageCustomFontPath,
+                            when (quoteMessage?.isDeleted) {
+                                true -> Typeface.ITALIC
+                                else -> quoteChatMessageTextStyle
+                            }
+                        )
                         setLetterSpacingForTextView(chatMessage, chatMessageTextLetterSpacing)
+                        setLetterSpacingForTextView(
+                            quote_chatMessage,
+                            quoteChatMessageTextLetterSpacing
+                        )
                         if (chatViewThemeAttribute.showMessageDateTime) {
                             v.message_date_time.visibility = View.VISIBLE
                             if (EngagementSDK.enableDebug) {
@@ -683,6 +676,12 @@ internal class ChatRecyclerAdapter(
                             chatBubblePaddingRight,
                             chatBubblePaddingBottom
                         )
+                        v.lay_quote_message.setPadding(
+                            quoteChatBubblePaddingLeft,
+                            quoteChatBubblePaddingTop,
+                            quoteChatBubblePaddingRight,
+                            quoteChatBubblePaddingBottom
+                        )
                         val layoutParam1: LinearLayout.LayoutParams =
                             v.chatBubbleBackground.layoutParams as LinearLayout.LayoutParams
                         layoutParam1.setMargins(
@@ -711,12 +710,12 @@ internal class ChatRecyclerAdapter(
                         layoutParamAvatar.gravity = chatAvatarGravity
                         v.img_chat_avatar.layoutParams = layoutParamAvatar
 
-                        val options = RequestOptions()
+                        var options = RequestOptions()
                         if (chatAvatarCircle) {
-                            options.optionalCircleCrop()
+                            options = options.optionalCircleCrop()
                         }
                         if (chatAvatarRadius > 0) {
-                            options.transform(
+                            options = options.transform(
                                 CenterCrop(),
                                 RoundedCorners(chatAvatarRadius)
                             )
@@ -739,103 +738,22 @@ internal class ChatRecyclerAdapter(
                                 .error(chatUserPicDrawable)
                                 .into(img_chat_avatar)
                         }
-                        chatMessage.tag = message.id
 
-                        val spaceRemover = Pattern.compile("[\\s]")
-                        val inputNoString = spaceRemover.matcher(message.message ?: "")
-                            .replaceAll(Matcher.quoteReplacement(""))
-                        val isOnlyStickers =
-                            inputNoString.findIsOnlyStickers()
-                                .matches() || message.message?.findImages()?.matches() == true
-                        val atLeastOneSticker =
-                            inputNoString.findStickers().find() || message.message?.findImages()
-                                ?.matches() == true
-                        val numberOfStickers = message.message?.findStickers()?.countMatches() ?: 0
-                        val isExternalImage = message.message?.findImages()?.matches() ?: false
-
-                        chatMessage.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-                        callback.addView(chatMessage)
-                        chatMessage.contentDescription = if (isExternalImage) {
-                            context.getString(R.string.image)
-                        } else {
-                            message.message
-                        }
-                        when {
-                            !isDeleted && isExternalImage -> {
-                                chatMessage.minHeight = AndroidResource.dpToPx(LARGER_STICKER_SIZE)
-                                val s = SpannableString(message.message)
-                                replaceWithImages(
-                                    s,
-                                    context.applicationContext,
-                                    callback,
-                                    false,
-                                    message.id,
-                                    message.image_width ?: LARGER_STICKER_SIZE,
-                                    message.image_height ?: LARGER_STICKER_SIZE
-                                ) {
-                                    // TODO this might write to the wrong messageView on slow connection.
-                                    if (chatMessage.tag == message.id)
-                                        chatMessage.text = s
-                                }
-                            }
-                            !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
-                                chatMessage.minHeight = AndroidResource.dpToPx(MEDIUM_STICKER_SIZE)
-                                val s = SpannableString(message.message)
-                                replaceWithStickers(
-                                    s,
-                                    context.applicationContext,
-                                    stickerPackRepository,
-                                    null,
-                                    callback,
-                                    MEDIUM_STICKER_SIZE
-                                ) {
-                                    // TODO this might write to the wrong messageView on slow connection.
-                                    if (chatMessage.tag == message.id) {
-                                        chatMessage.text = when (showLinks) {
-                                            true -> getTextWithCustomLinks(s)
-                                            else -> s
-                                        }
-                                    }
-                                }
-                            }
-                            !isDeleted && atLeastOneSticker -> {
-                                var columnCount = numberOfStickers / 8
-                                val lines = message.message?.withoutStickers()?.getLinesCount() ?: 0
-                                if (columnCount == 0) {
-                                    columnCount = 1
-                                }
-                                chatMessage.minHeight =
-                                    (chatMessageTextSize.toInt() * columnCount) + when {
-                                        lines != columnCount -> (lines * chatMessageTextSize.toInt())
-                                        else -> 0
-                                    }
-                                val s = SpannableString(message.message)
-                                replaceWithStickers(
-                                    s,
-                                    context.applicationContext,
-                                    stickerPackRepository,
-                                    null,
-                                    callback,
-                                    SMALL_STICKER_SIZE
-                                ) {
-                                    // TODO this might write to the wrong messageView on slow connection.
-                                    if (chatMessage.tag == message.id) {
-                                        chatMessage.text = when (showLinks) {
-                                            true -> getTextWithCustomLinks(s)
-                                            else -> s
-                                        }
-                                    }
-                                }
-                            }
-                            else -> {
-                                clearTarget(message.id, context)
-                                chatMessage.minHeight = chatMessageTextSize.toInt()
-                                chatMessage.text = when (showLinks) {
-                                    true -> getTextWithCustomLinks(SpannableString(message.message))
-                                    else -> message.message
-                                }
-                            }
-                        }
+                        setTextOrImageToView(
+                            message,
+                            chatMessage,
+                            img_chat_message,
+                            false,
+                            chatMessageTextSize,
+                            stickerPackRepository,
+                            showLinks,
+                            v.context.resources.displayMetrics.density,
+                            linksRegex,
+                            chatRoomId,
+                            chatRoomName,
+                            analyticsService,
+                            false
+                        )
 
                         var imageView: ImageView
                         rel_reactions_lay.removeAllViews()
@@ -931,6 +849,29 @@ internal class ChatRecyclerAdapter(
                             txt_chat_reactions_count.visibility = View.INVISIBLE
                             txt_chat_reactions_count.text = "  "
                         }
+                    }
+                    lay_quote_message.visibility =
+                        when (quoteMessage != null && enableQuoteMessage && !isDeleted) {
+                            true -> View.VISIBLE
+                            else -> View.GONE
+                        }
+                    quoteMessage?.let {
+                        setTextOrImageToView(
+                            it,
+                            quote_chatMessage,
+                            img_quote_chat_message,
+                            true,
+                            chatViewThemeAttribute.quoteChatMessageTextSize,
+                            stickerPackRepository,
+                            showLinks,
+                            v.context.resources.displayMetrics.density,
+                            linksRegex,
+                            chatRoomId,
+                            chatRoomName,
+                            analyticsService,
+                            false
+                        )
+                        quote_chat_message_nickname.text = it.senderDisplayName
                     }
                 }
             }

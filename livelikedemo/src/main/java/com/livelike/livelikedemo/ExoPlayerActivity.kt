@@ -2,8 +2,6 @@ package com.livelike.livelikedemo
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
-import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
@@ -11,7 +9,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.method.ScrollingMovementMethod
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,6 +53,28 @@ import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import kotlinx.android.synthetic.main.activity_exo_player.btn_custom_message
+import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
+import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
+import kotlinx.android.synthetic.main.activity_exo_player.live_blog
+import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
+import kotlinx.android.synthetic.main.activity_exo_player.openLogs
+import kotlinx.android.synthetic.main.activity_exo_player.playerView
+import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
+import kotlinx.android.synthetic.main.activity_exo_player.startAd
+import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
+import kotlinx.android.synthetic.main.custom_msg_item.view.img_sender_msg
+import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg
+import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_sender_name
+import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_time
+import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
+import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_id
+import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
+import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
+import java.util.Date
+import java.util.Random
+import java.util.Timer
+import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.custom_msg_item.view.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
@@ -69,6 +88,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private var customLink: String? = null
     private var showLink: Boolean = false
+    private var enableReplies: Boolean = false
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
     private var jsonTheme: String? = null
     private var showNotification: Boolean = true
@@ -130,7 +150,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             showNotification = intent.getBooleanExtra("showNotification", true)
             showLink = intent.getBooleanExtra("showLink", false)
             customLink = intent.getStringExtra("customLink")
-
+            enableReplies = intent.getBooleanExtra("enableReplies",false)
             adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
             val position = savedInstanceState?.getLong(POSITION) ?: 0
             startingState = PlayerState(0, position, !adsPlaying)
@@ -545,6 +565,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             if (showLink) {
                 chat_view.chatMessageUrlPatterns = customLink
             }
+            chat_view.enableQuoteMessage = enableReplies
 //            chat_view.reactionCountFormatter = { count -> prettyCount(count)}
 
             chat_view.chatViewDelegate = object : ChatViewDelegate {
@@ -565,6 +586,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     showChatAvatar: Boolean
                 ) {
                     println("ExoPlayerActivity.onBindView>> ${holder is MyCustomMsgViewHolder}")
+                    /*
                     chatViewThemeAttributes.chatBubbleBackgroundRes?.let {
                         if (it < 0) {
                             holder.itemView.lay_msg_back.setBackgroundColor(it)
@@ -590,6 +612,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                             }
                         }
                     }
+                    */
                     if (showChatAvatar) {
                         holder.itemView.img_sender_msg.visibility = View.VISIBLE
                         Glide.with(applicationContext)
@@ -612,7 +635,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
             chat_view?.setSession(session!!.chatSession)
-
         }
         player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
     }

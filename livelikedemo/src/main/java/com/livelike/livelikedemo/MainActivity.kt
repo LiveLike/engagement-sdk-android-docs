@@ -2,12 +2,7 @@ package com.livelike.livelikedemo
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.BroadcastReceiver
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.graphics.Typeface
 import android.net.ConnectivityManager
 import android.net.Network
@@ -32,56 +27,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
-import kotlinx.android.synthetic.main.activity_main.badges_collection
-import kotlinx.android.synthetic.main.activity_main.btn_avatar
-import kotlinx.android.synthetic.main.activity_main.btn_avatar_remove
-import kotlinx.android.synthetic.main.activity_main.btn_create
-import kotlinx.android.synthetic.main.activity_main.btn_join
-import kotlinx.android.synthetic.main.activity_main.btn_nick_name
-import kotlinx.android.synthetic.main.activity_main.btn_user_details
-import kotlinx.android.synthetic.main.activity_main.build_no
-import kotlinx.android.synthetic.main.activity_main.chat_input_visibility_switch
-import kotlinx.android.synthetic.main.activity_main.chat_only_button
-import kotlinx.android.synthetic.main.activity_main.chatroomText
-import kotlinx.android.synthetic.main.activity_main.chatroomText1
-import kotlinx.android.synthetic.main.activity_main.chk_custom_widgets_ui
-import kotlinx.android.synthetic.main.activity_main.chk_enable_debug
-import kotlinx.android.synthetic.main.activity_main.chk_show_avatar
-import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
-import kotlinx.android.synthetic.main.activity_main.chk_show_links
-import kotlinx.android.synthetic.main.activity_main.custom_chat
-import kotlinx.android.synthetic.main.activity_main.ed_avatar
-import kotlinx.android.synthetic.main.activity_main.ed_link_custom
-import kotlinx.android.synthetic.main.activity_main.events_button
-import kotlinx.android.synthetic.main.activity_main.events_label
-import kotlinx.android.synthetic.main.activity_main.get_widget_filter
-import kotlinx.android.synthetic.main.activity_main.layout_overlay
-import kotlinx.android.synthetic.main.activity_main.layout_side_panel
-import kotlinx.android.synthetic.main.activity_main.leaderboard_button
-import kotlinx.android.synthetic.main.activity_main.leaderboard_rank
-import kotlinx.android.synthetic.main.activity_main.live_blog
-import kotlinx.android.synthetic.main.activity_main.nicknameText
-import kotlinx.android.synthetic.main.activity_main.private_group_button
-import kotlinx.android.synthetic.main.activity_main.private_group_label
-import kotlinx.android.synthetic.main.activity_main.progressBar
-import kotlinx.android.synthetic.main.activity_main.rewards_client_test
-import kotlinx.android.synthetic.main.activity_main.sample_app
-import kotlinx.android.synthetic.main.activity_main.sdk_version
-import kotlinx.android.synthetic.main.activity_main.sponsor_test
-import kotlinx.android.synthetic.main.activity_main.textView2
-import kotlinx.android.synthetic.main.activity_main.themes_button
-import kotlinx.android.synthetic.main.activity_main.themes_json_button
-import kotlinx.android.synthetic.main.activity_main.themes_json_label
-import kotlinx.android.synthetic.main.activity_main.themes_label
-import kotlinx.android.synthetic.main.activity_main.timeline_two
-import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
-import kotlinx.android.synthetic.main.activity_main.txt_nickname_server
-import kotlinx.android.synthetic.main.activity_main.unclaimed_interaction
-import kotlinx.android.synthetic.main.activity_main.view_pager_sample
-import kotlinx.android.synthetic.main.activity_main.widget_viewModel
-import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
-import kotlinx.android.synthetic.main.activity_main.widgets_json_button
-import kotlinx.android.synthetic.main.activity_main.widgets_only_button
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.InputStream
@@ -102,7 +48,8 @@ class MainActivity : AppCompatActivity() {
         var showAvatar: Boolean = true,
         var customCheerMeter: Boolean = false,
         var showLink: Boolean = false,
-        var customLink: String? = null
+        var customLink: String? = null,
+        var quoteMsg: Boolean=false
     )
 
     private lateinit var userStream: Stream<LiveLikeUserApi>
@@ -173,14 +120,14 @@ class MainActivity : AppCompatActivity() {
         "Exo Player",
         ExoPlayerActivity::class,
         R.style.Default,
-        true
+        true,
     )
 
     val onlyWidget = PlayerInfo(
         "Widget Only",
         WidgetOnlyActivity::class,
         R.style.Default,
-        true
+        true,
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -197,6 +144,7 @@ class MainActivity : AppCompatActivity() {
 
         layout_side_panel.setOnClickListener {
             player.customLink = ed_link_custom.text.toString()
+            player.quoteMsg = chk_enable_quote_msg.isChecked
             startActivity(playerDetailIntent(player))
         }
 
@@ -226,6 +174,9 @@ class MainActivity : AppCompatActivity() {
         }
         chk_show_links.setOnCheckedChangeListener { _, isChecked ->
             player.showLink = isChecked
+        }
+        chk_enable_quote_msg.setOnCheckedChangeListener { _, isChecked ->
+            player.quoteMsg = isChecked
         }
 
         sample_app.setOnClickListener {
@@ -275,7 +226,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         widgets_json_button.setOnClickListener {
-            startActivity(Intent(this,WidgetJsonActivity::class.java))
+            startActivity(Intent(this, WidgetJsonActivity::class.java))
         }
 
         private_group_button.setOnClickListener {
@@ -622,6 +573,7 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     intent.putExtra("customCheerMeter", player.customCheerMeter)
     intent.putExtra("showLink", player.showLink)
     intent.putExtra("customLink", player.customLink)
+    intent.putExtra("enableReplies", player.quoteMsg)
     intent.putExtra(
         "keyboardClose",
         when (player.theme) {

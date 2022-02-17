@@ -24,6 +24,10 @@ class ChatViewThemeAttributes {
                 R.styleable.ChatView_usernameColor,
                 ContextCompat.getColor(context, R.color.livelike_openChatNicknameMe)
             )
+            quoteChatNickNameColor = getColor(
+                R.styleable.ChatView_quoteUsernameColor,
+                ContextCompat.getColor(context, R.color.livelike_default_quote_chat_cell_name_color)
+            )
             chatOtherNickNameColor = getColor(
                 R.styleable.ChatView_otherUsernameColor,
                 ContextCompat.getColor(context, R.color.livelike_openChatNicknameOther)
@@ -33,6 +37,13 @@ class ChatViewThemeAttributes {
                 ContextCompat.getColor(
                     context,
                     R.color.livelike_default_chat_cell_message_color
+                )
+            )
+            quoteChatMessageColor = getColor(
+                R.styleable.ChatView_quoteMessageColor,
+                ContextCompat.getColor(
+                    context,
+                    R.color.livelike_default_quote_chat_cell_message_color
                 )
             )
             rankValueTextColor = getColor(
@@ -94,6 +105,19 @@ class ChatViewThemeAttributes {
                 else -> null
             }
 
+            val parentColorBackValue = TypedValue()
+            getValue(R.styleable.ChatView_quoteChatBackground, parentColorBackValue)
+
+            quoteChatBackgroundRes = when {
+                parentColorBackValue.type == TypedValue.TYPE_REFERENCE || parentColorBackValue.type == TypedValue.TYPE_STRING -> getResourceId(
+                    R.styleable.ChatView_quoteChatBackground,
+                    R.drawable.quote_chat_rounded_background
+                )
+                parentColorBackValue.type == TypedValue.TYPE_NULL -> R.drawable.quote_chat_rounded_background
+                parentColorBackValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && parentColorBackValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> parentColorBackValue.data
+                else -> R.drawable.quote_chat_rounded_background
+            }
+
             val colorHighlightedBackValue = TypedValue()
             getValue(
                 R.styleable.ChatView_chatReactionMessageBackHighlightedBackground,
@@ -108,6 +132,22 @@ class ChatViewThemeAttributes {
                 colorHighlightedBackValue.type == TypedValue.TYPE_NULL -> null
                 colorHighlightedBackValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorHighlightedBackValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> colorHighlightedBackValue.data
                 else -> null
+            }
+
+            val parentColorHighlightedBackValue = TypedValue()
+            getValue(
+                R.styleable.ChatView_quoteChatReactionMessageBackHighlightedBackground,
+                parentColorHighlightedBackValue
+            )
+
+            quoteChatReactionMessageBackHighlightedBackground = when {
+                parentColorHighlightedBackValue.type == TypedValue.TYPE_REFERENCE || parentColorHighlightedBackValue.type == TypedValue.TYPE_STRING -> getResourceId(
+                    R.styleable.ChatView_quoteChatReactionMessageBackHighlightedBackground,
+                    android.R.color.transparent
+                )
+                parentColorHighlightedBackValue.type == TypedValue.TYPE_NULL -> R.drawable.quote_chat_highlighted_rounded_background
+                parentColorHighlightedBackValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && parentColorHighlightedBackValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> parentColorHighlightedBackValue.data
+                else -> R.drawable.quote_chat_highlighted_rounded_background
             }
 
             val sendDrawable = TypedValue()
@@ -415,6 +455,23 @@ class ChatViewThemeAttributes {
                 resources.getDimension(R.dimen.livelike_default_chat_cell_padding_bottom).toInt()
             )
 
+            quoteChatBubblePaddingLeft = getDimensionPixelOffset(
+                R.styleable.ChatView_quoteChatBubblePaddingLeft,
+                resources.getDimension(R.dimen.livelike_default_chat_cell_padding_left).toInt()
+            )
+            quoteChatBubblePaddingRight = getDimensionPixelOffset(
+                R.styleable.ChatView_quoteChatBubblePaddingRight,
+                resources.getDimension(R.dimen.livelike_default_chat_cell_padding_right).toInt()
+            )
+            quoteChatBubblePaddingTop = getDimensionPixelOffset(
+                R.styleable.ChatView_quoteChatBubblePaddingTop,
+                resources.getDimension(R.dimen.livelike_default_chat_cell_padding_top).toInt()
+            )
+            quoteChatBubblePaddingBottom = getDimensionPixelOffset(
+                R.styleable.ChatView_quoteChatBubblePaddingBottom,
+                resources.getDimension(R.dimen.livelike_default_chat_cell_padding_bottom).toInt()
+            )
+
             chatBubbleMarginLeft = getDimensionPixelOffset(
                 R.styleable.ChatView_chatBubbleMarginLeft, 5
             )
@@ -577,17 +634,32 @@ class ChatViewThemeAttributes {
                 getBoolean(R.styleable.ChatView_chatReactionModerationFlagVisible, true)
             chatUserNameTextStyle =
                 getInt(R.styleable.ChatView_chatUserNameTextStyle, Typeface.BOLD)
+            quoteChatUserNameTextStyle =
+                getInt(R.styleable.ChatView_quoteChatUserNameTextStyle, Typeface.BOLD)
             chatUserNameCustomFontPath = getString(R.styleable.ChatView_chatUserNameCustomFontPath)
+            quoteChatUserNameCustomFontPath =
+                getString(R.styleable.ChatView_quoteChatUserNameCustomFontPath)
             chatUserNameTextAllCaps =
                 getBoolean(R.styleable.ChatView_chatUserNameTextAllCaps, false)
             chatUserNameTextSize = getDimension(
                 R.styleable.ChatView_chatUserNameTextSize,
                 AndroidResource.spToPx(12.0f)
             )
+            quoteChatUserNameTextSize = getDimension(
+                R.styleable.ChatView_quoteChatUserNameTextSize,
+                AndroidResource.spToPx(12.0f)
+            )
             chatMessageCustomFontPath = getString(R.styleable.ChatView_chatMessageCustomFontPath)
+            quoteChatMessageCustomFontPath =
+                getString(R.styleable.ChatView_quoteChatMessageCustomFontPath)
             chatMessageTextStyle = getInt(R.styleable.ChatView_chatMessageTextStyle, 0)
+            quoteChatMessageTextStyle = getInt(R.styleable.ChatView_quoteChatMessageTextStyle, 0)
             chatMessageTextSize = getDimension(
                 R.styleable.ChatView_chatMessageTextSize,
+                AndroidResource.spToPx(12.0f)
+            )
+            quoteChatMessageTextSize = getDimension(
+                R.styleable.ChatView_quoteChatMessageTextSize,
                 AndroidResource.spToPx(12.0f)
             )
             chatMessageTimeCustomFontPath =
@@ -625,16 +697,25 @@ class ChatViewThemeAttributes {
                 getFloat(R.styleable.ChatView_chatMessageTimeTextLetterSpacing, 0.0f)
             chatMessageTextLetterSpacing =
                 getFloat(R.styleable.ChatView_chatMessageTextLetterSpacing, 0.0f)
+            quoteChatMessageTextLetterSpacing =
+                getFloat(R.styleable.ChatView_quoteChatMessageTextLetterSpacing, 0.0f)
             chatUserNameTextLetterSpacing =
                 getFloat(R.styleable.ChatView_chatUserNameTextLetterSpacing, 0.0f)
+            quoteChatUserNameTextLetterSpacing =
+                getFloat(R.styleable.ChatView_quoteChatUserNameTextLetterSpacing, 0.0f)
             chatMessageLinkTextColor = getColor(
                 R.styleable.ChatView_chatMessageLinkTextColor,
+                ContextCompat.getColor(context, R.color.livelike_chatMessage_link_text_color)
+            )
+            quoteChatMessageLinkTextColor = getColor(
+                R.styleable.ChatView_quoteChatMessageLinkTextColor,
                 ContextCompat.getColor(context, R.color.livelike_chatMessage_link_text_color)
             )
             chatInputCharLimit = getInteger(
                 R.styleable.ChatView_chatInputMaxCharLimit,
                 R.integer.chat_input_max_char_limit
             )
+
         }
     }
 
@@ -643,6 +724,10 @@ class ChatViewThemeAttributes {
     var chatBubblePaddingRight: Int = 0
     var chatBubblePaddingTop: Int = 0
     var chatBubblePaddingBottom: Int = 0
+    var quoteChatBubblePaddingLeft: Int = 0
+    var quoteChatBubblePaddingRight: Int = 0
+    var quoteChatBubblePaddingTop: Int = 0
+    var quoteChatBubblePaddingBottom: Int = 0
     var chatSendPaddingLeft: Int = AndroidResource.dpToPx(10)
     var chatSendPaddingRight: Int = AndroidResource.dpToPx(10)
     var chatSendPaddingTop: Int = AndroidResource.dpToPx(6)
@@ -660,8 +745,9 @@ class ChatViewThemeAttributes {
     var sendIconWidth: Int = 0
     var sendIconHeight: Int = 0
     var chatInputTextSize: Int = 0
-    var chatBubbleBackgroundRes: Int? = R.drawable.ic_chat_message_bubble_rounded_rectangle
+    var chatBubbleBackgroundRes: Int = R.drawable.ic_chat_message_bubble_rounded_rectangle
     var chatBackgroundRes: Int? = null
+    var quoteChatBackgroundRes: Int = R.drawable.quote_chat_rounded_background
     var chatViewBackgroundRes: Drawable? = null
     var chatInputBackgroundRes: Drawable? = null
     var chatInputViewBackgroundRes: Drawable? = null
@@ -672,6 +758,7 @@ class ChatViewThemeAttributes {
     var chatUserPicDrawable: Drawable? = null
     var chatSendBackgroundDrawable: Drawable? = null
     var chatMessageColor: Int = Color.TRANSPARENT
+    var quoteChatMessageColor: Int = Color.TRANSPARENT
     var sendImageTintColor: Int = Color.WHITE
     var sendStickerTintColor: Int = Color.WHITE
     var rankValueTextColor: Int = Color.WHITE
@@ -679,10 +766,12 @@ class ChatViewThemeAttributes {
     var chatInputHintTextColor: Int = Color.TRANSPARENT
     var chatOtherNickNameColor: Int = Color.TRANSPARENT
     var chatNickNameColor: Int = Color.TRANSPARENT
+    var quoteChatNickNameColor: Int = Color.TRANSPARENT
     var chatReactionBackgroundRes: Drawable? = null
-    var chatReactionMessageBubbleHighlightedBackground: Int? =
+    var chatReactionMessageBubbleHighlightedBackground: Int =
         R.drawable.ic_chat_message_highlighted_bubble_rounded_rectangle
     var chatReactionMessageBackHighlightedBackground: Int? = null
+    var quoteChatReactionMessageBackHighlightedBackground: Int = R.drawable.quote_chat_highlighted_rounded_background
     var chatReactionPanelColor: Int = Color.WHITE
     var chatReactionPanelCountColor: Int = Color.BLACK
     var chatReactionDisplayCountColor: Int = Color.WHITE
@@ -726,12 +815,18 @@ class ChatViewThemeAttributes {
     var chatReactionIconsFactor: Float = 1.2f
     var chatReactionModerationFlagVisible: Boolean = true
     var chatUserNameTextStyle: Int = Typeface.BOLD
+    var quoteChatUserNameTextStyle: Int = Typeface.BOLD
     var chatUserNameCustomFontPath: String? = null
+    var quoteChatUserNameCustomFontPath: String? = null
     var chatUserNameTextAllCaps: Boolean = false
     var chatUserNameTextSize: Float = AndroidResource.spToPx(12.0f)
+    var quoteChatUserNameTextSize: Float = AndroidResource.spToPx(12.0f)
     var chatMessageCustomFontPath: String? = null
+    var quoteChatMessageCustomFontPath: String? = null
     var chatMessageTextStyle: Int = 0
+    var quoteChatMessageTextStyle: Int = 0
     var chatMessageTextSize: Float = AndroidResource.spToPx(12.0f)
+    var quoteChatMessageTextSize: Float = AndroidResource.spToPx(12.0f)
     var chatMessageTimeCustomFontPath: String? = null
     var chatMessageTimeTextSize: Float = AndroidResource.spToPx(10.0f)
     var chatMessageTimeTextStyle: Int = 0
@@ -739,7 +834,9 @@ class ChatViewThemeAttributes {
     var chatMessageTimeTextColor: Int = Color.WHITE
     var chatMessageTimeTextLetterSpacing: Float = 0.0f
     var chatUserNameTextLetterSpacing: Float = 0.0f
+    var quoteChatUserNameTextLetterSpacing: Float = 0.0f
     var chatMessageTextLetterSpacing: Float = 0.0f
+    var quoteChatMessageTextLetterSpacing: Float = 0.0f
     var chatReactionDisplayCountTextStyle: Int = 0
     var chatReactionDisplayCountCustomFontPath: String? = null
     var chatReactionPanelCountCustomFontPath: String? = null
@@ -748,5 +845,6 @@ class ChatViewThemeAttributes {
     var chatReactionPanelGravity: Int = Gravity.CENTER or Gravity.TOP
     var chatReactionPanelCountVisibleIfZero: Boolean = true
     var chatMessageLinkTextColor: Int = Color.BLUE
+    var quoteChatMessageLinkTextColor: Int = Color.BLUE
     var chatInputCharLimit: Int = 250
 }

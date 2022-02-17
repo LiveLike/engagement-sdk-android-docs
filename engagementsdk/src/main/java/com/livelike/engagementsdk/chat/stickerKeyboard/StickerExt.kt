@@ -13,7 +13,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
-import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.CenterImageSpan
+import com.livelike.engagementsdk.chat.utils.CenterImageSpan
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import pl.droidsonroids.gif.GifDrawable
 import pl.droidsonroids.gif.MultiCallback

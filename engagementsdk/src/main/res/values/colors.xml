@@ -8,7 +8,9 @@
     <color name="livelike_colorAccent">#FFFFFF</color>
 
     <color name="livelike_default_chat_cell_name_color">#66ffffff</color>
+    <color name="livelike_default_quote_chat_cell_name_color">#ffffff</color>
     <color name="livelike_default_chat_cell_message_color">#dfdfdf</color>
+    <color name="livelike_default_quote_chat_cell_message_color">#949494</color>
     <color name="livelike_default_button_background_color">#60000000</color>
     <color name="livelike_poll_background_color">#000000</color>
     <color name="livelike_prediction_background_color">#000000</color>
@@ -155,5 +157,7 @@
     <color name="livelike_ama_confirmation_msg_text_color">#00f078</color>
     <color name="livelike_sponsor_container_background">#000000</color>
     <color name="livelike_sponsor_label_text_color">#ffffff</color>
+    <color name="quote_chat_bubble_background_color">#2A2A2A</color>
+    <color name="quote_chat_highlighted_bubble_background_color">#502A2A2A</color>
 
 </resources>

@@ -15,4 +15,5 @@
     <integer name="chat_bottom_bar_gradient_angle">-90</integer>
     <integer name="alert_label_text_max_length">50</integer>
     <integer name="chat_input_max_char_limit">50</integer>
+    <integer name="chat_input_quote_chat_message_max_lines">2</integer>
 </resources>
