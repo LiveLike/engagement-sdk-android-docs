@@ -272,6 +272,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     chatdisplay.postDelayed({
                         chatdisplay.scrollToPosition(it)
                     }, 100)
+                } else {
+                    logDebug { "Message not found" }
                 }
             }
         }
