@@ -42,6 +42,7 @@ internal fun setTextOrImageToView(
 ) {
     val callback = MultiCallback(true)
     chatMessage?.apply {
+        println("<top>.setTextOrImageToView>>$message>>$isParent")
         val tag = when (isParent) {
             true -> "parent_$id"
             else -> id
@@ -58,9 +59,10 @@ internal fun setTextOrImageToView(
                 ?.matches() == true
         val numberOfStickers = message?.findStickers()?.countMatches() ?: 0
         val isExternalImage = message?.findImages()?.matches() ?: false
+
         val linkText = getTextWithCustomLinks(
             linksRegex,
-            SpannableString(message),
+            SpannableString(message?:""),
             chatMessage.id,
             chatRoomId,
             chatRoomName,
