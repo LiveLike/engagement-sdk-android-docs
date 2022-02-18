@@ -674,10 +674,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                                 logDebug { "Not Allowed to quote message on Custom Message" }
                                 (session as? ChatSession)?.errorDelegate?.onError("Not Allowed to quote message on Custom Message")
                             } else {
-                                if (!chatMessage.isDeleted)
+                                if (!chatMessage.isDeleted && chatMessage.getUnixTimeStamp() != null)
                                     currentQuoteMessage = chatMessage.copy()
                                 else {
-                                    logDebug { "Not Allowed to quote message" }
+                                    logDebug { "Not Allowed to quote message because the chat message is deleted or not yet sent" }
                                     (session as? ChatSession)?.errorDelegate?.onError("Not Allowed to quote message")
                                 }
                             }
