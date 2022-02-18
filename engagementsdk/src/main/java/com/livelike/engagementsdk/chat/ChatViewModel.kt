@@ -27,6 +27,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.internal.filterList
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.*
@@ -252,24 +253,30 @@ internal class ChatViewModel(
                     applicationContext.getString(R.string.livelike_chat_message_deleted_message)
                 isDeleted = true
             }
-            messageList.find {
-                it.quoteMessage != null && it.quoteMessage?.id?.lowercase(Locale.getDefault()) == messageId
-            }?.apply {
-                quoteMessage = quoteMessage?.apply {
-                    message = when (messageId == id) {
-                        true -> applicationContext.getString(R.string.livelike_quote_chat_message_deleted_message)
-                        else -> message
+            messageList.filterList {
+                quoteMessage != null && quoteMessage?.id?.lowercase(Locale.getDefault()) == messageId
+            }.forEach {
+                if (it.quoteMessage != null && it.quoteMessage?.id?.lowercase(Locale.getDefault()) == messageId) {
+                    it.apply {
+                        quoteMessage = quoteMessage?.apply {
+                            message = when (messageId == id) {
+                                true -> applicationContext.getString(R.string.livelike_quote_chat_message_deleted_message)
+                                else -> message
+                            }
+                            isDeleted = deletedMessages.contains(id)
+                        }
                     }
-                    isDeleted = deletedMessages.contains(id)
                 }
             }
             uiScope.launch {
                 chatAdapter.submitList(ArrayList(messageList.toSet()))
                 chatAdapter.currentChatReactionPopUpViewPos = -1
                 val index = messageList.indexOfFirst { it.id == messageId }
-                val index2 = messageList.indexOfFirst { it.quoteMessage!=null && it.quoteMessage?.id == messageId }
+                val indexList = messageList.getIndexList {
+                    it.quoteMessage != null && it.quoteMessage?.id?.lowercase(Locale.getDefault()) == messageId
+                }
                 notifyIndexUpdate(index)
-                notifyIndexUpdate(index2)
+                indexList.forEach { notifyIndexUpdate(it) }
                 eventStream.onNext(EVENT_MESSAGE_DELETED)
             }
         }
@@ -414,6 +421,16 @@ internal class ChatViewModel(
                     }
                 }
             })
+    }
+
+    fun List<ChatMessage>.getIndexList(predicate: (ChatMessage) -> Boolean): List<Int> {
+        val list = arrayListOf<Int>()
+        this.forEachIndexed { index, chatMessage ->
+            if (predicate(chatMessage)) {
+                list.add(index)
+            }
+        }
+        return list
     }
 
     companion object {
