@@ -494,17 +494,6 @@ internal class PubnubChatMessagingClient(
         return null
     }
 
-    fun parseToGetString(key: String, jsonObject: JsonObject): String? {
-        return when (jsonObject.getAsJsonObject("payload")
-            .getAsJsonObject("message_payload")
-            ?.get(key)?.isJsonNull) {
-            true -> null
-            else -> jsonObject.getAsJsonObject("payload")
-                .getAsJsonObject("message_payload")
-                ?.get(key)?.asString
-        }
-    }
-
     private fun isMessageModerated(jsonObject: JsonObject): Boolean {
         // added this check since in payload content filter was coming as string (json primitive) instead of array
         val contentfilter = jsonObject.getAsJsonObject("payload")?.get("content_filter")

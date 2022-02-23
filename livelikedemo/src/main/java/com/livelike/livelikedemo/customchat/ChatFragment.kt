@@ -175,6 +175,7 @@ class ChatFragment : Fragment() {
                 }
 
                 override fun onPinMessage(message: PinMessageInfo) {
+                    println("ChatFragment.onPinMessage")
                     activity?.runOnUiThread {
                         Toast.makeText(
                             context,

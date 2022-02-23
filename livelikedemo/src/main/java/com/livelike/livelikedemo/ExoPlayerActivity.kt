@@ -520,6 +520,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
                 }
             })
+            widget_view?.allowWidgetSwipeToDismiss = false
 
             widget_view?.setSession(session)
 

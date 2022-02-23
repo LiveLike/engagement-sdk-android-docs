@@ -10,6 +10,8 @@ import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Editable
+import android.text.InputFilter
+import android.text.InputFilter.LengthFilter
 import android.text.Spannable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -199,6 +201,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             changeColorOfProgressbar(chatProgressLoaderColor)
             chat_input_background.background = chatInputViewBackgroundRes
             chat_input_border.background = chatInputBackgroundRes
+            edittext_chat_message.filters = arrayOf<InputFilter>(LengthFilter(chatInputCharLimit))
             edittext_chat_message.setTextColor(chatInputTextColor)
             edittext_chat_message.setHintTextColor(chatInputHintTextColor)
             edittext_chat_message.setTextSize(

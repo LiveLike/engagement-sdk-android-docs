@@ -2,15 +2,13 @@ package com.livelike.engagementsdk.gamification.models
 
 import com.google.gson.annotations.SerializedName
 
-data class Badge(
+data class RegisteredLink (
     @field:SerializedName("id")
     val id: String,
     @field:SerializedName("name")
     val name: String,
-    @field:SerializedName("badge_icon_url")
-    val badgeIconUrl: String,
     @field:SerializedName("description")
-    val description: String,
-    @field:SerializedName("registered_links")
-    val registeredLinks: List<RegisteredLink>
+    val description: String?,
+    @field:SerializedName("link_url")
+    val linkUrl : String,
 )

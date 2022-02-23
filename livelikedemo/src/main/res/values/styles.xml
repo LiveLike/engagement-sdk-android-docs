@@ -27,7 +27,7 @@
         <item name="sendIconTintColor">#FFF</item>
         <item name="stickerIconTintColor">#FFF</item>
         <item name="chatBubbleMarginLeft">5dp</item>
-        <item name="reaction_count_margin_right">30dp</item>
+        <item name="chatReactionCountMarginRight">30dp</item>
         <item name="chatBubbleMarginRight">25dp</item>
         <item name="chatAvatarMarginLeft">13dp</item>
         <item name="chatReactionPanelColor">@android:color/white</item>
@@ -100,16 +100,16 @@
         <item name="stickerRecentEmptyTextColor">@color/livelike_black</item>
         <item name="chatMessageBottomBorderHeight">1dp</item>
         <item name="chatMessageBottomBorderColor">#efeff4</item>
-        <item name="reaction_icon">@drawable/ic_chat_reaction_turner</item>
+        <item name="chatReactionIcon">@drawable/ic_chat_reaction_turner</item>
         <item name="chatStickerKeyboardSendDrawable">@drawable/ic_keyboard</item>
-        <item name="reaction_hint_enable">true</item>
-        <item name="reaction_icons_margin_top">0dp</item>
-        <item name="reaction_icons_margin_bottom">18dp</item>
-        <item name="reaction_icon_position_bottom">true</item>
-        <item name="reaction_count_margin_top">0dp</item>
-        <item name="reaction_count_margin_bottom">20dp</item>
-        <item name="reaction_count_icons_position_bottom">true</item>
-        <item name="reaction_icons_gap_factor">0.93</item>
+        <item name="chatReactionHintEnable">true</item>
+        <item name="chatReactionIconsMarginTop">0dp</item>
+        <item name="chatReactionIconsMarginBottom">18dp</item>
+        <item name="chatReactionIconPositionBottom">true</item>
+        <item name="chatReactionCountMarginTop">0dp</item>
+        <item name="chatReactionCountMarginBottom">20dp</item>
+        <item name="chatReactionCountIconsPositionBottom">true</item>
+        <item name="chatReactionIconsGapFactor">0.93</item>
         <item name="chatReactionModerationFlagVisible">true</item>
         <item name="chatUserNameCustomFontPath">fonts/RingsideExtraWide-Book.otf</item>
         <item name="chatUserNameTextAllCaps">true</item>
@@ -134,6 +134,7 @@
         <item name="chatMessageTextLetterSpacing">0.0</item>
         <item name="chatUserNameTextLetterSpacing">0.0</item>
         <item name="chatMessageLinkTextColor">#13D654</item>
+        <item name="chatInputMaxCharLimit">10</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">
@@ -145,7 +146,7 @@
         </item>
         <item name="chatReactionFlagTintColor">@android:color/white</item>
         <item name="chatReactionPanelCountColor">@android:color/white</item>
-        <item name="reaction_hint_enable">false</item>
+        <item name="chatReactionHintEnable">false</item>
 
     </style>
 
