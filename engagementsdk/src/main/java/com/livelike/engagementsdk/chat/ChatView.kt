@@ -107,11 +107,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             }
         }
 
-    /**
-     * To set the limit for loading history chat on swipe to refresh feature
-     */
-    var chatHistoryLoadLimit: Int = CHAT_HISTORY_LIMIT
-
     var chatViewDelegate: ChatViewDelegate? = null
         set(value) {
             field = value
@@ -240,7 +235,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
         swipeToRefresh.setOnRefreshListener {
             if (viewModel?.chatLoaded == true) {
-                viewModel?.loadPreviousMessages(chatHistoryLoadLimit)
+                viewModel?.loadPreviousMessages()
                 hidePopUpReactionPanel()
             } else
                 swipeToRefresh.isRefreshing = false
