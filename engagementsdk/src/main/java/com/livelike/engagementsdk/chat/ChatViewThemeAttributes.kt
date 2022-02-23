@@ -637,7 +637,7 @@ class ChatViewThemeAttributes {
             )
             chatProgressLoaderColor = getColor(
                 R.styleable.ChatView_chatProgressLoaderColor,
-                ContextCompat.getColor(context, R.color.livelike_chatMessage_link_text_color)
+                ContextCompat.getColor(context, R.color.livelike_chat_view_loader_progress_color)
             )
         }
     }
