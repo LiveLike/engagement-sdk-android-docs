@@ -631,6 +631,10 @@ class ChatViewThemeAttributes {
                 R.styleable.ChatView_chatMessageLinkTextColor,
                 ContextCompat.getColor(context, R.color.livelike_chatMessage_link_text_color)
             )
+            chatProgressLoaderColor = getColor(
+                R.styleable.ChatView_chatProgressLoaderColor,
+                ContextCompat.getColor(context, R.color.livelike_chatMessage_link_text_color)
+            )
         }
     }
 
@@ -744,4 +748,5 @@ class ChatViewThemeAttributes {
     var chatReactionPanelGravity: Int = Gravity.CENTER or Gravity.TOP
     var chatReactionPanelCountVisibleIfZero: Boolean = true
     var chatMessageLinkTextColor: Int = Color.BLUE
+    var chatProgressLoaderColor: Int = Color.WHITE
 }

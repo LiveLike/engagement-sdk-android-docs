@@ -4,6 +4,11 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
+import android.os.Build
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
@@ -40,6 +45,7 @@ import pl.droidsonroids.gif.MultiCallback
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
+
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -190,6 +196,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatDisplayBackgroundRes?.let {
                 chatdisplay.background = it
             }
+            changeColorOfProgressbar(chatProgressLoaderColor)
             chat_input_background.background = chatInputViewBackgroundRes
             chat_input_border.background = chatInputBackgroundRes
             edittext_chat_message.setTextColor(chatInputTextColor)
@@ -201,7 +208,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             button_emoji.setImageDrawable(chatStickerSendDrawable)
             button_emoji.setColorFilter(
                 sendStickerTintColor,
-                android.graphics.PorterDuff.Mode.MULTIPLY
+                PorterDuff.Mode.MULTIPLY
             )
             button_emoji.visibility = when {
                 showStickerSend -> View.VISIBLE
@@ -222,7 +229,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             )
             button_chat_send.setColorFilter(
                 sendImageTintColor,
-                android.graphics.PorterDuff.Mode.MULTIPLY
+                PorterDuff.Mode.MULTIPLY
             )
             initEmptyView()
         }
@@ -235,6 +242,17 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             } else
                 swipeToRefresh.isRefreshing = false
         }
+    }
+
+    private fun changeColorOfProgressbar(chatProgressLoaderColor: Int) {
+        val progressDrawable: Drawable = loadingSpinner.indeterminateDrawable.mutate()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            progressDrawable.colorFilter =
+                BlendModeColorFilter(chatProgressLoaderColor, BlendMode.SRC_ATOP)
+        } else {
+            progressDrawable.setColorFilter(chatProgressLoaderColor, PorterDuff.Mode.SRC_ATOP)
+        }
+        loadingSpinner.progressDrawable = progressDrawable
     }
 
     private fun initEmptyView() {
