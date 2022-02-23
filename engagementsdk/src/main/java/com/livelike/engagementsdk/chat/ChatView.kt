@@ -4,6 +4,11 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
+import android.os.Build
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputFilter.LengthFilter
@@ -130,7 +135,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     init {
         context.scanForActivity()?.window?.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-                or @Suppress("DEPRECATION") WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE //kept due to pre M support
+                    or @Suppress("DEPRECATION") WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE //kept due to pre M support
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
         context.obtainStyledAttributes(
             attrs,
@@ -188,6 +193,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatDisplayBackgroundRes?.let {
                 chatdisplay.background = it
             }
+            changeColorOfProgressbar(chatProgressLoaderColor)
             chat_input_background.background = chatInputViewBackgroundRes
             chat_input_border.background = chatInputBackgroundRes
             edittext_chat_message.filters = arrayOf<InputFilter>(LengthFilter(chatInputCharLimit))
@@ -200,7 +206,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             button_emoji.setImageDrawable(chatStickerSendDrawable)
             button_emoji.setColorFilter(
                 sendStickerTintColor,
-                android.graphics.PorterDuff.Mode.MULTIPLY
+                PorterDuff.Mode.MULTIPLY
             )
             button_emoji.visibility = when {
                 showStickerSend -> View.VISIBLE
@@ -221,7 +227,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             )
             button_chat_send.setColorFilter(
                 sendImageTintColor,
-                android.graphics.PorterDuff.Mode.MULTIPLY
+                PorterDuff.Mode.MULTIPLY
             )
             initEmptyView()
         }
@@ -234,6 +240,17 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             } else
                 swipeToRefresh.isRefreshing = false
         }
+    }
+
+    private fun changeColorOfProgressbar(chatProgressLoaderColor: Int) {
+        val progressDrawable: Drawable = loadingSpinner.indeterminateDrawable.mutate()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            progressDrawable.colorFilter =
+                BlendModeColorFilter(chatProgressLoaderColor, BlendMode.SRC_ATOP)
+        } else {
+            progressDrawable.setColorFilter(chatProgressLoaderColor, PorterDuff.Mode.SRC_ATOP)
+        }
+        loadingSpinner.progressDrawable = progressDrawable
     }
 
     private fun initEmptyView() {
@@ -261,6 +278,33 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         val dateTime = Date()
         dateTime.time = messageTimeStamp
         return DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER.format(dateTime)
+    }
+
+    /**
+     * Scroll directly to the particular messageId mentioned
+     */
+    open fun scrollToMessage(messageId: String) {
+        if (messageId.isEmpty()) {
+            logError { "Not allowed empty Message ID" }
+        } else {
+            val index = viewModel?.messageList?.indexOfFirst { it.id == messageId }
+            index?.let {
+                if (index > -1 && index < (chatdisplay.adapter?.itemCount ?: 0)) {
+                    chatdisplay.postDelayed({
+                        chatdisplay.scrollToPosition(it)
+                    }, 100)
+                } else {
+                    logDebug { "Message not found" }
+                }
+            }
+        }
+    }
+
+    /**
+     * Scroll the chat list to the bottom
+     */
+    open fun scrollChatToBottom() {
+        snapToLive()
     }
 
     /**
@@ -298,7 +342,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         autoScroll = true
                         checkEmptyChat()
                         if (viewModel?.isLastItemVisible == true && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
-                            .not()
+                                .not()
                         ) {
                             snapToLive()
                         } else if (chatAdapter.isReactionPopUpShowing() || (viewModel?.isLastItemVisible == false && chatAdapter.itemCount > 0)) {
@@ -826,7 +870,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
-                displayChatMessage(it)
+                if (session?.allowDiscardOwnPublishedMessageInSubscription == true) {
+                    displayChatMessage(it)
+                }
                 val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
                 if (hasExternalImage) {
                     uploadAndPostImage(context, it, timeData)
