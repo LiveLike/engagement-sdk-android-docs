@@ -645,6 +645,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
                 }
             }
+            chat_view?.chatHistoryLoadLimit = 50
             chat_view?.setSession(session!!.chatSession)
 
         }

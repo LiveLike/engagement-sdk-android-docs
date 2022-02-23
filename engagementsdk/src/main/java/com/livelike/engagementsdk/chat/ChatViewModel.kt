@@ -21,14 +21,15 @@ import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.publicapis.*
+import com.livelike.engagementsdk.publicapis.BlockedInfo
+import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 internal class ChatViewModel(
@@ -306,11 +307,11 @@ internal class ChatViewModel(
         chatAdapter.submitList(messageList)
     }
 
-    fun loadPreviousMessages() {
+    fun loadPreviousMessages(chatLimit: Int) {
         currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
             if (chatRepository != null) {
                 logDebug { "Chat loading previous messages size:${messageList.size},all Message size:${messageList.size},deleted Message:${deletedMessages.size}," }
-                chatRepository?.loadPreviousMessages(channel)
+                chatRepository?.loadPreviousMessages(channel, chatLimit)
             } else {
                 eventStream.onNext(EVENT_LOADING_COMPLETE)
                 logError { "Chat repo is null" }

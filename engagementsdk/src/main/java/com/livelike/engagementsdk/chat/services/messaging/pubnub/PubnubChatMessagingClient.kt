@@ -3,8 +3,7 @@ package com.livelike.engagementsdk.chat.services.messaging.pubnub
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.EpochTime
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.REACTION_CREATED
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
@@ -542,14 +541,14 @@ internal class PubnubChatMessagingClient(
 
     internal fun loadMessagesWithReactions(
         channel: String,
-        chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
+        chatHistoryLimit: Int = CHAT_HISTORY_LIMIT
     ) {
         if (firstTimeToken == 0L)
             pubnub.time().async { result, _ ->
                 firstTimeToken = result?.timetoken ?: 0
                 loadMessagesWithReactions(
                     channel,
-                    chatHistoyLimit
+                    chatHistoryLimit
                 )
             }
         else {
@@ -557,7 +556,7 @@ internal class PubnubChatMessagingClient(
             pubnub.fetchMessages()
                 .channels(listOf(channel))
                 .includeMeta(true)
-                .maximumPerChannel(chatHistoyLimit)
+                .maximumPerChannel(chatHistoryLimit)
                 .start(firstTimeToken)
                 .includeMessageActions(true)
                 .async { result, status ->
