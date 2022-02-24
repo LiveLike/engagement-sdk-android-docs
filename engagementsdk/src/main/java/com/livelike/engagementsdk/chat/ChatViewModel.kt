@@ -51,7 +51,13 @@ internal class ChatViewModel(
     var chatAdapter: ChatRecyclerAdapter =
         ChatRecyclerAdapter(analyticsService, ::reportChatMessage, ::blockProfile)
     var messageList = mutableListOf<ChatMessage>()
-    var deletedMessages = hashSetOf<String>()
+    private var deletedMessages = hashSetOf<String>()
+
+    var enableQuoteMessage: Boolean = false
+        set(value) {
+            field = value
+            chatAdapter.enableQuoteMessage = value
+        }
 
     internal val eventStream: Stream<String> =
         SubscriptionManager(true)
@@ -115,6 +121,13 @@ internal class ChatViewModel(
                 chatAdapter.chatViewDelegate != null || (chatAdapter.chatViewDelegate == null && it.messageEvent != PubnubChatEventType.CUSTOM_MESSAGE_CREATED)
             }.map {
                 it.isFromMe = userStream.latest()?.id == it.senderId
+                it.quoteMessage = it.quoteMessage?.apply {
+                    message = when (deletedMessages.contains(id)) {
+                        true -> applicationContext.getString(R.string.livelike_quote_chat_message_deleted_message)
+                        else -> message
+                    }
+                    isDeleted = deletedMessages.contains(id)
+                }
                 it
             }
         )
@@ -128,7 +141,7 @@ internal class ChatViewModel(
                 message.channel != currentChatRoom?.channels?.chat?.get(
                     CHAT_PROVIDER
                 )
-            } check deleted:${deletedMessages.contains(message.id)}"
+            } check deleted:${deletedMessages.contains(message.id)} has Parent msg: ${message.quoteMessage != null}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
 
@@ -146,6 +159,13 @@ internal class ChatViewModel(
         messageList.add(
             message.apply {
                 isFromMe = userStream.latest()?.id == senderId
+                quoteMessage = quoteMessage?.apply {
+                    this.message = when (deletedMessages.contains(id)) {
+                        true -> applicationContext.getString(R.string.livelike_quote_chat_message_deleted_message)
+                        else -> this.message
+                    }
+                    this.isDeleted = deletedMessages.contains(id)
+                }
             }
         )
 
@@ -232,15 +252,32 @@ internal class ChatViewModel(
                     applicationContext.getString(R.string.livelike_chat_message_deleted_message)
                 isDeleted = true
             }
+            messageList.find {
+                it.quoteMessage != null && it.quoteMessage?.id?.lowercase(Locale.getDefault()) == messageId
+            }?.apply {
+                quoteMessage = quoteMessage?.apply {
+                    message = when (messageId == id) {
+                        true -> applicationContext.getString(R.string.livelike_quote_chat_message_deleted_message)
+                        else -> message
+                    }
+                    isDeleted = deletedMessages.contains(id)
+                }
+            }
             uiScope.launch {
                 chatAdapter.submitList(ArrayList(messageList.toSet()))
                 chatAdapter.currentChatReactionPopUpViewPos = -1
                 val index = messageList.indexOfFirst { it.id == messageId }
-                if (index != -1 && index < chatAdapter.itemCount) {
-                    chatAdapter.notifyItemChanged(index)
-                }
+                val index2 = messageList.indexOfFirst { it.quoteMessage!=null && it.quoteMessage?.id == messageId }
+                notifyIndexUpdate(index)
+                notifyIndexUpdate(index2)
                 eventStream.onNext(EVENT_MESSAGE_DELETED)
             }
+        }
+    }
+
+    private fun notifyIndexUpdate(index: Int) {
+        if (index != -1 && index < chatAdapter.itemCount) {
+            chatAdapter.notifyItemChanged(index)
         }
     }
 

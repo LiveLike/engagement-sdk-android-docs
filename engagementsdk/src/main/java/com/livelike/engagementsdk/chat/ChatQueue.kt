@@ -1,10 +1,10 @@
 package com.livelike.engagementsdk.chat
 
-import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.ChatRoomListener
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.core.services.messaging.ClientMessage
 import com.livelike.engagementsdk.core.services.messaging.Error
@@ -14,13 +14,12 @@ import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.publicapis.*
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatRoom
 
-internal class ChatQueue(upstream: MessagingClient) :
+internal class ChatQueue(
+    upstream: MessagingClient,
+) :
     MessagingClientProxy(upstream),
     ChatEventListener {
-
     var msgListener: MessageListener? = null
     var chatRoomListener: ChatRoomListener? = null
     var blockedProfileIds = hashSetOf<String>()
@@ -31,7 +30,7 @@ internal class ChatQueue(upstream: MessagingClient) :
                 getProfileBlockIds(object : LiveLikeCallback<List<String>>() {
                     override fun onResponse(result: List<String>?, error: String?) {
                         error?.let {
-                            logError { "Block Profile Ids Error: $it"}
+                            logError { "Block Profile Ids Error: $it" }
                         }
                         result?.let {
                             blockedProfileIds.addAll(it)
@@ -88,14 +87,16 @@ internal class ChatQueue(upstream: MessagingClient) :
         val messageList = list.map { event ->
             val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
             chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
+            chatMessage.quoteMessage?.apply {
+                isBlocked = blockedProfileIds.contains(senderId)
+            }
             return@map chatMessage
         }.filter {
             !blockedProfileIds
                 .contains(it.senderId)
         }
-
-        renderer?.displayChatMessages(messageList)
         msgListener?.onHistoryMessage(messageList.map { it.toLiveLikeChatMessage() })
+        renderer?.displayChatMessages(messageList)
     }
 
     var renderer: ChatRenderer? = null
@@ -121,6 +122,9 @@ internal class ChatQueue(upstream: MessagingClient) :
                 ) {
                     logDebug { "user is blocked" }
                     return
+                }
+                chatMessage.quoteMessage?.apply {
+                    isBlocked = blockedProfileIds.contains(senderId)
                 }
                 renderer?.displayChatMessage(chatMessage)
                 msgListener?.onNewMessage(chatMessage.toLiveLikeChatMessage())
