@@ -155,5 +155,6 @@
     <color name="livelike_ama_confirmation_msg_text_color">#00f078</color>
     <color name="livelike_sponsor_container_background">#000000</color>
     <color name="livelike_sponsor_label_text_color">#ffffff</color>
+    <color name="livelike_chat_view_loader_progress_color">#000000</color>
 
 </resources>
