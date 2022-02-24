@@ -475,27 +475,12 @@ internal class PubnubChatMessagingClient(
 
                 }
                 MESSAGE_PINNED, MESSAGE_UNPINNED -> {
-                    val pubnubChatRoomEvent: PubnubChatEvent<PinMessageInfo> = gson.fromJson(
+                    val pubnubChatRoomEvent: PubnubChatEvent<PubnubPinMessageInfo> = gson.fromJson(
                         jsonObject,
-                        object : TypeToken<PubnubChatEvent<PinMessageInfo>>() {}.type
+                        object : TypeToken<PubnubChatEvent<PubnubPinMessageInfo>>() {}.type
                     )
-                    pubnubChatRoomEvent.payload.messagePayload?.senderId =
-                        jsonObject.getAsJsonObject("payload").getAsJsonObject("message_payload")
-                            ?.get("sender_id")?.asString
-                    pubnubChatRoomEvent.payload.messagePayload?.nickname =
-                        jsonObject.getAsJsonObject("payload").getAsJsonObject("message_payload")
-                            ?.get("sender_nickname")?.asString
-                    pubnubChatRoomEvent.payload.messagePayload?.userPic =
-                        when (jsonObject.getAsJsonObject("payload")
-                            .getAsJsonObject("message_payload")
-                            ?.get("sender_image_url")?.isJsonNull) {
-                            true -> null
-                            else -> jsonObject.getAsJsonObject("payload")
-                                .getAsJsonObject("message_payload")
-                                ?.get("sender_image_url")?.asString
-                        }
                     clientMessage = ClientMessage(
-                        gson.toJsonTree(pubnubChatRoomEvent.payload).asJsonObject.apply {
+                        gson.toJsonTree(pubnubChatRoomEvent.payload.toPinMessageInfo()).asJsonObject.apply {
                             addProperty("event", event.key)
                         },
                         channel

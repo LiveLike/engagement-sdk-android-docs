@@ -33,6 +33,7 @@ internal data class PubnubPinMessageInfo(
     var pinnedById: String? = null
 )
 
+
 internal fun PubnubPinMessageInfo.toPinMessageInfo(): PinMessageInfo {
     return PinMessageInfo(
         id,
