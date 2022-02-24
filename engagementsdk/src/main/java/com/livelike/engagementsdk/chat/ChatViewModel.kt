@@ -112,6 +112,9 @@ internal class ChatViewModel(
         Log.d("custom", "messages")
         messages.forEach {
             replaceImageMessageContentWithImageUrl(it)
+            it.quoteMessage?.apply {
+                replaceImageMessageContentWithImageUrl(this)
+            }
         }
 
         messageList.addAll(
@@ -161,6 +164,7 @@ internal class ChatViewModel(
             message.apply {
                 isFromMe = userStream.latest()?.id == senderId
                 quoteMessage = quoteMessage?.apply {
+                    replaceImageMessageContentWithImageUrl(this)
                     this.message = when (deletedMessages.contains(id)) {
                         true -> applicationContext.getString(R.string.livelike_quote_chat_message_deleted_message)
                         else -> this.message
@@ -186,7 +190,7 @@ internal class ChatViewModel(
         message: ChatMessage
     ) {
         val imageUrl = message.imageUrl
-        if (message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()) {
+        if (!imageUrl.isNullOrEmpty()) {
             message.message = CHAT_MESSAGE_IMAGE_TEMPLATE.replace("message", imageUrl)
         }
     }
