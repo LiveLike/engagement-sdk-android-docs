@@ -20,24 +20,24 @@ abstract class WidgetUserInteractionBase(
         internal fun <T : WidgetUserInteractionBase> getWidgetClass(widgetKind: String): Class<T> {
             @Suppress("UNCHECKED_CAST")
             return (
-                when {
-                    widgetKind == "emoji-slider" -> {
-                        EmojiSliderUserInteraction::class.java
+                    when {
+                        widgetKind == "emoji-slider" -> {
+                            EmojiSliderUserInteraction::class.java
+                        }
+                        widgetKind.contains("quiz") -> {
+                            QuizWidgetUserInteraction::class.java
+                        }
+                        widgetKind.contains("poll") -> {
+                            PollWidgetUserInteraction::class.java
+                        }
+                        widgetKind.contains("prediction") -> {
+                            PredictionWidgetUserInteraction::class.java
+                        }
+                        else -> {
+                            CheerMeterUserInteraction::class.java
+                        }
                     }
-                    widgetKind.contains("quiz") -> {
-                        QuizWidgetUserInteraction::class.java
-                    }
-                    widgetKind.contains("poll") -> {
-                        PollWidgetUserInteraction::class.java
-                    }
-                    widgetKind.contains("prediction") -> {
-                        PredictionWidgetUserInteraction::class.java
-                    }
-                    else -> {
-                        CheerMeterUserInteraction::class.java
-                    }
-                }
-                ) as Class<T>
+                    ) as Class<T>
         }
     }
 }
@@ -94,7 +94,9 @@ class CheerMeterUserInteraction(
     createdAt: String,
     url: String?,
     widgetId: String,
-    widgetKind: String
+    widgetKind: String,
+    @field:SerializedName("option_id")
+    var optionId: String?
 ) : WidgetUserInteractionBase(id, createdAt, url, widgetId, widgetKind)
 
 class TextAskUserInteraction(

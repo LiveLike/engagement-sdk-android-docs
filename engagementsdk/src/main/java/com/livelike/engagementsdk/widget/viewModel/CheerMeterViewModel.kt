@@ -1,24 +1,12 @@
 package com.livelike.engagementsdk.widget.viewModel
 
 import com.google.gson.JsonParseException
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
-import com.livelike.engagementsdk.DismissAction
-import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.LiveLikeWidget
-import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
-import com.livelike.engagementsdk.core.utils.AndroidResource
-import com.livelike.engagementsdk.core.utils.SubscriptionManager
-import com.livelike.engagementsdk.core.utils.debounce
-import com.livelike.engagementsdk.core.utils.gson
-import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.core.utils.map
-import com.livelike.engagementsdk.formatIsoZoned8601
+import com.livelike.engagementsdk.core.utils.*
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
@@ -89,14 +77,14 @@ internal class CheerMeterViewModel(
         }
     }
 
-    fun incrementVoteCount(teamIndex: Int) {
+    fun incrementVoteCount(teamIndex: Int, optionID: String?) {
         interactionData.incrementInteraction()
         totalVoteCount++
         voteStateList.getOrNull(teamIndex)?.let {
             it.voteCount++
         }
         vote.onNext(totalVoteCount)
-        saveInteraction(totalVoteCount, null)
+        saveInteraction(totalVoteCount, null, optionID)
     }
 
     private fun wouldSendVote() {
@@ -266,7 +254,7 @@ internal class CheerMeterViewModel(
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let {
-                incrementVoteCount(it)
+                incrementVoteCount(it, optionID)
             }
         }
     }
@@ -305,7 +293,7 @@ internal class CheerMeterViewModel(
         }
     }
 
-    internal fun saveInteraction(score: Int, url: String?) {
+    internal fun saveInteraction(score: Int, url: String?, optionID: String?) {
         widgetInteractionRepository?.saveWidgetInteraction(
             CheerMeterUserInteraction(
                 score,
@@ -313,7 +301,8 @@ internal class CheerMeterViewModel(
                 ZonedDateTime.now().formatIsoZoned8601(),
                 url,
                 widgetInfos.widgetId,
-                widgetInfos.type
+                widgetInfos.type,
+                optionID
             )
         )
     }

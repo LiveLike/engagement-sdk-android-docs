@@ -39,6 +39,7 @@
         <item name="chatReactionXPosition">120dp</item>
         <item name="chatReactionYPosition">-5dp</item>
         <item name="chatReactionPanelGravity">center|top</item>
+        <item name="chatProgressLoaderColor">@android:color/white</item>
     </style>
 
     <style name="MMLChatTheme">
@@ -79,7 +80,7 @@
         <item name="chatAvatarMarginTop">0dp</item>
         <item name="sendButtonHeight">38dp</item>
         <item name="sendButtonWidth">38dp</item>
-
+        <item name="chatProgressLoaderColor">#12FF34</item>
         <item name="chatSendButtonPaddingLeft">2dp</item>
         <item name="chatSendButtonPaddingRight">2dp</item>
         <item name="chatSendButtonPaddingTop">0dp</item>

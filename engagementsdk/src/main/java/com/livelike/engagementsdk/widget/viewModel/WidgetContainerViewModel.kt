@@ -27,16 +27,16 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     private lateinit var currentWidgetId: String
     private lateinit var currentWidgetType: String
     var enableDefaultWidgetTransition: Boolean = true
+    var allowWidgetSwipeToDismiss: Boolean = true
         set(value) {
             field = value
             if (value) {
-                widgetContainer?.setOnTouchListener(
-                    swipeDismissTouchListener
-                )
+                widgetContainer?.setOnTouchListener(swipeDismissTouchListener)
             } else {
                 widgetContainer?.setOnTouchListener(null)
             }
         }
+
     var showTimer: Boolean = true
     internal var showDismissButton: Boolean = true
 
@@ -48,7 +48,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     private lateinit var programId: String
 
     // Swipe to dismiss
-    var swipeDismissTouchListener: View.OnTouchListener? = null
+    private var swipeDismissTouchListener: View.OnTouchListener? = null
 
     var widgetViewViewFactory: LiveLikeWidgetViewFactory? = null
     var isLayoutTransitionEnabled: Boolean? = null
@@ -85,10 +85,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 }
             }
         )
-        if (enableDefaultWidgetTransition) {
-            widgetContainer.setOnTouchListener(
-                swipeDismissTouchListener
-            )
+        if (allowWidgetSwipeToDismiss) {
+            widgetContainer.setOnTouchListener(swipeDismissTouchListener)
         }
         currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { pair ->
             if (pair != null)
@@ -117,9 +115,9 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     widgetView?.widgetViewModel as FollowUpWidgetViewModel,
                     fromString == WidgetType.IMAGE_PREDICTION_FOLLOW_UP
                 )
-        }else if(fromString == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP ||
-            fromString == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP)
-            {
+        } else if (fromString == WidgetType.TEXT_NUMBER_PREDICTION_FOLLOW_UP ||
+            fromString == WidgetType.IMAGE_NUMBER_PREDICTION_FOLLOW_UP
+        ) {
             customView =
                 widgetViewViewFactory?.createNumberPredictionFollowupWidgetView(
                     widgetView?.widgetViewModel as NumberPredictionFollowUpWidgetModel,
@@ -251,8 +249,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         widgetContainer?.removeAllViews()
         widgetContainer?.apply {
             if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                !isInLayout
-            } else {
+                    !isInLayout
+                } else {
                     true
                 }
             ) requestLayout()

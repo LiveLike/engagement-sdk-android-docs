@@ -715,6 +715,10 @@ class ChatViewThemeAttributes {
                 R.styleable.ChatView_chatInputMaxCharLimit,
                 R.integer.chat_input_max_char_limit
             )
+            chatProgressLoaderColor = getColor(
+                R.styleable.ChatView_chatProgressLoaderColor,
+                ContextCompat.getColor(context, R.color.livelike_chat_view_loader_progress_color)
+            )
 
         }
     }
@@ -847,4 +851,5 @@ class ChatViewThemeAttributes {
     var chatMessageLinkTextColor: Int = Color.BLUE
     var quoteChatMessageLinkTextColor: Int = Color.BLUE
     var chatInputCharLimit: Int = 250
+    var chatProgressLoaderColor: Int = Color.WHITE
 }

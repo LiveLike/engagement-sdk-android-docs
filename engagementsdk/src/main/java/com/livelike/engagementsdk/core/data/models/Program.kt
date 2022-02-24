@@ -71,10 +71,19 @@ data class RewardItem(
     @SerializedName("attributes") val attributes: List<RewardAttribute>?,
     @SerializedName("images") val images: List<RewardItemImage>?
 )
-data class RewardAttribute (
+class RewardAttribute (
+    key: String,
+    value: String
+): Attribute(key,value)
+
+open class Attribute(
     @SerializedName( "key") val key: String,
     @SerializedName( "value") val value: String
-)
+) {
+    override fun toString(): String {
+        return "Attribute(key='$key', value='$value')"
+    }
+}
 
 data class RewardItemImage(
     @SerializedName("id") val id: String,
