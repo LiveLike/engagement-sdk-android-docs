@@ -206,6 +206,7 @@
         <attr name="chatMessageLinkTextColor" format="color" />
         <attr name="quoteChatMessageLinkTextColor" format="color" />
         <attr name="chatInputMaxCharLimit" format="integer" />
+        <attr name="chatProgressLoaderColor" format="color" />
     </declare-styleable>
 
     <declare-styleable name="PointView">

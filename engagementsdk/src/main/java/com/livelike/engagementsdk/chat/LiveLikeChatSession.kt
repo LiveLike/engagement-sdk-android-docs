@@ -46,6 +46,8 @@ interface LiveLikeChatSession {
     /** Avatar Image Url  **/
     var avatarUrl: String?
 
+    var allowDiscardOwnPublishedMessageInSubscription: Boolean
+
     /**
      * send Chat Message to the current ChatRoom
      *
