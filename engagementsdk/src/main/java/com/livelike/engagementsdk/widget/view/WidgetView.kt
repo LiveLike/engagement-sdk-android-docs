@@ -7,15 +7,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
-import com.livelike.engagementsdk.ContentSession
-import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.LiveLikeContentSession
-import com.livelike.engagementsdk.LiveLikeEngagementTheme
-import com.livelike.engagementsdk.LiveLikeWidget
-import com.livelike.engagementsdk.MockAnalyticsService
-import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.WidgetListener
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -51,6 +43,13 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             field = value
             widgetContainerViewModel?.enableDefaultWidgetTransition = value
         }
+
+    var allowWidgetSwipeToDismiss = true
+        set(value) {
+            field = value
+            widgetContainerViewModel?.allowWidgetSwipeToDismiss = value
+        }
+
     var showTimer = true
         set(value) {
             field = value
@@ -103,6 +102,8 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         session.analyticServiceStream.latest()
             ?.trackOrientationChange(resources.configuration.orientation == 1)
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
+        widgetContainerViewModel?.allowWidgetSwipeToDismiss = allowWidgetSwipeToDismiss
+        widgetContainerViewModel?.enableDefaultWidgetTransition = enableDefaultWidgetTransition
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
         widgetContainerViewModel?.widgetViewViewFactory = widgetViewFactory
         session.livelikeThemeStream.onNext(engagementSDKTheme)
@@ -158,7 +159,11 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     ) {
         try {
             val jsonObject = GsonBuilder().create().toJson(liveLikeWidget)
-            displayWidget(sdk, JsonParser.parseString(jsonObject).asJsonObject, showWithInteractionData)
+            displayWidget(
+                sdk,
+                JsonParser.parseString(jsonObject).asJsonObject,
+                showWithInteractionData
+            )
         } catch (ex: JsonParseException) {
             logDebug { "Invalid json passed for displayWidget" }
             ex.printStackTrace()
@@ -166,9 +171,9 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     }
 
     /** displays the widget in the container
-     throws error if json invalid
-     clears the previous displayed widget (if any)
-     only clears if json is valid
+    throws error if json invalid
+    clears the previous displayed widget (if any)
+    only clears if json is valid
      */
     fun displayWidget(
         sdk: EngagementSDK,

@@ -3,8 +3,7 @@ package com.livelike.engagementsdk.chat.services.messaging.pubnub
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.EpochTime
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.REACTION_CREATED
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
@@ -52,7 +51,7 @@ internal class PubnubChatMessagingClient(
     uuid: String,
     private val analyticsService: AnalyticsService,
     publishKey: String? = null,
-    val isDiscardOwnPublishInSubcription: Boolean = true,
+    var isDiscardOwnPublishInSubscription: Boolean = true,
     val origin: String? = null,
     private val pubnubHeartbeatInterval: Int,
     private val pubnubPresenceTimeout: Int
@@ -106,7 +105,7 @@ internal class PubnubChatMessagingClient(
             )
         )
         publishQueue.enqueue(Pair(channel, pubnubChatEvent))
-        if (isDiscardOwnPublishInSubcription) {
+        if (isDiscardOwnPublishInSubscription) {
             addPublishedMessage(channel, pubnubChatEvent.payload.messageId)
         }
         if (!isPublishRunning) {
@@ -395,7 +394,7 @@ internal class PubnubChatMessagingClient(
             var clientMessage: ClientMessage? = null
             when (event) {
                 MESSAGE_CREATED, IMAGE_CREATED, CUSTOM_MESSAGE_CREATED -> {
-                    if (isDiscardOwnPublishInSubcription && getPublishedMessages(channel).contains(
+                    if (isDiscardOwnPublishInSubscription && getPublishedMessages(channel).contains(
                             pubnubChatEvent.payload.messageId
                         )
                     ) {
@@ -475,27 +474,12 @@ internal class PubnubChatMessagingClient(
 
                 }
                 MESSAGE_PINNED, MESSAGE_UNPINNED -> {
-                    val pubnubChatRoomEvent: PubnubChatEvent<PinMessageInfo> = gson.fromJson(
+                    val pubnubChatRoomEvent: PubnubChatEvent<PubnubPinMessageInfo> = gson.fromJson(
                         jsonObject,
-                        object : TypeToken<PubnubChatEvent<PinMessageInfo>>() {}.type
+                        object : TypeToken<PubnubChatEvent<PubnubPinMessageInfo>>() {}.type
                     )
-                    pubnubChatRoomEvent.payload.messagePayload?.senderId =
-                        jsonObject.getAsJsonObject("payload").getAsJsonObject("message_payload")
-                            ?.get("sender_id")?.asString
-                    pubnubChatRoomEvent.payload.messagePayload?.nickname =
-                        jsonObject.getAsJsonObject("payload").getAsJsonObject("message_payload")
-                            ?.get("sender_nickname")?.asString
-                    pubnubChatRoomEvent.payload.messagePayload?.userPic =
-                        when (jsonObject.getAsJsonObject("payload")
-                            .getAsJsonObject("message_payload")
-                            ?.get("sender_image_url")?.isJsonNull) {
-                            true -> null
-                            else -> jsonObject.getAsJsonObject("payload")
-                                .getAsJsonObject("message_payload")
-                                ?.get("sender_image_url")?.asString
-                        }
                     clientMessage = ClientMessage(
-                        gson.toJsonTree(pubnubChatRoomEvent.payload).asJsonObject.apply {
+                        gson.toJsonTree(pubnubChatRoomEvent.payload.toPinMessageInfo()).asJsonObject.apply {
                             addProperty("event", event.key)
                         },
                         channel
@@ -546,14 +530,14 @@ internal class PubnubChatMessagingClient(
 
     internal fun loadMessagesWithReactions(
         channel: String,
-        chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
+        chatHistoryLimit: Int = CHAT_HISTORY_LIMIT
     ) {
         if (firstTimeToken == 0L)
             pubnub.time().async { result, _ ->
                 firstTimeToken = result?.timetoken ?: 0
                 loadMessagesWithReactions(
                     channel,
-                    chatHistoyLimit
+                    chatHistoryLimit
                 )
             }
         else {
@@ -561,7 +545,7 @@ internal class PubnubChatMessagingClient(
             pubnub.fetchMessages()
                 .channels(listOf(channel))
                 .includeMeta(true)
-                .maximumPerChannel(chatHistoyLimit)
+                .maximumPerChannel(chatHistoryLimit)
                 .start(firstTimeToken)
                 .includeMessageActions(true)
                 .async { result, status ->

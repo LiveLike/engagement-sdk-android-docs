@@ -95,9 +95,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 lockInteraction()
                 onWidgetInteractionCompleted()
                 if ((
-                    viewModel?.totalVoteCount
-                        ?: 0
-                    ) > 0 || viewModel?.enableDefaultWidgetTransition == false
+                            viewModel?.totalVoteCount
+                                ?: 0
+                            ) > 0 || viewModel?.enableDefaultWidgetTransition == false
                 ) {
                     viewModel?.voteEnd?.onNext(true)
                     viewModel?.voteEnd()
@@ -182,7 +182,11 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             val optionList = resource.getMergedOptions() ?: return
             if (!inflated) {
                 inflated = true
-                binding = WidgetCheerMeterBinding.inflate(LayoutInflater.from(context), this@CheerMeterView, true)
+                binding = WidgetCheerMeterBinding.inflate(
+                    LayoutInflater.from(context),
+                    this@CheerMeterView,
+                    true
+                )
             }
             widgetsTheme?.cheerMeter?.let { cheerMeterTheme ->
                 AndroidResource.updateThemeForView(
@@ -299,9 +303,11 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                 teamView.animate().rotation(0F).setDuration(50)
                                     .start()
                                 if (teamIndex == 0) {
-                                    binding?.txtCheerMeterTeam1!!.animate().alpha(1F).setDuration(30).start()
+                                    binding?.txtCheerMeterTeam1!!.animate().alpha(1F)
+                                        .setDuration(30).start()
                                 } else {
-                                    binding?.txtCheerMeterTeam2!!.animate().alpha(1F).setDuration(30).start()
+                                    binding?.txtCheerMeterTeam2!!.animate().alpha(1F)
+                                        .setDuration(30).start()
                                 }
                                 handler.removeCallbacksAndMessages(null)
                                 handler.postDelayed(
@@ -338,7 +344,11 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                     ?.setListener(listener)
                                     ?.start()
 
-                                viewModel?.incrementVoteCount(teamIndex)
+                                viewModel?.incrementVoteCount(
+                                    teamIndex,
+                                    viewModel?.data?.latest()?.resource?.getMergedOptions()
+                                        ?.get(teamIndex)?.id
+                                )
                                 binding?.txtMyScore?.visibility = View.VISIBLE
                                 binding?.txtMyScore?.text = "${viewModel?.totalVoteCount}"
                             }
@@ -435,19 +445,19 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         .load(winnerTeam.image_url)
                         .into(binding?.imgWinnerTeam!!)
                     animation.setAnimationListener(object :
-                            Animation.AnimationListener {
-                            override fun onAnimationRepeat(animation: Animation?) {
-                                //not required
-                            }
+                        Animation.AnimationListener {
+                        override fun onAnimationRepeat(animation: Animation?) {
+                            //not required
+                        }
 
-                            override fun onAnimationStart(animation: Animation?) {
-                                //not required
-                            }
+                        override fun onAnimationStart(animation: Animation?) {
+                            //not required
+                        }
 
-                            override fun onAnimationEnd(animation: Animation?) {
-                                playWinnerAnimation()
-                            }
-                        })
+                        override fun onAnimationEnd(animation: Animation?) {
+                            playWinnerAnimation()
+                        }
+                    })
                     binding?.imgWinnerTeam!!.startAnimation(animation)
                 },
                 500

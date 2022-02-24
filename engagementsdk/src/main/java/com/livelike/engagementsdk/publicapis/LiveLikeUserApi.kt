@@ -5,6 +5,7 @@ import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 
 /**
  * User pojo to be exposed, should be minimal in terms of fields
@@ -140,6 +141,22 @@ internal fun LiveLikeChatMessage.toChatMessage(): ChatMessage {
         quoteMessage = quoteMessage?.toChatMessage(),
         isDeleted = isDeleted,
         timeStamp = timestamp
+    )
+}
+
+internal fun LiveLikeChatMessage.toPubNubChatMessage(): PubnubChatMessage {
+    return PubnubChatMessage(
+        id ?: "",
+        message,
+        senderId ?: "",
+        userPic,
+        nickname ?: "",
+        timestamp,
+        null,
+        imageUrl,
+        image_width,
+        image_height,
+        custom_data
     )
 }
 

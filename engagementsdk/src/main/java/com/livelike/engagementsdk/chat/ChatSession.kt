@@ -3,17 +3,10 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
-import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.CHAT_PROVIDER
-import com.livelike.engagementsdk.ChatRoomListener
-import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.MessageListener
-import com.livelike.engagementsdk.MockAnalyticsService
-import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
@@ -27,6 +20,11 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
+import kotlinx.coroutines.*
 import com.livelike.engagementsdk.publicapis.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
@@ -35,6 +33,7 @@ import org.json.JSONObject
 import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
+import java.util.*
 
 
 internal class ChatSession(
@@ -53,7 +52,7 @@ internal class ChatSession(
     }
 
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
-    private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
+    private var pubnubMessagingClient: PubnubChatMessagingClient? = null
     internal val dataClient: ChatDataClient = ChatDataClientImpl()
     private var isClosed = false
     val chatViewModel: ChatViewModel by lazy {
@@ -209,9 +208,7 @@ internal class ChatSession(
     ) {
         analyticsServiceStream.latest()!!.trackLastChatStatus(true)
         chatClient = chatRepository?.establishChatMessagingConnection()
-
         pubnubMessagingClient = chatClient as PubnubChatMessagingClient
-
         currentPlayheadTime.let {
             chatClient =
                 chatClient?.syncTo(it)
@@ -224,6 +221,8 @@ internal class ChatSession(
                 this.renderer = chatViewModel
                 chatViewModel.chatLoaded = false
                 chatViewModel.chatListener = this
+                pubnubMessagingClient?.isDiscardOwnPublishInSubscription =
+                    allowDiscardOwnPublishedMessageInSubscription
             }
         logDebug { "initialized Chat Messaging" }
     }
@@ -330,13 +329,13 @@ internal class ChatSession(
                         //subscribe to channel for listening for pin message events
                         val controlChannel = chatRoom.channels.control[CHAT_PROVIDER]
                         controlChannel?.let {
-                            pubnubMessagingClient.addChannelSubscription(it)
+                            pubnubMessagingClient?.addChannelSubscription(it)
                         }
                         val channel = chatRoom.channels.chat[CHAT_PROVIDER]
                         channel?.let { ch ->
                             contentSessionScope.launch {
                                 delay(500)
-                                pubnubMessagingClient.addChannelSubscription(ch)
+                                pubnubMessagingClient?.addChannelSubscription(ch)
                                 delay(500)
                                 chatViewModel.apply {
                                     flushMessages()
@@ -351,7 +350,7 @@ internal class ChatSession(
                                     chatLoaded = false
                                 }
                                 this@ChatSession.currentChatRoom = chatRoom
-                                pubnubMessagingClient.activeChatRoom = channel
+                                pubnubMessagingClient?.activeChatRoom = channel
                                 callback?.onResponse(Unit, null)
                             }
                         }
@@ -375,6 +374,12 @@ internal class ChatSession(
     }
 
     override var avatarUrl: String? = null
+
+    override var allowDiscardOwnPublishedMessageInSubscription: Boolean = true
+        set(value) {
+            field = value
+            pubnubMessagingClient?.isDiscardOwnPublishInSubscription = value
+        }
 
     /**
      * TODO: added it into default chat once all functionality related to chat is done

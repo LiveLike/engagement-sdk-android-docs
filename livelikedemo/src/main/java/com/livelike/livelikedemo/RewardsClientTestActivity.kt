@@ -26,6 +26,8 @@ class RewardsClientTestActivity : AppCompatActivity() {
 
     val rewardItemBalanceMap: MutableMap<String, Int> = mutableMapOf()
 
+    var redemptionOptions: GetRedemptionKeyRequestOptions? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.reward_is_client_test_activity)
@@ -74,6 +76,27 @@ class RewardsClientTestActivity : AppCompatActivity() {
             }
         }
 
+        filter_spinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, RedemptionKeyStatus.values().map {it.name}.toMutableList().apply { add("None") } )
+        filter_spinner.setSelection(RedemptionKeyStatus.values().size)
+        filter_spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                redemptionOptions = if ( position >= RedemptionKeyStatus.values().size ){
+                    null
+                } else {
+                    GetRedemptionKeyRequestOptions(RedemptionKeyStatus.values()[position])
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+        }
     }
 
     fun fetchRewardItemBalances(ids: List<String>) {
@@ -283,6 +306,62 @@ class RewardsClientTestActivity : AppCompatActivity() {
                         })
             }
         }
+
+        show_redemption.setOnClickListener {
+            rewardsClient.getRedemptionKeys(LiveLikePagination.FIRST,
+                redemptionOptions,
+                object : LiveLikeCallback<LLPaginatedResult<RedemptionKey>>() {
+                override fun onResponse(
+                    result: LLPaginatedResult<RedemptionKey>?,
+                    error: String?
+                ) {
+                    result?.let{
+                        runOnUiThread {
+                            AlertDialog.Builder(this@RewardsClientTestActivity)
+                                .setTitle("codes assigned to user")
+                                .setItems(result
+                                    .results
+                                    ?.map(RedemptionKey::toString)
+                                    ?.toTypedArray()) { _, _ -> }
+                                .create()
+                                .show()
+                        }
+
+                    }
+                }
+            })
+        }
+
+        val callback = object : LiveLikeCallback<RedemptionKey>() {
+            override fun onResponse(result: RedemptionKey?, error: String?) {
+                result?.let {
+                    runOnUiThread {
+                        AlertDialog.Builder(this@RewardsClientTestActivity)
+                            .setTitle("redeem code result")
+                            .setItems(arrayOf(result.toString())) { _, _ -> }
+                            .create()
+                            .show()
+                    }
+                }
+                error?.let {
+                    runOnUiThread {
+                        AlertDialog.Builder(this@RewardsClientTestActivity)
+                            .setMessage(it)
+                            .create()
+                            .show()
+                    }
+                }
+            }
+        }
+
+        redeem_code.setOnClickListener {
+            rewardsClient.redeemKeyWithId(redemption_code.text.toString(),callback)
+        }
+
+        redeem_code2.setOnClickListener {
+            rewardsClient.redeemKeyWithCode(redemption_code.text.toString(),callback)
+        }
+
     }
 
     private fun buildResultDialog(result: LLPaginatedResult<RewardTransaction>?, error: String?) {
