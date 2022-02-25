@@ -54,8 +54,6 @@ import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlin.math.ln
 import kotlin.math.pow
 
@@ -73,10 +71,11 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
 internal class ChatRecyclerAdapter(
     internal var analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit,
-    private val blockProfile: (String) -> Unit
+    private val blockProfile: (String) -> Unit,
 ) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(diffChatMessage) {
     var isKeyboardOpen: Boolean = false
     internal var chatRoomId: String? = null
+    internal var showChatAvatarLogo: Boolean = true
     internal var chatRoomName: String? = null
     private var lastFloatingUiAnchorView: View? = null
     var chatRepository: ChatRepository? = null
@@ -94,7 +93,7 @@ internal class ChatRecyclerAdapter(
     internal var reactionCountFormatter: ((count: Int) -> String)? = null
     var currentChatReactionPopUpViewPos: Int = -1
     internal var chatPopUpView: ChatActionsPopupView? = null
-    var showChatAvatarLogo = true
+
     var chatViewDelegate: ChatViewDelegate? = null
     var enableQuoteMessage: Boolean = false
 
@@ -844,7 +843,9 @@ internal class ChatRecyclerAdapter(
                         if (emojiCountMap.isNotEmpty() && sumCount > 0 && isReactionsAvaiable) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
                             txt_chat_reactions_count.text =
-                                reactionCountFormatter?.invoke(sumCount) ?: formatReactionCount(sumCount)
+                                reactionCountFormatter?.invoke(sumCount) ?: formatReactionCount(
+                                    sumCount
+                                )
                         } else {
                             txt_chat_reactions_count.visibility = View.INVISIBLE
                             txt_chat_reactions_count.text = "  "

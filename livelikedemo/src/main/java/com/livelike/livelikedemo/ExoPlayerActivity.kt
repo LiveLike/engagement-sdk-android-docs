@@ -604,6 +604,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             session?.chatSession?.avatarUrl = avatarUrl
             txt_chat_room_id?.visibility = View.INVISIBLE
             txt_chat_room_title?.visibility = View.INVISIBLE
+            println("ExoPlayerActivity.initializeLiveLikeSDK::$showChatAvatar")
             session?.chatSession?.shouldDisplayAvatar = showChatAvatar
             chat_view.enableChatMessageURLs = showLink
             if (showLink) {

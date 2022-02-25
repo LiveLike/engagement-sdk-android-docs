@@ -49,8 +49,17 @@ internal class ChatViewModel(
             field = value
             chatAdapter.analyticsService = value
         }
+    internal var showChatAvatarLogo: Boolean = true
+    set(value) {
+        field = value
+        chatAdapter.showChatAvatarLogo = value
+    }
     var chatAdapter: ChatRecyclerAdapter =
-        ChatRecyclerAdapter(analyticsService, ::reportChatMessage, ::blockProfile)
+        ChatRecyclerAdapter(
+            analyticsService,
+            ::reportChatMessage,
+            ::blockProfile
+        )
     var messageList = mutableListOf<ChatMessage>()
     private var deletedMessages = hashSetOf<String>()
 
@@ -70,7 +79,6 @@ internal class ChatViewModel(
             chatAdapter.chatRoomName = value?.title
         }
 
-    var avatarUrl: String? = null
     var liveLikeChatClient: LiveLikeChatClient? = null
 
     var stickerPackRepository: StickerPackRepository? = null

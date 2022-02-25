@@ -823,6 +823,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             .error(chatUserPicDrawable)
                             .into(img_quote_chat_avatar)
                     }
+                    viewModel?.showChatAvatarLogo?.let {
+                        img_quote_chat_avatar.apply {
+                            visibility = if (it) View.VISIBLE else View.GONE
+                        }
+                    }
                     if (enableChatMessageURLs) {
                         quote_chatMessage.apply {
                             linksClickable = enableChatMessageURLs
