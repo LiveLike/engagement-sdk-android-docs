@@ -49,8 +49,10 @@ class MainActivity : AppCompatActivity() {
         var customCheerMeter: Boolean = false,
         var showLink: Boolean = false,
         var customLink: String? = null,
-        var quoteMsg: Boolean=false
-    )
+        var quoteMsg: Boolean=false,
+        var allowDiscard: Boolean = true
+    ) {
+    }
 
     private lateinit var userStream: Stream<LiveLikeUserApi>
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
@@ -166,6 +168,10 @@ class MainActivity : AppCompatActivity() {
             player.customCheerMeter = isChecked
             onlyWidget.customCheerMeter = isChecked
             LiveLikeApplication.showCustomWidgetsUI = isChecked
+        }
+        chk_allow_discard_own_msg.isChecked = true
+        chk_allow_discard_own_msg.setOnCheckedChangeListener { btn, isChecked ->
+            player.allowDiscard = isChecked
         }
 
         chk_enable_debug.isChecked = EngagementSDK.enableDebug
@@ -574,6 +580,7 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     intent.putExtra("showLink", player.showLink)
     intent.putExtra("customLink", player.customLink)
     intent.putExtra("enableReplies", player.quoteMsg)
+    intent.putExtra("allowDiscard", player.allowDiscard)
     intent.putExtra(
         "keyboardClose",
         when (player.theme) {

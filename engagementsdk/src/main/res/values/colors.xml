@@ -159,5 +159,6 @@
     <color name="livelike_sponsor_label_text_color">#ffffff</color>
     <color name="quote_chat_bubble_background_color">#2A2A2A</color>
     <color name="quote_chat_highlighted_bubble_background_color">#502A2A2A</color>
+    <color name="livelike_chat_view_loader_progress_color">#000000</color>
 
 </resources>
