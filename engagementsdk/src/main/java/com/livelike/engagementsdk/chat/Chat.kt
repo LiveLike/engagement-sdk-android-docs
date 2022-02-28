@@ -2,10 +2,11 @@ package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import java.util.*
+import com.livelike.engagementsdk.parseISODateTime
+import java.text.ParseException
 
 internal interface ChatEventListener {
-    fun onChatMessageSend(message: ChatMessage, timeData: EpochTime)
+    fun onChatMessageSend(url: String, message: ChatMessage, timeData: EpochTime)
 }
 
 internal interface ChatRenderer {
@@ -16,7 +17,13 @@ internal interface ChatRenderer {
      **/
     fun displayChatMessages(messages: List<ChatMessage>)
     fun deleteChatMessage(messageId: String)
-    fun updateChatMessageTimeToken(messageId: String, timetoken: String)
+    fun updateChatMessageTimeToken(
+        messageId: String,
+        clientMessageId: String?,
+        timetoken: String,
+        createdAt: String?
+    )
+
     fun loadingCompleted()
     fun addMessageReaction(
         isOwnReaction: Boolean,
@@ -45,7 +52,7 @@ internal data class ChatMessage(
     val senderId: String,
     val senderDisplayName: String,
     val senderDisplayPic: String?,
-    var id: String = UUID.randomUUID().toString(),
+    var id: String? = null,
     // PDT video time //NOt using right now for later use FYI @shivansh @Willis
     var timeStamp: String? = null,
     var imageUrl: String? = null,
@@ -60,7 +67,10 @@ internal data class ChatMessage(
     var isDeleted: Boolean = false,
     var quoteMessage: ChatMessage? = null,
     var isBlocked: Boolean = false,
-    var quoteMessageID: String? = null
+    var quoteMessageID: String? = null,
+    var clientMessageId: String? = null,
+    var createdAt: String? = null,
+    var chatRoomId: String? = null,
 ) {
     // Update the user_id to profile_id as required from backend
     fun toReportMessageJson(): String {
@@ -85,6 +95,9 @@ internal data class ChatMessage(
 
     fun getUnixTimeStamp(): Long? {
         if (timetoken == 0L) {
+            if (createdAt != null) {
+                return createdAt?.parseISODateTime()?.toEpochSecond()
+            }
             return null
         }
         return try {

@@ -166,7 +166,9 @@ internal fun setTextOrImageToView(
             else -> {
                 imageView.visibility = View.GONE
                 textView.visibility = View.VISIBLE
-                clearTarget(id, textView.context)
+                id?.let {
+                    clearTarget(it, textView.context)
+                }
                 textView.minHeight = textSize.toInt()
                 textView.text = when (isParent && isBlocked) {
                     true -> textView.context.getString(R.string.livelike_quote_blocked_message)
@@ -183,7 +185,7 @@ internal fun setTextOrImageToView(
 private fun getTextWithCustomLinks(
     linksRegex: Regex,
     spannableString: SpannableString,
-    messageId: String,
+    messageId: String?,
     chatRoomId: String?,
     chatRoomName: String?,
     analyticsService: AnalyticsService

@@ -47,15 +47,15 @@ import com.livelike.engagementsdk.chat.utils.setTextOrImageToView
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.publicapis.ChatMessageType
 import com.livelike.engagementsdk.publicapis.toChatMessageType
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlin.math.ln
 import kotlin.math.pow
 
@@ -277,8 +277,10 @@ internal class ChatRecyclerAdapter(
                     )
                 }
             }
-            item?.let {
-                analyticsService.trackMessageDisplayed(item.id, item.message)
+            item?.let { chatMessage ->
+                chatMessage.id?.let {
+                    analyticsService.trackMessageDisplayed(it, chatMessage.message)
+                }
             }
         }
 
@@ -380,14 +382,16 @@ internal class ChatRecyclerAdapter(
                                     }
                                     isRemoved = false
                                 }
-                                reactionId?.let {
-                                    chatRoomId?.let {
-                                        analyticsService.trackChatReactionSelected(
-                                            it,
-                                            id,
-                                            reactionId,
-                                            isRemoved
-                                        )
+                                id?.let {
+                                    reactionId?.let {
+                                        chatRoomId?.let {
+                                            analyticsService.trackChatReactionSelected(
+                                                it,
+                                                id!!,
+                                                reactionId,
+                                                isRemoved
+                                            )
+                                        }
                                     }
                                 }
                                 // removing unecessary call
@@ -844,7 +848,9 @@ internal class ChatRecyclerAdapter(
                         if (emojiCountMap.isNotEmpty() && sumCount > 0 && isReactionsAvaiable) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
                             txt_chat_reactions_count.text =
-                                reactionCountFormatter?.invoke(sumCount) ?: formatReactionCount(sumCount)
+                                reactionCountFormatter?.invoke(sumCount) ?: formatReactionCount(
+                                    sumCount
+                                )
                         } else {
                             txt_chat_reactions_count.visibility = View.INVISIBLE
                             txt_chat_reactions_count.text = "  "

@@ -10,7 +10,7 @@ internal interface MessagingClient {
     fun subscribe(channels: List<String>)
     fun unsubscribe(channels: List<String>)
     fun unsubscribeAll()
-    fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime)
+    fun publishMessage(url:String,message: String, channel: String, timeSinceEpoch: EpochTime)
     fun stop()
     fun start()
     fun destroy()

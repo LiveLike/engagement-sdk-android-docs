@@ -69,7 +69,6 @@ internal class ChatViewModel(
             chatAdapter.chatRoomName = value?.title
         }
 
-    var avatarUrl: String? = null
     var liveLikeChatClient: LiveLikeChatClient? = null
 
     var stickerPackRepository: StickerPackRepository? = null
@@ -150,7 +149,7 @@ internal class ChatViewModel(
         if (chatAdapter.chatViewDelegate == null && message.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) return
 
 
-        if (deletedMessages.contains(message.id.lowercase(Locale.getDefault()))) {
+        if (deletedMessages.contains(message.id?.lowercase(Locale.getDefault()))) {
             logDebug { "the message is deleted by producer" }
             return
         }
@@ -246,7 +245,7 @@ internal class ChatViewModel(
         if (chatLoaded) {
             logDebug { "message is deleted from producer so changing its text" }
             messageList.find {
-                it.id.lowercase(Locale.getDefault()) == messageId
+                it.id?.lowercase(Locale.getDefault()) == messageId
             }?.apply {
                 message =
                     applicationContext.getString(R.string.livelike_chat_message_deleted_message)
@@ -275,22 +274,29 @@ internal class ChatViewModel(
         }
     }
 
-    private fun notifyIndexUpdate(index: Int) {
-        if (index != -1 && index < chatAdapter.itemCount) {
-            chatAdapter.notifyItemChanged(index)
-        }
-    }
-
-    override fun updateChatMessageTimeToken(messageId: String, timetoken: String) {
+    override fun updateChatMessageTimeToken(
+        messageId: String,
+        clientMessageId: String?,
+        timetoken: String,
+        createdAt: String?
+    ) {
         uiScope.launch {
             messageList.find {
-                it.id == messageId
+                it.clientMessageId == clientMessageId
             }?.let { cm ->
                 cm.timetoken = timetoken.toLong()
+                cm.createdAt = createdAt
+                cm.id = messageId
                 chatAdapter.submitList(ArrayList(messageList))
                 chatAdapter.notifyItemChanged(messageList.indexOf(cm))
                 eventStream.onNext(EVENT_NEW_MESSAGE)
             }
+        }
+    }
+
+    private fun notifyIndexUpdate(index: Int) {
+        if (index != -1 && index < chatAdapter.itemCount) {
+            chatAdapter.notifyItemChanged(index)
         }
     }
 
@@ -332,7 +338,7 @@ internal class ChatViewModel(
     }
 
     internal fun refreshWithDeletedMessage() {
-        messageList.removeAll { deletedMessages.contains(it.id.lowercase(Locale.getDefault())) }
+        messageList.removeAll { deletedMessages.contains(it.id?.lowercase(Locale.getDefault())) }
         uiScope.launch {
             chatAdapter.submitList(ArrayList(messageList))
         }
@@ -357,63 +363,65 @@ internal class ChatViewModel(
     }
 
     fun uploadAndPostImage(context: Context, chatMessage: ChatMessage, timedata: EpochTime) {
-        val url =
-            Uri.parse(chatMessage.message?.substring(1, (chatMessage.message?.length ?: 0) - 1))
-        uiScope.launch(Dispatchers.IO) {
-            try {
-                context.contentResolver.openAssetFileDescriptor(
-                    url,
-                    "r"
-                )?.use {
-                    try {
-                        val fileBytes = it.createInputStream().readBytes()
-                        val imageUrl = dataClient.uploadImage(
-                            currentChatRoom!!.uploadUrl,
-                            null,
-                            fileBytes
-                        )
-                        chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
-                        chatMessage.imageUrl = imageUrl
-                        val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
-                        chatMessage.image_width = bitmap.width
-                        chatMessage.image_height = bitmap.height
-                        val m = chatMessage.copy()
-                        m.message = ""
-                        chatListener?.onChatMessageSend(m, timedata)
-                        bitmap.recycle()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        logError { e.message }
-                        e.message?.let { it1 -> errorDelegate?.onError(it1) }
-                    }
-                }
-            } catch (e: FileNotFoundException) {
-                e.printStackTrace()
-                logError { e.message }
-                e.message?.let { it1 -> errorDelegate?.onError(it1) }
-            }
-        }
-        Glide.with(context.applicationContext)
-            .`as`(ByteArray::class.java)
-            .load(url)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(object : CustomTarget<ByteArray>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
-                override fun onLoadCleared(placeholder: Drawable?) {
-                }
-
-                override fun onResourceReady(
-                    fileBytes: ByteArray,
-                    transition: Transition<in ByteArray>?
-                ) {
-                    try {
-                        uiScope.launch(Dispatchers.IO) {
+        currentChatRoom?.chatroomMessageUrl?.let { sendMessageUrl ->
+            val url =
+                Uri.parse(chatMessage.message?.substring(1, (chatMessage.message?.length ?: 0) - 1))
+            uiScope.launch(Dispatchers.IO) {
+                try {
+                    context.contentResolver.openAssetFileDescriptor(
+                        url,
+                        "r"
+                    )?.use {
+                        try {
+                            val fileBytes = it.createInputStream().readBytes()
+                            val imageUrl = dataClient.uploadImage(
+                                currentChatRoom!!.uploadUrl,
+                                null,
+                                fileBytes
+                            )
+                            chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                            chatMessage.imageUrl = imageUrl
+                            val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                            chatMessage.image_width = bitmap.width
+                            chatMessage.image_height = bitmap.height
+                            val m = chatMessage.copy()
+                            m.message = ""
+                            chatListener?.onChatMessageSend(sendMessageUrl, m, timedata)
+                            bitmap.recycle()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            logError { e.message }
+                            e.message?.let { it1 -> errorDelegate?.onError(it1) }
                         }
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                        logError { e.message }
                     }
+                } catch (e: FileNotFoundException) {
+                    e.printStackTrace()
+                    logError { e.message }
+                    e.message?.let { it1 -> errorDelegate?.onError(it1) }
                 }
-            })
+            }
+            Glide.with(context.applicationContext)
+                .`as`(ByteArray::class.java)
+                .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(object : CustomTarget<ByteArray>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+
+                    override fun onResourceReady(
+                        fileBytes: ByteArray,
+                        transition: Transition<in ByteArray>?
+                    ) {
+                        try {
+                            uiScope.launch(Dispatchers.IO) {
+                            }
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                            logError { e.message }
+                        }
+                    }
+                })
+        }
     }
 
     companion object {

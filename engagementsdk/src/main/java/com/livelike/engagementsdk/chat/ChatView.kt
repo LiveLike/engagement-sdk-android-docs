@@ -970,27 +970,40 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             quoteMessage = when (enableQuoteMessage) {
                 true -> currentQuoteMessage
                 else -> null
-            }
-        ).let {
-            sentMessageListener?.invoke(it.toLiveLikeChatMessage())
+            },
+            clientMessageId = UUID.randomUUID().toString(),
+            chatRoomId = viewModel?.currentChatRoom?.id
+        ).let { chatMessage ->
+            sentMessageListener?.invoke(chatMessage.toLiveLikeChatMessage())
             viewModel?.apply {
-                displayChatMessage(it)
-                val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
+                displayChatMessage(chatMessage)
+                val hasExternalImage = (chatMessage.message?.findImages()?.countMatches() ?: 0) > 0
                 if (hasExternalImage) {
-                    uploadAndPostImage(context, it, timeData)
+                    uploadAndPostImage(context, chatMessage, timeData)
                 } else {
-                    chatListener?.onChatMessageSend(it, timeData)
+                    if (currentChatRoom?.chatroomMessageUrl != null) {
+                        chatListener?.onChatMessageSend(
+                            currentChatRoom?.chatroomMessageUrl!!,
+                            chatMessage,
+                            timeData
+                        )
+                    } else {
+                        (session as? ChatSession)?.errorDelegate?.onError("Cannot send Message Url is invalid :${currentChatRoom?.chatroomMessageUrl}")
+                        logError { "Cannot send Message Url is invalid :${currentChatRoom?.chatroomMessageUrl}" }
+                    }
                 }
                 edittext_chat_message.setText("")
                 currentQuoteMessage = null
                 snapToLive()
                 viewModel?.currentChatRoom?.id?.let { id ->
-                    analyticsService.trackMessageSent(
-                        it.id,
-                        it.message,
-                        hasExternalImage,
-                        id
-                    )
+                    chatMessage.id?.let {
+                        analyticsService.trackMessageSent(
+                            it,
+                            chatMessage.message,
+                            hasExternalImage,
+                            id
+                        )
+                    }
                 }
             }
         }

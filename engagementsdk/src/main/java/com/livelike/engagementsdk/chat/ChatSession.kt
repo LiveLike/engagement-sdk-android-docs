@@ -3,17 +3,10 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
-import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.CHAT_PROVIDER
-import com.livelike.engagementsdk.ChatRoomListener
-import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.MessageListener
-import com.livelike.engagementsdk.MockAnalyticsService
-import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
@@ -34,7 +27,6 @@ import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
 import java.net.URL
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 internal class ChatSession(
@@ -450,53 +442,60 @@ internal class ChatSession(
             timeStamp = timeData.timeSinceEpochInMs.toString(),
             quoteMessage = parentChatMessage?.copy()?.toChatMessage()
         ).let { chatMessage ->
-
             // TODO: need to update for error handling here if pubnub respond failure of message
             liveLikeCallback.onResponse(chatMessage.toLiveLikeChatMessage(), null)
-
-            val hasExternalImage = imageUrl != null
-            if (hasExternalImage) {
-                contentSessionScope.launch {
-                    val uri = Uri.parse(chatMessage.imageUrl)
-                    when {
-                        uri.scheme != null && uri.scheme.equals("content") -> {
-                            applicationContext.contentResolver.openInputStream(uri)
+            currentChatRoom?.chatroomMessageUrl?.let { messageUrl ->
+                val hasExternalImage = imageUrl != null
+                if (hasExternalImage) {
+                    contentSessionScope.launch {
+                        val uri = Uri.parse(chatMessage.imageUrl)
+                        when {
+                            uri.scheme != null && uri.scheme.equals("content") -> {
+                                applicationContext.contentResolver.openInputStream(uri)
+                            }
+                            else -> {
+                                URL(chatMessage.imageUrl).openConnection().getInputStream()
+                            }
+                        }?.use {
+                            val fileBytes = it.readBytes()
+                            val uploadedImageUrl = dataClient.uploadImage(
+                                currentChatRoom!!.uploadUrl,
+                                null,
+                                fileBytes
+                            )
+                            chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                            chatMessage.imageUrl = uploadedImageUrl
+                            val bitmap =
+                                BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                            chatMessage.image_width = imageWidth ?: bitmap.width
+                            chatMessage.image_height = imageHeight ?: bitmap.height
+                            val m = chatMessage.copy()
+                            m.message = ""
+                            (chatClient as? ChatEventListener)?.onChatMessageSend(
+                                messageUrl,
+                                chatMessage,
+                                timeData
+                            )
+                            bitmap.recycle()
                         }
-                        else -> {
-                            URL(chatMessage.imageUrl).openConnection().getInputStream()
-                        }
-                    }?.use {
-                        val fileBytes = it.readBytes()
-                        val uploadedImageUrl = dataClient.uploadImage(
-                            currentChatRoom!!.uploadUrl,
-                            null,
-                            fileBytes
+                    }
+                } else {
+                    (chatClient as? ChatEventListener)?.onChatMessageSend(
+                        messageUrl,
+                        chatMessage,
+                        timeData
+                    )
+                }
+                currentChatRoom?.id?.let { id ->
+                    chatMessage.id?.let {
+                        analyticsServiceStream.latest()?.trackMessageSent(
+                            it,
+                            chatMessage.message,
+                            hasExternalImage,
+                            id
                         )
-                        chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
-                        chatMessage.imageUrl = uploadedImageUrl
-                        val bitmap =
-                            BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
-                        chatMessage.image_width = imageWidth ?: bitmap.width
-                        chatMessage.image_height = imageHeight ?: bitmap.height
-                        val m = chatMessage.copy()
-                        m.message = ""
-                        (chatClient as? ChatEventListener)?.onChatMessageSend(
-                            chatMessage,
-                            timeData
-                        )
-                        bitmap.recycle()
                     }
                 }
-            } else {
-                (chatClient as? ChatEventListener)?.onChatMessageSend(chatMessage, timeData)
-            }
-            currentChatRoom?.id?.let { id ->
-                analyticsServiceStream.latest()?.trackMessageSent(
-                    chatMessage.id,
-                    chatMessage.message,
-                    hasExternalImage,
-                    id
-                )
             }
         }
     }
