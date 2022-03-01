@@ -82,7 +82,7 @@ internal open class PubnubMessagingClient(
                                 // channel and channel group configuration. This is another explicit error
                                 listener?.onClientMessageError(
                                     this@PubnubMessagingClient,
-                                    Error("Access Denied", "Access Denied")
+                                    Error("Access Denied", "Access Denied",null)
                                 )
                             }
 
