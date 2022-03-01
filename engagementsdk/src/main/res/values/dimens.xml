@@ -9,8 +9,10 @@
     <dimen name="livelike_option_text_size">14sp</dimen>
     <dimen name="livelike_widget_tag_text_size">12sp</dimen>
 
-    <dimen name="livelike_default_chat_cell_text_size">16sp</dimen>
+    <dimen name="livelike_default_chat_cell_text_size">12sp</dimen>
+    <dimen name="livelike_default_quote_chat_cell_text_size">12sp</dimen>
     <dimen name="livelike_default_chat_cell_name_size">12sp</dimen>
+    <dimen name="livelike_default_quote_chat_cell_name_size">12sp</dimen>
     <dimen name="livelike_default_chat_input_text_size">14sp</dimen>
     <dimen name="livelike_default_chat_cell_margin_vertical">8dp</dimen>
     <dimen name="livelike_default_chat_cell_padding_horizontal">16dp</dimen>
@@ -235,7 +237,9 @@
     <dimen name="livelike_ama_count_text_margin_top">2dp</dimen>
     <dimen name="livelike_sponsor_label_text_size">12sp</dimen>
     <dimen name="livelike_ama_title_padding_top">12dp</dimen>
-
+    <dimen name="quote_chat_bubble_background_radius">8dp</dimen>
+    <dimen name="input_quote_chat_message_width">48dp</dimen>
+    <dimen name="input_quote_chat_message_height">48dp</dimen>
 
 
 </resources>

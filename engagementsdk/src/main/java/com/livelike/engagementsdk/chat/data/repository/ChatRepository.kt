@@ -57,7 +57,7 @@ internal class ChatRepository(
         chatRoomTemplateUrl: String
     ): Result<ChatRoom> {
         val remoteURL = chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "")
-        val titleRequest = createTitleRequest(title, visibility)
+        val titleRequest = createTitleRequest(title, visibility, false)
         return dataClient.remoteCall<ChatRoom>(
             remoteURL,
             RequestType.POST,
@@ -68,29 +68,32 @@ internal class ChatRepository(
 
     private fun createTitleRequest(
         title: String?,
-        visibility: Visibility?
+        visibility: Visibility?,
+        enableMessageReply: Boolean,
     ) = when {
         title.isNullOrEmpty()
             .not() && visibility != null ->
-            """{"visibility":"${visibility.name}","title":"$title"}"""
+            """{"visibility":"${visibility.name}","title":"$title","enable_message_reply":$enableMessageReply}"""
                 .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         title.isNullOrEmpty().not() && visibility == null ->
-            """{"title":"$title"}"""
+            """{"title":"$title","enable_message_reply":$enableMessageReply}"""
                 .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         title.isNullOrEmpty() && visibility != null ->
-            """{"visibility":"${visibility.name}"}"""
+            """{"visibility":"${visibility.name},"enable_message_reply":$enableMessageReply"}"""
                 .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        else -> byteArrayOf().toRequestBody(null, 0)
+        else -> """{"enable_message_reply":$enableMessageReply"}"""
+            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
     }
 
     suspend fun updateChatRoom(
         title: String?,
         visibility: Visibility?,
+        enableMessageReply: Boolean,
         chatRoomId: String,
         chatRoomTemplateUrl: String
     ): Result<ChatRoom> {
         val chatRoomResult = fetchChatRoom(chatRoomId, chatRoomTemplateUrl)
-        val titleRequest = createTitleRequest(title, visibility)
+        val titleRequest = createTitleRequest(title, visibility, enableMessageReply)
         return if (chatRoomResult is Result.Success) {
             return dataClient.remoteCall<ChatRoom>(
                 chatRoomResult.data.url,

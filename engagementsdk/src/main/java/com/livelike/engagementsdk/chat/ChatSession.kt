@@ -25,22 +25,24 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import kotlinx.coroutines.*
+import com.livelike.engagementsdk.publicapis.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
 import java.net.URL
 import java.util.*
+import kotlin.collections.ArrayList
+import java.util.*
 
-/**
- * Created by Shivansh Mittal on 2020-04-08.
- */
+
 internal class ChatSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val isPublicRoom: Boolean = true,
     internal val analyticsServiceStream: Stream<AnalyticsService>,
-    private val errorDelegate: ErrorDelegate? = null,
+    internal val errorDelegate: ErrorDelegate? = null,
     private val liveLikeChatClient: LiveLikeChatClient,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeChatSession {
@@ -111,9 +113,9 @@ internal class ChatSession(
     }
 
     override var shouldDisplayAvatar: Boolean
-        get() = chatViewModel.chatAdapter.showChatAvatarLogo
+        get() = chatViewModel.showChatAvatarLogo
         set(value) {
-            chatViewModel.chatAdapter.showChatAvatarLogo = value
+            chatViewModel.showChatAvatarLogo = value
         }
 
     private fun updatingURls(
@@ -382,11 +384,52 @@ internal class ChatSession(
     /**
      * TODO: added it into default chat once all functionality related to chat is done
      */
-    override fun sendChatMessage(
+    override fun sendMessage(
         message: String?,
         imageUrl: String?,
         imageWidth: Int?,
         imageHeight: Int?,
+        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+    ) {
+        internalSendMessage(
+            message,
+            imageUrl,
+            imageWidth,
+            imageHeight,
+            liveLikeCallback = liveLikeCallback
+        )
+    }
+
+    override fun quoteMessage(
+        message: String?,
+        imageUrl: String?,
+        imageWidth: Int?,
+        imageHeight: Int?,
+        quoteMessageId: String,
+        quoteMessage: LiveLikeChatMessage,
+        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+    ) {
+        // Removing the parent message from parent message in order to avoid reply to reply in terms of data
+        // and avoid data nesting
+        if (quoteMessage.quoteMessage != null) {
+            quoteMessage.quoteMessage = null
+        }
+        internalSendMessage(
+            message,
+            imageUrl,
+            imageWidth,
+            imageHeight,
+            quoteMessage,
+            liveLikeCallback
+        )
+    }
+
+    private fun internalSendMessage(
+        message: String?,
+        imageUrl: String?,
+        imageWidth: Int?,
+        imageHeight: Int?,
+        parentChatMessage: LiveLikeChatMessage? = null,
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
         if (message?.isEmpty() == true) {
@@ -409,7 +452,8 @@ internal class ChatSession(
             isFromMe = true,
             image_width = imageWidth ?: 100,
             image_height = imageHeight ?: 100,
-            timeStamp = timeData.timeSinceEpochInMs.toString()
+            timeStamp = timeData.timeSinceEpochInMs.toString(),
+            quoteMessage = parentChatMessage?.copy()?.toChatMessage()
         ).let { chatMessage ->
 
             // TODO: need to update for error handling here if pubnub respond failure of message

@@ -80,6 +80,8 @@ data class LiveLikeChatMessage(val message: String?) {
      * if the message is deleted when chat is showing
      */
     var isDeleted: Boolean = false
+
+    var quoteMessage: LiveLikeChatMessage? = null
 }
 
 enum class ChatMessageType(val key: String) {
@@ -101,6 +103,16 @@ internal fun PubnubChatEventType.toChatMessageType(): ChatMessageType? {
     }
 }
 
+internal fun ChatMessageType.toPubnubChatEventType(): PubnubChatEventType {
+    return when (this) {
+        ChatMessageType.MESSAGE_CREATED -> PubnubChatEventType.MESSAGE_CREATED
+        ChatMessageType.MESSAGE_DELETED -> PubnubChatEventType.MESSAGE_DELETED
+        ChatMessageType.IMAGE_CREATED -> PubnubChatEventType.IMAGE_CREATED
+        ChatMessageType.IMAGE_DELETED -> PubnubChatEventType.IMAGE_DELETED
+        ChatMessageType.CUSTOM_MESSAGE_CREATED -> PubnubChatEventType.CUSTOM_MESSAGE_CREATED
+    }
+}
+
 // TODO: check for the requirement else remove this method
 // internal fun PubnubChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
 //    // TODO will require to bump to major version as id needs to be string
@@ -112,6 +124,25 @@ internal fun PubnubChatEventType.toChatMessageType(): ChatMessageType? {
 //        messageId.hashCode().toLong()
 //    )
 // }
+
+internal fun LiveLikeChatMessage.toChatMessage(): ChatMessage {
+    return ChatMessage(
+        type?.toPubnubChatEventType() ?: PubnubChatEventType.MESSAGE_CREATED,
+        channel?:"",
+        message,
+        custom_data,
+        senderId?:"",
+        nickname?:"",
+        userPic,
+        id?:"",
+        imageUrl = imageUrl,
+        image_width = image_width,
+        image_height = image_height,
+        quoteMessage = quoteMessage?.toChatMessage(),
+        isDeleted = isDeleted,
+        timeStamp = timestamp
+    )
+}
 
 internal fun LiveLikeChatMessage.toPubNubChatMessage(): PubnubChatMessage {
     return PubnubChatMessage(
@@ -147,9 +178,10 @@ internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
         this.senderId = this@toLiveLikeChatMessage.senderId
         this.timestamp = epochTimeStamp.toString()
         this.isDeleted = this@toLiveLikeChatMessage.isDeleted
+        this.quoteMessage =
+            this@toLiveLikeChatMessage.quoteMessage?.toLiveLikeChatMessage()
     }
 }
-
 
 internal fun ChatRoom.toLiveLikeChatRoom(): ChatRoomInfo {
     return ChatRoomInfo(
