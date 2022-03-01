@@ -112,8 +112,8 @@ internal class ChatQueue(
 
     override fun onClientMessageError(client: MessagingClient, error: Error) {
         super.onClientMessageError(client, error)
-        if (error.type.equals(MessageError.DENIED_MESSAGE_PUBLISH.name)) {
-            renderer?.errorSendingMessage(MessageError.DENIED_MESSAGE_PUBLISH)
+        if (error.type == MessageError.DENIED_MESSAGE_PUBLISH.name) {
+            renderer?.errorSendingMessage(error)
         }
     }
 

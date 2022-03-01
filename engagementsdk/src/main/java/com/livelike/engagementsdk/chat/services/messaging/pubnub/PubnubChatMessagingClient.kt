@@ -167,7 +167,8 @@ internal class PubnubChatMessagingClient(
                             this@PubnubChatMessagingClient,
                             Error(
                                 MessageError.DENIED_MESSAGE_PUBLISH.name,
-                                ""
+                                "",
+                                pubnubChatEvent.payload.clientMessageId
                             )
                         )
                         it.resume(true)
@@ -193,7 +194,8 @@ internal class PubnubChatMessagingClient(
                     this@PubnubChatMessagingClient,
                     Error(
                         MessageError.DENIED_MESSAGE_PUBLISH.name,
-                        result.exception.toString()
+                        result.exception.toString(),
+                        pubnubChatEvent.payload.clientMessageId
                     )
                 )
                 it.resume(true)
@@ -279,7 +281,7 @@ internal class PubnubChatMessagingClient(
                                 // channel and channel group configuration. This is another explicit error
                                 listener?.onClientMessageError(
                                     client,
-                                    Error("Access Denied", "Access Denied")
+                                    Error("Access Denied", "Access Denied",null)
                                 )
                             }
 

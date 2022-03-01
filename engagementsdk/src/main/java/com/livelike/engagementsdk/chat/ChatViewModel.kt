@@ -18,6 +18,7 @@ import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.network.ChatDataClient
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
+import com.livelike.engagementsdk.core.services.messaging.Error
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
@@ -207,11 +208,17 @@ internal class ChatViewModel(
         }
     }
 
-    override fun errorSendingMessage(error: MessageError) {
-        if (error.equals(MessageError.DENIED_MESSAGE_PUBLISH)) {
-            messageList.remove(messageList.findLast { it.isFromMe })
-            chatAdapter.submitList(messageList)
-            eventStream.onNext(EVENT_MESSAGE_CANNOT_SEND)
+    //TODO: need to check for error message to show in ChatView
+    override fun errorSendingMessage(error: Error) {
+        if (error.type == MessageError.DENIED_MESSAGE_PUBLISH.name) {
+            val index = messageList.indexOfLast { it.clientMessageId == error.clientMessageId }
+            if (index > -1) {
+                messageList.removeAt(index)
+                chatAdapter.submitList(messageList)
+                eventStream.onNext(EVENT_MESSAGE_CANNOT_SEND)
+            } else {
+                logError { "Unable to find the message based on client message id: ${error.clientMessageId}" }
+            }
         }
     }
 

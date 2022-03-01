@@ -2,7 +2,9 @@ package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
+import com.livelike.engagementsdk.core.services.messaging.Error
 import com.livelike.engagementsdk.parseISODateTime
+import java.lang.Exception
 import java.text.ParseException
 
 internal interface ChatEventListener {
@@ -33,7 +35,7 @@ internal interface ChatRenderer {
 
     fun removeMessageReaction(messagePubnubToken: Long, emojiId: String)
 
-    fun errorSendingMessage(error: MessageError)
+    fun errorSendingMessage(error: Error)
 }
 
 /**
