@@ -4,8 +4,6 @@ import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.core.services.messaging.Error
 import com.livelike.engagementsdk.parseISODateTime
-import java.lang.Exception
-import java.text.ParseException
 
 internal interface ChatEventListener {
     fun onChatMessageSend(url: String, message: ChatMessage, timeData: EpochTime)
@@ -126,3 +124,5 @@ data class ChatRoomInfo(
 enum class Visibility { everyone, members }
 
 internal const val CHAT_MESSAGE_IMAGE_TEMPLATE = ":message:"
+
+internal data class ChatRoomRequest(var title: String?, var visibility: Visibility?)

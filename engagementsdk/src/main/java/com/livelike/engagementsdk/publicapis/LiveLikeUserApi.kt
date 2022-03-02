@@ -142,7 +142,9 @@ internal fun LiveLikeChatMessage.toChatMessage(): ChatMessage {
         image_height = image_height,
         quoteMessage = quoteMessage?.toChatMessage(),
         isDeleted = isDeleted,
-        timeStamp = timestamp
+        timeStamp = timestamp,
+        clientMessageId = clientMessageId,
+        createdAt = createdAt
     )
 }
 
@@ -184,6 +186,8 @@ internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
         this.isDeleted = this@toLiveLikeChatMessage.isDeleted
         this.quoteMessage =
             this@toLiveLikeChatMessage.quoteMessage?.toLiveLikeChatMessage()
+        this.clientMessageId = this@toLiveLikeChatMessage.clientMessageId
+        this.createdAt = this@toLiveLikeChatMessage.createdAt
     }
 }
 

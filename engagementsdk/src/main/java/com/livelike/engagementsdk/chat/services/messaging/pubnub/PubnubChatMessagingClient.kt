@@ -201,16 +201,16 @@ internal class PubnubChatMessagingClient(
                 it.resume(true)
             } else if (result is Result.Success) {
                 //TODO: has to uncomment later once reaction api is implemented
-                processReceivedMessage(
-                    channel,
-                    PubnubChatEvent(
-                        result.data.messageEvent!!,
-                        result.data,
-                        0L,
-                        pubnubChatEvent.messageUrl
-                    ),
-                    0L
-                )
+//                processReceivedMessage(
+//                    channel,
+//                    PubnubChatEvent(
+//                        result.data.messageEvent!!,
+//                        result.data,
+//                        0L,
+//                        pubnubChatEvent.messageUrl
+//                    ),
+//                    0L
+//                )
                 it.resume(true)
             }
         }

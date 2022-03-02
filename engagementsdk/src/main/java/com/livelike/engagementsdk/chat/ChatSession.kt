@@ -20,19 +20,12 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
-import kotlinx.coroutines.*
 import com.livelike.engagementsdk.publicapis.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
 import java.net.URL
-import java.util.*
-import kotlin.collections.ArrayList
 import java.util.*
 
 
@@ -193,8 +186,8 @@ internal class ChatSession(
             msgListener?.onUnPinMessage(pinMessageId)
         }
 
-        override fun onErrorMessage(error: String) {
-            msgListener?.onErrorMessage(error)
+        override fun onErrorMessage(error: String, clientMessageId: String?) {
+            msgListener?.onErrorMessage(error, clientMessageId)
         }
     }
 
@@ -393,14 +386,14 @@ internal class ChatSession(
         imageUrl: String?,
         imageWidth: Int?,
         imageHeight: Int?,
-        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+        liveLikePreCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
         internalSendMessage(
             message,
             imageUrl,
             imageWidth,
             imageHeight,
-            liveLikeCallback = liveLikeCallback
+            preLiveLikeCallback = liveLikePreCallback
         )
     }
 
@@ -411,7 +404,7 @@ internal class ChatSession(
         imageHeight: Int?,
         quoteMessageId: String,
         quoteMessage: LiveLikeChatMessage,
-        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+        liveLikePreCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
         // Removing the parent message from parent message in order to avoid reply to reply in terms of data
         // and avoid data nesting
@@ -424,7 +417,7 @@ internal class ChatSession(
             imageWidth,
             imageHeight,
             quoteMessage,
-            liveLikeCallback
+            liveLikePreCallback
         )
     }
 
@@ -434,10 +427,10 @@ internal class ChatSession(
         imageWidth: Int?,
         imageHeight: Int?,
         parentChatMessage: LiveLikeChatMessage? = null,
-        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+        preLiveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
         if (message?.isEmpty() == true) {
-            liveLikeCallback.onResponse(null, "Message cannot be empty")
+            preLiveLikeCallback.onResponse(null, "Message cannot be empty")
             return
         }
         val timeData = getPlayheadTime()
@@ -457,10 +450,11 @@ internal class ChatSession(
             image_width = imageWidth ?: 100,
             image_height = imageHeight ?: 100,
             timeStamp = timeData.timeSinceEpochInMs.toString(),
-            quoteMessage = parentChatMessage?.copy()?.toChatMessage()
+            quoteMessage = parentChatMessage?.copy()?.toChatMessage(),
+            clientMessageId = UUID.randomUUID().toString(),
         ).let { chatMessage ->
             // TODO: need to update for error handling here if pubnub respond failure of message
-            liveLikeCallback.onResponse(chatMessage.toLiveLikeChatMessage(), null)
+            preLiveLikeCallback.onResponse(chatMessage.toLiveLikeChatMessage(), null)
             currentChatRoom?.chatroomMessageUrl?.let { messageUrl ->
                 val hasExternalImage = imageUrl != null
                 if (hasExternalImage) {
