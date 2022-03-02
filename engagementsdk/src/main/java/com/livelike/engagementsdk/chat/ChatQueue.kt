@@ -114,6 +114,7 @@ internal class ChatQueue(
         super.onClientMessageError(client, error)
         if (error.type == MessageError.DENIED_MESSAGE_PUBLISH.name) {
             renderer?.errorSendingMessage(error)
+            msgListener?.onErrorMessage(error.message)
         }
     }
 

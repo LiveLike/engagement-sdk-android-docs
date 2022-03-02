@@ -121,6 +121,7 @@ interface MessageListener {
     fun onDeleteMessage(messageId: String)
     fun onPinMessage(message: PinMessageInfo)
     fun onUnPinMessage(pinMessageId: String)
+    fun onErrorMessage(error:String)
 }
 
 /**

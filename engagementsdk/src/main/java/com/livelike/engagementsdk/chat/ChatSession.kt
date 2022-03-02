@@ -192,6 +192,10 @@ internal class ChatSession(
         override fun onUnPinMessage(pinMessageId: String) {
             msgListener?.onUnPinMessage(pinMessageId)
         }
+
+        override fun onErrorMessage(error: String) {
+            msgListener?.onErrorMessage(error)
+        }
     }
 
     private var msgListener: MessageListener? = null

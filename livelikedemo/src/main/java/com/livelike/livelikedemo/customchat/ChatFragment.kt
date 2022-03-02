@@ -267,6 +267,10 @@ class ChatFragment : Fragment() {
                         }
                     }
                 }
+
+                override fun onErrorMessage(error: String) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                }
             })
 
             lay_swipe.isRefreshing = true
