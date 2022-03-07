@@ -313,6 +313,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             setDataSource(chatAdapter)
             if (chatLoaded)
                 checkEmptyChat()
+            logDebug { "SetSession ViewModel:$this , ChatView:${this@ChatView}" }
             eventStream.subscribe(javaClass.simpleName) {
                 logDebug { "Chat event stream : $it" }
                 when (it) {
@@ -969,6 +970,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      *This should generally be called to cleanup at time of onDestroy of activity and onDestroyView of fragment
      **/
     fun clearSession() {
+        logDebug { "Clear Chat Session ViewModel:$viewModel ,ChatView:$this" }
         viewModel?.apply {
             eventStream.unsubscribe(javaClass.simpleName)
             userStream.unsubscribe(javaClass.simpleName)
