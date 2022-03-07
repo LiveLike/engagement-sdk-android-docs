@@ -347,7 +347,7 @@ internal class ChatSession(
                                     chatLoaded = false
                                 }
                                 this@ChatSession.currentChatRoom = chatRoom
-                                pubnubMessagingClient?.activeChatRoom = channel
+                                pubnubMessagingClient?.activeChatRoom = chatRoom
                                 callback?.onResponse(Unit, null)
                             }
                         }

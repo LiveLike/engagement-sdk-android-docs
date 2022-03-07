@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.*
-import com.livelike.engagementsdk.REACTION_CREATED
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
@@ -23,7 +22,6 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.*
 import com.livelike.engagementsdk.core.utils.Queue
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedPreferences
-import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubSubscribeCallbackAdapter
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
@@ -32,7 +30,6 @@ import com.pubnub.api.enums.PNOperationType
 import com.pubnub.api.enums.PNReconnectionPolicy
 import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNStatus
-import com.pubnub.api.models.consumer.history.PNFetchMessageItem
 import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.objects_api.membership.PNMembershipResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
@@ -69,12 +66,16 @@ internal class PubnubChatMessagingClient(
     private var firstTimeToken: Long = 0
     private var pubnubChatRoomLastMessageTime: MutableMap<String, ArrayList<String>>? = null
 
-    var activeChatRoom = ""
+    var activeChatRoom: ChatRoom? = null
         set(value) {
             field = value
             firstTimeToken = 0
-            subscribe(listOf(value))
-            flushPublishedMessage(*connectedChannels.toTypedArray())
+            if (value != null) {
+                value.channels.chat[CHAT_PROVIDER]?.let {
+                    subscribe(listOf(it))
+                }
+                flushPublishedMessage(*connectedChannels.toTypedArray())
+            }
         }
 
     @Synchronized
@@ -281,7 +282,7 @@ internal class PubnubChatMessagingClient(
                                 // channel and channel group configuration. This is another explicit error
                                 listener?.onClientMessageError(
                                     client,
-                                    Error("Access Denied", "Access Denied",null)
+                                    Error("Access Denied", "Access Denied", null)
                                 )
                             }
 
@@ -433,7 +434,7 @@ internal class PubnubChatMessagingClient(
         jsonObject: JsonObject,
         channel: String,
         timeToken: Long,
-        actions: HashMap<String, HashMap<String, List<PNFetchMessageItem.Action>>>? = null
+        actions: HashMap<String, HashMap<String, List<PubnubChatReaction>>>? = null
     ): ClientMessage? {
         val event = jsonObject.extractStringOrEmpty("event").toPubnubChatEventType()
         if (event != null) {
@@ -561,12 +562,12 @@ internal class PubnubChatMessagingClient(
         }
     }
 
-    private fun getOwnReaction(actions: HashMap<String, HashMap<String, List<PNFetchMessageItem.Action>>>?): ChatMessageReaction? {
+    private fun getOwnReaction(actions: HashMap<String, HashMap<String, List<PubnubChatReaction>>>?): ChatMessageReaction? {
         actions?.get(REACTION_CREATED)?.let { reactions ->
             for (value in reactions.keys) {
                 reactions[value]?.forEach { action ->
                     if (action.uuid == pubnub.configuration.uuid) {
-                        return ChatMessageReaction(value, action.actionTimetoken.toLongOrNull())
+                        return ChatMessageReaction(value, action.actionTimeToken)
                     }
                 }
             }
@@ -574,7 +575,7 @@ internal class PubnubChatMessagingClient(
         return null
     }
 
-    private fun processReactionCounts(actions: HashMap<String, HashMap<String, List<PNFetchMessageItem.Action>>>?): MutableMap<String, Int> {
+    private fun processReactionCounts(actions: HashMap<String, HashMap<String, List<PubnubChatReaction>>>?): MutableMap<String, Int> {
         val reactionCountMap = mutableMapOf<String, Int>()
         actions?.get(REACTION_CREATED)?.let { reactions ->
             for (value in reactions.keys) {
@@ -623,13 +624,48 @@ internal class PubnubChatMessagingClient(
                                     jsonObject,
                                     channel,
                                     messageItem.timetoken,
-                                    messageItem.actions
+//                                    messageItem.actions
                                 )
                             }?.filterNotNull() ?: arrayListOf()
                         listener?.onClientMessageEvents(this, list)
                     }
                     sendLoadingCompletedEvent(channel)
                 }
+        }
+    }
+
+    private var firstSince: String? = null
+
+    internal fun loadMessagesWithReactionsFromServer(chatHistoryLimit: Int = CHAT_HISTORY_LIMIT) {
+        activeChatRoom?.let { chatRoom ->
+            chatRoom.chatroomMessageUrl?.let { url ->
+                coroutineScope.launch {
+                    val result = chatRepository.getMessageHistory(
+                        url,
+                        chatRoom.id,
+                        pageSize = chatHistoryLimit,
+                        since = firstSince
+                    )
+                    if (result is Result.Success) {
+                        firstSince = result.data.results.firstOrNull()?.createdAt
+                        val list = result.data.results.map {
+                            val pubnubChatEvent = PubnubChatEvent(it.messageEvent!!, it, it.pubnubTimeToken, url)
+                            return@map processPubnubChatEvent(
+                                JsonParser.parseString(
+                                    gson.toJson(
+                                        pubnubChatEvent
+                                    )
+                                ).asJsonObject,
+                                activeChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
+                                pubnubChatEvent.pubnubToken ?: 0L
+                            )
+                        }.filterNotNull()
+                        listener?.onClientMessageEvents(this@PubnubChatMessagingClient, list)
+                    } else if (result is Result.Error) {
+                        logError { "Error Loading Message : ${result.exception}" }
+                    }
+                }
+            }
         }
     }
 
@@ -748,7 +784,8 @@ internal class PubnubChatMessagingClient(
     override fun subscribe(channels: List<String>) {
         channels.forEach {
             connectedChannels.add(it)
-            loadMessagesWithReactions(it)
+//            loadMessagesWithReactions(it)
+            loadMessagesWithReactionsFromServer()
         }
         pubnub.subscribe().channels(channels).execute()
     }

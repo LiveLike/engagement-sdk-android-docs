@@ -6,6 +6,7 @@ import com.livelike.engagementsdk.TEMPLATE_CHAT_ROOM_ID
 import com.livelike.engagementsdk.chat.ChatRoomRequest
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatListResponse
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
@@ -61,7 +62,8 @@ internal class ChatRepository(
         chatRoomTemplateUrl: String
     ): Result<ChatRoom> {
         val remoteURL = chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "")
-        val titleRequest = gson.toJson(ChatRoomRequest(title, visibility)).toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val titleRequest = gson.toJson(ChatRoomRequest(title, visibility))
+            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         return dataClient.remoteCall<ChatRoom>(
             remoteURL,
             RequestType.POST,
@@ -77,7 +79,8 @@ internal class ChatRepository(
         chatRoomTemplateUrl: String
     ): Result<ChatRoom> {
         val chatRoomResult = fetchChatRoom(chatRoomId, chatRoomTemplateUrl)
-        val titleRequest = gson.toJson(ChatRoomRequest(title, visibility)).toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val titleRequest = gson.toJson(ChatRoomRequest(title, visibility))
+            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         return if (chatRoomResult is Result.Success) {
             return dataClient.remoteCall<ChatRoom>(
                 chatRoomResult.data.url,
@@ -131,10 +134,11 @@ internal class ChatRepository(
     }
 
     fun loadPreviousMessages(channel: String, limit: Int = CHAT_HISTORY_LIMIT) {
-        pubnubChatMessagingClient?.loadMessagesWithReactions(
-            channel,
-            limit
-        )
+//        pubnubChatMessagingClient?.loadMessagesWithReactions(
+//            channel,
+//            limit
+//        )
+        pubnubChatMessagingClient?.loadMessagesWithReactionsFromServer(limit)
     }
 
     suspend fun sendMessage(
@@ -148,6 +152,21 @@ internal class ChatRepository(
             requestBody = gson.toJson(pubnubChatMessage).toRequestBody(
                 "application/json; charset=utf-8".toMediaTypeOrNull()
             )
+        )
+    }
+
+    suspend fun getMessageHistory(
+        url: String,
+        chatRoomId: String,
+        since: String? = null,
+        until: String? = null,
+        pageSize: Int = CHAT_HISTORY_LIMIT
+    ): Result<PubnubChatListResponse> {
+        val apiUrl = "$url?chat_room_id=$chatRoomId&since=$since&until=$until&page_size=$pageSize"
+        return dataClient.remoteCall(
+            apiUrl,
+            accessToken = authKey,
+            requestType = RequestType.GET
         )
     }
 
