@@ -453,11 +453,14 @@ class EngagementSDK(
     /**
      *  Creates a content session without sync.
      *  @param programId Backend generated unique identifier for current program
+     *  @param connectToDefaultChatRoom allow chatSession to connect to default chatRoom
      */
     fun createContentSession(
         programId: String,
-        errorDelegate: ErrorDelegate? = null
+        errorDelegate: ErrorDelegate? = null,
+        connectToDefaultChatRoom: Boolean = true
     ): LiveLikeContentSession {
+        logDebug { "Create Content Session : ${Thread.currentThread().stackTrace.contentToString()},connectToDefaultChatRoom:$connectToDefaultChatRoom" }
         return ContentSession(
             configurationStream,
             userRepository,
@@ -465,7 +468,8 @@ class EngagementSDK(
             programId,
             analyticService,
             errorDelegate,
-            chat()
+            chat(),
+            connectToDefaultChatRoom
         ) { EpochTime(0) }
     }
 
@@ -481,12 +485,15 @@ class EngagementSDK(
      *  Creates a content session with sync.
      *  @param programId Backend generated identifier for current program
      *  @param timecodeGetter returns the video timecode
+     *  @param connectToDefaultChatRoom allow chatSession to connect to default chatRoom
      */
     fun createContentSession(
         programId: String,
         timecodeGetter: TimecodeGetter,
-        errorDelegate: ErrorDelegate? = null
+        errorDelegate: ErrorDelegate? = null,
+        connectToDefaultChatRoom: Boolean = true
     ): LiveLikeContentSession {
+        logDebug { "Create Content Session : ${Thread.currentThread().stackTrace.contentToString()},connectToDefaultChatRoom:$connectToDefaultChatRoom" }
         return ContentSession(
             configurationStream,
             userRepository,
@@ -494,7 +501,8 @@ class EngagementSDK(
             programId,
             analyticService,
             errorDelegate,
-            chat()
+            chat(),
+            connectToDefaultChatRoom
         ) { timecodeGetter.getTimecode() }.apply {
             this.engagementSDK = this@EngagementSDK
         }

@@ -65,6 +65,7 @@ import java.util.*
 
 class ExoPlayerActivity : AppCompatActivity() {
 
+    private var allowDefaultLoadChatRoom: Boolean = true
     private var customLink: String? = null
     private var showLink: Boolean = false
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
@@ -128,6 +129,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             showNotification = intent.getBooleanExtra("showNotification", true)
             showLink = intent.getBooleanExtra("showLink", false)
             customLink = intent.getStringExtra("customLink")
+            allowDefaultLoadChatRoom = intent.getBooleanExtra("allowDefaultLoadChatRoom", true)
 
             adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
             val position = savedInstanceState?.getLong(POSITION) ?: 0
@@ -509,8 +511,20 @@ class ExoPlayerActivity : AppCompatActivity() {
                 when (showNotification) {
                     true -> dialog
                     else -> null
-                }
+                },
+                allowDefaultLoadChatRoom = allowDefaultLoadChatRoom
             )
+            if (!allowDefaultLoadChatRoom) {
+                session.chatSession.connectToChatRoom(
+                    "38043523-920c-47eb-afb4-128d27f5a849",
+                    object :
+                        LiveLikeCallback<Unit>() {
+                        override fun onResponse(result: Unit?, error: String?) {
+                            println("ExoPlayerActivity.onResponse> $result >> $error")
+                        }
+                    })
+            }
+
             widget_view?.setWidgetListener(object : WidgetListener {
                 override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
                     if (myWidgetsList.find { it.id == liveLikeWidget.id } == null) {
