@@ -18,7 +18,7 @@
         "sender_image_url": null,
         "badge_image_url": null,
         "sender_id": "57489a5a-2873-4cb9-ac3f-a962daf4b7e7",
-        "sender_profile_url": "https://cf-blast-dig.livelikecdn.com/api/v1/profiles/57489a5a-2873-4cb9-ac3f-a962daf4b7e7/",
+        "sender_profile_url": "https://localhost:8000/api/v1/profiles/57489a5a-2873-4cb9-ac3f-a962daf4b7e7/",
         "program_date_time": "2021-11-23T06:56:36,731Z"
       },
       "chat_room_id": "46a975fc-49e1-4fc0-8239-25c566296b5e",

@@ -20,19 +20,12 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
-import kotlinx.coroutines.*
 import com.livelike.engagementsdk.publicapis.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
 import java.net.URL
-import java.util.*
-import kotlin.collections.ArrayList
 import java.util.*
 
 
@@ -191,6 +184,10 @@ internal class ChatSession(
 
         override fun onUnPinMessage(pinMessageId: String) {
             msgListener?.onUnPinMessage(pinMessageId)
+        }
+
+        override fun onErrorMessage(error: String, clientMessageId: String?) {
+            msgListener?.onErrorMessage(error, clientMessageId)
         }
     }
 
@@ -389,14 +386,14 @@ internal class ChatSession(
         imageUrl: String?,
         imageWidth: Int?,
         imageHeight: Int?,
-        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+        liveLikePreCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
         internalSendMessage(
             message,
             imageUrl,
             imageWidth,
             imageHeight,
-            liveLikeCallback = liveLikeCallback
+            preLiveLikeCallback = liveLikePreCallback
         )
     }
 
@@ -407,7 +404,7 @@ internal class ChatSession(
         imageHeight: Int?,
         quoteMessageId: String,
         quoteMessage: LiveLikeChatMessage,
-        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+        liveLikePreCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
         // Removing the parent message from parent message in order to avoid reply to reply in terms of data
         // and avoid data nesting
@@ -420,7 +417,7 @@ internal class ChatSession(
             imageWidth,
             imageHeight,
             quoteMessage,
-            liveLikeCallback
+            liveLikePreCallback
         )
     }
 
@@ -430,10 +427,10 @@ internal class ChatSession(
         imageWidth: Int?,
         imageHeight: Int?,
         parentChatMessage: LiveLikeChatMessage? = null,
-        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+        preLiveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
         if (message?.isEmpty() == true) {
-            liveLikeCallback.onResponse(null, "Message cannot be empty")
+            preLiveLikeCallback.onResponse(null, "Message cannot be empty")
             return
         }
         val timeData = getPlayheadTime()
@@ -453,55 +450,63 @@ internal class ChatSession(
             image_width = imageWidth ?: 100,
             image_height = imageHeight ?: 100,
             timeStamp = timeData.timeSinceEpochInMs.toString(),
-            quoteMessage = parentChatMessage?.copy()?.toChatMessage()
+            quoteMessage = parentChatMessage?.copy()?.toChatMessage(),
+            clientMessageId = UUID.randomUUID().toString(),
         ).let { chatMessage ->
-
             // TODO: need to update for error handling here if pubnub respond failure of message
-            liveLikeCallback.onResponse(chatMessage.toLiveLikeChatMessage(), null)
-
-            val hasExternalImage = imageUrl != null
-            if (hasExternalImage) {
-                contentSessionScope.launch {
-                    val uri = Uri.parse(chatMessage.imageUrl)
-                    when {
-                        uri.scheme != null && uri.scheme.equals("content") -> {
-                            applicationContext.contentResolver.openInputStream(uri)
+            preLiveLikeCallback.onResponse(chatMessage.toLiveLikeChatMessage(), null)
+            currentChatRoom?.chatroomMessageUrl?.let { messageUrl ->
+                val hasExternalImage = imageUrl != null
+                if (hasExternalImage) {
+                    contentSessionScope.launch {
+                        val uri = Uri.parse(chatMessage.imageUrl)
+                        when {
+                            uri.scheme != null && uri.scheme.equals("content") -> {
+                                applicationContext.contentResolver.openInputStream(uri)
+                            }
+                            else -> {
+                                URL(chatMessage.imageUrl).openConnection().getInputStream()
+                            }
+                        }?.use {
+                            val fileBytes = it.readBytes()
+                            val uploadedImageUrl = dataClient.uploadImage(
+                                currentChatRoom!!.uploadUrl,
+                                null,
+                                fileBytes
+                            )
+                            chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                            chatMessage.imageUrl = uploadedImageUrl
+                            val bitmap =
+                                BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                            chatMessage.image_width = imageWidth ?: bitmap.width
+                            chatMessage.image_height = imageHeight ?: bitmap.height
+                            val m = chatMessage.copy()
+                            m.message = ""
+                            (chatClient as? ChatEventListener)?.onChatMessageSend(
+                                messageUrl,
+                                chatMessage,
+                                timeData
+                            )
+                            bitmap.recycle()
                         }
-                        else -> {
-                            URL(chatMessage.imageUrl).openConnection().getInputStream()
-                        }
-                    }?.use {
-                        val fileBytes = it.readBytes()
-                        val uploadedImageUrl = dataClient.uploadImage(
-                            currentChatRoom!!.uploadUrl,
-                            null,
-                            fileBytes
+                    }
+                } else {
+                    (chatClient as? ChatEventListener)?.onChatMessageSend(
+                        messageUrl,
+                        chatMessage,
+                        timeData
+                    )
+                }
+                currentChatRoom?.id?.let { id ->
+                    chatMessage.id?.let {
+                        analyticsServiceStream.latest()?.trackMessageSent(
+                            it,
+                            chatMessage.message,
+                            hasExternalImage,
+                            id
                         )
-                        chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
-                        chatMessage.imageUrl = uploadedImageUrl
-                        val bitmap =
-                            BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
-                        chatMessage.image_width = imageWidth ?: bitmap.width
-                        chatMessage.image_height = imageHeight ?: bitmap.height
-                        val m = chatMessage.copy()
-                        m.message = ""
-                        (chatClient as? ChatEventListener)?.onChatMessageSend(
-                            chatMessage,
-                            timeData
-                        )
-                        bitmap.recycle()
                     }
                 }
-            } else {
-                (chatClient as? ChatEventListener)?.onChatMessageSend(chatMessage, timeData)
-            }
-            currentChatRoom?.id?.let { id ->
-                analyticsServiceStream.latest()?.trackMessageSent(
-                    chatMessage.id,
-                    chatMessage.message,
-                    hasExternalImage,
-                    id
-                )
             }
         }
     }

@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.ChatRoomListener
 import com.livelike.engagementsdk.EngagementSDK
@@ -24,6 +23,7 @@ import com.livelike.engagementsdk.chat.MessageSwipeController
 import com.livelike.engagementsdk.chat.SwipeControllerActions
 import com.livelike.engagementsdk.chat.data.remote.LiveLikeOrdering
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
@@ -267,6 +267,10 @@ class ChatFragment : Fragment() {
                         }
                     }
                 }
+
+                override fun onErrorMessage(error: String, clientMessageId: String?) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                }
             })
 
             lay_swipe.isRefreshing = true
@@ -323,14 +327,14 @@ class ChatFragment : Fragment() {
                     imageUrl,
                     imageWidth = 150,
                     imageHeight = 150,
-                    liveLikeCallback = callback,
+                    liveLikePreCallback = callback,
                     quoteMessage = currentQuoteMessage!!,
                     quoteMessageId = currentQuoteMessage!!.id!!
                 )
             } else {
                 homeChat.session.chatSession.sendMessage(
                     message, imageUrl = imageUrl, imageWidth = 150, imageHeight = 150,
-                    liveLikeCallback = callback
+                    liveLikePreCallback = callback
                 )
             }
         }

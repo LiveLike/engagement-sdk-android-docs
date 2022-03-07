@@ -27,9 +27,6 @@ internal open class PubnubMessagingClient(
     pubnubPresenceTimeout: Int
 ) : MessagingClient {
 
-    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
-    }
-
     private val subscribedChannels = mutableListOf<String>()
 
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
@@ -85,7 +82,7 @@ internal open class PubnubMessagingClient(
                                 // channel and channel group configuration. This is another explicit error
                                 listener?.onClientMessageError(
                                     this@PubnubMessagingClient,
-                                    Error("Access Denied", "Access Denied")
+                                    Error("Access Denied", "Access Denied",null)
                                 )
                             }
 
@@ -163,6 +160,15 @@ internal open class PubnubMessagingClient(
 
     override fun unsubscribeAll() {
         pubnub.unsubscribeAll()
+    }
+
+    override fun publishMessage(
+        url: String,
+        message: String,
+        channel: String,
+        timeSinceEpoch: EpochTime
+    ) {
+
     }
 
     override fun addMessagingEventListener(listener: MessagingEventListener) {

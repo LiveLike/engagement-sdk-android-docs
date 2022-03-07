@@ -21,7 +21,6 @@ interface LiveLikeChatClient {
         chatRoomId: String,
         title: String? = null,
         visibility: Visibility? = null,
-        enableMessageReply: Boolean,
         liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
     )
 

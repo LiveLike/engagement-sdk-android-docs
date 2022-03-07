@@ -82,6 +82,8 @@ data class LiveLikeChatMessage(val message: String?) {
     var isDeleted: Boolean = false
 
     var quoteMessage: LiveLikeChatMessage? = null
+    var clientMessageId: String? = null
+    var createdAt: String? = null
 }
 
 enum class ChatMessageType(val key: String) {
@@ -128,19 +130,21 @@ internal fun ChatMessageType.toPubnubChatEventType(): PubnubChatEventType {
 internal fun LiveLikeChatMessage.toChatMessage(): ChatMessage {
     return ChatMessage(
         type?.toPubnubChatEventType() ?: PubnubChatEventType.MESSAGE_CREATED,
-        channel?:"",
+        channel ?: "",
         message,
         custom_data,
-        senderId?:"",
-        nickname?:"",
+        senderId ?: "",
+        nickname ?: "",
         userPic,
-        id?:"",
+        id ?: "",
         imageUrl = imageUrl,
         image_width = image_width,
         image_height = image_height,
         quoteMessage = quoteMessage?.toChatMessage(),
         isDeleted = isDeleted,
-        timeStamp = timestamp
+        timeStamp = timestamp,
+        clientMessageId = clientMessageId,
+        createdAt = createdAt
     )
 }
 
@@ -156,7 +160,9 @@ internal fun LiveLikeChatMessage.toPubNubChatMessage(): PubnubChatMessage {
         imageUrl,
         image_width,
         image_height,
-        custom_data
+        custom_data,
+        createdAt = createdAt,
+        clientMessageId = clientMessageId,
     )
 }
 
@@ -180,6 +186,8 @@ internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
         this.isDeleted = this@toLiveLikeChatMessage.isDeleted
         this.quoteMessage =
             this@toLiveLikeChatMessage.quoteMessage?.toLiveLikeChatMessage()
+        this.clientMessageId = this@toLiveLikeChatMessage.clientMessageId
+        this.createdAt = this@toLiveLikeChatMessage.createdAt
     }
 }
 
