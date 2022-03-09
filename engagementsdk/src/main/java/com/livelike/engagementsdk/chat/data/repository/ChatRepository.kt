@@ -133,7 +133,7 @@ internal class ChatRepository(
         )
     }
 
-    fun loadPreviousMessages(channel: String, limit: Int = CHAT_HISTORY_LIMIT) {
+    fun loadPreviousMessages(limit: Int = CHAT_HISTORY_LIMIT) {
 //        pubnubChatMessagingClient?.loadMessagesWithReactions(
 //            channel,
 //            limit
@@ -162,7 +162,13 @@ internal class ChatRepository(
         until: String? = null,
         pageSize: Int = CHAT_HISTORY_LIMIT
     ): Result<PubnubChatListResponse> {
-        val apiUrl = "$url?chat_room_id=$chatRoomId&since=$since&until=$until&page_size=$pageSize"
+        var apiUrl = "$url?chat_room_id=$chatRoomId&page_size=$pageSize"
+        since?.let {
+            apiUrl = "$apiUrl&since=$it"
+        }
+        until?.let {
+            apiUrl = "$apiUrl&until=$it"
+        }
         return dataClient.remoteCall(
             apiUrl,
             accessToken = authKey,

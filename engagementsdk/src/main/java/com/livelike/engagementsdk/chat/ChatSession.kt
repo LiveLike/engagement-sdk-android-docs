@@ -512,13 +512,11 @@ internal class ChatSession(
     }
 
     override fun loadNextHistory(limit: Int) {
-        currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
-            if (chatRepository != null) {
-                chatRepository?.loadPreviousMessages(channel, limit)
-            } else {
-                logError { "Chat repo is null" }
-                errorDelegate?.onError("Chat Repository is Null")
-            }
+        if (chatRepository != null) {
+            chatRepository?.loadPreviousMessages(limit)
+        } else {
+            logError { "Chat repo is null" }
+            errorDelegate?.onError("Chat Repository is Null")
         }
     }
 
