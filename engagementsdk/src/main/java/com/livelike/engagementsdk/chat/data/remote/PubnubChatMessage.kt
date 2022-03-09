@@ -42,6 +42,8 @@ internal data class PubnubChatMessage(
     var pubnubTimeToken: Long? = null,
     @SerializedName("reactions")
     var reactions: Map<String, List<PubnubChatReaction>>? = null,
+    @SerializedName("content_filter")
+    var contentFilter: List<String>? = null
 )
 
 internal data class PubnubChatReaction(

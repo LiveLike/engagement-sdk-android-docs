@@ -4,51 +4,24 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
-import com.livelike.engagementsdk.CHAT_PROVIDER
-import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.REACTION_CREATED
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.MessageError
-import com.livelike.engagementsdk.chat.data.remote.ChatRoom
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CHATROOM_UPDATED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.CUSTOM_MESSAGE_CREATED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_CREATED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_DELETED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_PINNED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_UNPINNED
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatReaction
-import com.livelike.engagementsdk.chat.data.remote.PubnubPinMessageInfo
-import com.livelike.engagementsdk.chat.data.remote.toPinMessageInfo
-import com.livelike.engagementsdk.chat.data.remote.toPubnubChatEventType
+import com.livelike.engagementsdk.chat.data.remote.*
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.*
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.addPublishedMessage
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.flushPublishedMessage
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.getPublishedMessages
-import com.livelike.engagementsdk.core.services.messaging.ClientMessage
-import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
-import com.livelike.engagementsdk.core.services.messaging.Error
-import com.livelike.engagementsdk.core.services.messaging.MessagingClient
-import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
+import com.livelike.engagementsdk.core.services.messaging.*
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.*
 import com.livelike.engagementsdk.core.utils.Queue
-import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
-import com.livelike.engagementsdk.core.utils.gson
-import com.livelike.engagementsdk.core.utils.isoUTCDateTimeFormatter
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedPreferences
-import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubSubscribeCallbackAdapter
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
@@ -61,14 +34,10 @@ import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.objects_api.membership.PNMembershipResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
-import java.util.Calendar
+import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -582,15 +551,10 @@ internal class PubnubChatMessagingClient(
         return null
     }
 
-    private fun isMessageModerated(jsonObject: JsonObject): Boolean {
+    private fun isMessageModerated(chatMessage: PubnubChatMessage): Boolean {
         // added this check since in payload content filter was coming as string (json primitive) instead of array
-        val contentFilter = jsonObject.getAsJsonObject("payload")?.get("content_filter")
-        return if (contentFilter?.isJsonPrimitive == true) {
-            false
-        } else {
-            jsonObject.getAsJsonObject("payload")?.getAsJsonArray("content_filter")
-                ?.size() ?: 0 > 0
-        }
+        val contentFilter = chatMessage.contentFilter
+        return (contentFilter?.size ?: 0) > 0
     }
 
     private fun getOwnReaction(actions: Map<String, List<PubnubChatReaction>>?): ChatMessageReaction? {
@@ -642,12 +606,13 @@ internal class PubnubChatMessagingClient(
                             firstTimeToken = it
                         }
                         val list =
-                            result.channels?.get(channel)?.filter { messageItem ->
-                                val jsonObject = messageItem.message.asJsonObject.apply {
-                                    addProperty("pubnubToken", messageItem.timetoken)
-                                }
-                                return@filter !isMessageModerated(jsonObject)
-                            }?.map { messageItem ->
+                            result.channels?.get(channel)
+                                /*?.filter { messageItem ->
+                                    val jsonObject = messageItem.message.asJsonObject.apply {
+                                        addProperty("pubnubToken", messageItem.timetoken)
+                                    }
+                                    return@filter !isMessageModerated(jsonObject)
+                                }*/?.map { messageItem ->
                                 val jsonObject = messageItem.message.asJsonObject.apply {
                                     addProperty("pubnubToken", messageItem.timetoken)
                                 }
@@ -665,7 +630,7 @@ internal class PubnubChatMessagingClient(
         }
     }
 
-    private var firstSince: String? = null
+    private var firstUntil: String? = null
 
     internal fun loadMessagesWithReactionsFromServer(chatHistoryLimit: Int = CHAT_HISTORY_LIMIT) {
         activeChatRoom?.let { chatRoom ->
@@ -675,11 +640,13 @@ internal class PubnubChatMessagingClient(
                         url,
                         chatRoom.id,
                         pageSize = chatHistoryLimit,
-                        since = firstSince
+                        until = firstUntil
                     )
                     if (result is Result.Success) {
-                        firstSince = result.data.results.firstOrNull()?.createdAt
-                        val list = result.data.results.map {
+                        firstUntil = result.data.results.firstOrNull()?.createdAt
+                        val list = result.data.results.filter { chatMessage ->
+                            return@filter !isMessageModerated(chatMessage)
+                        }.map {
                             val pubnubChatEvent =
                                 PubnubChatEvent(
                                     it.messageEvent ?: MESSAGE_CREATED.key,
