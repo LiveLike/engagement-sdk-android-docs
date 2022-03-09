@@ -19,6 +19,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.net.URLEncoder
 
 internal class ChatRepository(
     private val subscribeKey: String,
@@ -164,11 +165,12 @@ internal class ChatRepository(
     ): Result<PubnubChatListResponse> {
         var apiUrl = "$url?chat_room_id=$chatRoomId&page_size=$pageSize"
         since?.let {
-            apiUrl = "$apiUrl&since=$it"
+            apiUrl = "$apiUrl&since=${URLEncoder.encode(it, "utf-8")}"
         }
         until?.let {
-            apiUrl = "$apiUrl&until=$it"
+            apiUrl = "$apiUrl&until=${URLEncoder.encode(it, "utf-8")}"
         }
+
         return dataClient.remoteCall(
             apiUrl,
             accessToken = authKey,
