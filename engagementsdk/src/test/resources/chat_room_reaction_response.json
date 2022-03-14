@@ -1,0 +1,50 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": "c9f67af5-179a-4568-b7d5-57f4c4eb4afb",
+      "url": "https://localhost:8080/api/v1/reaction-packs/c9f67af5-179a-4568-b7d5-57f4c4eb4afb/",
+      "name": "a",
+      "emojis": [
+        {
+          "id": "9ca6849e-6883-40b9-a477-3e83efb396e9",
+          "name": "aa",
+          "file": "https://cf-blast-storage-dig.livelikecdn.com/assets/382add90-41f0-4806-aa17-da73737634d9.gif",
+          "mimetype": "image/gif"
+        },
+        {
+          "id": "bf76d529-cecf-4fce-8c2b-352c439e6d15",
+          "name": "ad",
+          "file": "https://cf-blast-storage-dig.livelikecdn.com/assets/266d0744-2faa-418e-bb20-5004decb2e16.png",
+          "mimetype": "image/png"
+        },
+        {
+          "id": "ddea92dd-32db-4549-9780-b605a4e176f8",
+          "name": "ase",
+          "file": "https://cf-blast-storage-dig.livelikecdn.com/assets/da8ff991-6e71-411d-81e0-e36f285af60f.png",
+          "mimetype": "image/png"
+        },
+        {
+          "id": "638f8543-fa4f-4627-905e-e0adec08c087",
+          "name": "e",
+          "file": "https://cf-blast-storage-dig.livelikecdn.com/assets/07e1587a-e034-4f14-b580-ceb0335bc81f.jpeg",
+          "mimetype": "image/jpeg"
+        },
+        {
+          "id": "92a604c5-b6cf-42dd-a17e-4f8076e9f3db",
+          "name": "asd",
+          "file": "https://cf-blast-storage-dig.livelikecdn.com/assets/8bd87561-dfa2-42f7-a4a5-1e6cb1175503.png",
+          "mimetype": "image/png"
+        },
+        {
+          "id": "cf67ac84-331e-4270-971c-56b68de039c1",
+          "name": "wesa",
+          "file": "https://cf-blast-storage-dig.livelikecdn.com/assets/68a5ba2f-8ebc-42f9-b207-81c911789eef.png",
+          "mimetype": "image/png"
+        }
+      ]
+    }
+  ]
+}

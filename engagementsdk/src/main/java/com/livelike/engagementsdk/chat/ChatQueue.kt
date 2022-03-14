@@ -58,8 +58,13 @@ internal class ChatQueue(
             }
         }
 
-    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
-        upstream.publishMessage(message, channel, timeSinceEpoch)
+    override fun publishMessage(
+        url: String,
+        message: String,
+        channel: String,
+        timeSinceEpoch: EpochTime
+    ) {
+        upstream.publishMessage(url, message, channel, timeSinceEpoch)
     }
 
     override fun stop() {
@@ -81,8 +86,8 @@ internal class ChatQueue(
         deletedList.forEach { event ->
             val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
             chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
-            renderer?.deleteChatMessage(chatMessage.id)
-            msgListener?.onDeleteMessage(chatMessage.id)
+            renderer?.deleteChatMessage(chatMessage.id!!)
+            msgListener?.onDeleteMessage(chatMessage.id!!)
         }
         val messageList = list.map { event ->
             val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
@@ -101,14 +106,15 @@ internal class ChatQueue(
 
     var renderer: ChatRenderer? = null
 
-    override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
-        publishMessage(gson.toJson(message), message.channel, timeData)
+    override fun onChatMessageSend(url: String, message: ChatMessage, timeData: EpochTime) {
+        publishMessage(url, gson.toJson(message), message.channel, timeData)
     }
 
     override fun onClientMessageError(client: MessagingClient, error: Error) {
         super.onClientMessageError(client, error)
-        if (error.type.equals(MessageError.DENIED_MESSAGE_PUBLISH.name)) {
-            renderer?.errorSendingMessage(MessageError.DENIED_MESSAGE_PUBLISH)
+        if (error.type == MessageError.DENIED_MESSAGE_PUBLISH.name) {
+            renderer?.errorSendingMessage(error)
+            msgListener?.onErrorMessage(error.message,error.clientMessageId)
         }
     }
 
@@ -136,10 +142,12 @@ internal class ChatQueue(
             ChatViewModel.EVENT_MESSAGE_TIMETOKEN_UPDATED -> {
                 renderer?.updateChatMessageTimeToken(
                     event.message.get("messageId").asString,
-                    event.message.get("timetoken").asString
+                    event.message.get("clientMessageId").asString,
+                    event.message.get("timeToken").asString,
+                    event.message.get("createdAt").asString,
                 )
                 var epochTimeStamp = 0L
-                val time = event.message.get("timetoken").asString.toLong()
+                val time = event.message.get("timeToken").asString.toLong()
                 if (time > 0) {
                     epochTimeStamp = time / 10000
                 }

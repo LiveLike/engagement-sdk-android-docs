@@ -55,8 +55,8 @@ interface LiveLikeChatSession {
      * @imageUrl: image message
      * @imageWidth: image width default is 100, if value is not null then the original width of image will not set
      * @imageHeight: image height default is 100, f value is not null then the original height of image will not set
-     * @liveLikeCallback : callback to provide the message object, this callback is not meant the message is sent
-     *
+     * @liveLikePreCallback : callback to provide the message object, this callback is not meant the message is sent, this when you want to add the message to message list before the message is sent/delivered
+     * you can use clientMessageId to compare and update the message object
      * Note: For the very first for every message livelikeCallback return the ChatMessage object which contains the data added by the user,
      * then the #messageListener will recieve the same chatMessage with uploaded url and timetoken updated ,you can check it with the id in #ChatMessage
      *
@@ -66,7 +66,7 @@ interface LiveLikeChatSession {
         imageUrl: String? = null,
         imageWidth: Int?,
         imageHeight: Int?,
-        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+        liveLikePreCallback: LiveLikeCallback<LiveLikeChatMessage>
     )
 
     fun quoteMessage(
@@ -76,7 +76,7 @@ interface LiveLikeChatSession {
         imageHeight: Int?,
         quoteMessageId: String,
         quoteMessage: LiveLikeChatMessage,
-        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+        liveLikePreCallback: LiveLikeCallback<LiveLikeChatMessage>
     )
 
     /**

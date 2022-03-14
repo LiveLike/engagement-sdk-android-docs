@@ -1,6 +1,6 @@
 {
   "id": "4da3a0b6-7387-4088-8246-68e7fe33d337",
-  "url": "https://cf-blast-dig.livelikecdn.com/api/v1/pin-message/4da3a0b6-7387-4088-8246-68e7fe33d337/",
+  "url": "https://localhost:8000/api/v1/pin-message/4da3a0b6-7387-4088-8246-68e7fe33d337/",
   "message_id": "777e8267-2992-4e76-9001-faec2f552b57",
   "message_payload": {
     "custom_data": "",
@@ -10,7 +10,7 @@
     "image_width": 150,
     "content_filter": [],
     "sender_id": "1c285e1a-aa93-4135-8361-ecd27317c66a",
-    "sender_profile_url": "https://cf-blast-dig.livelikecdn.com/api/v1/profiles/1c285e1a-aa93-4135-8361-ecd27317c66a/",
+    "sender_profile_url": "https://localhost:8000/api/v1/profiles/1c285e1a-aa93-4135-8361-ecd27317c66a/",
     "sender_image_url": null,
     "badge_image_url": null,
     "program_date_time": null,

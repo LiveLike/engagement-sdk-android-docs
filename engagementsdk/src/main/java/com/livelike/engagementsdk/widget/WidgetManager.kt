@@ -4,14 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import com.google.gson.JsonObject
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.LiveLikeEngagementTheme
-import com.livelike.engagementsdk.LiveLikeWidget
-import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.ViewAnimationEvents
-import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.messaging.ClientMessage
@@ -31,8 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.PriorityQueue
-import java.util.Queue
+import java.util.*
 
 internal class WidgetManager(
     upstream: MessagingClient,
@@ -87,8 +79,13 @@ internal class WidgetManager(
         }
     }
 
-    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
-        upstream.publishMessage(message, channel, timeSinceEpoch)
+    override fun publishMessage(
+        url: String,
+        message: String,
+        channel: String,
+        timeSinceEpoch: EpochTime
+    ) {
+        upstream.publishMessage(url,message, channel, timeSinceEpoch)
     }
 
     override fun stop() {
@@ -246,9 +243,11 @@ enum class WidgetType(val event: String) {
     SOCIAL_EMBED("social-embed-created"),
     VIDEO_ALERT("video-alert-created"),
     TEXT_ASK("text-ask-created"),
+
     @UnsupportedWidgetType
     TEXT_NUMBER_PREDICTION("text-number-prediction-created"),
     IMAGE_NUMBER_PREDICTION("image-number-prediction-created"),
+
     @UnsupportedWidgetType
     TEXT_NUMBER_PREDICTION_FOLLOW_UP("text-number-prediction-follow-up-updated"),
     IMAGE_NUMBER_PREDICTION_FOLLOW_UP("image-number-prediction-follow-up-updated");

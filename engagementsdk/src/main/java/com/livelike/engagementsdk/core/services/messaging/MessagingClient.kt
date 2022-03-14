@@ -10,7 +10,7 @@ internal interface MessagingClient {
     fun subscribe(channels: List<String>)
     fun unsubscribe(channels: List<String>)
     fun unsubscribeAll()
-    fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime)
+    fun publishMessage(url: String, message: String, channel: String, timeSinceEpoch: EpochTime)
     fun stop()
     fun start()
     fun destroy()
@@ -41,7 +41,7 @@ internal data class ClientMessage(
 /**
  * Represents a MessagingClient error that can be sent from a MessagingClient
  */
-internal data class Error(val type: String, val message: String)
+internal data class Error(val type: String, val message: String, val clientMessageId: String?)
 
 /**
  * Represents the ConnectionStatus of a MessagingClient
