@@ -43,7 +43,7 @@ internal data class ChatRoom(
     var customMessagesUrl: String? = null,
     @SerializedName("sponsors_url")
     var sponsorsUrl: String? = null,
-    @SerializedName("chatroom_message_url")
+    @SerializedName("chatroom_messages_url")
     var chatroomMessageUrl: String? = null,
 )
 
