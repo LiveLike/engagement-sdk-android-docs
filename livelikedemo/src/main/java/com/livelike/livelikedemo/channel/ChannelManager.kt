@@ -5,7 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.NonNull
-import com.livelike.livelikedemo.PREFERENCES_APP_ID
+import com.livelike.livelikedemo.LiveLikeApplication.Companion.PREFERENCES_APP_ID
 import okhttp3.*
 import org.json.JSONException
 import org.json.JSONObject

@@ -24,7 +24,7 @@ class GetWidgetTestActivity : AppCompatActivity() {
 
         var channelManager = (application as LiveLikeApplication).channelManager
         var session = (application as LiveLikeApplication).createPublicSession(
-            channelManager.selectedChannel.llProgram.toString(), allowTimeCodeGetter = false
+            channelManager?.selectedChannel?.llProgram.toString(), allowTimeCodeGetter = false
         )
 
         stateToViewLookup[null] = RadioButton(this).apply {

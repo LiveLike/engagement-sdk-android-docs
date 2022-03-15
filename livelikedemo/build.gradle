@@ -31,44 +31,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    flavorDimensions 'default'
-    productFlavors {
-        staging {
-            dimension 'default'
-            buildConfigField "String", "APP_CLIENT_ID", '"vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/programs/?client_id=vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
-            applicationIdSuffix ".debug"
-        }
-        production {
-            dimension 'default'
-            buildConfigField "String", "APP_CLIENT_ID", '"8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
-        }
-        qatesting {
-            dimension 'default'
-            applicationIdSuffix ".qa"
-            buildConfigField "String", "APP_CLIENT_ID", '"pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/programs/?client_id=pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
-        }
-        qaiconictesting {
-            dimension 'default'
-            applicationIdSuffix ".iconicqa"
-            buildConfigField "String", "APP_CLIENT_ID", '"LT9lUmrzSqXvAL66rSWSGK0weclpFNbHANUTxW9O"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-iconic.livelikecdn.com/api/v1/programs/?client_id=LT9lUmrzSqXvAL66rSWSGK0weclpFNbHANUTxW9O"'
-        }
-        qagamechangerstesting {
-            dimension 'default'
-            applicationIdSuffix ".gamechangersqa"
-            buildConfigField "String", "APP_CLIENT_ID", '"GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-game-changers.livelikecdn.com/api/v1/programs/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L"'
-        }
-        qadigtesting {
-            dimension 'default'
-            applicationIdSuffix ".digqa"
-            buildConfigField "String", "APP_CLIENT_ID", '"lom9db0XtQUhOZQq1vz8QPfSpiyyxppiUVGMcAje"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-dig.livelikecdn.com/api/v1/programs/?client_id=lom9db0XtQUhOZQq1vz8QPfSpiyyxppiUVGMcAje"'
-        }
-    }
 }
 
 dependencies {

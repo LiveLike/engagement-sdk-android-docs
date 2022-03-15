@@ -29,6 +29,7 @@ class LiveLikeApplication : Application() {
     var publicSession: LiveLikeContentSession? = null
     private var privateGroupChatsession: LiveLikeChatSession? = null
 
+
     lateinit var sdk: EngagementSDK
     lateinit var sdk2: EngagementSDK
 
@@ -40,11 +41,9 @@ class LiveLikeApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
-
-        initSDK()
 //        TODO: THIS SHOULD BE FIXED ASAP
 //        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
+//        selectEnvironment("QA")
         reigsterLogsHandler()
     }
 
@@ -52,45 +51,57 @@ class LiveLikeApplication : Application() {
         registerLogsHandler(object :
                 (String) -> Unit {
             override fun invoke(text: String) {
-               Log.d("engagement sdk logs : ", text)
+                Log.d("engagement sdk logs : ", text)
             }
         })
     }
 
-    private fun initSDK() {
-        sdk = EngagementSDK(
-            BuildConfig.APP_CLIENT_ID,
-            applicationContext,
-            object : ErrorDelegate() {
-                override fun onError(error: String) {
-                    println("LiveLikeApplication.onError--->$error")
-                    android.os.Handler(Looper.getMainLooper()).postDelayed(
-                        {
-                            initSDK()
-                        },
-                        1000
-                    )
-                }
-            },
-            accessTokenDelegate = object : AccessTokenDelegate {
-                override fun getAccessToken(): String? {
-                    return getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
-                        PREF_USER_ACCESS_TOKEN,
-                        null
-                    ).apply {
-                        println("Token:$this")
+    fun selectEnvironment(key: String) {
+        selectEnvironmentKey = key
+        selectedEnvironment = environmentMap[key]
+        initSDK()
+    }
+
+    fun initSDK() {
+        selectedEnvironment?.let {
+            channelManager = ChannelManager(it.testConfigUrl, applicationContext)
+            sdk = EngagementSDK(
+                it.clientId,
+                applicationContext,
+                object : ErrorDelegate() {
+                    override fun onError(error: String) {
+                        println("LiveLikeApplication.onError--->$error")
+                        android.os.Handler(Looper.getMainLooper()).postDelayed(
+                            {
+                                initSDK()
+                            },
+                            1000
+                        )
                     }
-                }
+                },
+                accessTokenDelegate = object : AccessTokenDelegate {
+                    override fun getAccessToken(): String? {
+                        return getSharedPreferences(
+                            PREFERENCES_APP_ID,
+                            Context.MODE_PRIVATE
+                        ).getString(
+                            PREF_USER_ACCESS_TOKEN,
+                            null
+                        ).apply {
+                            println("Token:$this")
+                        }
+                    }
 
-                override fun storeAccessToken(accessToken: String?) {
-                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(
-                        PREF_USER_ACCESS_TOKEN, accessToken
-                    ).apply()
-                }
-            }
-        )
-
-//        sdk.updateChatNickname("Hello Man:${java.util.Random().nextInt(20)}")
+                    override fun storeAccessToken(accessToken: String?) {
+                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit()
+                            .putString(
+                                PREF_USER_ACCESS_TOKEN, accessToken
+                            ).apply()
+                    }
+                },
+                originURL = it.configUrl
+            )
+        }
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {
@@ -146,10 +157,46 @@ class LiveLikeApplication : Application() {
 
     companion object {
         var showCustomWidgetsUI: Boolean = false
-        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
-//            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
+         val environmentMap = hashMapOf(
+            "Staging" to EnvironmentVariable(
+                "vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7",
+                "https://cf-blast-staging.livelikecdn.com",
+                "https://cf-blast-staging.livelikecdn.com/api/v1/programs/?client_id=vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"
+            ),
+            "Production" to EnvironmentVariable(
+                "8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS",
+                "https://cf-blast.livelikecdn.com",
+                "https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"
+            ),
+            "QA" to EnvironmentVariable(
+                "pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6",
+                "https://cf-blast-qa.livelikecdn.com",
+                "https://cf-blast-qa.livelikecdn.com/api/v1/programs/?client_id=pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"
+            ),
+            "QA Iconic" to EnvironmentVariable(
+                "LT9lUmrzSqXvAL66rSWSGK0weclpFNbHANUTxW9O",
+                "https://cf-blast-iconic.livelikecdn.com",
+                "https://cf-blast-iconic.livelikecdn.com/api/v1/programs/?client_id=LT9lUmrzSqXvAL66rSWSGK0weclpFNbHANUTxW9O"
+            ),
+            "QA DIG" to EnvironmentVariable(
+                "lom9db0XtQUhOZQq1vz8QPfSpiyyxppiUVGMcAje",
+                "https://cf-blast-dig.livelikecdn.com",
+                "https://cf-blast-dig.livelikecdn.com/api/v1/programs/?client_id=lom9db0XtQUhOZQq1vz8QPfSpiyyxppiUVGMcAje"
+            ),
+        )
+        var selectEnvironmentKey = "Staging"
+        var selectedEnvironment: EnvironmentVariable? = environmentMap["Staging"]
+        val PREFERENCES_APP_ID
+            get() = selectedEnvironment?.clientId + "Test_Demo"
+        val CHAT_ROOM_LIST
+            get() = selectedEnvironment?.clientId + "chat_rooms"
+
     }
 }
 
-const val PREFERENCES_APP_ID = BuildConfig.APP_CLIENT_ID + "Test_Demo"
-const val CHAT_ROOM_LIST = BuildConfig.APP_CLIENT_ID + "chat_rooms"
+
+data class EnvironmentVariable(
+    val clientId: String,
+    val configUrl: String,
+    val testConfigUrl: String
+)

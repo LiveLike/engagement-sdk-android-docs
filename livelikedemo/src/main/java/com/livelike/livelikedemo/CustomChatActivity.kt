@@ -35,7 +35,7 @@ class CustomChatActivity : AppCompatActivity() {
         if (supportFragmentManager.backStackEntryCount > 0) {
             selectedHomeChat?.let {
                 val sharedPref =
-                    application.getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                    application.getSharedPreferences(LiveLikeApplication.PREFERENCES_APP_ID, Context.MODE_PRIVATE)
                 sharedPref.edit().putLong(
                     "msg_time_${it.channel.llProgram}",
                     Calendar.getInstance().timeInMillis

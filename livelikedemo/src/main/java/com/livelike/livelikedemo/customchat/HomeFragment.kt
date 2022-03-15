@@ -13,7 +13,7 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication
-import com.livelike.livelikedemo.PREFERENCES_APP_ID
+import com.livelike.livelikedemo.LiveLikeApplication.Companion.PREFERENCES_APP_ID
 import com.livelike.livelikedemo.R
 import com.livelike.livelikedemo.channel.Channel
 import kotlinx.android.synthetic.main.fragment_home.lay_swipe
