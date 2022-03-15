@@ -19,8 +19,8 @@ internal data class PubnubChatEvent<T>(
     @SerializedName("payload")
     val payload: T,
     @SerializedName("pubnubToken")
-    val pubnubToken: Long? = null
-
+    val pubnubToken: Long? = null,
+    val messageUrl:String
 )
 
 internal enum class PubnubChatEventType(val key: String) {

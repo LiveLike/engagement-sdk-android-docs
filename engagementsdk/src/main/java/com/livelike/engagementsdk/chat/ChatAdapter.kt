@@ -47,11 +47,13 @@ import com.livelike.engagementsdk.chat.utils.setTextOrImageToView
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.publicapis.ChatMessageType
 import com.livelike.engagementsdk.publicapis.toChatMessageType
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.ln
@@ -276,8 +278,10 @@ internal class ChatRecyclerAdapter(
                     )
                 }
             }
-            item?.let {
-                analyticsService.trackMessageDisplayed(item.id, item.message)
+            item?.let { chatMessage ->
+                chatMessage.id?.let {
+                    analyticsService.trackMessageDisplayed(it, chatMessage.message)
+                }
             }
         }
 
@@ -379,14 +383,16 @@ internal class ChatRecyclerAdapter(
                                     }
                                     isRemoved = false
                                 }
-                                reactionId?.let {
-                                    chatRoomId?.let {
-                                        analyticsService.trackChatReactionSelected(
-                                            it,
-                                            id,
-                                            reactionId,
-                                            isRemoved
-                                        )
+                                id?.let {
+                                    reactionId?.let {
+                                        chatRoomId?.let {
+                                            analyticsService.trackChatReactionSelected(
+                                                it,
+                                                id!!,
+                                                reactionId,
+                                                isRemoved
+                                            )
+                                        }
                                     }
                                 }
                                 // removing unecessary call

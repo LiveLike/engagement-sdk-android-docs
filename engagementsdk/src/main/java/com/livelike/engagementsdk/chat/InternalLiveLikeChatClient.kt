@@ -102,14 +102,13 @@ internal class InternalLiveLikeChatClient(
         visibility: Visibility?,
         liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
     ) {
-        createUpdateChatRoom(null, visibility, title, false, liveLikeCallback)
+        createUpdateChatRoom(null, visibility, title, liveLikeCallback)
     }
 
     internal fun createUpdateChatRoom(
         chatRoomId: String?,
         visibility: Visibility?,
         title: String?,
-        enableMessageReply: Boolean,
         liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
     ) {
         sdkScope.launch {
@@ -131,7 +130,7 @@ internal class InternalLiveLikeChatClient(
                             title, visibility, pair.second.createChatRoomUrl
                         )
                         else -> chatRepository.updateChatRoom(
-                            title, visibility,enableMessageReply ,chatRoomId, pair.second.chatRoomDetailUrlTemplate
+                            title, visibility, chatRoomId, pair.second.chatRoomDetailUrlTemplate
                         )
                     }
                     if (chatRoomResult is Result.Success) {
@@ -157,10 +156,9 @@ internal class InternalLiveLikeChatClient(
         chatRoomId: String,
         title: String?,
         visibility: Visibility?,
-        enableMessageReply: Boolean,
         liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
     ) {
-        createUpdateChatRoom(chatRoomId, visibility, title, enableMessageReply, liveLikeCallback)
+        createUpdateChatRoom(chatRoomId, visibility, title, liveLikeCallback)
     }
 
     override fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>) {
