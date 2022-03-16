@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatListCountResponse
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.chat.services.network.ChatDataClient
@@ -44,7 +45,6 @@ internal class ChatSession(
         return currentPlayheadTime.invoke()
     }
 
-    private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private var pubnubMessagingClient: PubnubChatMessagingClient? = null
     internal val dataClient: ChatDataClient = ChatDataClientImpl()
     private var isClosed = false
@@ -271,25 +271,30 @@ internal class ChatSession(
         startTimestamp: Long,
         callback: LiveLikeCallback<Byte>
     ) {
-        chatRoomId?.let {
-            logDebug { "messageCount $chatRoomId ,$startTimestamp" }
+        chatRoomId?.let { chatRoomId ->
+            logDebug { "messageCount ${this.chatRoomId} ,$startTimestamp" }
             fetchChatRoom(
-                it,
+                chatRoomId,
                 object : LiveLikeCallback<ChatRoom>() {
                     override fun onResponse(result: ChatRoom?, error: String?) {
                         result?.let { chatRoom ->
                             chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
-                                if (pubnubClientForMessageCount == null) {
-                                    pubnubClientForMessageCount =
-                                        chatRepository?.establishChatMessagingConnection() as PubnubChatMessagingClient
-                                }
-                                pubnubClientForMessageCount?.getMessageCountV1(
-                                    channel,
-                                    startTimestamp
-                                )
-                                    ?.run {
-                                        callback.processResult(this)
+                                pubnubMessagingClient?.getMessageCountFromServer(
+                                    startTimestamp, liveLikeCallback = object : LiveLikeCallback<PubnubChatListCountResponse>() {
+                                        override fun onResponse(
+                                            result: PubnubChatListCountResponse?,
+                                            error: String?
+                                        ) {
+                                            result?.let {
+                                                callback.onResponse(it.count.toByte(),null)
+                                            }
+                                            error?.let {
+                                                callback.onResponse(null,it)
+                                            }
+                                        }
+
                                     }
+                                )
                             }
                         }
                         error?.let {
