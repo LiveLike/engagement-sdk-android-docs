@@ -73,10 +73,11 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
 internal class ChatRecyclerAdapter(
     internal var analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit,
-    private val blockProfile: (String) -> Unit
+    private val blockProfile: (String) -> Unit,
 ) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(diffChatMessage) {
     var isKeyboardOpen: Boolean = false
     internal var chatRoomId: String? = null
+    internal var showChatAvatarLogo: Boolean = true
     internal var chatRoomName: String? = null
     private var lastFloatingUiAnchorView: View? = null
     var chatRepository: ChatRepository? = null
@@ -94,7 +95,7 @@ internal class ChatRecyclerAdapter(
     internal var reactionCountFormatter: ((count: Int) -> String)? = null
     var currentChatReactionPopUpViewPos: Int = -1
     internal var chatPopUpView: ChatActionsPopupView? = null
-    var showChatAvatarLogo = true
+
     var chatViewDelegate: ChatViewDelegate? = null
     var enableQuoteMessage: Boolean = false
 
