@@ -69,11 +69,14 @@ class HomeFragment : Fragment() {
             lay_swipe.setOnRefreshListener {
                 loadUnreadCount()
             }
-            lay_swipe?.postDelayed({ loadUnreadCount() }, 5000L)
+            lay_swipe?.postDelayed(runnable, 8000L)
         }
     }
 
+    private val runnable = { loadUnreadCount() }
+
     override fun onDestroy() {
+        lay_swipe?.removeCallbacks(runnable)
         adapter.sessionsList.forEach { it.session.close() }
         super.onDestroy()
     }

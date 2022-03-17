@@ -271,38 +271,32 @@ internal class ChatSession(
         startTimestamp: Long,
         callback: LiveLikeCallback<Byte>
     ) {
-        chatRoomId?.let { chatRoomId ->
-            logDebug { "messageCount ${this.chatRoomId} ,$startTimestamp" }
-            fetchChatRoom(
-                chatRoomId,
-                object : LiveLikeCallback<ChatRoom>() {
-                    override fun onResponse(result: ChatRoom?, error: String?) {
-                        result?.let { chatRoom ->
-                            chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
-                                pubnubMessagingClient?.getMessageCountFromServer(
-                                    startTimestamp, liveLikeCallback = object : LiveLikeCallback<PubnubChatListCountResponse>() {
-                                        override fun onResponse(
-                                            result: PubnubChatListCountResponse?,
-                                            error: String?
-                                        ) {
-                                            result?.let {
-                                                callback.onResponse(it.count.toByte(),null)
-                                            }
-                                            error?.let {
-                                                callback.onResponse(null,it)
-                                            }
-                                        }
-
-                                    }
-                                )
+        if (chatRoomId != null) {
+            logDebug { "messageCount ${this.chatRoomId} , StartTime: $startTimestamp , Valid:${pubnubMessagingClient != null}" }
+            chatSessionIdleStream.subscribe(this) {
+                if (it == true) {
+                    chatSessionIdleStream.unsubscribe(this)
+                    pubnubMessagingClient?.getMessageCountFromServer(
+                        startTimestamp,
+                        liveLikeCallback = object :
+                            LiveLikeCallback<PubnubChatListCountResponse>() {
+                            override fun onResponse(
+                                result: PubnubChatListCountResponse?,
+                                error: String?
+                            ) {
+                                result?.let {
+                                    callback.onResponse(it.count.toByte(), null)
+                                }
+                                error?.let {
+                                    callback.onResponse(null, it)
+                                }
                             }
                         }
-                        error?.let {
-                            callback.onResponse(null, error)
-                        }
-                    }
+                    )
                 }
-            )
+            }
+        } else {
+            logError { "ChatRoom Not Found" }
         }
     }
 
