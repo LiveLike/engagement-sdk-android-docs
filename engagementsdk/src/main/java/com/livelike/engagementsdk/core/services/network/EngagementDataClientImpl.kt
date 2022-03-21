@@ -217,6 +217,7 @@ internal open class EngagementDataClientImpl :
                         mainHandler.post { responseCallback.invoke(user) }
                     } else {
                         logError { response.body?.string() }
+
                     }
                 } catch (e: java.lang.Exception) {
                     logError { e }
