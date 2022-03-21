@@ -13,29 +13,15 @@ import com.livelike.engagementsdk.core.data.models.Program
 import com.livelike.engagementsdk.core.data.models.ProgramModel
 import com.livelike.engagementsdk.core.data.models.toProgram
 import com.livelike.engagementsdk.core.exceptionhelpers.safeRemoteApiCall
-import com.livelike.engagementsdk.core.utils.addAuthorizationBearer
-import com.livelike.engagementsdk.core.utils.addUserAgent
-import com.livelike.engagementsdk.core.utils.extractBoolean
-import com.livelike.engagementsdk.core.utils.extractLong
-import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
-import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.core.utils.logVerbose
-import com.livelike.engagementsdk.core.utils.logWarn
+import com.livelike.engagementsdk.core.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.HttpUrl
+import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import okio.ByteString
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -149,30 +135,35 @@ internal open class EngagementDataClientImpl :
 
             override fun onResponse(call: Call, response: Response) {
                 try {
-                    val responseData = JsonParser.parseString(response.body?.string()).asJsonObject
-                    val user = LiveLikeUser(
-                        responseData.extractStringOrEmpty("id"),
-                        responseData.extractStringOrEmpty("nickname"),
-                        responseData.extractStringOrEmpty("access_token"),
-                        responseData.extractBoolean("widgets_enabled"),
-                        responseData.extractBoolean("chat_enabled"),
-                        null,
-                        responseData.extractStringOrEmpty("url"),
-                        responseData.extractStringOrEmpty("chat_room_memberships_url"),
-                        responseData.extractStringOrEmpty("custom_data"),
-                        responseData.extractStringOrEmpty("block_profile_url"),
-                        responseData.extractStringOrEmpty("badges_url"),
-                        responseData.extractStringOrEmpty("badge_progress_url"),
-                        responseData.extractStringOrEmpty("reward_item_balances_url"),
-                        responseData.extractStringOrEmpty("reward_item_transfer_url"),
-                        responseData.extractStringOrEmpty("subscribe_channel"),
-                        responseData.extractLong("reported_count").toInt(),
-                        responseData.extractStringOrEmpty("created_at"),
-                        responseData.extractStringOrEmpty("blocked_profiles_template_url"),
-                        responseData.extractStringOrEmpty("blocked_profile_ids_url")
-                    )
-                    logVerbose { user }
-                    mainHandler.post { responseCallback.invoke(user) }
+                    if (response.isSuccessful) {
+                        val responseData =
+                            JsonParser.parseString(response.body?.string()).asJsonObject
+                        val user = LiveLikeUser(
+                            responseData.extractStringOrEmpty("id"),
+                            responseData.extractStringOrEmpty("nickname"),
+                            responseData.extractStringOrEmpty("access_token"),
+                            responseData.extractBoolean("widgets_enabled"),
+                            responseData.extractBoolean("chat_enabled"),
+                            null,
+                            responseData.extractStringOrEmpty("url"),
+                            responseData.extractStringOrEmpty("chat_room_memberships_url"),
+                            responseData.extractStringOrEmpty("custom_data"),
+                            responseData.extractStringOrEmpty("block_profile_url"),
+                            responseData.extractStringOrEmpty("badges_url"),
+                            responseData.extractStringOrEmpty("badge_progress_url"),
+                            responseData.extractStringOrEmpty("reward_item_balances_url"),
+                            responseData.extractStringOrEmpty("reward_item_transfer_url"),
+                            responseData.extractStringOrEmpty("subscribe_channel"),
+                            responseData.extractLong("reported_count").toInt(),
+                            responseData.extractStringOrEmpty("created_at"),
+                            responseData.extractStringOrEmpty("blocked_profiles_template_url"),
+                            responseData.extractStringOrEmpty("blocked_profile_ids_url")
+                        )
+                        logVerbose { user }
+                        mainHandler.post { responseCallback.invoke(user) }
+                    } else {
+                        logError { response.body?.string() }
+                    }
                 } catch (e: java.lang.Exception) {
                     logError { e }
                 }
@@ -198,30 +189,35 @@ internal open class EngagementDataClientImpl :
 
             override fun onResponse(call: Call, response: Response) {
                 try {
-                    val responseData = JsonParser.parseString(response.body?.string()).asJsonObject
-                    val user = LiveLikeUser(
-                        responseData.extractStringOrEmpty("id"),
-                        responseData.extractStringOrEmpty("nickname"),
-                        accessToken,
-                        responseData.extractBoolean("widgets_enabled"),
-                        responseData.extractBoolean("chat_enabled"),
-                        null,
-                        responseData.extractStringOrEmpty("url"),
-                        responseData.extractStringOrEmpty("chat_room_memberships_url"),
-                        responseData.extractStringOrEmpty("custom_data"),
-                        responseData.extractStringOrEmpty("block_profile_url"),
-                        responseData.extractStringOrEmpty("badges_url"),
-                        responseData.extractStringOrEmpty("badge_progress_url"),
-                        responseData.extractStringOrEmpty("reward_item_balances_url"),
-                        responseData.extractStringOrEmpty("reward_item_transfer_url"),
-                        responseData.extractStringOrEmpty("subscribe_channel"),
-                        responseData.extractLong("reported_count").toInt(),
-                        responseData.extractStringOrEmpty("created_at"),
-                        responseData.extractStringOrEmpty("blocked_profiles_template_url"),
-                        responseData.extractStringOrEmpty("blocked_profile_ids_url")
-                    )
-                    logVerbose { user }
-                    mainHandler.post { responseCallback.invoke(user) }
+                    if (response.isSuccessful) {
+                        val responseData =
+                            JsonParser.parseString(response.body?.string()).asJsonObject
+                        val user = LiveLikeUser(
+                            responseData.extractStringOrEmpty("id"),
+                            responseData.extractStringOrEmpty("nickname"),
+                            accessToken,
+                            responseData.extractBoolean("widgets_enabled"),
+                            responseData.extractBoolean("chat_enabled"),
+                            null,
+                            responseData.extractStringOrEmpty("url"),
+                            responseData.extractStringOrEmpty("chat_room_memberships_url"),
+                            responseData.extractStringOrEmpty("custom_data"),
+                            responseData.extractStringOrEmpty("block_profile_url"),
+                            responseData.extractStringOrEmpty("badges_url"),
+                            responseData.extractStringOrEmpty("badge_progress_url"),
+                            responseData.extractStringOrEmpty("reward_item_balances_url"),
+                            responseData.extractStringOrEmpty("reward_item_transfer_url"),
+                            responseData.extractStringOrEmpty("subscribe_channel"),
+                            responseData.extractLong("reported_count").toInt(),
+                            responseData.extractStringOrEmpty("created_at"),
+                            responseData.extractStringOrEmpty("blocked_profiles_template_url"),
+                            responseData.extractStringOrEmpty("blocked_profile_ids_url")
+                        )
+                        logVerbose { user }
+                        mainHandler.post { responseCallback.invoke(user) }
+                    } else {
+                        logError { response.body?.string() }
+                    }
                 } catch (e: java.lang.Exception) {
                     logError { e }
                 }
