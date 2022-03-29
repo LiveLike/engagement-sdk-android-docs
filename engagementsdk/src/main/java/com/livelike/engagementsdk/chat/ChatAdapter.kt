@@ -180,9 +180,7 @@ internal class ChatRecyclerAdapter(
                         )
                     )
                     setPositiveButton(context.getString(R.string.livelike_chat_alert_blocked_confirm)) { _, _ ->
-                        analyticsService.trackBlockingUser()
-                        blockProfile(msg.senderId)
-                        reporter(msg)
+
                     }
                     create()
                 }.show()
@@ -191,8 +189,7 @@ internal class ChatRecyclerAdapter(
                 AlertDialog.Builder(v.context).apply {
                     setMessage(context.getString(R.string.flag_ui_reporting_message))
                     setPositiveButton(context.getString(R.string.livelike_chat_report_message_confirm)) { _, _ ->
-                        analyticsService.trackReportingMessage()
-                        reporter(msg)
+
                     }
                     create()
                 }.show()
@@ -320,6 +317,17 @@ internal class ChatRecyclerAdapter(
                             setTitle(context.getString(R.string.flag_ui_title))
                             setItems(dialogOptions.map { it.first }.toTypedArray()) { _, which ->
                                 message?.let {
+                                    when(dialogOptions[which].first){
+                                        v.context.getString(R.string.flag_ui_blocking_title) -> {
+                                            analyticsService.trackBlockingUser()
+                                            blockProfile(it.senderId)
+                                            reporter(it)
+                                        }
+                                        v.context.getString(R.string.flag_ui_reporting_title) -> {
+                                            analyticsService.trackReportingMessage()
+                                            reporter(it)
+                                        }
+                                    }
                                     dialogOptions[which].second.invoke(it)
                                 }
                             }
