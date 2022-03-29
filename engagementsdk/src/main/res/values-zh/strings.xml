@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LiveLikeSDK</string>
     <string name="livelike_chat_input_hint">说些什么…</string>
     <string name="point_tutorial_body">不断做出反应，以赚取更多积分并跻身排行榜榜首！</string>
     <string name="points_tutorial_title">伟大的开始！</string>
@@ -52,8 +51,8 @@
     <string name="livelike_predicted_label">预料到的!</string>
     <string name="livelike_cancel_the_quote_chat_window">" 取消家长聊天窗口"</string>
     <string name="livelike_send_quote_message_input_accessibility">向 %1$s 发送回复消息</string>
-    <string name="livelike_quote_image_accessibility">Reply message to Image</string>
-    <string name="livelike_quote_message_accessibility">Replying Message to %1$s</string>
+    <string name="livelike_quote_image_accessibility">回复图片到图片</string>
+    <string name="livelike_quote_message_accessibility">回复消息给 %1$s</string>
     <string name="livelike_quote_blocked_message">消息发件人被阻止</string>
     <string name="livelike_quote_chat_message_deleted_message">消息已删除</string>
 
