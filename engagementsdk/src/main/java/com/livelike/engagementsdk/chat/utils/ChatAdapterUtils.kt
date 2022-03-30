@@ -42,7 +42,6 @@ internal fun setTextOrImageToView(
 ) {
     val callback = MultiCallback(true)
     chatMessage?.apply {
-        println("<top>.setTextOrImageToView>>$message>>$isParent")
         val tag = when (isParent) {
             true -> "parent_$id"
             else -> id
@@ -62,13 +61,13 @@ internal fun setTextOrImageToView(
 
         val linkText = getTextWithCustomLinks(
             linksRegex,
-            SpannableString(message?:""),
+            SpannableString(message ?: ""),
             chatMessage.id,
             chatRoomId,
             chatRoomName,
             analyticsService
         )
-        logDebug { "Stickers: $numberOfStickers,isExternalImage:$isExternalImage,atLeastOneSticker:$atLeastOneSticker,isOnlySticker:$isOnlyStickers,linkText:$linkText" }
+        logDebug { "Stickers: $numberOfStickers,isExternalImage:$isExternalImage,atLeastOneSticker:$atLeastOneSticker,isOnlySticker:$isOnlyStickers,linkText:$linkText,isParent:$isParent" }
 
         textView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         callback.addView(textView)
@@ -92,14 +91,21 @@ internal fun setTextOrImageToView(
                     true -> MEDIUM_STICKER_SIZE
                     else -> LARGER_STICKER_SIZE
                 }
-                imageView.minimumHeight = AndroidResource.dpToPx(size)
                 val factor: Double = when (isParent) {
                     true -> when (input) {
                         true -> 2.2
                         else -> 1.75
                     }
-                    else -> 1.0
+                    else -> when ((image_height ?: 0) > size) {
+                        true -> when ((image_height ?: 0) > 1000) {
+                            true -> 3.0
+                            else -> 1.0
+                        }
+                        else -> 1.0
+                    }
                 }
+                imageView.minimumHeight = ((image_height ?: size) / factor).toInt()
+                logDebug { "Height:$image_height,>$image_width>>$size>>$factor" }
                 Glide.with(imageView.context)
                     .load(imageUrl)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
