@@ -183,11 +183,16 @@ class LiveLikeApplication : Application() {
                 "https://cf-blast-dig.livelikecdn.com",
                 "https://cf-blast-dig.livelikecdn.com/api/v1/programs/?client_id=lom9db0XtQUhOZQq1vz8QPfSpiyyxppiUVGMcAje"
             ),
+             "QA GameChangers" to EnvironmentVariable(
+                 "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
+                 "https://cf-blast-game-changers.livelikecdn.com",
+                 "https://cf-blast-game-changers.livelikecdn.com/api/v1/programs/?client_id=GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L"
+             )
         )
         var selectEnvironmentKey = "Staging"
         var selectedEnvironment: EnvironmentVariable? = environmentMap["Staging"]
         val PREFERENCES_APP_ID
-            get() = selectedEnvironment?.clientId + "Test_Demo"
+            get() = "Test_Demo Preference"
         val CHAT_ROOM_LIST
             get() = selectedEnvironment?.clientId + "chat_rooms"
 

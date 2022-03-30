@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var userStream: Stream<LiveLikeUserApi>
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
-
+    private val selectedEnvironment: String = "Selected App Environment"
     private val mConnReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (context.isNetworkConnected()) {
@@ -159,7 +159,12 @@ class MainActivity : AppCompatActivity() {
                     .toTypedArray()) { _, which ->
                     (application as LiveLikeApplication).selectEnvironment(LiveLikeApplication.environmentMap.keys.toList()[which])
                     events_label.text = "Select Channel"
-                    env_label.text = LiveLikeApplication.environmentMap.keys.toList()[which]
+                    LiveLikeApplication.environmentMap.keys.toList()[which].let {
+                        env_label.text = it
+                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
+                            edit().putString(selectedEnvironment, it).apply()
+                        }
+                    }
                 }
                 create()
             }.show()
@@ -326,7 +331,7 @@ class MainActivity : AppCompatActivity() {
 
         events_label.text = (application as LiveLikeApplication).channelManager.selectedChannel.name
 
-        getSharedPreferences(LiveLikeApplication.PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
+        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
             getString("UserNickname", "")
                 .let {
                     nicknameText.setText(it)
@@ -342,7 +347,11 @@ class MainActivity : AppCompatActivity() {
                     edit().putString("userPic", it).apply()
                 }
             }
-
+            getString(selectedEnvironment, null)?.let {
+                (application as LiveLikeApplication).selectEnvironment(it)
+                events_label.text = "Select Channel"
+                env_label.text = it
+            }
             chatRoomIds = getStringSet(CHAT_ROOM_LIST, mutableSetOf()) ?: mutableSetOf()
         }
 
