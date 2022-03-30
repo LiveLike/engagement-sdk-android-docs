@@ -1,11 +1,11 @@
 package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
-import com.example.example.PinMessageInfo
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
@@ -121,6 +121,7 @@ interface MessageListener {
     fun onDeleteMessage(messageId: String)
     fun onPinMessage(message: PinMessageInfo)
     fun onUnPinMessage(pinMessageId: String)
+    fun onErrorMessage(error: String, clientMessageId: String?)
 }
 
 /**

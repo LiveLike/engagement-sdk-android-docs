@@ -2,8 +2,6 @@ package com.livelike.livelikedemo
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
-import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
@@ -11,11 +9,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.method.ScrollingMovementMethod
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -67,7 +65,6 @@ import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
 import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.custom_msg_item.view.img_sender_msg
-import kotlinx.android.synthetic.main.custom_msg_item.view.lay_msg_back
 import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg
 import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_sender_name
 import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_time
@@ -79,11 +76,25 @@ import java.util.Date
 import java.util.Random
 import java.util.Timer
 import java.util.TimerTask
+import kotlinx.android.synthetic.main.activity_exo_player.*
+import kotlinx.android.synthetic.main.custom_msg_item.view.*
+import kotlinx.android.synthetic.main.widget_chat_stacked.*
+import java.text.DecimalFormat
+import java.util.*
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
+import kotlinx.android.synthetic.main.activity_exo_player.*
+import kotlinx.android.synthetic.main.custom_msg_item.view.*
+import kotlinx.android.synthetic.main.widget_chat_stacked.*
+import java.util.*
+
 
 class ExoPlayerActivity : AppCompatActivity() {
 
     private var customLink: String? = null
     private var showLink: Boolean = false
+    private var enableReplies: Boolean = false
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
     private var jsonTheme: String? = null
     private var showNotification: Boolean = true
@@ -145,7 +156,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             showNotification = intent.getBooleanExtra("showNotification", true)
             showLink = intent.getBooleanExtra("showLink", false)
             customLink = intent.getStringExtra("customLink")
-
+            enableReplies = intent.getBooleanExtra("enableReplies",false)
             adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
             val position = savedInstanceState?.getLong(POSITION) ?: 0
             startingState = PlayerState(0, position, !adsPlaying)
@@ -378,7 +389,42 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
 
+        btn_send_message?.setOnClickListener {
+            session?.chatSession?.sendMessage("Sample ${Random().nextInt()}", null, null, null,
+                object : LiveLikeCallback<LiveLikeChatMessage>() {
+                    override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                        runOnUiThread {
+                            result?.let {
+                                Toast.makeText(
+                                    applicationContext,
+                                    it.toString(),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            error?.let {
+                                Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
 
+                })
+        }
+
+        btn_scroll_position?.setOnClickListener {
+            val alert = AlertDialog.Builder(this)
+            val edittext = EditText(this)
+            alert.setTitle("Enter Message ID")
+
+            alert.setView(edittext)
+
+            alert.setPositiveButton("Done") { dialog, _ -> //What ever you want to do with the value
+                val text = edittext.text.toString()
+                dialog.dismiss()
+                chat_view?.scrollToMessage(text)
+            }
+
+            alert.show()
+        }
 
         btn_custom_message.setOnClickListener {
             session?.chatSession?.sendCustomChatMessage("{" +
@@ -504,6 +550,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
                 }
             })
+            widget_view?.allowWidgetSwipeToDismiss = false
 
             widget_view?.setSession(session)
 
@@ -535,6 +582,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
             this.session = session
+            val allowDiscard = intent.getBooleanExtra("allowDiscard", true)
+            session.chatSession.allowDiscardOwnPublishedMessageInSubscription = allowDiscard
             player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }
 
@@ -557,11 +606,14 @@ class ExoPlayerActivity : AppCompatActivity() {
             session?.chatSession?.avatarUrl = avatarUrl
             txt_chat_room_id?.visibility = View.INVISIBLE
             txt_chat_room_title?.visibility = View.INVISIBLE
+            println("ExoPlayerActivity.initializeLiveLikeSDK::$showChatAvatar")
             session?.chatSession?.shouldDisplayAvatar = showChatAvatar
             chat_view.enableChatMessageURLs = showLink
             if (showLink) {
                 chat_view.chatMessageUrlPatterns = customLink
             }
+            chat_view.enableQuoteMessage = enableReplies
+//            chat_view.reactionCountFormatter = { count -> prettyCount(count)}
 
             chat_view.chatViewDelegate = object : ChatViewDelegate {
                 override fun onCreateViewHolder(
@@ -581,6 +633,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     showChatAvatar: Boolean
                 ) {
                     println("ExoPlayerActivity.onBindView>> ${holder is MyCustomMsgViewHolder}")
+                    /*
                     chatViewThemeAttributes.chatBubbleBackgroundRes?.let {
                         if (it < 0) {
                             holder.itemView.lay_msg_back.setBackgroundColor(it)
@@ -606,6 +659,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                             }
                         }
                     }
+                    */
                     if (showChatAvatar) {
                         holder.itemView.img_sender_msg.visibility = View.VISIBLE
                         Glide.with(applicationContext)
@@ -628,7 +682,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
             chat_view?.setSession(session!!.chatSession)
-
         }
         player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
     }

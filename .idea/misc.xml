@@ -11,7 +11,6 @@
         <entry key="engagementsdk/src/main/res/drawable/livelike_rounded_solid_backgound.xml" value="0.206" />
         <entry key="engagementsdk/src/main/res/drawable/parent_chat_highlighted_rounded_background.xml" value="0.206" />
         <entry key="engagementsdk/src/main/res/drawable/parent_chat_rounded_background.xml" value="0.206" />
-        <entry key="engagementsdk/src/main/res/layout/atom_gamification_progression_meter.xml" value="0.20625" />
         <entry key="engagementsdk/src/main/res/layout/chat_input.xml" value="0.2006079027355623" />
         <entry key="engagementsdk/src/main/res/layout/chat_view.xml" value="0.375" />
         <entry key="engagementsdk/src/main/res/layout/default_chat_cell.xml" value="0.14739583333333334" />
@@ -20,7 +19,6 @@
         <entry key="engagementsdk/src/main/res/layout/widget_text_option_selection.xml" value="0.3802083333333333" />
         <entry key="livelikedemo/src/main/res/drawable/ic_chat_message_highlighted_bubble_rounded_rectangle.xml" value="0.206" />
         <entry key="livelikedemo/src/main/res/drawable/ic_chat_message_highlighted_parent_bubble_rounded_rectangle.xml" value="0.206" />
-        <entry key="livelikedemo/src/main/res/drawable/ic_keyboard_arrow_right_black_24dp.xml" value="0.206" />
         <entry key="livelikedemo/src/main/res/layout-land/activity_exo_player.xml" value="0.21666666666666667" />
         <entry key="livelikedemo/src/main/res/layout/activity_exo_player.xml" value="0.2006079027355623" />
         <entry key="livelikedemo/src/main/res/layout/activity_main.xml" value="0.19351570415400202" />
@@ -40,7 +38,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_15" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

@@ -3,17 +3,10 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
-import com.example.example.PinMessageInfo
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.CHAT_PROVIDER
-import com.livelike.engagementsdk.ChatRoomListener
-import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.MessageListener
-import com.livelike.engagementsdk.MockAnalyticsService
-import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
@@ -27,32 +20,22 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
+import com.livelike.engagementsdk.publicapis.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.net.URL
-import java.util.UUID
+import java.util.*
 
-/**
- * Created by Shivansh Mittal on 2020-04-08.
- */
+
 internal class ChatSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val isPublicRoom: Boolean = true,
     internal val analyticsServiceStream: Stream<AnalyticsService>,
-    private val errorDelegate: ErrorDelegate? = null,
+    internal val errorDelegate: ErrorDelegate? = null,
     private val liveLikeChatClient: LiveLikeChatClient,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeChatSession {
@@ -62,7 +45,7 @@ internal class ChatSession(
     }
 
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
-    private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
+    private var pubnubMessagingClient: PubnubChatMessagingClient? = null
     internal val dataClient: ChatDataClient = ChatDataClientImpl()
     private var isClosed = false
     val chatViewModel: ChatViewModel by lazy {
@@ -123,9 +106,9 @@ internal class ChatSession(
     }
 
     override var shouldDisplayAvatar: Boolean
-        get() = chatViewModel.chatAdapter.showChatAvatarLogo
+        get() = chatViewModel.showChatAvatarLogo
         set(value) {
-            chatViewModel.chatAdapter.showChatAvatarLogo = value
+            chatViewModel.showChatAvatarLogo = value
         }
 
     private fun updatingURls(
@@ -167,7 +150,9 @@ internal class ChatSession(
         chatClient?.run {
             destroy()
         }
-        (liveLikeChatClient as InternalLiveLikeChatClient).unsubscribeToChatRoomDelegate(chatViewModel.hashCode().toString())
+        (liveLikeChatClient as InternalLiveLikeChatClient).unsubscribeToChatRoomDelegate(
+            chatViewModel.hashCode().toString()
+        )
         contentSessionScope.cancel()
         isClosed = true
         chatViewModel.chatAdapter.mRecyclerView = null
@@ -200,6 +185,10 @@ internal class ChatSession(
         override fun onUnPinMessage(pinMessageId: String) {
             msgListener?.onUnPinMessage(pinMessageId)
         }
+
+        override fun onErrorMessage(error: String, clientMessageId: String?) {
+            msgListener?.onErrorMessage(error, clientMessageId)
+        }
     }
 
     private var msgListener: MessageListener? = null
@@ -216,9 +205,7 @@ internal class ChatSession(
     ) {
         analyticsServiceStream.latest()!!.trackLastChatStatus(true)
         chatClient = chatRepository?.establishChatMessagingConnection()
-
         pubnubMessagingClient = chatClient as PubnubChatMessagingClient
-
         currentPlayheadTime.let {
             chatClient =
                 chatClient?.syncTo(it)
@@ -231,6 +218,8 @@ internal class ChatSession(
                 this.renderer = chatViewModel
                 chatViewModel.chatLoaded = false
                 chatViewModel.chatListener = this
+                pubnubMessagingClient?.isDiscardOwnPublishInSubscription =
+                    allowDiscardOwnPublishedMessageInSubscription
             }
         logDebug { "initialized Chat Messaging" }
     }
@@ -337,13 +326,13 @@ internal class ChatSession(
                         //subscribe to channel for listening for pin message events
                         val controlChannel = chatRoom.channels.control[CHAT_PROVIDER]
                         controlChannel?.let {
-                            pubnubMessagingClient.addChannelSubscription(it)
+                            pubnubMessagingClient?.addChannelSubscription(it)
                         }
                         val channel = chatRoom.channels.chat[CHAT_PROVIDER]
                         channel?.let { ch ->
                             contentSessionScope.launch {
                                 delay(500)
-                                pubnubMessagingClient.addChannelSubscription(ch)
+                                pubnubMessagingClient?.addChannelSubscription(ch)
                                 delay(500)
                                 chatViewModel.apply {
                                     flushMessages()
@@ -358,7 +347,7 @@ internal class ChatSession(
                                     chatLoaded = false
                                 }
                                 this@ChatSession.currentChatRoom = chatRoom
-                                pubnubMessagingClient.activeChatRoom = channel
+                                pubnubMessagingClient?.activeChatRoom = channel
                                 callback?.onResponse(Unit, null)
                             }
                         }
@@ -383,18 +372,65 @@ internal class ChatSession(
 
     override var avatarUrl: String? = null
 
+    override var allowDiscardOwnPublishedMessageInSubscription: Boolean = true
+        set(value) {
+            field = value
+            pubnubMessagingClient?.isDiscardOwnPublishInSubscription = value
+        }
+
     /**
      * TODO: added it into default chat once all functionality related to chat is done
      */
-    override fun sendChatMessage(
+    override fun sendMessage(
         message: String?,
         imageUrl: String?,
         imageWidth: Int?,
         imageHeight: Int?,
-        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+        liveLikePreCallback: LiveLikeCallback<LiveLikeChatMessage>
+    ) {
+        internalSendMessage(
+            message,
+            imageUrl,
+            imageWidth,
+            imageHeight,
+            preLiveLikeCallback = liveLikePreCallback
+        )
+    }
+
+    override fun quoteMessage(
+        message: String?,
+        imageUrl: String?,
+        imageWidth: Int?,
+        imageHeight: Int?,
+        quoteMessageId: String,
+        quoteMessage: LiveLikeChatMessage,
+        liveLikePreCallback: LiveLikeCallback<LiveLikeChatMessage>
+    ) {
+        // Removing the parent message from parent message in order to avoid reply to reply in terms of data
+        // and avoid data nesting
+        if (quoteMessage.quoteMessage != null) {
+            quoteMessage.quoteMessage = null
+        }
+        internalSendMessage(
+            message,
+            imageUrl,
+            imageWidth,
+            imageHeight,
+            quoteMessage,
+            liveLikePreCallback
+        )
+    }
+
+    private fun internalSendMessage(
+        message: String?,
+        imageUrl: String?,
+        imageWidth: Int?,
+        imageHeight: Int?,
+        parentChatMessage: LiveLikeChatMessage? = null,
+        preLiveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
         if (message?.isEmpty() == true) {
-            liveLikeCallback.onResponse(null, "Message cannot be empty")
+            preLiveLikeCallback.onResponse(null, "Message cannot be empty")
             return
         }
         val timeData = getPlayheadTime()
@@ -413,55 +449,64 @@ internal class ChatSession(
             isFromMe = true,
             image_width = imageWidth ?: 100,
             image_height = imageHeight ?: 100,
-            timeStamp = timeData.timeSinceEpochInMs.toString()
+            timeStamp = timeData.timeSinceEpochInMs.toString(),
+            quoteMessage = parentChatMessage?.copy()?.toChatMessage(),
+            clientMessageId = UUID.randomUUID().toString(),
         ).let { chatMessage ->
-
             // TODO: need to update for error handling here if pubnub respond failure of message
-            liveLikeCallback.onResponse(chatMessage.toLiveLikeChatMessage(), null)
-
-            val hasExternalImage = imageUrl != null
-            if (hasExternalImage) {
-                contentSessionScope.launch {
-                    val uri = Uri.parse(chatMessage.imageUrl)
-                    when {
-                        uri.scheme != null && uri.scheme.equals("content") -> {
-                            applicationContext.contentResolver.openInputStream(uri)
+            preLiveLikeCallback.onResponse(chatMessage.toLiveLikeChatMessage(), null)
+            currentChatRoom?.chatroomMessageUrl?.let { messageUrl ->
+                val hasExternalImage = imageUrl != null
+                if (hasExternalImage) {
+                    contentSessionScope.launch {
+                        val uri = Uri.parse(chatMessage.imageUrl)
+                        when {
+                            uri.scheme != null && uri.scheme.equals("content") -> {
+                                applicationContext.contentResolver.openInputStream(uri)
+                            }
+                            else -> {
+                                URL(chatMessage.imageUrl).openConnection().getInputStream()
+                            }
+                        }?.use {
+                            val fileBytes = it.readBytes()
+                            val uploadedImageUrl = dataClient.uploadImage(
+                                currentChatRoom!!.uploadUrl,
+                                null,
+                                fileBytes
+                            )
+                            chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                            chatMessage.imageUrl = uploadedImageUrl
+                            val bitmap =
+                                BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                            chatMessage.image_width = imageWidth ?: bitmap.width
+                            chatMessage.image_height = imageHeight ?: bitmap.height
+                            val m = chatMessage.copy()
+                            m.message = ""
+                            (chatClient as? ChatEventListener)?.onChatMessageSend(
+                                messageUrl,
+                                chatMessage,
+                                timeData
+                            )
+                            bitmap.recycle()
                         }
-                        else -> {
-                            URL(chatMessage.imageUrl).openConnection().getInputStream()
-                        }
-                    }?.use {
-                        val fileBytes = it.readBytes()
-                        val uploadedImageUrl = dataClient.uploadImage(
-                            currentChatRoom!!.uploadUrl,
-                            null,
-                            fileBytes
+                    }
+                } else {
+                    (chatClient as? ChatEventListener)?.onChatMessageSend(
+                        messageUrl,
+                        chatMessage,
+                        timeData
+                    )
+                }
+                currentChatRoom?.id?.let { id ->
+                    chatMessage.id?.let {
+                        analyticsServiceStream.latest()?.trackMessageSent(
+                            it,
+                            chatMessage.message,
+                            hasExternalImage,
+                            id
                         )
-                        chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
-                        chatMessage.imageUrl = uploadedImageUrl
-                        val bitmap =
-                            BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
-                        chatMessage.image_width = imageWidth ?: bitmap.width
-                        chatMessage.image_height = imageHeight ?: bitmap.height
-                        val m = chatMessage.copy()
-                        m.message = ""
-                        (chatClient as? ChatEventListener)?.onChatMessageSend(
-                            chatMessage,
-                            timeData
-                        )
-                        bitmap.recycle()
                     }
                 }
-            } else {
-                (chatClient as? ChatEventListener)?.onChatMessageSend(chatMessage, timeData)
-            }
-            currentChatRoom?.id?.let { id ->
-                analyticsServiceStream.latest()?.trackMessageSent(
-                    chatMessage.id,
-                    chatMessage.message,
-                    hasExternalImage,
-                    id
-                )
             }
         }
     }

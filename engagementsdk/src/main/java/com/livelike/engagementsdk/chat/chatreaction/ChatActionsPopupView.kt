@@ -11,21 +11,16 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.accessibility.AccessibilityEvent
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.PopupWindow
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
+import com.livelike.engagementsdk.chat.formatReactionCount
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
-import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
-import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag
-import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag_lay
+import kotlinx.android.synthetic.main.popup_chat_reaction.view.*
 
 /**
  * Chat reactions and Chat moderation actions view that will popup when use long press chat
@@ -85,10 +80,7 @@ internal class ChatActionsPopupView(
     }
 
     private fun formattedReactionCount(count: Int): String {
-        return if (count < 99)
-            "$count"
-        else
-            "99+"
+        return formatReactionCount(count)
     }
 
     fun updatePopView(

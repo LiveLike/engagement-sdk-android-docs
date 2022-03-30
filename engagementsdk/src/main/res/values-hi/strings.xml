@@ -50,4 +50,10 @@
     <string name="livelike_answered_label">जवाब!</string>
     <string name="livelike_predict_label">भविष्यवाणी करना</string>
     <string name="livelike_predicted_label">भविष्यवाणी की!</string>
+    <string name="livelike_cancel_the_quote_chat_window">अभिभावक चैट विंडो रद्द करें</string>
+    <string name="livelike_send_quote_message_input_accessibility">" %1$s को उत्तर संदेश भेजें"</string>
+    <string name="livelike_quote_image_accessibility">Reply message to Image</string>
+    <string name="livelike_quote_message_accessibility">Replying Message to %1$s</string>
+    <string name="livelike_quote_blocked_message">संदेश भेजने वाले को ब्लॉक किया गया</string>
+    <string name="livelike_quote_chat_message_deleted_message">संदेश हटाये</string>
 </resources>

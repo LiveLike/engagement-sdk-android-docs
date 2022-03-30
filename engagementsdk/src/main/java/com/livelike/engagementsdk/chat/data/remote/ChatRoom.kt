@@ -40,9 +40,11 @@ internal data class ChatRoom(
     @SerializedName("custom_data")
     val customData: String? = null,
     @SerializedName("custom_messages_url")
-    var customMessagesUrl : String? = null,
+    var customMessagesUrl: String? = null,
     @SerializedName("sponsors_url")
-    var sponsorsUrl : String? = null
+    var sponsorsUrl: String? = null,
+    @SerializedName("chatroom_messages_url")
+    var chatroomMessageUrl: String? = null,
 )
 
 internal data class Channels(

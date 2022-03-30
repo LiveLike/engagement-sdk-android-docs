@@ -14,7 +14,6 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.WidgetType
-import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.services.messaging.LiveLikeEventMessagingService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +35,8 @@ internal class Rewards(
     private var lastRewardTransfersPageMap: MutableMap<RewardItemTransferRequestParams,LLPaginatedResult<TransferRewardItem>?> = mutableMapOf()
 
     private var rewardTransactionsPageMap: MutableMap<RewardTransactionsRequestParameters?,LLPaginatedResult<RewardTransaction>?> = mutableMapOf()
+    private var redemptionCodesPageMap: MutableMap<GetRedemptionKeyRequestOptions?, LLPaginatedResult<RedemptionKey>?> = mutableMapOf()
+
 
     override var rewardEventsListener: RewardEventsListener? = null
         set(value) {
@@ -309,6 +310,100 @@ internal class Rewards(
             }
         }
     }
+
+    override fun getRedemptionKeys(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionKey>>
+    ) {
+        return getRedemptionKeys(liveLikePagination, null, liveLikeCallback)
+    }
+
+    override fun getRedemptionKeys(
+        liveLikePagination: LiveLikePagination,
+        requestParams: GetRedemptionKeyRequestOptions?,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionKey>>
+    ) {
+        var fetchUrl: String? = null
+        sdkScope.launch {
+            if (redemptionCodesPageMap[requestParams] == null || liveLikePagination == LiveLikePagination.FIRST) {
+                configurationUserPairFlow.collect { pair ->
+                    fetchUrl = pair.second.redemptionKeysUrl
+                }
+            } else {
+                fetchUrl =
+                    redemptionCodesPageMap[requestParams]?.getPaginationUrl(liveLikePagination)
+            }
+            if (fetchUrl == null) {
+                liveLikeCallback.onResponse(null, "No more data")
+            } else {
+                configurationUserPairFlow.collect { pair ->
+                    fetchUrl = fetchUrl?.toHttpUrlOrNull()?.newBuilder()?.apply {
+                        requestParams?.let {
+                            addQueryParameter("status", it.status.name)
+                        }
+                    }?.build()?.toUrl()?.toString()
+
+                    dataClient.remoteCall<LLPaginatedResult<RedemptionKey>>(
+                        fetchUrl ?: "",
+                        RequestType.GET,
+                        null,
+                        pair.first.accessToken
+                    ).run {
+                        if (this is Result.Success) {
+                            redemptionCodesPageMap[requestParams] = this.data
+                        }
+                        liveLikeCallback.processResult(this)
+                    }
+                }
+            }
+        }
+    }
+
+    override fun redeemKeyWithId(
+        redemptionKeyId: String,
+        liveLikeCallback: LiveLikeCallback<RedemptionKey>
+    ) {
+        var fetchUrl: String? = null
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                fetchUrl = pair.second.redemptionKeyDetailUrlTemplate?.replace("{redemption_key_id}", redemptionKeyId)
+            }
+            internalRedeemCode(fetchUrl, liveLikeCallback)
+        }
+    }
+
+    override fun redeemKeyWithCode(
+        code: String,
+        liveLikeCallback: LiveLikeCallback<RedemptionKey>
+    ) {
+        var fetchUrl: String? = null
+        sdkScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                fetchUrl = pair.second.redemptionKeyDetailByCodeUrlTemplate?.replace("{code}", code)
+            }
+            internalRedeemCode(fetchUrl, liveLikeCallback)
+        }
+    }
+
+    private suspend fun internalRedeemCode(
+        fetchUrl: String?,
+        liveLikeCallback: LiveLikeCallback<RedemptionKey>
+    ) {
+        if (fetchUrl == null) {
+            liveLikeCallback.onResponse(null, "No more data")
+        } else {
+            configurationUserPairFlow.collect { pair ->
+                dataClient.remoteCall<RedemptionKey>(
+                    fetchUrl ?: "",
+                    RequestType.PATCH,
+                    "{\"status\":\"redeemed\"}".toRequestBody("application/json".toMediaTypeOrNull()),
+                    pair.first.accessToken
+                ).run {
+                    liveLikeCallback.processResult(this)
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -390,6 +485,68 @@ interface IRewardsClient {
         liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RewardTransaction>>
     )
 
+    /**
+     * Retrieve all redemption code associated
+     * with the current user profile
+     *
+     **/
+    fun getRedemptionKeys(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionKey>>
+    )
+
+    /**
+     * Retrieve all redemption code associated
+     * with the current user profile
+     *
+     * @param requestParams for applying filters
+     **/
+    fun getRedemptionKeys(
+        liveLikePagination: LiveLikePagination,
+        requestParams: GetRedemptionKeyRequestOptions?,
+        liveLikeCallback: LiveLikeCallback<LLPaginatedResult<RedemptionKey>>
+    )
+
+    /**
+     * redeem redemption code
+     *
+     * @param redemptionKeyId id of code being submitted
+     **/
+    fun redeemKeyWithId(
+        redemptionKeyId: String,
+        liveLikeCallback: LiveLikeCallback<RedemptionKey>
+    )
+
+    /**
+     * redeem redemption code
+     *
+     * @param code code being submitted
+     **/
+    fun redeemKeyWithCode(
+        code: String,
+        liveLikeCallback: LiveLikeCallback<RedemptionKey>
+    )
+
+}
+
+data class GetRedemptionKeyRequestOptions (
+    val status: RedemptionKeyStatus
+)
+
+data class RedemptionKey (
+    @SerializedName("id") val id: String,
+    @SerializedName("client_id") val clientId: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("description") val description: String,
+    @SerializedName("code") val code: String,
+    @SerializedName("created_at") val createdAt: String,
+    @SerializedName("redeemed_at") val redeemedAt: String?,
+    @SerializedName("redeemed_by") val redeemedBy: String?,
+    @SerializedName("status") val status: RedemptionKeyStatus
+)
+
+enum class RedemptionKeyStatus {
+    active, redeemed, inactive;
 }
 
 data class ApplicationRewardItemsRequestParams(

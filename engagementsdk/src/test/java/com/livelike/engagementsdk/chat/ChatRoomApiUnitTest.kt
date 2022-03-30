@@ -3,13 +3,12 @@ package com.livelike.engagementsdk.chat
 import android.content.Context
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
-import com.example.example.PinMessageInfo
 import com.livelike.engagementsdk.*
-import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.publicapis.BlockedInfo
 import com.livelike.engagementsdk.chat.data.remote.LiveLikeOrdering
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.core.utils.gson
-import com.livelike.engagementsdk.publicapis.IEngagement
+import com.livelike.engagementsdk.publicapis.BlockedInfo
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
@@ -36,7 +35,7 @@ class ChatRoomApiUnitTest {
 
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private var mockWebServer = MockWebServer()
-    private lateinit var sdk: IEngagement
+    private lateinit var sdk: EngagementSDK
 
     @Before
     fun setup() {
@@ -150,12 +149,28 @@ class ChatRoomApiUnitTest {
                                 .readAll()
                         )
                     }
+                    "/reaction-packs/e8f3b5d2-3353-4c8e-b54e-32ecca6b7482/reaction_packs.json" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream("chat_room_reaction_response.json")
+                                .readAll()
+                        )
+                    }
+                    "/api/v1/blocked-profile-ids/" -> MockResponse().apply {
+                        setResponseCode(200)
+                        setBody(
+                            javaClass.classLoader.getResourceAsStream("block_profile_ids_response.json")
+                                .readAll()
+                        )
+                    }
+
                     else -> MockResponse().apply {
                         setResponseCode(500)
                     }
                 }
             }
         }
+
         sdk = EngagementSDK(
             "GaEBcpVrCxiJOSNu4bvX6krEaguxHR9Hlp63tK6L",
             context,
@@ -163,6 +178,7 @@ class ChatRoomApiUnitTest {
             "http://localhost:8080",
             null
         )
+        sdk.analyticService.onNext(MockAnalyticsService())
     }
 
     @After
@@ -369,7 +385,6 @@ class ChatRoomApiUnitTest {
         assert(resultCaptor.firstValue.isNotEmpty() && resultCaptor.firstValue.first().blockedProfileID == "5cb2295b-fde9-488a-8105-c2f5cbdd7801")
     }
 
-
     @Test
     fun pin_message_in_chat_room() {
         val callback =
@@ -435,6 +450,7 @@ class ChatRoomApiUnitTest {
             LiveLikePagination.FIRST,
             callback
         )
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
         Thread.sleep(3000)
         Shadows.shadowOf(Looper.getMainLooper()).idle()
         val resultCaptor =
@@ -450,4 +466,45 @@ class ChatRoomApiUnitTest {
     }
 
 
+    @Test
+    fun send_msg_to_chat_room() {
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(5000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        val session = sdk.createChatSession(object : EngagementSDK.TimecodeGetter {
+            override fun getTimecode(): EpochTime = EpochTime(0)
+        })
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(3000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        session.connectToChatRoom("e8f3b5d2-3353-4c8e-b54e-32ecca6b7482")
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(8000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        val listener = Mockito.mock(MessageListener::class.java)
+        session.setMessageListener(listener)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(1000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        val callback =
+            Mockito.mock(LiveLikeCallback::class.java) as LiveLikeCallback<LiveLikeChatMessage>
+        session.sendMessage("hello", null, null, null, callback)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(1000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        val errorCaptor = argumentCaptor<String>()
+        val callbackCapture = argumentCaptor<LiveLikeChatMessage>()
+        verify(callback, timeout(2000)).onResponse(callbackCapture.capture(), errorCaptor.capture())
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        assert(callbackCapture.firstValue.clientMessageId != null)
+        val clientMsgId = callbackCapture.firstValue.clientMessageId
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        val messageCapture = argumentCaptor<LiveLikeChatMessage>()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Thread.sleep(2000)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        verify(listener, timeout(2000)).onNewMessage(messageCapture.capture())
+        assert(messageCapture.firstValue.clientMessageId == clientMsgId)
+    }
 }

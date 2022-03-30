@@ -68,6 +68,48 @@
                     tools:ignore="HardcodedText"
                     tools:text="asd" />
 
+                <LinearLayout
+                    android:id="@+id/lay_quote_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/quote_chat_rounded_background"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/quote_chat_message_nickname"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/livelike_default_quote_chat_cell_name_color"
+                        android:textSize="@dimen/livelike_default_quote_chat_cell_name_size"
+                        android:textStyle="bold"
+                        app:fontFamily="@font/livelike_chat_nickname_font"
+                        tools:text="Parent" />
+
+                    <TextView
+                        android:id="@+id/quote_chatMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="start"
+                        android:text=""
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/livelike_default_chat_cell_message_color"
+                        android:textSize="@dimen/livelike_default_quote_chat_cell_text_size"
+                        app:fontFamily="@font/livelike_chat_message_font"
+                        tools:ignore="HardcodedText"
+                        tools:text="@tools:sample/lorem[30]" />
+
+                    <ImageView
+                        android:id="@+id/img_quote_chat_message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:gravity="start" />
+
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/chatMessage"
                     android:layout_width="wrap_content"
@@ -80,6 +122,12 @@
                     app:fontFamily="@font/livelike_chat_message_font"
                     tools:ignore="HardcodedText"
                     tools:text="@tools:sample/lorem[30]" />
+
+                <ImageView
+                    android:id="@+id/img_chat_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start" />
 
                 <TextView
                     android:id="@+id/message_date_time"
