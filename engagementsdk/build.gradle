@@ -38,7 +38,7 @@ android {
             publications {
                 // creating a release publication
                 release(MavenPublication) {
-                    from components.productionRelease
+                    from components.release
                     groupId =  'com.livelike.android-engagement-sdk'
                     artifactId = 'engagementsdk'
                     version = '2.46'
@@ -52,33 +52,6 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-    flavorDimensions 'default'
-    productFlavors {
-        staging {
-            dimension 'default'
-            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/"'
-        }
-        production {
-            dimension 'default'
-            buildConfigField "String", "CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/"'
-        }
-        qatesting {
-            dimension 'default'
-            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/"'
-        }
-        qaiconictesting {
-            dimension 'default'
-            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-iconic.livelikecdn.com/api/v1/"'
-        }
-        qagamechangerstesting {
-            dimension 'default'
-            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-game-changers.livelikecdn.com/api/v1/"'
-        }
-        qadigtesting {
-            dimension 'default'
-            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-dig.livelikecdn.com/api/v1/"'
         }
     }
 

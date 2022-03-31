@@ -21,27 +21,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    flavorDimensions 'default'
-    productFlavors {
-        staging {
-            dimension 'default'
-        }
-        production {
-            dimension 'default'
-        }
-        qatesting {
-            dimension 'default'
-        }
-        qaiconictesting{
-            dimension 'default'
-        }
-        qagamechangerstesting{
-            dimension 'default'
-        }
-        qadigtesting{
-            dimension 'default'
-        }
-    }
 }
 
 dependencies {

@@ -44,6 +44,7 @@ class EngagementSDK(
     private var accessTokenDelegate: AccessTokenDelegate? = null
 ) : IEngagement {
 
+    private var url: String
     private var internalChatClient: InternalLiveLikeChatClient
     internal var configurationStream: Stream<SdkConfiguration> =
         SubscriptionManager(true)
@@ -116,8 +117,8 @@ class EngagementSDK(
             }
             (chat() as InternalLiveLikeChatClient).setUpPubNubClientForChatRoom()
         }
-        val url = originURL?.plus("/api/v1/applications/$clientId")
-            ?: BuildConfig.CONFIG_URL.plus("applications/$clientId")
+        url = originURL?.plus("/api/v1/applications/$clientId")
+            ?: "https://cf-blast.livelikecdn.com/api/v1/".plus("applications/$clientId")
         dataClient.getEngagementSdkConfig(url) {
             if (it is Result.Success) {
                 configurationStream.onNext(it.data)
@@ -434,7 +435,8 @@ class EngagementSDK(
     ) {
         uiScope.launch {
             try {
-                val jsonObject = widgetDataClient.getWidgetDataFromIdAndKind(widgetId, widgetKind)
+                val jsonObject =
+                    widgetDataClient.getWidgetDataFromIdAndKind(url, widgetId, widgetKind)
                 val widget = gson.fromJson(jsonObject, LiveLikeWidget::class.java)
                 liveLikeCallback.onResponse(
                     widget,
