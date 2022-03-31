@@ -402,11 +402,13 @@ class ExoPlayerActivity : AppCompatActivity() {
                     "\"custom_message\": \"${getRandomString((10..50).random())}\"" +
                     "}", object : LiveLikeCallback<LiveLikeChatMessage>() {
                 override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                    result?.let {
-                        println("ExoPlayerActivity.onResponse> ${it.id}")
-                    }
-                    error?.let {
-                        Toast.makeText(applicationContext, error, Toast.LENGTH_SHORT).show()
+                    runOnUiThread {
+                        result?.let {
+                            println("ExoPlayerActivity.onResponse> ${it.id}")
+                        }
+                        error?.let {
+                            Toast.makeText(applicationContext, error, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             })
