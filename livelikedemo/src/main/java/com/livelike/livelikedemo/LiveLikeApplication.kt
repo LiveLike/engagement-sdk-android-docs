@@ -82,7 +82,7 @@ class LiveLikeApplication : Application() {
                 accessTokenDelegate = object : AccessTokenDelegate {
                     override fun getAccessToken(): String? {
                         return getSharedPreferences(
-                            PREFERENCES_APP_ID,
+                            selectEnvironmentKey,
                             Context.MODE_PRIVATE
                         ).getString(
                             PREF_USER_ACCESS_TOKEN,
@@ -93,7 +93,7 @@ class LiveLikeApplication : Application() {
                     }
 
                     override fun storeAccessToken(accessToken: String?) {
-                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit()
+                        getSharedPreferences(selectEnvironmentKey, Context.MODE_PRIVATE).edit()
                             .putString(
                                 PREF_USER_ACCESS_TOKEN, accessToken
                             ).apply()
