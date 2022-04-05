@@ -10,15 +10,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.google.gson.JsonParser
+import com.livelike.engagementsdk.ChatRoomListener
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.MessageListener
-import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.ChatRoomInfo
+import com.livelike.engagementsdk.chat.MessageSwipeController
+import com.livelike.engagementsdk.chat.SwipeControllerActions
 import com.livelike.engagementsdk.chat.data.remote.LiveLikeOrdering
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
@@ -39,14 +44,29 @@ import okhttp3.OkHttpClient
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class ChatFragment : Fragment() {
 
+    private var currentQuoteMessage: LiveLikeChatMessage? = null
+        set(value) {
+            field = value
+            if (value != null) {
+                lay_quote.visibility = View.VISIBLE
+                txt_quote_msg.text = when (value.imageUrl != null) {
+                    true -> "Image"
+                    else -> value.message
+                }
+            } else {
+                lay_quote.visibility = View.INVISIBLE
+                txt_quote_msg.text = ""
+            }
+        }
     val images = arrayListOf<String>(
-        "https://homepages.cae.wisc.edu/~ece533/images/fruits.png",
-        "https://homepages.cae.wisc.edu/~ece533/images/monarch.png",
-        "https://homepages.cae.wisc.edu/~ece533/images/mountain.png",
-        "https://homepages.cae.wisc.edu/~ece533/images/watch.png",
-        "https://homepages.cae.wisc.edu/~ece533/images/serrano.png"
+        "https://i.picsum.photos/id/574/200/300.jpg?hmac=8A2sOGZU1xgRXI46snJ80xNY3Yx-KcLVsBG-wRchwFg",
+        "https://i.picsum.photos/id/958/200/300.jpg?hmac=oCwv3AFzS5VqZv3nvDJ3H5RzcDH2OiL2g-GGwWL5fsI",
+        "https://i.picsum.photos/id/658/200/300.jpg?hmac=K1TI0jSVU6uQZCZkkCMzBiau45UABMHNIqoaB9icB_0",
+        "https://i.picsum.photos/id/237/200/300.jpg?hmac=TmmQSbShHz9CdQm0NkEjx1Dyh_Y984R9LpNrpvH2D_U",
+        "https://i.picsum.photos/id/185/200/300.jpg?hmac=77sYncM4jSlhNlIKtqotElWQuIV3br7wNsq18rlbKnA"
     )
     val gifs = arrayListOf<String>(
         "https://media.giphy.com/media/SggILpMXO7Xt6/giphy.gif",
@@ -80,6 +100,17 @@ class ChatFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         rcyl_chat.adapter = adapter
+        context?.let {
+            val messageSwipeController =
+                MessageSwipeController(it, object : SwipeControllerActions {
+                    override fun showReplyUI(position: Int) {
+                        currentQuoteMessage = adapter.getChatMessage(position)
+                        Toast.makeText(context, "Send Reply", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            val itemTouchHelper = ItemTouchHelper(messageSwipeController)
+            itemTouchHelper.attachToRecyclerView(rcyl_chat)
+        }
 
         // presently program id and chat room has been harcoded for just
         // testing purpose wheather we the data is received and rendered correctly
@@ -120,9 +151,47 @@ class ChatFragment : Fragment() {
 
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             adapter.chatRoomId = homeChat.session.chatSession.getCurrentChatRoom()
+
+            img_quote_remove.setOnClickListener {
+                currentQuoteMessage = null
+            }
+
             adapter.loadPinnedMessage(context)
             adapter.chatList.clear()
             adapter.chatList.addAll(homeChat.session.chatSession.getLoadedMessages())
+            homeChat.session.chatSession.setChatRoomListener(object : ChatRoomListener {
+                override fun onChatRoomUpdate(chatRoom: ChatRoomInfo) {
+                    activity?.runOnUiThread {
+//                        switch_quote_message.isChecked = chatRoom.enableMessageReply
+                    }
+                }
+            })
+//            switch_reply_message.setOnCheckedChangeListener { buttonView, isChecked ->
+//                (activity as CustomChatActivity).sdk?.chat()
+//                    ?.updateChatRoom(homeChat.session.chatSession.getCurrentChatRoom(),
+//                        enableMessageReply = isChecked,
+//                        liveLikeCallback = object : LiveLikeCallback<ChatRoomInfo>() {
+//                            override fun onResponse(result: ChatRoomInfo?, error: String?) {
+//                                switch_reply_message.isChecked = result?.enableMessageReply ?: false
+//                                error?.let {
+//                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+//                                }
+//                            }
+//                        })
+//            }
+            (activity as CustomChatActivity).sdk?.chat()
+                ?.getChatRoom(homeChat.session.chatSession.getCurrentChatRoom(),
+                    object : LiveLikeCallback<ChatRoomInfo>() {
+                        override fun onResponse(result: ChatRoomInfo?, error: String?) {
+                            error?.let {
+                                Toast.makeText(context, "FetchError: $it", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+//                            switch_quote_message.isChecked = result?.enableMessageReply ?: false
+
+                        }
+                    })
+
             homeChat.session.chatSession.setMessageListener(object : MessageListener {
                 private val TAG = "LiveLike"
                 override fun onNewMessage(message: LiveLikeChatMessage) {
@@ -175,6 +244,7 @@ class ChatFragment : Fragment() {
                 }
 
                 override fun onPinMessage(message: PinMessageInfo) {
+                    println("ChatFragment.onPinMessage")
                     activity?.runOnUiThread {
                         Toast.makeText(
                             context,
@@ -184,7 +254,6 @@ class ChatFragment : Fragment() {
                         adapter.pinnedList.add(message)
                         adapter.notifyDataSetChanged()
                     }
-
                 }
 
                 override fun onUnPinMessage(pinMessageId: String) {
@@ -198,6 +267,10 @@ class ChatFragment : Fragment() {
                         }
                     }
                 }
+
+                override fun onErrorMessage(error: String, clientMessageId: String?) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                }
             })
 
             lay_swipe.isRefreshing = true
@@ -209,6 +282,7 @@ class ChatFragment : Fragment() {
                 val msg = ed_msg.text.toString()
                 if (msg.trim().isNotEmpty()) {
                     sendMessage(msg, null)
+                    currentQuoteMessage = null
                 }
             }
             btn_img_send.setOnClickListener {
@@ -234,22 +308,35 @@ class ChatFragment : Fragment() {
 
     private fun sendMessage(message: String?, imageUrl: String?) {
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
-            homeChat.session.chatSession.sendChatMessage(
-                message, imageUrl = imageUrl, imageWidth = 150, imageHeight = 150,
-                liveLikeCallback = object : LiveLikeCallback<LiveLikeChatMessage>() {
-                    override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                        ed_msg.text?.clear()
-                        result?.let { message ->
-                            val index = adapter.chatList.indexOfFirst { message.id == it.id }
-                            if (index == -1) {
-                                adapter.chatList.add(message)
-                                adapter.notifyItemInserted(adapter.chatList.size - 1)
-                                rcyl_chat.scrollToPosition(adapter.itemCount - 1)
-                            }
+            val callback = object : LiveLikeCallback<LiveLikeChatMessage>() {
+                override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                    ed_msg.text?.clear()
+                    result?.let { message ->
+                        val index = adapter.chatList.indexOfFirst { message.id == it.id }
+                        if (index == -1) {
+                            adapter.chatList.add(message)
+                            adapter.notifyItemInserted(adapter.chatList.size - 1)
+                            rcyl_chat.scrollToPosition(adapter.itemCount - 1)
                         }
                     }
                 }
-            )
+            }
+            if (currentQuoteMessage != null) {
+                homeChat.session.chatSession.quoteMessage(
+                    message,
+                    imageUrl,
+                    imageWidth = 150,
+                    imageHeight = 150,
+                    liveLikePreCallback = callback,
+                    quoteMessage = currentQuoteMessage!!,
+                    quoteMessageId = currentQuoteMessage!!.id!!
+                )
+            } else {
+                homeChat.session.chatSession.sendMessage(
+                    message, imageUrl = imageUrl, imageWidth = 150, imageHeight = 150,
+                    liveLikePreCallback = callback
+                )
+            }
         }
     }
 
@@ -353,8 +440,40 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
         )
     }
 
+    override fun getItemViewType(position: Int): Int {
+        val chat = chatList[position]
+        if (chat.quoteMessage != null) {
+            return 2
+        }
+        return 1
+    }
+
     override fun onBindViewHolder(holder: CustomChatViewHolder, position: Int) {
         val chatMessage = chatList[position]
+
+        if (chatMessage.quoteMessage != null) {
+            holder.itemView.lay_quote_chat_msg.visibility = View.VISIBLE
+            holder.itemView.txt_name_quote.text = chatMessage.quoteMessage?.nickname
+            holder.itemView.txt_message_quote.text = chatMessage.quoteMessage?.message
+            if (chatMessage.quoteMessage?.imageUrl != null) {
+                holder.itemView.img_message_quote.visibility = View.VISIBLE
+                Glide.with(holder.itemView.img_message_quote.context)
+                    .load(chatMessage.quoteMessage!!.imageUrl!!)
+                    .apply(
+                        RequestOptions().override(
+                            chatMessage.quoteMessage!!.image_width!!,
+                            chatMessage.quoteMessage!!.image_height!!
+                        )
+                    )
+                    .into(holder.itemView.img_message_quote)
+
+            } else {
+                holder.itemView.img_message_quote.visibility = View.GONE
+            }
+        } else {
+            holder.itemView.lay_quote_chat_msg.visibility = View.GONE
+        }
+
         holder.itemView.normal_message.visibility = View.VISIBLE
         holder.itemView.custom_messages.visibility = View.GONE
         holder.itemView.custom_tv.visibility = View.GONE
@@ -475,9 +594,29 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
             "MMM d, h:mm a",
             Locale.getDefault()
         ).format(dateTime)
+
     }
 
     override fun getItemCount(): Int = chatList.size
+    fun getChatMessage(position: Int): LiveLikeChatMessage {
+        val msg = chatList[position]
+        return LiveLikeChatMessage(msg.message).apply {
+            isDeleted = msg.isDeleted
+            channel = msg.channel
+            custom_data = msg.custom_data
+            id = msg.id
+            imageUrl = msg.imageUrl
+            image_height = msg.image_height
+            image_width = msg.image_width
+            nickname = msg.nickname
+            quoteMessage = msg.quoteMessage
+            senderId = msg.senderId
+            timestamp = msg.timestamp
+            userPic = msg.userPic
+            type = msg.type
+        }
+    }
+
 }
 
 class CustomChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

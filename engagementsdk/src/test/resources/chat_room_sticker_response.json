@@ -1,0 +1,88 @@
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": "dbad3c45-4adb-48b2-9b8f-90f291c08803",
+      "url": "https://localhost:8080/api/v1/sticker-packs/dbad3c45-4adb-48b2-9b8f-90f291c08803/",
+      "client_id": "lom9db0XtQUhOZQq1vz8QPfSpiyyxppiUVGMcAje",
+      "name": "s2",
+      "file": "https://localhost:8080/stickers/bb1cb9e2-7230-4863-ac69-3cdac8731496.jpg",
+      "mimetype": "image/jpeg",
+      "stickers_url": "https://localhost:8080/api/v1/stickers/?pack_id=dbad3c45-4adb-48b2-9b8f-90f291c08803",
+      "stickers": []
+    },
+    {
+      "id": "6fe5f151-4f29-4625-9ec4-3def94e8b70e",
+      "url": "https://localhost:8080/api/v1/sticker-packs/6fe5f151-4f29-4625-9ec4-3def94e8b70e/",
+      "client_id": "lom9db0XtQUhOZQq1vz8QPfSpiyyxppiUVGMcAje",
+      "name": "A1",
+      "file": "https://localhost:8080/stickers/926b4072-4a3a-4d19-923c-5425217bd0b3.jpg",
+      "mimetype": "image/jpeg",
+      "stickers_url": "https://localhost:8080/api/v1/stickers/?pack_id=6fe5f151-4f29-4625-9ec4-3def94e8b70e",
+      "stickers": [
+        {
+          "id": "c373174f-724c-427a-a91e-58d460ea26bb",
+          "url": "https://localhost:8080/api/v1/stickers/c373174f-724c-427a-a91e-58d460ea26bb/",
+          "pack_id": "6fe5f151-4f29-4625-9ec4-3def94e8b70e",
+          "pack_url": "https://localhost:8080/api/v1/sticker-packs/6fe5f151-4f29-4625-9ec4-3def94e8b70e/",
+          "pack_name": "A1",
+          "shortcode": "opagh",
+          "file": "https://localhost:8080/stickers/6f665708-9439-4ef3-9c12-20aeda7d6a67.png",
+          "mimetype": "image/png"
+        },
+        {
+          "id": "07854387-a79a-42aa-9e3a-29f4827f47bd",
+          "url": "https://localhost:8080/api/v1/stickers/07854387-a79a-42aa-9e3a-29f4827f47bd/",
+          "pack_id": "6fe5f151-4f29-4625-9ec4-3def94e8b70e",
+          "pack_url": "https://localhost:8080/api/v1/sticker-packs/6fe5f151-4f29-4625-9ec4-3def94e8b70e/",
+          "pack_name": "A1",
+          "shortcode": "uxjj",
+          "file": "https://localhost:8080/stickers/a15e663f-799c-4eda-8595-dff5678e3cf9.png",
+          "mimetype": "image/png"
+        },
+        {
+          "id": "627ce17b-5450-4491-a28c-62dbd65d9fd2",
+          "url": "https://localhost:8080/api/v1/stickers/627ce17b-5450-4491-a28c-62dbd65d9fd2/",
+          "pack_id": "6fe5f151-4f29-4625-9ec4-3def94e8b70e",
+          "pack_url": "https://localhost:8080/api/v1/sticker-packs/6fe5f151-4f29-4625-9ec4-3def94e8b70e/",
+          "pack_name": "A1",
+          "shortcode": "trdrtfg",
+          "file": "https://localhost:8080/stickers/a42c955b-35b9-4462-b35b-7ce665aaf45f.png",
+          "mimetype": "image/png"
+        },
+        {
+          "id": "e7aca6f8-a010-4700-a5bf-8d8f15672c58",
+          "url": "https://localhost:8080/api/v1/stickers/e7aca6f8-a010-4700-a5bf-8d8f15672c58/",
+          "pack_id": "6fe5f151-4f29-4625-9ec4-3def94e8b70e",
+          "pack_url": "https://localhost:8080/api/v1/sticker-packs/6fe5f151-4f29-4625-9ec4-3def94e8b70e/",
+          "pack_name": "A1",
+          "shortcode": "uyrdf",
+          "file": "https://localhost:8080/stickers/74e47fb7-7c0c-47e4-b581-8620531afc34.png",
+          "mimetype": "image/png"
+        },
+        {
+          "id": "0f4c0283-f1e0-414f-8703-672ed15e12cd",
+          "url": "https://localhost:8080/api/v1/stickers/0f4c0283-f1e0-414f-8703-672ed15e12cd/",
+          "pack_id": "6fe5f151-4f29-4625-9ec4-3def94e8b70e",
+          "pack_url": "https://localhost:8080/api/v1/sticker-packs/6fe5f151-4f29-4625-9ec4-3def94e8b70e/",
+          "pack_name": "A1",
+          "shortcode": "ewjkh",
+          "file": "https://localhost:8080/stickers/b4a59fd1-02bf-4153-9ebe-3e182f1a1101.png",
+          "mimetype": "image/png"
+        },
+        {
+          "id": "d037cd7c-2d3b-4e5f-a871-0b426d65169b",
+          "url": "https://localhost:8080/api/v1/stickers/d037cd7c-2d3b-4e5f-a871-0b426d65169b/",
+          "pack_id": "6fe5f151-4f29-4625-9ec4-3def94e8b70e",
+          "pack_url": "https://localhost:8080/api/v1/sticker-packs/6fe5f151-4f29-4625-9ec4-3def94e8b70e/",
+          "pack_name": "A1",
+          "shortcode": "5555",
+          "file": "https://localhost:8080/stickers/235d914e-2c53-4394-85ba-5d868c03526e.jpg",
+          "mimetype": "image/jpeg"
+        }
+      ]
+    }
+  ]
+}

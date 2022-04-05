@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat.services.messaging.pubnub
 
 import com.google.gson.reflect.TypeToken
+import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.remote.toPubnubChatEventType

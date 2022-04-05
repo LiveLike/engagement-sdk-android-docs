@@ -4,24 +4,39 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
+import android.os.Build
 import android.text.Editable
+import android.text.InputFilter
+import android.text.InputFilter.LengthFilter
 import android.text.Spannable
 import android.text.TextWatcher
+import android.text.method.LinkMovementMethod
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.*
 import android.view.View.OnLayoutChangeListener
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.stickerKeyboard.*
+import com.livelike.engagementsdk.chat.utils.setTextOrImageToView
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.core.utils.animators.buildScaleAnimator
@@ -41,6 +56,7 @@ import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
+
 /**
  *  This view will load and display a chat component. To use chat view
  *  ```
@@ -54,6 +70,12 @@ import kotlin.math.min
  */
 open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
+
+    private var currentQuoteMessage: ChatMessage? = null
+        set(value) {
+            field = value
+            updateInputView()
+        }
 
     /**
      * use this variable to hide message input to build use case like influencer chat
@@ -105,6 +127,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             viewModel?.chatAdapter?.chatViewDelegate = value
         }
 
+    var reactionCountFormatter: ((count: Int) -> String)? = null
+
     private val viewModel: ChatViewModel?
         get() = (session as ChatSession?)?.chatViewModel
 
@@ -144,6 +168,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
         initView(context)
     }
+
+    var enableQuoteMessage: Boolean = false
+        set(value) {
+            field = value
+            viewModel?.enableQuoteMessage = value
+        }
 
     var enableChatMessageURLs: Boolean = false
         set(value) {
@@ -185,8 +215,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatDisplayBackgroundRes?.let {
                 chatdisplay.background = it
             }
+            changeColorOfProgressbar(chatProgressLoaderColor)
             chat_input_background.background = chatInputViewBackgroundRes
             chat_input_border.background = chatInputBackgroundRes
+            edittext_chat_message.filters = arrayOf<InputFilter>(LengthFilter(chatInputCharLimit))
             edittext_chat_message.setTextColor(chatInputTextColor)
             edittext_chat_message.setHintTextColor(chatInputHintTextColor)
             edittext_chat_message.setTextSize(
@@ -196,7 +228,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             button_emoji.setImageDrawable(chatStickerSendDrawable)
             button_emoji.setColorFilter(
                 sendStickerTintColor,
-                android.graphics.PorterDuff.Mode.MULTIPLY
+                PorterDuff.Mode.MULTIPLY
             )
             button_emoji.visibility = when {
                 showStickerSend -> View.VISIBLE
@@ -217,8 +249,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             )
             button_chat_send.setColorFilter(
                 sendImageTintColor,
-                android.graphics.PorterDuff.Mode.MULTIPLY
+                PorterDuff.Mode.MULTIPLY
             )
+            img_quote_msg_cancel.setOnClickListener {
+                currentQuoteMessage = null
+            }
             initEmptyView()
         }
         callback.addView(edittext_chat_message)
@@ -230,6 +265,17 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             } else
                 swipeToRefresh.isRefreshing = false
         }
+    }
+
+    private fun changeColorOfProgressbar(chatProgressLoaderColor: Int) {
+        val progressDrawable: Drawable = loadingSpinner.indeterminateDrawable.mutate()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            progressDrawable.colorFilter =
+                BlendModeColorFilter(chatProgressLoaderColor, BlendMode.SRC_ATOP)
+        } else {
+            progressDrawable.setColorFilter(chatProgressLoaderColor, PorterDuff.Mode.SRC_ATOP)
+        }
+        loadingSpinner.progressDrawable = progressDrawable
     }
 
     private fun initEmptyView() {
@@ -298,6 +344,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         viewModel?.apply {
+            this.enableQuoteMessage = this@ChatView.enableQuoteMessage
             chatAdapter.showLinks = enableChatMessageURLs
             chatMessageUrlPatterns?.let {
                 if (it.isNotEmpty())
@@ -308,6 +355,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatAdapter.messageTimeFormatter = { time ->
                 formatMessageDateTime(time)
             }
+            chatAdapter.reactionCountFormatter = reactionCountFormatter
             initStickerKeyboard(sticker_keyboard, this)
             refreshWithDeletedMessage()
             setDataSource(chatAdapter)
@@ -662,6 +710,27 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             })
+            if (enableQuoteMessage && isChatInputVisible) {
+                val messageSwipeController =
+                    MessageSwipeController(context, object : SwipeControllerActions {
+                        override fun showReplyUI(position: Int) {
+                            val chatMessage = chatAdapter.getChatMessage(position)
+                            if (chatMessage.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED) {
+                                logDebug { "Not Allowed to quote message on Custom Message" }
+                                (session as? ChatSession)?.errorDelegate?.onError("Not Allowed to quote message on Custom Message")
+                            } else {
+                                if (!chatMessage.isDeleted && chatMessage.getUnixTimeStamp() != null)
+                                    currentQuoteMessage = chatMessage.copy()
+                                else {
+                                    logDebug { "Not Allowed to quote message because the chat message is deleted or not yet sent" }
+                                    (session as? ChatSession)?.errorDelegate?.onError("Not Allowed to quote message")
+                                }
+                            }
+                        }
+                    })
+                val itemTouchHelper = ItemTouchHelper(messageSwipeController)
+                itemTouchHelper.attachToRecyclerView(rv)
+            }
         }
 
         snap_live.setOnClickListener {
@@ -722,6 +791,102 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             }
+        }
+    }
+
+    private fun updateInputView() {
+        lay_quote_message.visibility = when (currentQuoteMessage != null && isChatInputVisible) {
+            true -> {
+                quote_chat_message_nickname.text = currentQuoteMessage?.senderDisplayName
+                chatAttribute.apply {
+                    var options = RequestOptions()
+                    if (chatAvatarCircle) {
+                        options = options.optionalCircleCrop()
+                    }
+                    if (chatAvatarRadius > 0) {
+                        options = options.transform(
+                            CenterCrop(),
+                            RoundedCorners(chatAvatarRadius)
+                        )
+                    }
+                    if (currentQuoteMessage!!.senderDisplayPic.isNullOrEmpty()) {
+                        // load local image
+                        Glide.with(context.applicationContext)
+                            .load(R.drawable.default_avatar)
+                            .apply(options)
+                            .placeholder(chatUserPicDrawable)
+                            .into(img_quote_chat_avatar)
+                    } else {
+                        Glide.with(context.applicationContext)
+                            .load(currentQuoteMessage!!.senderDisplayPic)
+                            .apply(options)
+                            .placeholder(chatUserPicDrawable)
+                            .error(chatUserPicDrawable)
+                            .into(img_quote_chat_avatar)
+                    }
+                    viewModel?.showChatAvatarLogo?.let {
+                        img_quote_chat_avatar.apply {
+                            visibility = if (it) View.VISIBLE else View.GONE
+                        }
+                    }
+                    if (enableChatMessageURLs) {
+                        quote_chatMessage.apply {
+                            linksClickable = enableChatMessageURLs
+                            setLinkTextColor(quoteChatMessageLinkTextColor)
+                            movementMethod = LinkMovementMethod.getInstance()
+                        }
+                    }
+                    currentQuoteMessage?.let {
+                        viewModel?.stickerPackRepository?.let {
+                            viewModel?.chatAdapter?.linksRegex?.let {
+                                viewModel?.analyticsService?.let {
+                                    setTextOrImageToView(
+                                        currentQuoteMessage,
+                                        quote_chatMessage,
+                                        img_quote_chat_message,
+                                        true,
+                                        quoteChatMessageTextSize,
+                                        viewModel?.stickerPackRepository!!,
+                                        enableChatMessageURLs,
+                                        context.resources.displayMetrics.density,
+                                        viewModel?.chatAdapter?.linksRegex!!,
+                                        viewModel?.chatAdapter?.chatRoomId,
+                                        viewModel?.chatAdapter?.chatRoomName,
+                                        viewModel?.analyticsService!!, true
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                lay_quote_message.accessibilityDelegate = object : View.AccessibilityDelegate() {
+                    override fun onInitializeAccessibilityNodeInfo(
+                        host: View?,
+                        info: AccessibilityNodeInfo?
+                    ) {
+                        super.onInitializeAccessibilityNodeInfo(host, info)
+                        val isExternalImage =
+                            currentQuoteMessage?.message?.findImages()?.matches() ?: false
+                        info?.text = context.getString(
+                            R.string.livelike_send_quote_message_input_accessibility,
+                            when (isExternalImage) {
+                                true -> context.getString(R.string.image)
+                                false -> currentQuoteMessage?.message
+                            }
+                        )
+                    }
+                }
+                View.VISIBLE
+            }
+            else -> View.GONE
+        }
+        if (currentQuoteMessage != null && isChatInputVisible) {
+            lay_quote_message.postDelayed(
+                {
+                    lay_quote_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+                },
+                100
+            )
         }
     }
 
@@ -833,6 +998,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             return
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
+        if (enableQuoteMessage) {
+            if (currentQuoteMessage?.quoteMessage != null) {
+                currentQuoteMessage?.quoteMessage = null
+            }
+        }
 
         // TODO all this can be moved to view model easily
         ChatMessage(
@@ -846,28 +1016,46 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             isFromMe = true,
             image_width = 100,
             image_height = 100,
-            timeStamp = timeData.timeSinceEpochInMs.toString()
-        ).let {
-            sentMessageListener?.invoke(it.toLiveLikeChatMessage())
+            timeStamp = timeData.timeSinceEpochInMs.toString(),
+            quoteMessage = when (enableQuoteMessage) {
+                true -> currentQuoteMessage
+                else -> null
+            },
+            clientMessageId = UUID.randomUUID().toString(),
+            chatRoomId = viewModel?.currentChatRoom?.id
+        ).let { chatMessage ->
+            sentMessageListener?.invoke(chatMessage.toLiveLikeChatMessage())
             viewModel?.apply {
                 if (session?.allowDiscardOwnPublishedMessageInSubscription == true) {
-                    displayChatMessage(it)
+                    displayChatMessage(chatMessage)
                 }
-                val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
+                val hasExternalImage = (chatMessage.message?.findImages()?.countMatches() ?: 0) > 0
                 if (hasExternalImage) {
-                    uploadAndPostImage(context, it, timeData)
+                    uploadAndPostImage(context, chatMessage, timeData)
                 } else {
-                    chatListener?.onChatMessageSend(it, timeData)
+                    if (currentChatRoom?.chatroomMessageUrl != null) {
+                        chatListener?.onChatMessageSend(
+                            currentChatRoom?.chatroomMessageUrl!!,
+                            chatMessage,
+                            timeData
+                        )
+                    } else {
+                        (session as? ChatSession)?.errorDelegate?.onError("Cannot send Message Url is invalid :${currentChatRoom?.chatroomMessageUrl}")
+                        logError { "Cannot send Message Url is invalid :${currentChatRoom?.chatroomMessageUrl}" }
+                    }
                 }
                 edittext_chat_message.setText("")
+                currentQuoteMessage = null
                 snapToLive()
                 viewModel?.currentChatRoom?.id?.let { id ->
-                    analyticsService.trackMessageSent(
-                        it.id,
-                        it.message,
-                        hasExternalImage,
-                        id
-                    )
+                    chatMessage.id?.let {
+                        analyticsService.trackMessageSent(
+                            it,
+                            chatMessage.message,
+                            hasExternalImage,
+                            id
+                        )
+                    }
                 }
             }
         }

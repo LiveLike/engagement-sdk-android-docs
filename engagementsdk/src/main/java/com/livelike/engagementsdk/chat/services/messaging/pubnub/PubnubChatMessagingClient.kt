@@ -2,9 +2,9 @@ package com.livelike.engagementsdk.chat.services.messaging.pubnub
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
-import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.EpochTime
+import com.livelike.engagementsdk.*
 import com.livelike.engagementsdk.REACTION_CREATED
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.MessageError
 import com.livelike.engagementsdk.chat.data.remote.*
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.*
+import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.addPublishedMessage
@@ -36,10 +37,7 @@ import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.objects_api.membership.PNMembershipResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
 import java.util.*
@@ -55,7 +53,8 @@ internal class PubnubChatMessagingClient(
     var isDiscardOwnPublishInSubscription: Boolean = true,
     val origin: String? = null,
     private val pubnubHeartbeatInterval: Int,
-    private val pubnubPresenceTimeout: Int
+    private val pubnubPresenceTimeout: Int,
+    private val chatRepository: ChatRepository
 ) : MessagingClient {
 
     @Volatile
@@ -91,7 +90,12 @@ internal class PubnubChatMessagingClient(
         return timestamp * 10000
     }
 
-    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
+    override fun publishMessage(
+        url: String,
+        message: String,
+        channel: String,
+        timeSinceEpoch: EpochTime
+    ) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         val pubnubChatEvent = PubnubChatEvent(
             clientMessage.messageEvent.key,
@@ -103,11 +107,13 @@ internal class PubnubChatMessagingClient(
                         org.threeten.bp.ZoneId.of("UTC")
                     ).format(isoUTCDateTimeFormatter)
                 }
-            )
+            ),
+            null,
+            url
         )
         publishQueue.enqueue(Pair(channel, pubnubChatEvent))
         if (isDiscardOwnPublishInSubscription) {
-            addPublishedMessage(channel, pubnubChatEvent.payload.messageId)
+            addPublishedMessage(channel, pubnubChatEvent.payload.clientMessageId!!)
         }
         if (!isPublishRunning) {
             startPublishingFromQueue()
@@ -119,7 +125,7 @@ internal class PubnubChatMessagingClient(
         coroutineScope.async {
             while (!publishQueue.isEmpty()) {
                 publishQueue.peek()?.let { messageChannelPair ->
-                    if (publishMessageToPubnub(
+                    if (publishMessageToServer(
                             messageChannelPair.second,
                             messageChannelPair.first
                         )
@@ -159,9 +165,10 @@ internal class PubnubChatMessagingClient(
                     if (status.statusCode == 403) {
                         listener?.onClientMessageError(
                             this@PubnubChatMessagingClient,
-                            com.livelike.engagementsdk.core.services.messaging.Error(
+                            Error(
                                 MessageError.DENIED_MESSAGE_PUBLISH.name,
-                                ""
+                                "",
+                                pubnubChatEvent.payload.clientMessageId
                             )
                         )
                         it.resume(true)
@@ -170,6 +177,43 @@ internal class PubnubChatMessagingClient(
                     }
                 }
             }
+    }
+
+    private suspend fun publishMessageToServer(
+        pubnubChatEvent: PubnubChatEvent<PubnubChatMessage>,
+        channel: String
+    ) = suspendCoroutine<Boolean> {
+        coroutineScope.launch {
+            val result = chatRepository.sendMessage(
+                pubnubChatEvent.messageUrl,
+                pubnubChatEvent.payload.apply {
+                    messageEvent = pubnubChatEvent.pubnubChatEventType
+                })
+            if (result is Result.Error) {
+                listener?.onClientMessageError(
+                    this@PubnubChatMessagingClient,
+                    Error(
+                        MessageError.DENIED_MESSAGE_PUBLISH.name,
+                        result.exception.toString(),
+                        pubnubChatEvent.payload.clientMessageId
+                    )
+                )
+                it.resume(true)
+            } else if (result is Result.Success) {
+                //TODO: has to uncomment later once reaction api is implemented
+//                processReceivedMessage(
+//                    channel,
+//                    PubnubChatEvent(
+//                        result.data.messageEvent!!,
+//                        result.data,
+//                        0L,
+//                        pubnubChatEvent.messageUrl
+//                    ),
+//                    0L
+//                )
+                it.resume(true)
+            }
+        }
     }
 
     override fun stop() {
@@ -237,7 +281,7 @@ internal class PubnubChatMessagingClient(
                                 // channel and channel group configuration. This is another explicit error
                                 listener?.onClientMessageError(
                                     client,
-                                    Error("Access Denied", "Access Denied")
+                                    Error("Access Denied", "Access Denied",null)
                                 )
                             }
 
@@ -260,65 +304,12 @@ internal class PubnubChatMessagingClient(
 
             override fun message(pubnub: PubNub, pnMessageResult: PNMessageResult) {
                 val channel = pnMessageResult.channel
-                if (pubnubChatRoomLastMessageTime == null)
-                    pubnubChatRoomLastMessageTime = GsonBuilder().create().fromJson(
-                        getSharedPreferences()
-                            .getString(
-                                PREF_CHAT_ROOM_MSG_RECEIVED,
-                                null
-                            ),
-                        object : TypeToken<MutableMap<String, ArrayList<String>>>() {}.type
-                    ) ?: mutableMapOf()
-                pubnubChatRoomLastMessageTime?.let { map ->
-                    val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> =
-                        gson.fromJson(
-                            pnMessageResult.message.asJsonObject,
-                            object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type
-                        )
-                    val msgId = pubnubChatEvent.payload.messageId
-
-                    val list =
-                        when {
-                            map.containsKey(channel) -> map[channel]
-                            else -> ArrayList()
-                        } ?: ArrayList()
-                    val event = pnMessageResult.message.asJsonObject.extractStringOrEmpty("event")
-                        .toPubnubChatEventType()
-
-                    when (event) {
-                        MESSAGE_CREATED, IMAGE_CREATED, CUSTOM_MESSAGE_CREATED -> {
-                            if (!list.contains(msgId)) {
-                                list.add(msgId)
-                                map[channel] = list
-                                getSharedPreferences()
-                                    .edit()
-                                    .putString(
-                                        PREF_CHAT_ROOM_MSG_RECEIVED,
-                                        GsonBuilder().create().toJson(map)
-                                    ).apply()
-                                processPubnubChatEvent(
-                                    pnMessageResult.message.asJsonObject.apply {
-                                        addProperty("pubnubToken", pnMessageResult.timetoken)
-                                    },
-                                    channel, pnMessageResult.timetoken
-                                )?.let {
-                                    listener?.onClientMessageEvent(client, it)
-                                }
-                            } else {
-                            }
-                        }
-                        else -> {
-                            processPubnubChatEvent(
-                                pnMessageResult.message.asJsonObject.apply {
-                                    addProperty("pubnubToken", pnMessageResult.timetoken)
-                                },
-                                channel, pnMessageResult.timetoken
-                            )?.let {
-                                listener?.onClientMessageEvent(client, it)
-                            }
-                        }
-                    }
-                }
+                val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> =
+                    gson.fromJson(
+                        pnMessageResult.message.asJsonObject,
+                        object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type
+                    )
+                processReceivedMessage(channel, pubnubChatEvent, pnMessageResult.timetoken)
             }
 
             override fun messageAction(
@@ -334,6 +325,64 @@ internal class PubnubChatMessagingClient(
             override fun membership(pubnub: PubNub, pnMembershipResult: PNMembershipResult) {
             }
         })
+    }
+
+    private fun processReceivedMessage(
+        channel: String,
+        pubnubChatEvent: PubnubChatEvent<PubnubChatMessage>,
+        timeToken: Long
+    ) {
+        if (pubnubChatRoomLastMessageTime == null)
+            pubnubChatRoomLastMessageTime = GsonBuilder().create().fromJson(
+                getSharedPreferences()
+                    .getString(
+                        PREF_CHAT_ROOM_MSG_RECEIVED,
+                        null
+                    ),
+                object : TypeToken<MutableMap<String, ArrayList<String>>>() {}.type
+            ) ?: mutableMapOf()
+        pubnubChatRoomLastMessageTime?.let { map ->
+            val msgId = pubnubChatEvent.payload.messageId
+            val list =
+                when {
+                    map.containsKey(channel) -> map[channel]
+                    else -> ArrayList()
+                } ?: ArrayList()
+            when (pubnubChatEvent.pubnubChatEventType.toPubnubChatEventType()) {
+                MESSAGE_CREATED, IMAGE_CREATED, CUSTOM_MESSAGE_CREATED -> {
+                    if (!list.contains(msgId)) {
+                        list.add(msgId!!)
+                        map[channel] = list
+                        getSharedPreferences()
+                            .edit()
+                            .putString(
+                                PREF_CHAT_ROOM_MSG_RECEIVED,
+                                GsonBuilder().create().toJson(map)
+                            ).apply()
+                        processPubnubChatEvent(
+                            JsonParser.parseString(gson.toJson(pubnubChatEvent)).asJsonObject.apply {
+                                addProperty("pubnubToken", timeToken)
+                            },
+                            channel, timeToken
+                        )?.let {
+                            listener?.onClientMessageEvent(this, it)
+                        }
+                    } else {
+                        logDebug { "Received Message is already added in the list" }
+                    }
+                }
+                else -> {
+                    processPubnubChatEvent(
+                        JsonParser.parseString(gson.toJson(pubnubChatEvent)).asJsonObject.apply {
+                            addProperty("pubnubToken", timeToken)
+                        },
+                        channel, timeToken
+                    )?.let {
+                        listener?.onClientMessageEvent(this, it)
+                    }
+                }
+            }
+        }
     }
 
     private fun processPubnubMessageAction(
@@ -396,7 +445,7 @@ internal class PubnubChatMessagingClient(
             when (event) {
                 MESSAGE_CREATED, IMAGE_CREATED, CUSTOM_MESSAGE_CREATED -> {
                     if (isDiscardOwnPublishInSubscription && getPublishedMessages(channel).contains(
-                            pubnubChatEvent.payload.messageId
+                            pubnubChatEvent.payload.clientMessageId
                         )
                     ) {
                         logError { "discarding as its own recently published message which is broadcasted by pubnub on that channel." }
@@ -412,7 +461,12 @@ internal class PubnubChatMessagingClient(
                             ).asJsonObject.apply {
                                 addProperty("event", ChatViewModel.EVENT_MESSAGE_TIMETOKEN_UPDATED)
                                 addProperty("messageId", pubnubChatEvent.payload.messageId)
-                                addProperty("timetoken", timeToken)
+                                addProperty(
+                                    "clientMessageId",
+                                    pubnubChatEvent.payload.clientMessageId
+                                )
+                                addProperty("timeToken", timeToken)
+                                addProperty("createdAt", pubnubChatEvent.payload.createdAt)
                             },
                             channel
                         )
@@ -437,6 +491,7 @@ internal class PubnubChatMessagingClient(
                             ).asJsonObject.apply {
                                 addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
                                 addProperty("pubnubMessageToken", pubnubChatEvent.pubnubToken)
+                                addProperty("createdAt", pubnubChatEvent.payload.createdAt)
                             },
                             channel,
                             EpochTime(epochTimeMs)
@@ -495,21 +550,10 @@ internal class PubnubChatMessagingClient(
         return null
     }
 
-    fun parseToGetString(key: String, jsonObject: JsonObject): String? {
-        return when (jsonObject.getAsJsonObject("payload")
-            .getAsJsonObject("message_payload")
-            ?.get(key)?.isJsonNull) {
-            true -> null
-            else -> jsonObject.getAsJsonObject("payload")
-                .getAsJsonObject("message_payload")
-                ?.get(key)?.asString
-        }
-    }
-
     private fun isMessageModerated(jsonObject: JsonObject): Boolean {
         // added this check since in payload content filter was coming as string (json primitive) instead of array
-        val contentfilter = jsonObject.getAsJsonObject("payload")?.get("content_filter")
-        return if (contentfilter?.isJsonPrimitive == true) {
+        val contentFilter = jsonObject.getAsJsonObject("payload")?.get("content_filter")
+        return if (contentFilter?.isJsonPrimitive == true) {
             false
         } else {
             jsonObject.getAsJsonObject("payload")?.getAsJsonArray("content_filter")
@@ -517,7 +561,7 @@ internal class PubnubChatMessagingClient(
         }
     }
 
-    private fun getOwnReaction(actions: java.util.HashMap<String, java.util.HashMap<String, List<PNFetchMessageItem.Action>>>?): ChatMessageReaction? {
+    private fun getOwnReaction(actions: HashMap<String, HashMap<String, List<PNFetchMessageItem.Action>>>?): ChatMessageReaction? {
         actions?.get(REACTION_CREATED)?.let { reactions ->
             for (value in reactions.keys) {
                 reactions[value]?.forEach { action ->
@@ -530,7 +574,7 @@ internal class PubnubChatMessagingClient(
         return null
     }
 
-    private fun processReactionCounts(actions: java.util.HashMap<String, java.util.HashMap<String, List<PNFetchMessageItem.Action>>>?): MutableMap<String, Int> {
+    private fun processReactionCounts(actions: HashMap<String, HashMap<String, List<PNFetchMessageItem.Action>>>?): MutableMap<String, Int> {
         val reactionCountMap = mutableMapOf<String, Int>()
         actions?.get(REACTION_CREATED)?.let { reactions ->
             for (value in reactions.keys) {
@@ -542,14 +586,14 @@ internal class PubnubChatMessagingClient(
 
     internal fun loadMessagesWithReactions(
         channel: String,
-        chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
+        chatHistoryLimit: Int = CHAT_HISTORY_LIMIT
     ) {
         if (firstTimeToken == 0L)
             pubnub.time().async { result, _ ->
                 firstTimeToken = result?.timetoken ?: 0
                 loadMessagesWithReactions(
                     channel,
-                    chatHistoyLimit
+                    chatHistoryLimit
                 )
             }
         else {
@@ -557,7 +601,7 @@ internal class PubnubChatMessagingClient(
             pubnub.fetchMessages()
                 .channels(listOf(channel))
                 .includeMeta(true)
-                .maximumPerChannel(chatHistoyLimit)
+                .maximumPerChannel(chatHistoryLimit)
                 .start(firstTimeToken)
                 .includeMessageActions(true)
                 .async { result, status ->

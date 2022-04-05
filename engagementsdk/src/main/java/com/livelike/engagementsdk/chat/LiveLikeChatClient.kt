@@ -3,8 +3,8 @@ package com.livelike.engagementsdk.chat
 import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
-import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.data.remote.LiveLikeOrdering
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.*
 
 interface LiveLikeChatClient {
@@ -118,6 +118,7 @@ interface LiveLikeChatClient {
         pagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<PinMessageInfo>>
     )
+
     fun getProfileBlockIds(liveLikeCallback: LiveLikeCallback<List<String>>)
 
 }

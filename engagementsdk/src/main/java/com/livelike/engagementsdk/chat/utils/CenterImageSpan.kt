@@ -1,4 +1,4 @@
-package com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs
+package com.livelike.engagementsdk.chat.utils
 
 import android.graphics.Canvas
 import android.graphics.Paint

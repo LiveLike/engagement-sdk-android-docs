@@ -3,14 +3,17 @@ package com.livelike.engagementsdk.chat.data.repository
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
 import com.livelike.engagementsdk.TEMPLATE_CHAT_ROOM_ID
+import com.livelike.engagementsdk.chat.ChatRoomRequest
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.data.respository.BaseRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -41,7 +44,8 @@ internal class ChatRepository(
                     publishKey = publishKey,
                     origin = origin,
                     pubnubHeartbeatInterval = pubnubHeartbeatInterval,
-                    pubnubPresenceTimeout = pubnubPresenceTimeout
+                    pubnubPresenceTimeout = pubnubPresenceTimeout,
+                    chatRepository = this
                 )
         return pubnubChatMessagingClient!!
     }
@@ -57,30 +61,13 @@ internal class ChatRepository(
         chatRoomTemplateUrl: String
     ): Result<ChatRoom> {
         val remoteURL = chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "")
-        val titleRequest = createTitleRequest(title, visibility)
+        val titleRequest = gson.toJson(ChatRoomRequest(title, visibility)).toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         return dataClient.remoteCall<ChatRoom>(
             remoteURL,
             RequestType.POST,
             accessToken = authKey,
             requestBody = titleRequest
         )
-    }
-
-    private fun createTitleRequest(
-        title: String?,
-        visibility: Visibility?
-    ) = when {
-        title.isNullOrEmpty()
-            .not() && visibility != null ->
-            """{"visibility":"${visibility.name}","title":"$title"}"""
-                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        title.isNullOrEmpty().not() && visibility == null ->
-            """{"title":"$title"}"""
-                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        title.isNullOrEmpty() && visibility != null ->
-            """{"visibility":"${visibility.name}"}"""
-                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        else -> byteArrayOf().toRequestBody(null, 0)
     }
 
     suspend fun updateChatRoom(
@@ -90,7 +77,7 @@ internal class ChatRepository(
         chatRoomTemplateUrl: String
     ): Result<ChatRoom> {
         val chatRoomResult = fetchChatRoom(chatRoomId, chatRoomTemplateUrl)
-        val titleRequest = createTitleRequest(title, visibility)
+        val titleRequest = gson.toJson(ChatRoomRequest(title, visibility)).toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         return if (chatRoomResult is Result.Success) {
             return dataClient.remoteCall<ChatRoom>(
                 chatRoomResult.data.url,
@@ -147,6 +134,20 @@ internal class ChatRepository(
         pubnubChatMessagingClient?.loadMessagesWithReactions(
             channel,
             limit
+        )
+    }
+
+    suspend fun sendMessage(
+        url: String,
+        pubnubChatMessage: PubnubChatMessage
+    ): Result<PubnubChatMessage> {
+        return dataClient.remoteCall(
+            url,
+            accessToken = authKey,
+            requestType = RequestType.POST,
+            requestBody = gson.toJson(pubnubChatMessage).toRequestBody(
+                "application/json; charset=utf-8".toMediaTypeOrNull()
+            )
         )
     }
 

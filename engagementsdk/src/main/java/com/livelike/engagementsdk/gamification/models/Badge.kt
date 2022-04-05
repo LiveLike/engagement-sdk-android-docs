@@ -10,5 +10,7 @@ data class Badge(
     @field:SerializedName("badge_icon_url")
     val badgeIconUrl: String,
     @field:SerializedName("description")
-    val description: String
+    val description: String,
+    @field:SerializedName("registered_links")
+    val registeredLinks: List<RegisteredLink>
 )
