@@ -82,7 +82,7 @@ class CustomPollWidget : ConstraintLayout {
                     }
                 }
                 button2.visibility = View.GONE
-                pollWidgetModel?.voteResults?.subscribe(this) { result ->
+                pollWidgetModel?.voteResults?.subscribe(this.hashCode()) { result ->
                     result?.choices?.let { options ->
                         options.forEach { op ->
                             adapter.optionIdCount[op.id] = op.vote_count ?: 0
@@ -99,7 +99,7 @@ class CustomPollWidget : ConstraintLayout {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        pollWidgetModel?.voteResults?.unsubscribe(this)
+        pollWidgetModel?.voteResults?.unsubscribe(this.hashCode())
     }
 }
 

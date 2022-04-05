@@ -105,7 +105,7 @@ open class WidgetTimeLineViewModel(
      * observe the live (real time) widgets
      **/
     private fun observeForLiveWidgets() {
-        contentSession.widgetStream.subscribe(this) {
+        contentSession.widgetStream.subscribe(this.hashCode()) {
             it?.let {
                 val widget = TimelineWidgetResource(
                     decideWidgetInteraction(it, WidgetApiSource.REALTIME_API),
@@ -149,7 +149,7 @@ open class WidgetTimeLineViewModel(
      */
     fun clear() {
         uiScope.cancel()
-        contentSession.widgetStream.unsubscribe(this)
+        contentSession.widgetStream.unsubscribe(this.hashCode())
         widgetViewModelCache.forEach { entry ->
             entry.value?.onClear()
         }

@@ -34,11 +34,11 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         set(value) {
             field = value
             viewModel = value as PollViewModel
-//            viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
-//            viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
-//            viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
-            viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
-            viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
+//            viewModel?.data?.subscribe(this.hashCode()) { resourceObserver(it) }
+//            viewModel?.widgetState?.subscribe(this.hashCode()) { stateObserver(it) }
+//            viewModel?.results?.subscribe(this.hashCode()) { resultsObserver(it) }
+            viewModel?.currentVoteId?.subscribe(this.hashCode()) { clickedOptionObserver(it) }
+            viewModel?.points?.subscribe(this.hashCode()) { rewardsObserver(it) }
         }
 
     private fun clickedOptionObserver(id: String?) {
@@ -52,22 +52,22 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
-        viewModel?.widgetState?.subscribe(javaClass.simpleName) {
+        viewModel?.data?.subscribe(this.hashCode()) { resourceObserver(it) }
+        viewModel?.widgetState?.subscribe(this.hashCode()) {
             stateObserver(it)
         }
-//        viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
-        viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
-        viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
+//        viewModel?.results?.subscribe(this.hashCode()) { resultsObserver(it) }
+        viewModel?.currentVoteId?.subscribe(this.hashCode()) { clickedOptionObserver(it) }
+        viewModel?.points?.subscribe(this.hashCode()) { rewardsObserver(it) }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        viewModel?.data?.unsubscribe(javaClass.simpleName)
-        viewModel?.widgetState?.unsubscribe(javaClass.simpleName)
-        viewModel?.currentVoteId?.unsubscribe(javaClass.simpleName)
-        viewModel?.points?.unsubscribe(javaClass.simpleName)
-        viewModel?.results?.unsubscribe(javaClass.simpleName)
+        viewModel?.data?.unsubscribe(this.hashCode())
+        viewModel?.widgetState?.unsubscribe(this.hashCode())
+        viewModel?.currentVoteId?.unsubscribe(this.hashCode())
+        viewModel?.points?.unsubscribe(this.hashCode())
+        viewModel?.results?.unsubscribe(this.hashCode())
     }
 
     private fun stateObserver(widgetStates: WidgetStates?) {
@@ -82,7 +82,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 // show timer while widget interaction mode
                 viewModel?.data?.latest()?.showTimer()
 
-                viewModel?.results?.subscribe(javaClass.simpleName) {
+                viewModel?.results?.subscribe(this.hashCode()) {
                     if (isFirstInteraction)
                         resultsObserver(it)
                 }
@@ -93,7 +93,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
-                viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
+                viewModel?.results?.subscribe(this.hashCode()) { resultsObserver(it) }
             }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {

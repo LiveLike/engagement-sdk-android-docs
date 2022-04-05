@@ -115,7 +115,7 @@ internal class PollViewModel(
 //            })
 //        }
 
-        debouncer.subscribe(javaClass.simpleName) {
+        debouncer.subscribe(this.hashCode()) {
             if (it != null) vote()
         }
 

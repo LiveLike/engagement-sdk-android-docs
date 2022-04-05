@@ -81,7 +81,7 @@ class CustomPredictionWidget :
                     }
                 }
                 button2.visibility = View.GONE
-                voteResults?.subscribe(this) { result ->
+                voteResults?.subscribe(this.hashCode()) { result ->
                     result?.choices?.let { options ->
                         options.forEach { op ->
                             adapter.optionIdCount[op.id] = op.vote_count ?: 0
@@ -120,6 +120,6 @@ class CustomPredictionWidget :
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        predictionWidgetViewModel?.voteResults?.unsubscribe(this)
+        predictionWidgetViewModel?.voteResults?.unsubscribe(this.hashCode())
     }
 }
