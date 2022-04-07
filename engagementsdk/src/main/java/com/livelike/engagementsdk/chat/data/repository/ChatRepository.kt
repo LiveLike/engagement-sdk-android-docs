@@ -186,7 +186,7 @@ internal class ChatRepository(
         until?.let {
             apiUrl = "$apiUrl&until=${URLEncoder.encode(it, "utf-8")}"
         }
-        return dataClient.remoteCall(url, accessToken = authKey, requestType = RequestType.GET)
+        return dataClient.remoteCall(apiUrl, accessToken = authKey, requestType = RequestType.GET)
     }
 
     suspend fun postApi(url: String, customData: String): Result<LiveLikeChatMessage> {

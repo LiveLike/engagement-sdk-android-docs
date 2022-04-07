@@ -745,13 +745,13 @@ internal class PubnubChatMessagingClient(
                     val result = chatRepository.getMessageCount(
                         url,
                         since = ZonedDateTime.ofInstant(
-                            Instant.ofEpochMilli(endTimeStamp),
-                            ZoneId.systemDefault()
-                        ).formatIso8601(),
-                        until = ZonedDateTime.ofInstant(
                             Instant.ofEpochMilli(startTimestamp),
-                            ZoneId.systemDefault()
-                        ).formatIso8601(),
+                            ZoneId.of("UTC")
+                        ).isoDateTimeFormat(),
+                        until = ZonedDateTime.ofInstant(
+                            Instant.ofEpochMilli(endTimeStamp),
+                            ZoneId.of("UTC")
+                        ).isoDateTimeFormat(),
                     )
                     liveLikeCallback.processResult(result)
                 }
