@@ -47,13 +47,11 @@ import com.livelike.engagementsdk.chat.utils.setTextOrImageToView
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.publicapis.ChatMessageType
 import com.livelike.engagementsdk.publicapis.toChatMessageType
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.ln
@@ -218,6 +216,7 @@ internal class ChatRecyclerAdapter(
                 }
             }
             v.setOnLongClickListener(this)
+            v.rel_reactions_lay.setOnClickListener(this)
             v.setOnClickListener(this)
         }
 
@@ -247,16 +246,17 @@ internal class ChatRecyclerAdapter(
             if (chatPopUpView?.isShowing == true) {
                 hideFloatingUI()
             } else {
-                if (!isKeyboardOpen)
-                    wouldShowFloatingUi(view)
-                else
-                    isKeyboardOpen = false
+                if (view?.id == v.rel_reactions_lay.id) {
+                    if (!isKeyboardOpen)
+                        wouldShowFloatingUi(view)
+                    else
+                        isKeyboardOpen = false
+                }
             }
         }
 
         fun bindTo(item: ChatMessage?) {
             v.tag = item
-
             setMessage(item)
             updateBackground()
             if (item?.timetoken != 0L) {
