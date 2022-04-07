@@ -138,27 +138,7 @@ internal open class EngagementDataClientImpl :
                     if (response.isSuccessful) {
                         val responseData =
                             JsonParser.parseString(response.body?.string()).asJsonObject
-                        val user = LiveLikeUser(
-                            responseData.extractStringOrEmpty("id"),
-                            responseData.extractStringOrEmpty("nickname"),
-                            responseData.extractStringOrEmpty("access_token"),
-                            responseData.extractBoolean("widgets_enabled"),
-                            responseData.extractBoolean("chat_enabled"),
-                            null,
-                            responseData.extractStringOrEmpty("url"),
-                            responseData.extractStringOrEmpty("chat_room_memberships_url"),
-                            responseData.extractStringOrEmpty("custom_data"),
-                            responseData.extractStringOrEmpty("block_profile_url"),
-                            responseData.extractStringOrEmpty("badges_url"),
-                            responseData.extractStringOrEmpty("badge_progress_url"),
-                            responseData.extractStringOrEmpty("reward_item_balances_url"),
-                            responseData.extractStringOrEmpty("reward_item_transfer_url"),
-                            responseData.extractStringOrEmpty("subscribe_channel"),
-                            responseData.extractLong("reported_count").toInt(),
-                            responseData.extractStringOrEmpty("created_at"),
-                            responseData.extractStringOrEmpty("blocked_profiles_template_url"),
-                            responseData.extractStringOrEmpty("blocked_profile_ids_url")
-                        )
+                        val user = parseLiveLikeUser(responseData)
                         logVerbose { user }
                         mainHandler.post { responseCallback.invoke(user) }
                     } else {
@@ -169,6 +149,33 @@ internal open class EngagementDataClientImpl :
                 }
             }
         })
+    }
+
+    private fun parseLiveLikeUser(
+        responseData: JsonObject,
+        accessToken: String? = null
+    ): LiveLikeUser {
+        return LiveLikeUser(
+            responseData.extractStringOrEmpty("id"),
+            responseData.extractStringOrEmpty("nickname"),
+            accessToken ?: responseData.extractStringOrEmpty("access_token"),
+            responseData.extractBoolean("widgets_enabled"),
+            responseData.extractBoolean("chat_enabled"),
+            null,
+            responseData.extractStringOrEmpty("url"),
+            responseData.extractStringOrEmpty("chat_room_memberships_url"),
+            responseData.extractStringOrEmpty("custom_data"),
+            responseData.extractStringOrEmpty("block_profile_url"),
+            responseData.extractStringOrEmpty("badges_url"),
+            responseData.extractStringOrEmpty("badge_progress_url"),
+            responseData.extractStringOrEmpty("reward_item_balances_url"),
+            responseData.extractStringOrEmpty("reward_item_transfer_url"),
+            responseData.extractStringOrEmpty("subscribe_channel"),
+            responseData.extractLong("reported_count").toInt(),
+            responseData.extractStringOrEmpty("created_at"),
+            responseData.extractStringOrEmpty("blocked_profiles_template_url"),
+            responseData.extractStringOrEmpty("blocked_profile_ids_url")
+        )
     }
 
     override fun getUserData(
@@ -192,27 +199,7 @@ internal open class EngagementDataClientImpl :
                     if (response.isSuccessful) {
                         val responseData =
                             JsonParser.parseString(response.body?.string()).asJsonObject
-                        val user = LiveLikeUser(
-                            responseData.extractStringOrEmpty("id"),
-                            responseData.extractStringOrEmpty("nickname"),
-                            accessToken,
-                            responseData.extractBoolean("widgets_enabled"),
-                            responseData.extractBoolean("chat_enabled"),
-                            null,
-                            responseData.extractStringOrEmpty("url"),
-                            responseData.extractStringOrEmpty("chat_room_memberships_url"),
-                            responseData.extractStringOrEmpty("custom_data"),
-                            responseData.extractStringOrEmpty("block_profile_url"),
-                            responseData.extractStringOrEmpty("badges_url"),
-                            responseData.extractStringOrEmpty("badge_progress_url"),
-                            responseData.extractStringOrEmpty("reward_item_balances_url"),
-                            responseData.extractStringOrEmpty("reward_item_transfer_url"),
-                            responseData.extractStringOrEmpty("subscribe_channel"),
-                            responseData.extractLong("reported_count").toInt(),
-                            responseData.extractStringOrEmpty("created_at"),
-                            responseData.extractStringOrEmpty("blocked_profiles_template_url"),
-                            responseData.extractStringOrEmpty("blocked_profile_ids_url")
-                        )
+                        val user = parseLiveLikeUser(responseData, accessToken)
                         logVerbose { user }
                         mainHandler.post { responseCallback.invoke(user) }
                     } else {
