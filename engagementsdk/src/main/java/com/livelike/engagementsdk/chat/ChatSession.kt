@@ -307,7 +307,9 @@ internal class ChatSession(
             errorDelegate?.onError("ChatRoom Id cannot be Empty")
             return
         }
-        if (currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) == chatRoomId) return // Already in the room
+        if (currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)
+                ?.contains(chatRoomId) == true
+        ) return // Already in the room
 
         currentChatRoom?.let { chatRoom ->
             chatClient?.unsubscribe(listOf(chatRoom.channels.chat[CHAT_PROVIDER] ?: ""))
