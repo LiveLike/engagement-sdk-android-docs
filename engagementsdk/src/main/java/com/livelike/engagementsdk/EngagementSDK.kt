@@ -110,9 +110,9 @@ class EngagementSDK(
         }
         internalChatClient =
             InternalLiveLikeChatClient(configurationUserPairFlow, uiScope, sdkScope, dataClient)
-        userRepository.currentUserStream.subscribe(this.javaClass.simpleName) { user ->
+        userRepository.currentUserStream.subscribe(this.hashCode()) { user ->
             user?.accessToken?.let { token ->
-                userRepository.currentUserStream.unsubscribe(this.javaClass.simpleName)
+                userRepository.currentUserStream.unsubscribe(this.hashCode())
                 accessTokenDelegate!!.storeAccessToken(token)
             }
             (chat() as InternalLiveLikeChatClient).setUpPubNubClientForChatRoom()

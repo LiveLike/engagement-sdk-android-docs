@@ -100,7 +100,7 @@ class MMLPollWidget(
                         }
                     }
                     adapter.notifyDataSetChanged()
-                    pollWidgetModel.voteResults.subscribe(this@MMLPollWidget) { result ->
+                    pollWidgetModel.voteResults.subscribe(this@MMLPollWidget.hashCode()) { result ->
                         result?.choices?.let { options ->
                             var change = false
                             options.forEach { op ->
@@ -123,7 +123,7 @@ class MMLPollWidget(
                         timelineWidgetResource?.widgetState = WidgetStates.RESULTS
                         adapter.isTimeLine = true
                         adapter.notifyDataSetChanged()
-                        pollWidgetModel.voteResults.unsubscribe(this@MMLPollWidget)
+                        pollWidgetModel.voteResults.unsubscribe(this@MMLPollWidget.hashCode())
                         if (timelineWidgetResource == null) {
                             pollWidgetModel.finish()
                         } else {

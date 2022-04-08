@@ -417,7 +417,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
         userStream = (application as LiveLikeApplication).sdk.userStream
-        userStream.subscribe(this) {
+        userStream.subscribe(this.hashCode()) {
             runOnUiThread {
                 txt_nickname_server.text = it?.nickname
                 it?.let {

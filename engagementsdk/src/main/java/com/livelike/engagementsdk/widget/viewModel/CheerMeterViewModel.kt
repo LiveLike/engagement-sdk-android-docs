@@ -72,7 +72,7 @@ internal class CheerMeterViewModel(
         // restoring the cheer meter score from interaction history
         totalVoteCount = getUserInteraction()?.totalScore ?: 0
 
-        debounceVote.subscribe(this) {
+        debounceVote.subscribe(this.hashCode()) {
             wouldSendVote()
         }
     }

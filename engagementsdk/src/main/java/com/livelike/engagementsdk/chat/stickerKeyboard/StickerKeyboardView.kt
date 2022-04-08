@@ -74,7 +74,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
         onLoaded: ((List<StickerPack>?) -> Unit)? = null
     ) {
         viewModel = StickerKeyboardViewModel(stickerPackRepository)
-        viewModel?.stickerPacks?.subscribe(javaClass) {
+        viewModel?.stickerPacks?.subscribe(this.hashCode()) {
             onLoaded?.invoke(it)
             it?.let { stickerPacks ->
                 logDebug { "sticker pack: ${stickerPacks.size}" }
@@ -182,7 +182,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        viewModel?.stickerPacks?.unsubscribe(javaClass)
+        viewModel?.stickerPacks?.unsubscribe(this.hashCode())
     }
 
     private var listener: FragmentClickListener? = null
