@@ -329,47 +329,47 @@ internal class ChatSession(
                             controlChannel?.let {
                                 pubnubMessagingClient?.addChannelSubscription(it)
                             }
-                        } else {
-                            logDebug { "Current ChatRoom id not matched:1" }
-                        }
-                        val channel = chatRoom.channels.chat[CHAT_PROVIDER]
-                        channel?.let { ch ->
-                            contentSessionScope.launch {
-                                delay(500)
-                                if (chatRoom.id == currentChatRoomId) {
-                                    pubnubMessagingClient?.addChannelSubscription(ch)
-                                } else {
-                                    logDebug { "Current ChatRoom id not matched:2" }
-                                }
-                                delay(500)
-                                chatViewModel.apply {
-                                    flushMessages()
-                                    if (currentChatRoomId == chatRoom.id) {
-                                        updatingURls(
-                                            chatRoom.clientId,
-                                            chatRoom.stickerPacksUrl,
-                                            chatRoom.reactionPacksUrl,
-                                            chatRoom.reportMessageUrl
-                                        )
+                            val channel = chatRoom.channels.chat[CHAT_PROVIDER]
+                            channel?.let { ch ->
+                                contentSessionScope.launch {
+                                    delay(500)
+                                    if (chatRoom.id == currentChatRoomId) {
+                                        pubnubMessagingClient?.addChannelSubscription(ch)
                                     } else {
-                                        logDebug { "Current ChatRoom id not matched:3" }
+                                        logDebug { "Current ChatRoom id not matched:2" }
                                     }
-                                    delay(1000)
+                                    delay(500)
+                                    chatViewModel.apply {
+                                        flushMessages()
+                                        if (currentChatRoomId == chatRoom.id) {
+                                            updatingURls(
+                                                chatRoom.clientId,
+                                                chatRoom.stickerPacksUrl,
+                                                chatRoom.reactionPacksUrl,
+                                                chatRoom.reportMessageUrl
+                                            )
+                                        } else {
+                                            logDebug { "Current ChatRoom id not matched:3" }
+                                        }
+                                        delay(1000)
+                                        if (currentChatRoomId == chatRoom.id) {
+                                            currentChatRoom = chatRoom
+                                        } else {
+                                            logDebug { "Current ChatRoom id not matched:4" }
+                                        }
+                                        chatLoaded = false
+                                    }
                                     if (currentChatRoomId == chatRoom.id) {
-                                        currentChatRoom = chatRoom
+                                        this@ChatSession.currentChatRoom = chatRoom
+                                        pubnubMessagingClient?.activeChatRoom = channel
+                                        callback?.onResponse(Unit, null)
                                     } else {
-                                        logDebug { "Current ChatRoom id not matched:4" }
+                                        logDebug { "Current ChatRoom id not matched:5" }
                                     }
-                                    chatLoaded = false
-                                }
-                                if (currentChatRoomId == chatRoom.id) {
-                                    this@ChatSession.currentChatRoom = chatRoom
-                                    pubnubMessagingClient?.activeChatRoom = channel
-                                    callback?.onResponse(Unit, null)
-                                } else {
-                                    logDebug { "Current ChatRoom id not matched:5" }
                                 }
                             }
+                        } else {
+                            logDebug { "Current ChatRoom id not matched:1" }
                         }
                     }
                     error?.let {
