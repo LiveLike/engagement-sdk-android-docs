@@ -10,56 +10,27 @@ import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.LiveLikeChatClient
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
-import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
-import com.livelike.engagementsdk.core.data.models.LeaderboardClient
-import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
-import com.livelike.engagementsdk.core.data.models.RewardItem
-import com.livelike.engagementsdk.core.data.models.RewardsType
+import com.livelike.engagementsdk.core.data.models.*
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
-import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
-import com.livelike.engagementsdk.core.services.messaging.proxies.filter
-import com.livelike.engagementsdk.core.services.messaging.proxies.logAnalytics
-import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
-import com.livelike.engagementsdk.core.services.messaging.proxies.withPreloader
+import com.livelike.engagementsdk.core.services.messaging.proxies.*
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.Result
-import com.livelike.engagementsdk.core.utils.SubscriptionManager
-import com.livelike.engagementsdk.core.utils.combineLatestOnce
-import com.livelike.engagementsdk.core.utils.gson
-import com.livelike.engagementsdk.core.utils.isNetworkConnected
-import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.core.utils.logVerbose
-import com.livelike.engagementsdk.core.utils.validateUuid
+import com.livelike.engagementsdk.core.utils.*
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.widget.SpecifiedWidgetView
-import com.livelike.engagementsdk.widget.WidgetManager
-import com.livelike.engagementsdk.widget.WidgetProvider
-import com.livelike.engagementsdk.widget.WidgetType
-import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
-import com.livelike.engagementsdk.widget.asWidgetManager
-import com.livelike.engagementsdk.widget.data.models.PredictionWidgetUserInteraction
-import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.widget.data.models.PublishedWidgetListResponse
-import com.livelike.engagementsdk.widget.data.models.UnclaimedWidgetInteractionList
-import com.livelike.engagementsdk.widget.data.models.WidgetUserInteractionBase
+import com.livelike.engagementsdk.widget.*
+import com.livelike.engagementsdk.widget.data.models.*
 import com.livelike.engagementsdk.widget.data.respository.WidgetInteractionRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.threeten.bp.ZonedDateTime
 import java.io.IOException
@@ -72,6 +43,7 @@ internal class ContentSession(
     internal val analyticServiceStream: Stream<AnalyticsService>,
     private val errorDelegate: ErrorDelegate? = null,
     private val liveLikeChatClient: LiveLikeChatClient,
+    private val connectToDefaultChatRoom: Boolean,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
@@ -120,7 +92,7 @@ internal class ContentSession(
         liveLikePagination: LiveLikePagination,
         requestParams: WidgetsRequestParameters?,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
-    ){
+    ) {
         contentSessionScope.launch {
             programFlow.collect { program ->
                 uiScope.launch {
@@ -426,7 +398,10 @@ internal class ContentSession(
                                     configuration,
                                     pair.first.id
                                 )
-                                chatSession.connectToChatRoom(program.defaultChatRoom?.id ?: "")
+                                if (connectToDefaultChatRoom) {
+                                    chatSession.connectToChatRoom(program.defaultChatRoom?.id ?: "")
+                                }
+
 
                                 /* commented, since programId and programTitle doesn't need
                                 * to be a part of super properties */

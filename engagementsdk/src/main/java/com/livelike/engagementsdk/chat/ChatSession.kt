@@ -306,7 +306,10 @@ internal class ChatSession(
             errorDelegate?.onError("ChatRoom Id cannot be Empty")
             return
         }
-        if (currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) == chatRoomId) return // Already in the room
+        if (currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.contains(chatRoomId) == true) {
+            callback?.onResponse(null, "Already Connected to ChatRoom")
+            return // Already in the room
+        }
         currentChatRoom?.let { chatRoom ->
             chatClient?.unsubscribe(listOf(chatRoom.channels.chat[CHAT_PROVIDER] ?: ""))
         }
@@ -316,6 +319,7 @@ internal class ChatSession(
         messages.clear()
         deletedMsgList.clear()
         this.chatRoomId = chatRoomId
+        logDebug { "Connecting to ChatRoom: $chatRoomId" }
         fetchChatRoom(
             chatRoomId,
             object : LiveLikeCallback<ChatRoom>() {
@@ -344,6 +348,7 @@ internal class ChatSession(
                                     currentChatRoom = chatRoom
                                     chatLoaded = false
                                 }
+                                logDebug { "Connected to ChatRoom" }
                                 this@ChatSession.currentChatRoom = chatRoom
                                 pubnubMessagingClient?.activeChatRoom = chatRoom
                                 callback?.onResponse(Unit, null)
