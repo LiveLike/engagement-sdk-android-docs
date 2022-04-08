@@ -49,8 +49,9 @@ class MainActivity : AppCompatActivity() {
         var customCheerMeter: Boolean = false,
         var showLink: Boolean = false,
         var customLink: String? = null,
-        var quoteMsg: Boolean=false,
-        var allowDiscard: Boolean = true
+        var allowDiscard: Boolean = true,
+        var allowDefaultChatRoom: Boolean = true,
+        var quoteMsg: Boolean=false
     ) {
     }
 
@@ -184,6 +185,11 @@ class MainActivity : AppCompatActivity() {
         chk_enable_quote_msg.setOnCheckedChangeListener { _, isChecked ->
             player.quoteMsg = isChecked
         }
+        chk_allow_default_load_chat_room.isChecked = true
+        chk_allow_default_load_chat_room.setOnCheckedChangeListener { _, isChecked ->
+            player.allowDefaultChatRoom = isChecked
+        }
+
 
         sample_app.setOnClickListener {
             startActivity(Intent(this, SampleAppActivity::class.java))
@@ -581,6 +587,7 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     intent.putExtra("customLink", player.customLink)
     intent.putExtra("enableReplies", player.quoteMsg)
     intent.putExtra("allowDiscard", player.allowDiscard)
+    intent.putExtra("allowDefaultLoadChatRoom", player.allowDefaultChatRoom)
     intent.putExtra(
         "keyboardClose",
         when (player.theme) {

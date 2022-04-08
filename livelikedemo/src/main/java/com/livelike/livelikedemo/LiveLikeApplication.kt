@@ -52,7 +52,7 @@ class LiveLikeApplication : Application() {
         registerLogsHandler(object :
                 (String) -> Unit {
             override fun invoke(text: String) {
-               Log.d("engagement sdk logs : ", text)
+                Log.d("engagement sdk logs : ", text)
             }
         })
     }
@@ -112,14 +112,20 @@ class LiveLikeApplication : Application() {
     fun createPublicSession(
         sessionId: String,
         widgetInterceptor: WidgetInterceptor? = null,
-        allowTimeCodeGetter: Boolean = true
+        allowTimeCodeGetter: Boolean = true,
+        allowDefaultLoadChatRoom: Boolean = true
     ): LiveLikeContentSession {
         if (publicSession == null || publicSession?.contentSessionId() != sessionId) {
             publicSession?.close()
             publicSession = if (allowTimeCodeGetter)
-                sdk.createContentSession(sessionId, timecodeGetter, errorDelegate)
+                sdk.createContentSession(
+                    sessionId,
+                    timecodeGetter,
+                    errorDelegate,
+                    allowDefaultLoadChatRoom
+                )
             else
-                sdk.createContentSession(sessionId, errorDelegate)
+                sdk.createContentSession(sessionId, errorDelegate, allowDefaultLoadChatRoom)
         }
         publicSession!!.widgetInterceptor = widgetInterceptor
         return publicSession as LiveLikeContentSession
