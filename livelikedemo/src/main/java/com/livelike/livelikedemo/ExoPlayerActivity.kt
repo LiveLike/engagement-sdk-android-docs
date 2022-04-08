@@ -537,9 +537,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             })
             widget_view?.allowWidgetSwipeToDismiss = false
-
             widget_view?.setSession(session)
-
             widget_view?.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
                 override fun onWidgetStateChange(
                     state: WidgetStates,
