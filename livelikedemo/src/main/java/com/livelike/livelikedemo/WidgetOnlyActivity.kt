@@ -449,11 +449,11 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     val choices: ArrayList<Choice> = ArrayList()
                     val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
                     accessToken =
-                        when (com.livelike.livelikedemo.BuildConfig.FLAVOR) {
-                            "production" -> "Bearer zslM9_lbiy3SWkMbKsoGfAkK2Kg46dfVkN1Zsdt8K_P3BJU-AJOeSQ"
-                            "staging" -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
-                            "qatesting" -> "Bearer 95BmUG5FWgtikjrj-hqlYblfdF4X5nldidDepAmhFefBUy2lRPXEEw"
-                            "qaiconictesting" -> "Bearer NmQ6vAUxPtB2yBl2uLcebbJKQa3DWH_RnxcZpjVnBspVPZH_KB1BtQ"
+                        when (LiveLikeApplication.selectEnvironmentKey) {
+                            "Production" -> "Bearer zslM9_lbiy3SWkMbKsoGfAkK2Kg46dfVkN1Zsdt8K_P3BJU-AJOeSQ"
+                            "Staging" -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
+                            "QA" -> "Bearer 95BmUG5FWgtikjrj-hqlYblfdF4X5nldidDepAmhFefBUy2lRPXEEw"
+                            "QA Iconic" -> "Bearer NmQ6vAUxPtB2yBl2uLcebbJKQa3DWH_RnxcZpjVnBspVPZH_KB1BtQ"
                             else -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
                         }
                     scope.launch(Dispatchers.IO) {
@@ -733,7 +733,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             ): String? {
                 val body = Gson().toJson(post).toRequestBody(mediaType)
                 val request: Request = Request.Builder()
-                    .url("${BuildConfig.CONFIG_URL}$url/")
+                    .url("${LiveLikeApplication.selectedEnvironment?.configUrl}/api/v1/$url/")
                     .method("POST", body)
                     .addHeader(
                         authorization,

@@ -58,7 +58,7 @@ class CustomQuizWidget : ConstraintLayout {
                             quizWidgetModel?.lockInAnswer(item.id!!)
                     }
                 }
-                quizWidgetModel?.voteResults?.subscribe(this) { result ->
+                quizWidgetModel?.voteResults?.subscribe(this.hashCode()) { result ->
                     val op =
                         result?.choices?.find { option -> option.id == adapter.getSelectedOption()?.id }
 
@@ -88,7 +88,7 @@ class CustomQuizWidget : ConstraintLayout {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        quizWidgetModel?.voteResults?.unsubscribe(this)
+        quizWidgetModel?.voteResults?.unsubscribe(this.hashCode())
     }
 }
 

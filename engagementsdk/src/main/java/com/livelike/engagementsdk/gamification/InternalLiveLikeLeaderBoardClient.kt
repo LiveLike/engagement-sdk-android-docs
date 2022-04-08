@@ -38,9 +38,9 @@ internal class InternalLiveLikeLeaderBoardClient(
             programId: String,
             liveLikeCallback: LiveLikeCallback<List<LeaderBoard>>
     ) {
-        configurationStream.subscribe(this) { configuration ->
+        configurationStream.subscribe(this.hashCode()) { configuration ->
             configuration?.let {
-                configurationStream.unsubscribe(this)
+                configurationStream.unsubscribe(this.hashCode())
                 dataClient.getProgramData(
                         configuration.programDetailUrlTemplate.replace(
                                 TEMPLATE_PROGRAM_ID,
@@ -76,9 +76,9 @@ internal class InternalLiveLikeLeaderBoardClient(
             leaderBoardId: String,
             liveLikeCallback: LiveLikeCallback<LeaderBoard>
     ) {
-        configurationStream.subscribe(this) {
+        configurationStream.subscribe(this.hashCode()) {
             it?.let {
-                configurationStream.unsubscribe(this)
+                configurationStream.unsubscribe(this.hashCode())
                 uiScope.launch {
                     val url = "${
                         it.leaderboardDetailUrlTemplate?.replace(
@@ -129,9 +129,9 @@ internal class InternalLiveLikeLeaderBoardClient(
 
     private fun getEntries(pair: Pair<LiveLikePagination, Pair<String, LiveLikeCallback<LeaderBoardEntryPaginationResult>>>) {
         isQueueProcess = true
-        configurationStream.subscribe(this) { sdkConfiguration ->
+        configurationStream.subscribe(this.hashCode()) { sdkConfiguration ->
             sdkConfiguration?.let {
-                configurationStream.unsubscribe(this)
+                configurationStream.unsubscribe(this.hashCode())
                 uiScope.launch {
                     val leaderBoardId = pair.second.first
                     val liveLikeCallback = pair.second.second
@@ -215,9 +215,9 @@ internal class InternalLiveLikeLeaderBoardClient(
             profileId: String,
             liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     ) {
-        configurationStream.subscribe(this) {
+        configurationStream.subscribe(this.hashCode()) {
             it?.let {
-                configurationStream.unsubscribe(this)
+                configurationStream.unsubscribe(this.hashCode())
                 uiScope.launch {
                     val url = "${
                         it.leaderboardDetailUrlTemplate?.replace(
@@ -265,9 +265,9 @@ internal class InternalLiveLikeLeaderBoardClient(
             leaderBoardId: String,
             liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     ) {
-        userRepository.currentUserStream.subscribe(this) {
+        userRepository.currentUserStream.subscribe(this.hashCode()) {
             it?.let { user ->
-                userRepository.currentUserStream.unsubscribe(this)
+                userRepository.currentUserStream.unsubscribe(this.hashCode())
                 getLeaderBoardEntryForProfile(leaderBoardId, user.id, liveLikeCallback)
             }
         }
@@ -277,11 +277,11 @@ internal class InternalLiveLikeLeaderBoardClient(
             leaderBoardId: List<String>,
             liveLikeCallback: LiveLikeCallback<LeaderboardClient>
     ) {
-        configurationStream.subscribe(this) {
+        configurationStream.subscribe(this.hashCode()) {
             it?.let {
-                userRepository.currentUserStream.subscribe(this) { user ->
-                    userRepository.currentUserStream.unsubscribe(this)
-                    configurationStream.unsubscribe(this)
+                userRepository.currentUserStream.subscribe(this.hashCode()) { user ->
+                    userRepository.currentUserStream.unsubscribe(this.hashCode())
+                    configurationStream.unsubscribe(this.hashCode())
                     CoroutineScope(Dispatchers.IO).launch {
 
                         val job = ArrayList<Job>()

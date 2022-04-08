@@ -49,7 +49,7 @@ class CustomImageSlider : ConstraintLayout {
             imageSliderWidgetModel.lockInVote(gauge_seek_bar.getProgress().toDouble())
             gauge_seek_bar.interactive = false
         }
-        imageSliderWidgetModel.voteResults.subscribe(this) {
+        imageSliderWidgetModel.voteResults.subscribe(this.hashCode()) {
             it?.let {
                 txt_result.text = "Result: ${it.averageMagnitude}"
             }
@@ -61,6 +61,6 @@ class CustomImageSlider : ConstraintLayout {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        imageSliderWidgetModel.voteResults.unsubscribe(this)
+        imageSliderWidgetModel.voteResults.unsubscribe(this.hashCode())
     }
 }

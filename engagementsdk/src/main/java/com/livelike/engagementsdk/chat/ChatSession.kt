@@ -228,8 +228,7 @@ internal class ChatSession(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<ChatRoom>
     ) {
-        val requestId = UUID.randomUUID()
-        chatSessionIdleStream.subscribe(requestId) {
+        chatSessionIdleStream.subscribe(chatRoomId) {
             if (it == true) {
                 if (isClosed) {
                     logError { "Session is closed" }
@@ -259,7 +258,7 @@ internal class ChatSession(
                                         ?: "error in fetching room id resource"
                                 }
                             }
-                            chatSessionIdleStream.unsubscribe(requestId)
+                            chatSessionIdleStream.unsubscribe(chatRoomId)
                         }
                     }
                 }

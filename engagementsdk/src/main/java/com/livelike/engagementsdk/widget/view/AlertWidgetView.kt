@@ -52,13 +52,13 @@ internal class AlertWidgetView : SpecifiedWidgetView {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel?.data?.subscribe(javaClass) {
+        viewModel?.data?.subscribe(this.hashCode()) {
             logDebug { "showing the Alert WidgetView" }
             it?.let {
                 inflate(context, it)
             }
         }
-        viewModel?.widgetState?.subscribe(javaClass) { widgetStates ->
+        viewModel?.widgetState?.subscribe(this.hashCode()) { widgetStates ->
             logDebug { "Current State: $widgetStates" }
             widgetStates?.let {
                 if (widgetStates == WidgetStates.INTERACTING && (!viewModel?.data?.latest()?.link_url.isNullOrEmpty())) {
@@ -74,8 +74,8 @@ internal class AlertWidgetView : SpecifiedWidgetView {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        viewModel?.data?.unsubscribe(javaClass)
-        viewModel?.widgetState?.unsubscribe(javaClass)
+        viewModel?.data?.unsubscribe(this.hashCode())
+        viewModel?.widgetState?.unsubscribe(this.hashCode())
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {

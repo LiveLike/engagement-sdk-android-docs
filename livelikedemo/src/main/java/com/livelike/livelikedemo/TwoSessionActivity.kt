@@ -9,8 +9,7 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.livelikedemo.channel.ChannelManager
-import kotlinx.android.synthetic.main.two_sessions_activity.chat_view
-import kotlinx.android.synthetic.main.two_sessions_activity.widget_view
+import kotlinx.android.synthetic.main.two_sessions_activity.*
 
 class TwoSessionActivity : Activity() {
 
@@ -24,28 +23,29 @@ class TwoSessionActivity : Activity() {
         setContentView(R.layout.two_sessions_activity)
         val sharedPref = getSharedPreferences("app", Context.MODE_PRIVATE)
         channelManager = (application as LiveLikeApplication).channelManager
+        LiveLikeApplication.selectedEnvironment?.let {
+            engagementSDK = EngagementSDK(
+                it.clientId, applicationContext,
+                object : ErrorDelegate() {
+                    override fun onError(error: String) {
+                    }
+                },
+                accessTokenDelegate = object : AccessTokenDelegate {
+                    override fun getAccessToken(): String? {
+                        return sharedPref.getString("access", null)
+                    }
 
-        engagementSDK = EngagementSDK(
-            BuildConfig.APP_CLIENT_ID, applicationContext,
-            object : ErrorDelegate() {
-                override fun onError(error: String) {
+                    override fun storeAccessToken(accessToken: String?) {
+                        sharedPref.edit().putString("access", accessToken).apply()
+
+                        session =
+                            engagementSDK.createContentSession(channelManager.selectedChannel.llProgram.toString())
+                        widget_view.setSession(session)
+
+                        chat_view.setSession(session.chatSession)
+                    }
                 }
-            },
-            accessTokenDelegate = object : AccessTokenDelegate {
-                override fun getAccessToken(): String? {
-                    return sharedPref.getString("access", null)
-                }
-
-                override fun storeAccessToken(accessToken: String?) {
-                    sharedPref.edit().putString("access", accessToken).apply()
-
-                    session =
-                        engagementSDK.createContentSession(channelManager.selectedChannel.llProgram.toString())
-                    widget_view.setSession(session)
-
-                    chat_view.setSession(session.chatSession)
-                }
-            }
-        )
+            )
+        }
     }
 }

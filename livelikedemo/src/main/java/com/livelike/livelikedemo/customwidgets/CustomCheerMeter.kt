@@ -51,7 +51,7 @@ class CustomCheerMeter : ConstraintLayout {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        cheerMeterWidgetModel?.voteResults?.subscribe(this.javaClass) {
+        cheerMeterWidgetModel?.voteResults?.subscribe(this.hashCode()) {
             val op1 = it?.choices?.get(0)
             val op2 = it?.choices?.get(1)
             val vt1 = op1?.vote_count ?: 0
@@ -117,7 +117,7 @@ class CustomCheerMeter : ConstraintLayout {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        cheerMeterWidgetModel?.voteResults?.unsubscribe(this.javaClass)
+        cheerMeterWidgetModel?.voteResults?.unsubscribe(this.hashCode())
     }
 }
 fun String.parseDuration(): Long {

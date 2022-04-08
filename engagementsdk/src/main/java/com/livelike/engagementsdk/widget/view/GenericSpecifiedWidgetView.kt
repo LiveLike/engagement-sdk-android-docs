@@ -95,13 +95,13 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
     }
 
     protected open fun subscribeCalls() {
-        viewModel.data.subscribe(javaClass.simpleName) {
+        viewModel.data.subscribe(this.hashCode()) {
             dataModelObserver(it)
         }
-        viewModel.state.subscribe(javaClass.simpleName) {
+        viewModel.state.subscribe(this.hashCode()) {
             it?.let { stateObserver(it) }
         }
-        widgetViewModel?.widgetState?.subscribe(javaClass.simpleName) {
+        widgetViewModel?.widgetState?.subscribe(this.hashCode()) {
             when (it) {
                 WidgetStates.READY -> {
                     isFirstInteraction = false
@@ -122,7 +122,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                         )
                     }
                     findViewById<LinearLayout>(R.id.lay_lock).visibility = View.VISIBLE
-                    viewModel?.results?.subscribe(javaClass.simpleName) {
+                    viewModel?.results?.subscribe(this.hashCode()) {
                         if (isFirstInteraction)
                             showResults()
                     }
@@ -130,7 +130,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                 WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                     lockInteraction()
                     onWidgetInteractionCompleted()
-                    viewModel?.results?.subscribe(javaClass.simpleName) { showResults() }
+                    viewModel?.results?.subscribe(this.hashCode()) { showResults() }
                     // showResults()
                     viewModel.confirmInteraction()
                 }
@@ -170,9 +170,9 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
     }
 
     protected open fun unsubscribeCalls() {
-        viewModel.state.unsubscribe(javaClass.name)
-        viewModel.data.unsubscribe(javaClass.name)
-        widgetViewModel?.widgetState?.unsubscribe(javaClass.name)
+        viewModel.state.unsubscribe(this.hashCode())
+        viewModel.data.unsubscribe(this.hashCode())
+        widgetViewModel?.widgetState?.unsubscribe(this.hashCode())
     }
 
     override fun onAttachedToWindow() {

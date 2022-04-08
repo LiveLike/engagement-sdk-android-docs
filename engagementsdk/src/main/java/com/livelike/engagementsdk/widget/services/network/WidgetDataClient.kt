@@ -11,24 +11,14 @@ import com.livelike.engagementsdk.core.data.models.VoteApiResponse
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
-import com.livelike.engagementsdk.core.utils.addAuthorizationBearer
-import com.livelike.engagementsdk.core.utils.addUserAgent
-import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
-import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.core.utils.logVerbose
+import com.livelike.engagementsdk.core.utils.*
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVote
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.util.SingleRunner
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addPoints
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
+import okhttp3.*
 import java.io.IOException
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -61,7 +51,7 @@ internal interface WidgetDataClient {
         accessToken: String?
     ): SubmitApiResponse?
 
-    suspend fun getWidgetDataFromIdAndKind(id: String, kind: String): JsonObject?
+    suspend fun getWidgetDataFromIdAndKind(url: String, id: String, kind: String): JsonObject?
     suspend fun getAllPublishedWidgets(url: String): JsonObject?
     suspend fun getUnclaimedInteractions(url: String, accessToken: String?): JsonObject?
 }
@@ -100,13 +90,13 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                 jsonObject = postAsync(
                     voteUrl, accessToken,
                     (
-                        body ?: voteId?.let {
-                            FormBody.Builder()
-                                .add("option_id", it)
-                                .add("choice_id", it)
-                                .build()
-                        }
-                        ),
+                            body ?: voteId?.let {
+                                FormBody.Builder()
+                                    .add("option_id", it)
+                                    .add("choice_id", it)
+                                    .build()
+                            }
+                            ),
                     type ?: RequestType.PATCH
                 )
             }
@@ -139,7 +129,7 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                         }
                     }
                 }
-            }catch (ex: JsonParseException){
+            } catch (ex: JsonParseException) {
                 logError { ex.message }
             }
             return@afterPrevious voteUrl
@@ -177,11 +167,11 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
         return submitApiResponse
     }
 
-    override suspend fun getWidgetDataFromIdAndKind(id: String, kind: String) =
+    override suspend fun getWidgetDataFromIdAndKind(url: String, id: String, kind: String) =
         suspendCoroutine<JsonObject> {
             val client = OkHttpClient()
             val request = Request.Builder()
-                .url("${BuildConfig.CONFIG_URL}widgets/$kind/$id")
+                .url("${url}widgets/$kind/$id")
                 .get()
                 .addUserAgent()
                 .build()
