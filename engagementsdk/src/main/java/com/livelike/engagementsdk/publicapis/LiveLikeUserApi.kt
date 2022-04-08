@@ -84,7 +84,13 @@ data class LiveLikeChatMessage(val message: String?) {
     var quoteMessage: LiveLikeChatMessage? = null
     var clientMessageId: String? = null
     var createdAt: String? = null
+    var reactions: Map<String, List<LiveLikeChatReaction>>? = null
 }
+
+data class LiveLikeChatReaction(
+    val uuid: String? = null,
+    val actionTimeToken: String? = null
+)
 
 enum class ChatMessageType(val key: String) {
     MESSAGE_CREATED("message-created"),

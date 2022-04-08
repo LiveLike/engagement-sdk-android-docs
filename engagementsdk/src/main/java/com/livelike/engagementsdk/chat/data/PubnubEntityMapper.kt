@@ -58,6 +58,6 @@ internal fun PubnubChatMessage.toChatMessage(
         ),
         quoteMessageID = quoteMessageId,
         clientMessageId = clientMessageId,
-        chatRoomId = chatRoomId
+        chatRoomId = chatRoomId,
     )
 }

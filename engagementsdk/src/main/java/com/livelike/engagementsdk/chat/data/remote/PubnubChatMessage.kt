@@ -38,5 +38,15 @@ internal data class PubnubChatMessage(
     var messageEvent: String? = null,
     @SerializedName("chat_room_id")
     var chatRoomId: String? = null,
+    @SerializedName("pubnub_timetoken")
+    var pubnubTimeToken: Long? = null,
+    @SerializedName("reactions")
+    var reactions: Map<String, List<PubnubChatReaction>>? = null,
+    @SerializedName("content_filter")
+    var contentFilter: List<String>? = null
+)
 
+internal data class PubnubChatReaction(
+    val uuid: String? = null,
+    val actionTimeToken: Long? = null
 )
