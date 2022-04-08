@@ -45,6 +45,8 @@ internal data class ChatRoom(
     var sponsorsUrl: String? = null,
     @SerializedName("chatroom_messages_url")
     var chatroomMessageUrl: String? = null,
+    @SerializedName("chatroom_messages_count_url")
+    var chatroomMessagesCountUrl: String? = null,
 )
 
 internal data class Channels(

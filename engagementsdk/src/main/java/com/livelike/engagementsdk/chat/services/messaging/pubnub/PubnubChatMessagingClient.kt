@@ -22,6 +22,7 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.*
 import com.livelike.engagementsdk.core.utils.Queue
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedPreferences
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubSubscribeCallbackAdapter
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
@@ -36,6 +37,7 @@ import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
 import kotlinx.coroutines.*
 import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import java.util.*
 import kotlin.coroutines.resume
@@ -613,16 +615,16 @@ internal class PubnubChatMessagingClient(
                                     }
                                     return@filter !isMessageModerated(jsonObject)
                                 }*/?.map { messageItem ->
-                                val jsonObject = messageItem.message.asJsonObject.apply {
-                                    addProperty("pubnubToken", messageItem.timetoken)
-                                }
-                                return@map processPubnubChatEvent(
-                                    jsonObject,
-                                    channel,
-                                    messageItem.timetoken,
+                                    val jsonObject = messageItem.message.asJsonObject.apply {
+                                        addProperty("pubnubToken", messageItem.timetoken)
+                                    }
+                                    return@map processPubnubChatEvent(
+                                        jsonObject,
+                                        channel,
+                                        messageItem.timetoken,
 //                                    messageItem.actions
-                                )
-                            }?.filterNotNull() ?: arrayListOf()
+                                    )
+                                }?.filterNotNull() ?: arrayListOf()
                         listener?.onClientMessageEvents(this, list)
                     }
                     sendLoadingCompletedEvent(channel)
@@ -732,6 +734,31 @@ internal class PubnubChatMessagingClient(
             }
     }
 
+    internal fun getMessageCountFromServer(
+        startTimestamp: Long,
+        endTimeStamp: Long = Calendar.getInstance().timeInMillis,
+        liveLikeCallback: LiveLikeCallback<PubnubChatListCountResponse>
+    ) {
+        activeChatRoom?.let { chatRoom ->
+            chatRoom.chatroomMessagesCountUrl?.let { url ->
+                coroutineScope.launch {
+                    val result = chatRepository.getMessageCount(
+                        url,
+                        since = ZonedDateTime.ofInstant(
+                            Instant.ofEpochMilli(startTimestamp),
+                            ZoneId.of("UTC")
+                        ).isoDateTimeFormat(),
+                        until = ZonedDateTime.ofInstant(
+                            Instant.ofEpochMilli(endTimeStamp),
+                            ZoneId.of("UTC")
+                        ).isoDateTimeFormat(),
+                    )
+                    liveLikeCallback.processResult(result)
+                }
+            }
+        }
+    }
+
     /**
      * returns the message count between start and end time
      * max count can returned is 100
@@ -762,30 +789,6 @@ internal class PubnubChatMessagingClient(
             return Result.Success(count)
         } catch (e: PubNubException) {
             return Result.Error(e)
-        }
-    }
-
-    @Deprecated("use getMessageCountV1()")
-    internal fun getMessageCount(
-        channel: String,
-        startTimestamp: Long
-    ): Result<Long> {
-        return try {
-            val countResult = pubnub.messageCounts()
-                .channels(listOf(channel))
-                .channelsTimetoken(listOf(convertToTimeToken(startTimestamp)))
-                .sync()
-            logDebug {
-                "Count Read channel : $channel lasttimestamp:${
-                    convertToTimeToken(
-                        startTimestamp
-                    )
-                } count:${countResult?.channels?.get(channel) ?: 0}"
-            }
-            Result.Success(countResult?.channels?.get(channel) ?: 0)
-        } catch (ex: PubNubException) {
-            ex.printStackTrace()
-            Result.Error(ex)
         }
     }
 

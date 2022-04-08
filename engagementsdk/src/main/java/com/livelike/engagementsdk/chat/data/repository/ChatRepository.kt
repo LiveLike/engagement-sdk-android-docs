@@ -5,10 +5,7 @@ import com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
 import com.livelike.engagementsdk.TEMPLATE_CHAT_ROOM_ID
 import com.livelike.engagementsdk.chat.ChatRoomRequest
 import com.livelike.engagementsdk.chat.Visibility
-import com.livelike.engagementsdk.chat.data.remote.ChatRoom
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatListResponse
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
-import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
+import com.livelike.engagementsdk.chat.data.remote.*
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.data.respository.BaseRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
@@ -176,6 +173,20 @@ internal class ChatRepository(
             accessToken = authKey,
             requestType = RequestType.GET
         )
+    }
+
+    suspend fun getMessageCount(
+        url: String, since: String? = null,
+        until: String? = null
+    ): Result<PubnubChatListCountResponse> {
+        var apiUrl = "$url?"
+        since?.let {
+            apiUrl = "$apiUrl&since=${URLEncoder.encode(it, "utf-8")}"
+        }
+        until?.let {
+            apiUrl = "$apiUrl&until=${URLEncoder.encode(it, "utf-8")}"
+        }
+        return dataClient.remoteCall(apiUrl, accessToken = authKey, requestType = RequestType.GET)
     }
 
     suspend fun postApi(url: String, customData: String): Result<LiveLikeChatMessage> {
