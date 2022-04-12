@@ -149,6 +149,7 @@ internal class PubnubChatMessagingClient(
         channel: String
     ) = suspendCoroutine<Boolean> {
         coroutineScope.launch {
+            println("PubnubChatMessagingClient.publishMessageToServer>>${pubnubChatEvent.messageUrl}>>${pubnubChatEvent.payload.chatRoomId}")
             val result = chatRepository.sendMessage(
                 pubnubChatEvent.messageUrl,
                 pubnubChatEvent.payload.apply {

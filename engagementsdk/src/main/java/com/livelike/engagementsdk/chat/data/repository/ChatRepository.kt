@@ -163,7 +163,6 @@ internal class ChatRepository(
         until?.let {
             apiUrl = "$apiUrl&until=${URLEncoder.encode(it, "utf-8")}"
         }
-        println("ChatRepository.getMessageHistory>>$apiUrl>>>$since>>$until")
         return dataClient.remoteCall(
             apiUrl,
             accessToken = authKey,

@@ -196,7 +196,7 @@ class ChatFragment : Fragment() {
                 private val TAG = "LiveLike"
                 override fun onNewMessage(message: LiveLikeChatMessage) {
                     Log.i(TAG, "onNewMessage: $message")
-                    val index = adapter.chatList.indexOfFirst { it.id == message.id }
+                    val index = adapter.chatList.indexOfFirst { it.clientMessageId == message.clientMessageId }
                     if (index > -1) {
                         adapter.chatList[index] = message
                     } else {

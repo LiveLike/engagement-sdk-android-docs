@@ -474,6 +474,7 @@ internal class ChatSession(
             timeStamp = timeData.timeSinceEpochInMs.toString(),
             quoteMessage = parentChatMessage?.copy()?.toChatMessage(),
             clientMessageId = UUID.randomUUID().toString(),
+            chatRoomId = currentChatRoomId
         ).let { chatMessage ->
             // TODO: need to update for error handling here if pubnub respond failure of message
             preLiveLikeCallback.onResponse(chatMessage.toLiveLikeChatMessage(), null)
