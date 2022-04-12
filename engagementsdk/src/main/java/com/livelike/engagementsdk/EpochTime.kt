@@ -125,3 +125,7 @@ internal fun ZonedDateTime.formatIso8601(): String {
 internal fun ZonedDateTime.formatIsoZoned8601(): String {
     return DateTimeFormatter.ISO_ZONED_DATE_TIME.format(this)
 }
+
+internal fun ZonedDateTime.isoDateTimeFormat():String {
+    return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(this)
+}

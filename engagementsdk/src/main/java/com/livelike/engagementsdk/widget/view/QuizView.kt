@@ -51,18 +51,18 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
-        viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
-        viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
-        // viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
+        viewModel?.data?.subscribe(this.hashCode()) { resourceObserver(it) }
+        viewModel?.widgetState?.subscribe(this.hashCode()) { stateWidgetObserver(it) }
+        viewModel?.currentVoteId?.subscribe(this.hashCode()) { onClickObserver() }
+        // viewModel?.results?.subscribe(this.hashCode()) { resultsObserver(it) }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        viewModel?.data?.unsubscribe(javaClass.simpleName)
-        viewModel?.widgetState?.unsubscribe(javaClass.simpleName)
-        viewModel?.currentVoteId?.unsubscribe(javaClass.simpleName)
-        viewModel?.results?.unsubscribe(javaClass.simpleName)
+        viewModel?.data?.unsubscribe(this.hashCode())
+        viewModel?.widgetState?.unsubscribe(this.hashCode())
+        viewModel?.currentVoteId?.unsubscribe(this.hashCode())
+        viewModel?.results?.unsubscribe(this.hashCode())
     }
 
     private fun stateWidgetObserver(widgetStates: WidgetStates?) {
@@ -92,7 +92,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 onWidgetInteractionCompleted()
                 disableLockButton()
                 binding?.layLock?.labelLock?.visibility = View.VISIBLE
-                viewModel?.results?.subscribe(javaClass.simpleName) {
+                viewModel?.results?.subscribe(this.hashCode()) {
                     if (isFirstInteraction) {
                         resultsObserver(viewModel?.results?.latest())
                     }

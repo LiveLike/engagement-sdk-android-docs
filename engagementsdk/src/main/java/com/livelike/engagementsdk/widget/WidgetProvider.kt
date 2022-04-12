@@ -425,7 +425,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     }
 
     private fun subscribeWidgetStateAndPublishToLifecycleListener() {
-        widgetViewModel?.widgetState?.subscribe(this) {
+        widgetViewModel?.widgetState?.subscribe(this.hashCode()) {
             it?.let {
                 widgetLifeCycleEventsListener?.onWidgetStateChange(it, widgetData)
             }
@@ -434,7 +434,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        widgetViewModel?.widgetState?.unsubscribe(this)
+        widgetViewModel?.widgetState?.unsubscribe(this.hashCode())
         widgetLifeCycleEventsListener?.onWidgetDismissed(widgetData)
     }
 

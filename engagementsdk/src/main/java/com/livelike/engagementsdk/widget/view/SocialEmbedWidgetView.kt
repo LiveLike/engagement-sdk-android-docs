@@ -45,7 +45,7 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
             inflate(context, it)
         }
 
-        viewModel?.widgetState?.subscribe(javaClass) { widgetStates ->
+        viewModel?.widgetState?.subscribe(this.hashCode()) { widgetStates ->
             widgetStates?.let { state ->
                 if (viewModel?.enableDefaultWidgetTransition != false) {
                     defaultStateTransitionManager(state)
@@ -56,8 +56,8 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        viewModel?.data?.unsubscribe(javaClass)
-        viewModel?.widgetState?.unsubscribe(javaClass)
+        viewModel?.data?.unsubscribe(this.hashCode())
+        viewModel?.widgetState?.unsubscribe(this.hashCode())
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {

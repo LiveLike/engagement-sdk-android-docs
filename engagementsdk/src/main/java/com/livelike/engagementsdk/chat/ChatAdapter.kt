@@ -47,13 +47,11 @@ import com.livelike.engagementsdk.chat.utils.setTextOrImageToView
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.publicapis.ChatMessageType
 import com.livelike.engagementsdk.publicapis.toChatMessageType
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.ln
@@ -180,9 +178,7 @@ internal class ChatRecyclerAdapter(
                         )
                     )
                     setPositiveButton(context.getString(R.string.livelike_chat_alert_blocked_confirm)) { _, _ ->
-                        analyticsService.trackBlockingUser()
-                        blockProfile(msg.senderId)
-                        reporter(msg)
+
                     }
                     create()
                 }.show()
@@ -191,8 +187,7 @@ internal class ChatRecyclerAdapter(
                 AlertDialog.Builder(v.context).apply {
                     setMessage(context.getString(R.string.flag_ui_reporting_message))
                     setPositiveButton(context.getString(R.string.livelike_chat_report_message_confirm)) { _, _ ->
-                        analyticsService.trackReportingMessage()
-                        reporter(msg)
+
                     }
                     create()
                 }.show()
@@ -259,7 +254,6 @@ internal class ChatRecyclerAdapter(
 
         fun bindTo(item: ChatMessage?) {
             v.tag = item
-
             setMessage(item)
             updateBackground()
             if (item?.timetoken != 0L) {
@@ -320,6 +314,17 @@ internal class ChatRecyclerAdapter(
                             setTitle(context.getString(R.string.flag_ui_title))
                             setItems(dialogOptions.map { it.first }.toTypedArray()) { _, which ->
                                 message?.let {
+                                    when (dialogOptions[which].first) {
+                                        v.context.getString(R.string.flag_ui_blocking_title) -> {
+                                            analyticsService.trackBlockingUser()
+                                            blockProfile(it.senderId)
+                                            reporter(it)
+                                        }
+                                        v.context.getString(R.string.flag_ui_reporting_title) -> {
+                                            analyticsService.trackReportingMessage()
+                                            reporter(it)
+                                        }
+                                    }
                                     dialogOptions[which].second.invoke(it)
                                 }
                             }

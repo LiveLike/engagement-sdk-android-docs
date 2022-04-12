@@ -46,6 +46,7 @@ import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.widgetModel.*
+import com.livelike.livelikedemo.LiveLikeApplication.Companion.PREFERENCES_APP_ID
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
@@ -54,36 +55,6 @@ import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import kotlinx.android.synthetic.main.activity_exo_player.btn_custom_message
-import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
-import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
-import kotlinx.android.synthetic.main.activity_exo_player.live_blog
-import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
-import kotlinx.android.synthetic.main.activity_exo_player.openLogs
-import kotlinx.android.synthetic.main.activity_exo_player.playerView
-import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
-import kotlinx.android.synthetic.main.activity_exo_player.startAd
-import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
-import kotlinx.android.synthetic.main.custom_msg_item.view.img_sender_msg
-import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg
-import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_sender_name
-import kotlinx.android.synthetic.main.custom_msg_item.view.txt_msg_time
-import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
-import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_id
-import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
-import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
-import java.util.Date
-import java.util.Random
-import java.util.Timer
-import java.util.TimerTask
-import kotlinx.android.synthetic.main.activity_exo_player.*
-import kotlinx.android.synthetic.main.custom_msg_item.view.*
-import kotlinx.android.synthetic.main.widget_chat_stacked.*
-import java.text.DecimalFormat
-import java.util.*
-import kotlin.math.floor
-import kotlin.math.log10
-import kotlin.math.pow
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.custom_msg_item.view.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
@@ -434,11 +405,13 @@ class ExoPlayerActivity : AppCompatActivity() {
                     "\"custom_message\": \"${getRandomString((10..50).random())}\"" +
                     "}", object : LiveLikeCallback<LiveLikeChatMessage>() {
                 override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                    result?.let {
-                        println("ExoPlayerActivity.onResponse> ${it.id}")
-                    }
-                    error?.let {
-                        Toast.makeText(applicationContext, error, Toast.LENGTH_SHORT).show()
+                    runOnUiThread {
+                        result?.let {
+                            println("ExoPlayerActivity.onResponse> ${it.id}")
+                        }
+                        error?.let {
+                            Toast.makeText(applicationContext, error, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             })
@@ -564,9 +537,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             })
             widget_view?.allowWidgetSwipeToDismiss = false
-
             widget_view?.setSession(session)
-
             widget_view?.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
                 override fun onWidgetStateChange(
                     state: WidgetStates,

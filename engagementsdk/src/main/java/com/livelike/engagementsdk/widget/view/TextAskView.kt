@@ -42,14 +42,14 @@ class TextAskView(context: Context, attr: AttributeSet? = null) :
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
-        viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
+        viewModel?.data?.subscribe(this.hashCode()) { resourceObserver(it) }
+        viewModel?.widgetState?.subscribe(this.hashCode()) { stateWidgetObserver(it) }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        viewModel?.data?.unsubscribe(javaClass.simpleName)
-        viewModel?.widgetState?.unsubscribe(javaClass.simpleName)
+        viewModel?.data?.unsubscribe(this.hashCode())
+        viewModel?.widgetState?.unsubscribe(this.hashCode())
     }
 
     @SuppressLint("ClickableViewAccessibility")

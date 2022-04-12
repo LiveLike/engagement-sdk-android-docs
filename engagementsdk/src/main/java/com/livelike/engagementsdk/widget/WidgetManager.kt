@@ -70,7 +70,7 @@ internal class WidgetManager(
 
     private fun widgetInterceptorSubscribe() {
         widgetInterceptor?.let { wi ->
-            wi.events.subscribe(javaClass.simpleName) {
+            wi.events.subscribe(this.hashCode()) {
                 when (it) {
                     WidgetInterceptor.Decision.Show -> showPendingMessage()
                     WidgetInterceptor.Decision.Dismiss -> dismissPendingMessage()

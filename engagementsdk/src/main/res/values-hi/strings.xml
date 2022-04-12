@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LiveLikeSDK</string>
     <string name="livelike_chat_input_hint">कुछ कहें…</string>
     <string name="point_tutorial_body">अधिक अंक अर्जित करने और लीडरबोर्ड के शीर्ष पर पहुंचने के लिए प्रतिक्रिया देते रहें!</string>
     <string name="points_tutorial_title">महान शुरू करो!</string>
@@ -21,7 +20,7 @@
     <string name="you_can_add_reaction_hint">आप यहाँ प्रतिक्रिया जोड़ सकते हैं</string>
     <string name="image">छवि</string>
     <string name="coins">सिक्के</string>
-    <string name="snap_to_live">जीने के लिए तस्वीर</string>
+    <string name="snap_to_live">नवीनतम चैट देखने के लिए क्लिक करें</string>
     <string name="user_image">उपयोगकर्ता की छवि</string>
     <string name="report_message">रिपोर्ट संदेश</string>
     <string name="team_one">टीम एक</string>
@@ -52,8 +51,8 @@
     <string name="livelike_predicted_label">भविष्यवाणी की!</string>
     <string name="livelike_cancel_the_quote_chat_window">अभिभावक चैट विंडो रद्द करें</string>
     <string name="livelike_send_quote_message_input_accessibility">" %1$s को उत्तर संदेश भेजें"</string>
-    <string name="livelike_quote_image_accessibility">Reply message to Image</string>
-    <string name="livelike_quote_message_accessibility">Replying Message to %1$s</string>
+    <string name="livelike_quote_image_accessibility">छवि को संदेश का उत्तर दें</string>
+    <string name="livelike_quote_message_accessibility">%1$s को संदेश का जवाब देना</string>
     <string name="livelike_quote_blocked_message">संदेश भेजने वाले को ब्लॉक किया गया</string>
     <string name="livelike_quote_chat_message_deleted_message">संदेश हटाये</string>
 </resources>

@@ -25,7 +25,7 @@ definitions:
         caches:
           - gradle
         script:
-          - ./gradlew lintProductionRelease
+          - ./gradlew lintRelease
         artifacts:
           - app/build/reports/**
 

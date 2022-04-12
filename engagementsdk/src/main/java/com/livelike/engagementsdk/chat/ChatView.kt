@@ -362,7 +362,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             if (chatLoaded)
                 checkEmptyChat()
             logDebug { "SetSession ViewModel:$this , ChatView:${this@ChatView}" }
-            eventStream.subscribe(javaClass.simpleName) {
+            eventStream.subscribe(this@ChatView.hashCode()) {
                 logDebug { "Chat event stream : $it" }
                 when (it) {
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
@@ -410,7 +410,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             }
-            userStream.subscribe(javaClass.simpleName) {
+            userStream.subscribe(this@ChatView.hashCode()) {
                 currentUser = it
                 it?.let {
                     uiScope.launch {
@@ -419,7 +419,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             }
-            programRepository?.programGamificationProfileStream?.subscribe(javaClass.simpleName) {
+            programRepository?.programGamificationProfileStream?.subscribe(this@ChatView.hashCode()) {
                 it?.let { programRank ->
                     if (programRank.newPoints == 0 || pointView.visibility == View.GONE) {
                         pointView.showPoints(programRank.points)
@@ -448,7 +448,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             }
-            animationEventsStream?.subscribe(javaClass.simpleName) {
+            animationEventsStream?.subscribe(this@ChatView.hashCode()) {
                 if (it == ViewAnimationEvents.BADGE_COLLECTED) {
                     programRepository?.programGamificationProfileStream?.latest()
                         ?.let { programGamificationProfile ->
@@ -563,7 +563,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         chatViewModel: ChatViewModel
     ) {
         stickerKeyboardView.initTheme(chatAttribute)
-        chatViewModel.stickerPackRepositoryStream.subscribe(this@ChatView) { stickerPackRepository ->
+        chatViewModel.stickerPackRepositoryStream.subscribe(this@ChatView.hashCode()) { stickerPackRepository ->
             uiScope.launch {
                 stickerPackRepository?.let {
                     stickerKeyboardView.setProgram(stickerPackRepository) {
@@ -1160,10 +1160,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     fun clearSession() {
         logDebug { "Clear Chat Session ViewModel:$viewModel ,ChatView:$this" }
         viewModel?.apply {
-            eventStream.unsubscribe(javaClass.simpleName)
-            userStream.unsubscribe(javaClass.simpleName)
-            programRepository?.programGamificationProfileStream?.unsubscribe(javaClass.simpleName)
-            stickerPackRepositoryStream.unsubscribe(this@ChatView)
+            eventStream.unsubscribe(this@ChatView.hashCode())
+            userStream.unsubscribe(this@ChatView.hashCode())
+            programRepository?.programGamificationProfileStream?.unsubscribe(this@ChatView.hashCode())
+            stickerPackRepositoryStream.unsubscribe(this@ChatView.hashCode())
             chatAdapter.checkListIsAtTop = null
             chatAdapter.mRecyclerView = null
             chatAdapter.messageTimeFormatter = null

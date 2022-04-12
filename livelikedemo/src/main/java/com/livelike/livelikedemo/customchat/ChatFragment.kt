@@ -30,7 +30,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.LiveLikeEmptyResponse
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication
-import com.livelike.livelikedemo.PREFERENCES_APP_ID
+import com.livelike.livelikedemo.LiveLikeApplication.Companion.PREFERENCES_APP_ID
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_chat_item.view.*
 import kotlinx.android.synthetic.main.fragment_chat.*
@@ -196,7 +196,7 @@ class ChatFragment : Fragment() {
                 private val TAG = "LiveLike"
                 override fun onNewMessage(message: LiveLikeChatMessage) {
                     Log.i(TAG, "onNewMessage: $message")
-                    val index = adapter.chatList.indexOfFirst { it.id == message.id }
+                    val index = adapter.chatList.indexOfFirst { it.clientMessageId == message.clientMessageId }
                     if (index > -1) {
                         adapter.chatList[index] = message
                     } else {
@@ -293,7 +293,6 @@ class ChatFragment : Fragment() {
             }
 
             // send custom message
-            com.livelike.engagementsdk.BuildConfig.CONFIG_URL
             custom.setOnClickListener {
                 scope.launch(Dispatchers.IO) {
                     sendCustomMessage(

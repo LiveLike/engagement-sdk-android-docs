@@ -363,13 +363,13 @@ internal class ContentSession(
     val livelikeThemeStream: Stream<LiveLikeEngagementTheme> = SubscriptionManager()
 
     init {
-        userRepository.currentUserStream.subscribe(this) {
+        userRepository.currentUserStream.subscribe(this.hashCode()) {
             it?.let {
                 analyticServiceStream.latest()!!.trackUsername(it.nickname)
             }
         }
         userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode())
-            .subscribe(this) {
+            .subscribe(this.hashCode()) {
                 it?.let { pair ->
                     val configuration = pair.second
                     programRepository.programUrlTemplate = configuration.programDetailUrlTemplate
@@ -452,7 +452,7 @@ internal class ContentSession(
         rewardType: RewardsType
     ) {
         if (rewardType != RewardsType.NONE) {
-            programGamificationProfileStream.subscribe(javaClass.simpleName) {
+            programGamificationProfileStream.subscribe(this.hashCode()) {
                 it?.let {
                     analyticService.trackPointThisProgram(it.points)
                     if (rewardType == RewardsType.BADGES) {

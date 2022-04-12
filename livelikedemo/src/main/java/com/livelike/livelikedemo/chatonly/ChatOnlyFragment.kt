@@ -19,14 +19,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.ChatOnlyActivity
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.R
-import kotlinx.android.synthetic.main.fragment_chat_only.btn_chat_room_members
-import kotlinx.android.synthetic.main.fragment_chat_only.chat_view
-import kotlinx.android.synthetic.main.fragment_chat_only.prg_members
-import kotlinx.android.synthetic.main.fragment_chat_only.prg_visibility
-import kotlinx.android.synthetic.main.fragment_chat_only.txt_chat_room_id
-import kotlinx.android.synthetic.main.fragment_chat_only.txt_chat_room_members_count
-import kotlinx.android.synthetic.main.fragment_chat_only.txt_chat_room_title
-import kotlinx.android.synthetic.main.fragment_chat_only.txt_chat_room_visibility
+import kotlinx.android.synthetic.main.fragment_chat_only.*
 
 class ChatOnlyFragment : Fragment() {
 
@@ -130,6 +123,13 @@ class ChatOnlyFragment : Fragment() {
                 context?.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
             val clip = ClipData.newPlainText("copied ChatRoom Id", txt_chat_room_id.text.toString())
             clipboard?.setPrimaryClip(clip)
+        }
+
+        btn_chat_room_1.setOnClickListener {
+            (activity as? ChatOnlyActivity)?.privateGroupChatsession?.connectToChatRoom("564a120f-b3d9-41a0-8f21-8827dcb79866")
+        }
+        btn_chat_room_2.setOnClickListener {
+            (activity as? ChatOnlyActivity)?.privateGroupChatsession?.connectToChatRoom("af5e6e1e-ea65-4195-9f15-ccbaa8a1ffbe")
         }
     }
 

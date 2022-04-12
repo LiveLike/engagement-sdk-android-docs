@@ -88,7 +88,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         if (allowWidgetSwipeToDismiss) {
             widgetContainer.setOnTouchListener(swipeDismissTouchListener)
         }
-        currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { pair ->
+        currentWidgetViewStream.subscribe(this.hashCode()) { pair ->
             if (pair != null)
                 widgetObserver(pair.second, pair.first)
             else {

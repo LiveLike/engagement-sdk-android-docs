@@ -24,7 +24,8 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
-import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.LiveLikeApplication.Companion.CHAT_ROOM_LIST
+import com.livelike.livelikedemo.LiveLikeApplication.Companion.PREFERENCES_APP_ID
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import kotlinx.android.synthetic.main.activity_main.*
@@ -52,17 +53,17 @@ class MainActivity : AppCompatActivity() {
         var allowDiscard: Boolean = true,
         var allowDefaultChatRoom: Boolean = true,
         var quoteMsg: Boolean=false
+
     ) {
     }
 
     private lateinit var userStream: Stream<LiveLikeUserApi>
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
-
-    private lateinit var channelManager: ChannelManager
+    private val selectedEnvironment: String = "Selected App Environment"
     private val mConnReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (context.isNetworkConnected()) {
-                channelManager.loadClientConfig()
+                (application as LiveLikeApplication).channelManager.loadClientConfig()
             }
         }
     }
@@ -94,14 +95,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun registerNetWorkCallback() {
-        channelManager = (application as LiveLikeApplication).channelManager
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             networkCallback = object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     super.onAvailable(network)
 //                    (application as LiveLikeApplication).initSDK()
-                    channelManager.loadClientConfig()
+                    (application as LiveLikeApplication).channelManager.loadClientConfig()
                 }
 
                 override fun onLost(network: Network) {
@@ -136,6 +136,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        (application as LiveLikeApplication).selectEnvironment("QA")
+        env_label.text = "QA"
+        events_label.text = "Select Channel"
         registerNetWorkCallback()
         sdk_version.text = "SDK Version : ${com.livelike.engagementsdk.BuildConfig.SDK_VERSION}"
         if (BuildConfig.VERSION_CODE > 1) {
@@ -149,6 +152,24 @@ class MainActivity : AppCompatActivity() {
             player.customLink = ed_link_custom.text.toString()
             player.quoteMsg = chk_enable_quote_msg.isChecked
             startActivity(playerDetailIntent(player))
+        }
+
+        env_button.setOnClickListener {
+            AlertDialog.Builder(this).apply {
+                setTitle("Select Environment")
+                setItems(LiveLikeApplication.environmentMap.map { it.key }
+                    .toTypedArray()) { _, which ->
+                    (application as LiveLikeApplication).selectEnvironment(LiveLikeApplication.environmentMap.keys.toList()[which])
+                    events_label.text = "Select Channel"
+                    LiveLikeApplication.environmentMap.keys.toList()[which].let {
+                        env_label.text = it
+                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
+                            edit().putString(selectedEnvironment, it).apply()
+                        }
+                    }
+                }
+                create()
+            }.show()
         }
 
         layout_overlay.setOnClickListener {
@@ -196,29 +217,31 @@ class MainActivity : AppCompatActivity() {
         }
 
         events_button.setOnClickListener {
-            val channels = channelManager.getChannels()
-            AlertDialog.Builder(this).apply {
-                setTitle("Choose a channel to watch!")
-                setItems(channels.map { it.name }.toTypedArray()) { _, which ->
-                    channelManager.selectedChannel = channels[which]
-                    events_label.text = channelManager.selectedChannel.name
-                }
-                if (channelManager.nextUrl?.isNotEmpty() == true)
-                    setPositiveButton(
-                        "Load Next"
-                    ) { dialog, _ ->
-                        channelManager.loadClientConfig(channelManager.nextUrl)
-                        dialog.dismiss()
+            (application as LiveLikeApplication).channelManager.let { channelManager ->
+                val channels = channelManager.getChannels()
+                AlertDialog.Builder(this).apply {
+                    setTitle("Choose a channel to watch!")
+                    setItems(channels.map { it.name }.toTypedArray()) { _, which ->
+                        channelManager.selectedChannel = channels[which]
+                        events_label.text = channelManager.selectedChannel.name
                     }
-                if (channelManager.previousUrl?.isNotEmpty() == true)
-                    setNeutralButton(
-                        "Load Previous"
-                    ) { dialog, _ ->
-                        channelManager.loadClientConfig(channelManager.previousUrl)
-                        dialog.dismiss()
-                    }
-                create()
-            }.show()
+                    if (channelManager.nextUrl?.isNotEmpty() == true)
+                        setPositiveButton(
+                            "Load Next"
+                        ) { dialog, _ ->
+                            channelManager.loadClientConfig(channelManager.nextUrl)
+                            dialog.dismiss()
+                        }
+                    if (channelManager.previousUrl?.isNotEmpty() == true)
+                        setNeutralButton(
+                            "Load Previous"
+                        ) { dialog, _ ->
+                            channelManager.loadClientConfig(channelManager.previousUrl)
+                            dialog.dismiss()
+                        }
+                    create()
+                }.show()
+            }
         }
 
         live_blog.setOnClickListener {
@@ -313,7 +336,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        events_label.text = channelManager.selectedChannel.name
+        events_label.text = (application as LiveLikeApplication).channelManager.selectedChannel.name
 
         getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
             getString("UserNickname", "")
@@ -331,7 +354,11 @@ class MainActivity : AppCompatActivity() {
                     edit().putString("userPic", it).apply()
                 }
             }
-
+            getString(selectedEnvironment, null)?.let {
+                (application as LiveLikeApplication).selectEnvironment(it)
+                events_label.text = "Select Channel"
+                env_label.text = it
+            }
             chatRoomIds = getStringSet(CHAT_ROOM_LIST, mutableSetOf()) ?: mutableSetOf()
         }
 
@@ -397,7 +424,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
         userStream = (application as LiveLikeApplication).sdk.userStream
-        userStream.subscribe(this) {
+        userStream.subscribe(this.hashCode()) {
             runOnUiThread {
                 txt_nickname_server.text = it?.nickname
                 it?.let {
@@ -487,7 +514,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
         custom_chat.setOnClickListener {
-            if (channelManager.getChannels().isNotEmpty())
+            if ((application as LiveLikeApplication).channelManager.getChannels().isNotEmpty())
                 startActivity(Intent(this, CustomChatActivity::class.java))
             else
                 Toast.makeText(this, "Please wait for events loading", Toast.LENGTH_SHORT).show()
@@ -509,6 +536,7 @@ class MainActivity : AppCompatActivity() {
 
         (application as LiveLikeApplication).removePublicSession()
         (application as LiveLikeApplication).removePrivateSession()
+
     }
 
     fun setupJsonThemesFilePath(files: Array<out String>?) {

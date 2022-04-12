@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PinMessageInfo
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatListCountResponse
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.chat.services.network.ChatDataClient
@@ -44,7 +45,6 @@ internal class ChatSession(
         return currentPlayheadTime.invoke()
     }
 
-    private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private var pubnubMessagingClient: PubnubChatMessagingClient? = null
     internal val dataClient: ChatDataClient = ChatDataClientImpl()
     private var isClosed = false
@@ -58,13 +58,13 @@ internal class ChatSession(
             errorDelegate = errorDelegate
         )
     }
-    override var getCurrentChatRoom: () -> String = { currentChatRoom?.id ?: "" }
+    override var getCurrentChatRoom: () -> String = { currentChatRoomId ?: "" }
 
     private var chatClient: MessagingClient? = null
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     private var chatRepository: ChatRepository? = null
-    private var chatRoomId: String? = null
+    private var currentChatRoomId: String? = null
 
     private val chatSessionIdleStream: Stream<Boolean> =
         SubscriptionManager(true)
@@ -228,8 +228,7 @@ internal class ChatSession(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<ChatRoom>
     ) {
-        val requestId = UUID.randomUUID()
-        chatSessionIdleStream.subscribe(requestId) {
+        chatSessionIdleStream.subscribe(chatRoomId) {
             if (it == true) {
                 if (isClosed) {
                     logError { "Session is closed" }
@@ -259,7 +258,7 @@ internal class ChatSession(
                                         ?: "error in fetching room id resource"
                                 }
                             }
-                            chatSessionIdleStream.unsubscribe(requestId)
+                            chatSessionIdleStream.unsubscribe(chatRoomId)
                         }
                     }
                 }
@@ -271,33 +270,32 @@ internal class ChatSession(
         startTimestamp: Long,
         callback: LiveLikeCallback<Byte>
     ) {
-        chatRoomId?.let {
-            logDebug { "messageCount $chatRoomId ,$startTimestamp" }
-            fetchChatRoom(
-                it,
-                object : LiveLikeCallback<ChatRoom>() {
-                    override fun onResponse(result: ChatRoom?, error: String?) {
-                        result?.let { chatRoom ->
-                            chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
-                                if (pubnubClientForMessageCount == null) {
-                                    pubnubClientForMessageCount =
-                                        chatRepository?.establishChatMessagingConnection() as PubnubChatMessagingClient
+        if (currentChatRoomId != null) {
+            logDebug { "messageCount ${this.currentChatRoomId} , StartTime: $startTimestamp , Valid:${pubnubMessagingClient != null}" }
+            chatSessionIdleStream.subscribe(this) { idle ->
+                if (idle == true) {
+                    chatSessionIdleStream.unsubscribe(this)
+                    pubnubMessagingClient?.getMessageCountFromServer(
+                        startTimestamp,
+                        liveLikeCallback = object :
+                            LiveLikeCallback<PubnubChatListCountResponse>() {
+                            override fun onResponse(
+                                result: PubnubChatListCountResponse?,
+                                error: String?
+                            ) {
+                                result?.let {
+                                    callback.onResponse(it.count.toByte(), null)
                                 }
-                                pubnubClientForMessageCount?.getMessageCountV1(
-                                    channel,
-                                    startTimestamp
-                                )
-                                    ?.run {
-                                        callback.processResult(this)
-                                    }
+                                error?.let {
+                                    callback.onResponse(null, it)
+                                }
                             }
                         }
-                        error?.let {
-                            callback.onResponse(null, error)
-                        }
-                    }
+                    )
                 }
-            )
+            }
+        } else {
+            logError { "ChatRoom Not Found" }
         }
     }
 
@@ -320,7 +318,7 @@ internal class ChatSession(
         }
         messages.clear()
         deletedMsgList.clear()
-        this.chatRoomId = chatRoomId
+        this.currentChatRoomId = chatRoomId
         logDebug { "Connecting to ChatRoom: $chatRoomId" }
         fetchChatRoom(
             chatRoomId,
@@ -329,32 +327,51 @@ internal class ChatSession(
                     result?.let { chatRoom ->
                         //subscribe to channel for listening for pin message events
                         val controlChannel = chatRoom.channels.control[CHAT_PROVIDER]
-                        controlChannel?.let {
-                            pubnubMessagingClient?.addChannelSubscription(it)
-                        }
-                        val channel = chatRoom.channels.chat[CHAT_PROVIDER]
-                        channel?.let { ch ->
-                            contentSessionScope.launch {
-                                delay(500)
-                                pubnubMessagingClient?.addChannelSubscription(ch)
-                                delay(500)
-                                chatViewModel.apply {
-                                    flushMessages()
-                                    updatingURls(
-                                        chatRoom.clientId,
-                                        chatRoom.stickerPacksUrl,
-                                        chatRoom.reactionPacksUrl,
-                                        chatRoom.reportMessageUrl
-                                    )
-                                    delay(1000)
-                                    currentChatRoom = chatRoom
-                                    chatLoaded = false
-                                }
-                                logDebug { "Connected to ChatRoom" }
-                                this@ChatSession.currentChatRoom = chatRoom
-                                pubnubMessagingClient?.activeChatRoom = channel
-                                callback?.onResponse(Unit, null)
+                        if (chatRoom.id == currentChatRoomId) {
+                            controlChannel?.let {
+                                pubnubMessagingClient?.addChannelSubscription(it)
                             }
+                            val channel = chatRoom.channels.chat[CHAT_PROVIDER]
+                            channel?.let { ch ->
+                                contentSessionScope.launch {
+                                    delay(500)
+                                    if (chatRoom.id == currentChatRoomId) {
+                                        pubnubMessagingClient?.addChannelSubscription(ch)
+                                    } else {
+                                        logDebug { "Current ChatRoom id not matched:2" }
+                                    }
+                                    delay(500)
+                                    chatViewModel.apply {
+                                        flushMessages()
+                                        if (currentChatRoomId == chatRoom.id) {
+                                            updatingURls(
+                                                chatRoom.clientId,
+                                                chatRoom.stickerPacksUrl,
+                                                chatRoom.reactionPacksUrl,
+                                                chatRoom.reportMessageUrl
+                                            )
+                                        } else {
+                                            logDebug { "Current ChatRoom id not matched:3" }
+                                        }
+                                        delay(1000)
+                                        if (currentChatRoomId == chatRoom.id) {
+                                            currentChatRoom = chatRoom
+                                        } else {
+                                            logDebug { "Current ChatRoom id not matched:4" }
+                                        }
+                                        chatLoaded = false
+                                    }
+                                    if (currentChatRoomId == chatRoom.id) {
+                                        this@ChatSession.currentChatRoom = chatRoom
+                                        pubnubMessagingClient?.activeChatRoom = chatRoom
+                                        callback?.onResponse(Unit, null)
+                                    } else {
+                                        logDebug { "Current ChatRoom id not matched:5" }
+                                    }
+                                }
+                            }
+                        } else {
+                            logDebug { "Current ChatRoom id not matched:1" }
                         }
                     }
                     error?.let {
@@ -457,6 +474,7 @@ internal class ChatSession(
             timeStamp = timeData.timeSinceEpochInMs.toString(),
             quoteMessage = parentChatMessage?.copy()?.toChatMessage(),
             clientMessageId = UUID.randomUUID().toString(),
+            chatRoomId = currentChatRoomId
         ).let { chatMessage ->
             // TODO: need to update for error handling here if pubnub respond failure of message
             preLiveLikeCallback.onResponse(chatMessage.toLiveLikeChatMessage(), null)
@@ -517,13 +535,11 @@ internal class ChatSession(
     }
 
     override fun loadNextHistory(limit: Int) {
-        currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
-            if (chatRepository != null) {
-                chatRepository?.loadPreviousMessages(channel, limit)
-            } else {
-                logError { "Chat repo is null" }
-                errorDelegate?.onError("Chat Repository is Null")
-            }
+        if (chatRepository != null) {
+            chatRepository?.loadPreviousMessages(limit)
+        } else {
+            logError { "Chat repo is null" }
+            errorDelegate?.onError("Chat Repository is Null")
         }
     }
 

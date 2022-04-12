@@ -141,7 +141,7 @@ class WidgetsTimeLineView(
     }
 
     private fun subscribeForTimelineWidgets() {
-        timeLineViewModel.timeLineWidgetsStream.subscribe(this) { pair ->
+        timeLineViewModel.timeLineWidgetsStream.subscribe(this.hashCode()) { pair ->
             pair?.let {
                 // lockInteracatedWidgetsWithoutPatchUrl(pair.second) // will remove this logic when backend adds patch_url
                 lockAlreadyInteractedQuizAndEmojiSlider(pair.second)
@@ -288,7 +288,7 @@ class WidgetsTimeLineView(
             snapToLiveForTimeline()
         }
 
-        timeLineViewModel.widgetEventStream.subscribe(javaClass.simpleName) {
+        timeLineViewModel.widgetEventStream.subscribe(this.hashCode()) {
             logDebug { "Widget timeline event stream : $it" }
             when (it) {
 
@@ -407,8 +407,8 @@ class WidgetsTimeLineView(
     }
 
     private fun unsubscribeForTimelineWidgets() {
-        timeLineViewModel.timeLineWidgetsStream.unsubscribe(this)
-        timeLineViewModel.widgetEventStream.unsubscribe(this)
+        timeLineViewModel.timeLineWidgetsStream.unsubscribe(this.hashCode())
+        timeLineViewModel.widgetEventStream.unsubscribe(this.hashCode())
     }
 
     companion object {

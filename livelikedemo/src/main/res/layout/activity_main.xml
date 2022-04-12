@@ -25,13 +25,41 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <Button
+                    android:id="@+id/env_button"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_marginTop="16dp"
+                    android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="24dp"
+                    android:text="ENVIRONMENT"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Environment" />
+
+                <TextView
+                    android:id="@+id/env_label"
+                    style="@style/TestAppButtonSubLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="16dp"
+                    android:paddingTop="36dp"
+                    android:paddingEnd="16dp"
+                    android:text="@string/default_channel_label"
+                    app:layout_constraintBottom_toBottomOf="@id/env_button"
+                    app:layout_constraintStart_toStartOf="@id/env_button"
+                    app:layout_constraintTop_toTopOf="@id/env_button"
+                    tools:text="Staging" />
+
                 <TextView
                     android:id="@+id/layout_label"
                     style="@style/TestAppLabel"
                     android:text="@string/layout_label"
-
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/env_button"
                     tools:text="LAYOUT" />
 
                 <ImageView
@@ -63,12 +91,10 @@
                     android:layout_height="75dp"
                     android:layout_marginTop="16dp"
                     android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
-
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="24dp"
                     android:text="@string/events_btn_label"
-
                     app:layout_constraintTop_toBottomOf="@id/layout_side_panel"
                     tools:text="Events" />
 
@@ -78,7 +104,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="16dp"
-
                     android:paddingTop="36dp"
                     android:paddingEnd="16dp"
                     android:text="@string/default_channel_label"

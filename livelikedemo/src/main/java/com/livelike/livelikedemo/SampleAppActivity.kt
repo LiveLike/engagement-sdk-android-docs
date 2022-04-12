@@ -8,9 +8,9 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.livelikedemo.LiveLikeApplication.Companion.PREFERENCES_APP_ID
 import com.livelike.livelikedemo.channel.ChannelManager
-import kotlinx.android.synthetic.main.activity_sample_app.chat_view
-import kotlinx.android.synthetic.main.activity_sample_app.widget_view
+import kotlinx.android.synthetic.main.activity_sample_app.*
 
 class SampleAppActivity : AppCompatActivity() {
 
@@ -27,9 +27,8 @@ class SampleAppActivity : AppCompatActivity() {
 
     private fun initSDK() {
         channelManager = (application as LiveLikeApplication).channelManager
-        engagementSDK =
-            EngagementSDK(
-                BuildConfig.APP_CLIENT_ID, applicationContext,
+        LiveLikeApplication.selectedEnvironment?.let {
+            engagementSDK = EngagementSDK(it.clientId, applicationContext,
                 object : ErrorDelegate() {
                     override fun onError(error: String) {
                         android.os.Handler(Looper.getMainLooper()).postDelayed(
@@ -42,7 +41,10 @@ class SampleAppActivity : AppCompatActivity() {
                 },
                 accessTokenDelegate = object : AccessTokenDelegate {
                     override fun getAccessToken(): String? {
-                        return getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
+                        return getSharedPreferences(
+                            PREFERENCES_APP_ID,
+                            Context.MODE_PRIVATE
+                        ).getString(
                             PREF_USER_ACCESS_TOKEN_1,
                             null
                         ).apply {
@@ -51,12 +53,14 @@ class SampleAppActivity : AppCompatActivity() {
                     }
 
                     override fun storeAccessToken(accessToken: String?) {
-                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(
-                            PREF_USER_ACCESS_TOKEN_1, accessToken
-                        ).apply()
+                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit()
+                            .putString(
+                                PREF_USER_ACCESS_TOKEN_1, accessToken
+                            ).apply()
                     }
                 }
             )
+        }
         channelManager.selectedChannel.let { channel ->
             if (channel != ChannelManager.NONE_CHANNEL) {
                 session =
