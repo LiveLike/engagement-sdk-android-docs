@@ -557,29 +557,38 @@ internal class PubnubChatMessagingClient(
                         until = firstUntil
                     )
                     if (result is Result.Success) {
-                        firstUntil = result.data.results.firstOrNull()?.createdAt
-                        val list = result.data.results.filter { chatMessage ->
-                            return@filter !isMessageModerated(chatMessage)
-                        }.map {
-                            val pubnubChatEvent =
-                                PubnubChatEvent(
-                                    it.messageEvent ?: MESSAGE_CREATED.key,
-                                    it,
-                                    it.pubnubTimeToken,
-                                    url
-                                )
-                            return@map processPubnubChatEvent(
-                                JsonParser.parseString(
-                                    gson.toJson(
-                                        pubnubChatEvent
+                        if (result.data.results.isNotEmpty()) {
+                            firstUntil = result.data.results.firstOrNull {
+                                when (it.messageEvent) {
+                                    MESSAGE_CREATED.key, IMAGE_CREATED.key, CUSTOM_MESSAGE_CREATED.key -> true
+                                    else -> false
+                                }
+                            }?.createdAt
+                            val list = result.data.results.filter { chatMessage ->
+                                return@filter !isMessageModerated(chatMessage)
+                            }.map {
+                                val pubnubChatEvent =
+                                    PubnubChatEvent(
+                                        it.messageEvent ?: MESSAGE_CREATED.key,
+                                        it,
+                                        it.pubnubTimeToken,
+                                        url
                                     )
-                                ).asJsonObject,
-                                activeChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
-                                pubnubChatEvent.pubnubToken ?: 0L,
-                                it.reactions
-                            )
-                        }.filterNotNull()
-                        listener?.onClientMessageEvents(this@PubnubChatMessagingClient, list)
+                                return@map processPubnubChatEvent(
+                                    JsonParser.parseString(
+                                        gson.toJson(
+                                            pubnubChatEvent
+                                        )
+                                    ).asJsonObject,
+                                    activeChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
+                                    pubnubChatEvent.pubnubToken ?: 0L,
+                                    it.reactions
+                                )
+                            }.filterNotNull()
+                            listener?.onClientMessageEvents(this@PubnubChatMessagingClient, list)
+                        } else {
+                            listener?.onClientMessageEvents(this@PubnubChatMessagingClient, arrayListOf())
+                        }
                     } else if (result is Result.Error) {
                         logError { "Error Loading Message : ${result.exception}" }
                     }
