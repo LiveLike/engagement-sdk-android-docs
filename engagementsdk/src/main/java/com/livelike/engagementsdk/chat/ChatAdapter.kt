@@ -216,7 +216,6 @@ internal class ChatRecyclerAdapter(
                 }
             }
             v.setOnLongClickListener(this)
-            v.rel_reactions_lay.setOnClickListener(this)
             v.setOnClickListener(this)
         }
 
@@ -246,12 +245,10 @@ internal class ChatRecyclerAdapter(
             if (chatPopUpView?.isShowing == true) {
                 hideFloatingUI()
             } else {
-                if (view?.id == v.rel_reactions_lay.id) {
-                    if (!isKeyboardOpen)
-                        wouldShowFloatingUi(view)
-                    else
-                        isKeyboardOpen = false
-                }
+                if (!isKeyboardOpen)
+                    wouldShowFloatingUi(view)
+                else
+                    isKeyboardOpen = false
             }
         }
 
@@ -317,7 +314,7 @@ internal class ChatRecyclerAdapter(
                             setTitle(context.getString(R.string.flag_ui_title))
                             setItems(dialogOptions.map { it.first }.toTypedArray()) { _, which ->
                                 message?.let {
-                                    when(dialogOptions[which].first){
+                                    when (dialogOptions[which].first) {
                                         v.context.getString(R.string.flag_ui_blocking_title) -> {
                                             analyticsService.trackBlockingUser()
                                             blockProfile(it.senderId)
