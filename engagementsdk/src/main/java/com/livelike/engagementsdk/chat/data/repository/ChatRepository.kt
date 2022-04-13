@@ -80,7 +80,7 @@ internal class ChatRepository(
         val titleRequest = gson.toJson(ChatRoomRequest(title, visibility))
             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         return if (chatRoomResult is Result.Success) {
-            return dataClient.remoteCall<ChatRoom>(
+            return dataClient.remoteCall(
                 chatRoomResult.data.url,
                 RequestType.PUT,
                 accessToken = authKey,
@@ -92,7 +92,7 @@ internal class ChatRepository(
     }
 
     suspend fun getCurrentUserChatRoomList(membershipUrl: String): Result<UserChatRoomListResponse> {
-        return dataClient.remoteCall<UserChatRoomListResponse>(
+        return dataClient.remoteCall(
             membershipUrl,
             accessToken = authKey,
             requestType = RequestType.GET
@@ -105,7 +105,7 @@ internal class ChatRepository(
     ): Result<LiveLikeEmptyResponse> {
         val chatRoomResult = fetchChatRoom(chatRoomId, chatRoomTemplateUrl)
         return if (chatRoomResult is Result.Success) {
-            dataClient.remoteCall<LiveLikeEmptyResponse>(
+            dataClient.remoteCall(
                 chatRoomResult.data.membershipsUrl,
                 accessToken = authKey,
                 requestType = RequestType.DELETE
@@ -132,10 +132,6 @@ internal class ChatRepository(
     }
 
     fun loadPreviousMessages(limit: Int = CHAT_HISTORY_LIMIT) {
-//        pubnubChatMessagingClient?.loadMessagesWithReactions(
-//            channel,
-//            limit
-//        )
         pubnubChatMessagingClient?.loadMessagesWithReactionsFromServer(limit)
     }
 
@@ -167,7 +163,6 @@ internal class ChatRepository(
         until?.let {
             apiUrl = "$apiUrl&until=${URLEncoder.encode(it, "utf-8")}"
         }
-
         return dataClient.remoteCall(
             apiUrl,
             accessToken = authKey,

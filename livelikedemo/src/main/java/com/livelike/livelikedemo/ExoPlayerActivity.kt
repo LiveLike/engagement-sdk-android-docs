@@ -63,6 +63,7 @@ import java.util.*
 
 class ExoPlayerActivity : AppCompatActivity() {
 
+    private var allowDefaultLoadChatRoom: Boolean = true
     private var customLink: String? = null
     private var showLink: Boolean = false
     private var enableReplies: Boolean = false
@@ -127,7 +128,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             showNotification = intent.getBooleanExtra("showNotification", true)
             showLink = intent.getBooleanExtra("showLink", false)
             customLink = intent.getStringExtra("customLink")
-            enableReplies = intent.getBooleanExtra("enableReplies", false)
+            allowDefaultLoadChatRoom = intent.getBooleanExtra("allowDefaultLoadChatRoom", true)
+
+            enableReplies = intent.getBooleanExtra("enableReplies",false)
             adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
             val position = savedInstanceState?.getLong(POSITION) ?: 0
             startingState = PlayerState(0, position, !adsPlaying)
@@ -510,8 +513,20 @@ class ExoPlayerActivity : AppCompatActivity() {
                 when (showNotification) {
                     true -> dialog
                     else -> null
-                }
+                },
+                allowDefaultLoadChatRoom = allowDefaultLoadChatRoom
             )
+            if (!allowDefaultLoadChatRoom) {
+                session.chatSession.connectToChatRoom(
+                    "38043523-920c-47eb-afb4-128d27f5a849",
+                    object :
+                        LiveLikeCallback<Unit>() {
+                        override fun onResponse(result: Unit?, error: String?) {
+                            println("ExoPlayerActivity.onResponse> $result >> $error")
+                        }
+                    })
+            }
+
             widget_view?.setWidgetListener(object : WidgetListener {
                 override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
                     if (myWidgetsList.find { it.id == liveLikeWidget.id } == null) {
@@ -575,7 +590,6 @@ class ExoPlayerActivity : AppCompatActivity() {
             session?.chatSession?.avatarUrl = avatarUrl
             txt_chat_room_id?.visibility = View.INVISIBLE
             txt_chat_room_title?.visibility = View.INVISIBLE
-            println("ExoPlayerActivity.initializeLiveLikeSDK::$showChatAvatar")
             session?.chatSession?.shouldDisplayAvatar = showChatAvatar
             chat_view.enableChatMessageURLs = showLink
             if (showLink) {
